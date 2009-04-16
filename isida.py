@@ -21,6 +21,7 @@ if ff.count('Revision'):
         botVersion += ff
 else:
         botVersion +='xxx'
+botVersion +=' beta'
 god = u'Disаbler'
 
 execfile('commands\main.py')
