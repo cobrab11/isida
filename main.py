@@ -80,7 +80,7 @@ def spam(type, jid, nick, text):
         send_msg(type, jid, nick, 'done')
 
 def hidden_clear(type, jid, nick):
-        print u'Зачистка: '+unicode(jid)+u' по команде от: '+unicode(nick)
+        print u'clear: '+unicode(jid)+u' by: '+unicode(nick)
         cntr = 19                
         while (cntr>0):
                 cl.send(xmpp.Message(jid, '', "groupchat"))
@@ -110,10 +110,10 @@ def bot_join(type, jid, nick, text):
                         joinconf(text, domain)
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'зашла в '+text)
-                        print u'зашла в '+text
+                        print u'join to '+text
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom)
-                        print u'уже в '+text
+                        print u'already in '+text
 
 # допилить сообщения о выходе!!!
 def bot_leave(type, jid, nick, text):
@@ -131,10 +131,10 @@ def bot_leave(type, jid, nick, text):
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'свалила из '+text)
                         leaveconf(text, domain)
-                        print u'вышла из '+text
+                        print u'leave '+text
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
-                        print u'нету в '+text
+                        print u'never be in '+text
 
 def conf_pass(type, jid, nick, text):
         global psw

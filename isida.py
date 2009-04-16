@@ -329,7 +329,7 @@ lastnick = name
 
 jid = JID(node=node, domain=domain, resource=mainRes)
 
-print u'Мой jid: '+unicode(jid)
+print u'bot jid: '+unicode(jid)
 
 psw = u''
 
