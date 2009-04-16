@@ -69,7 +69,7 @@ def os_version():
 				japytOs += ' FW.Unknown ('+osInfo[3]+')'
 
 
-			japytOs += ' ('+osInfo[1]') / Python v'+japytPyVer
+			japytOs += ' ('+osInfo[1]+') / Python v'+japytPyVer
 		else:
 		        japytOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+japytPyVer
 
