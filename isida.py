@@ -24,7 +24,7 @@ else:
 botVersion +=' beta'
 god = u'Disаbler'
 
-execfile('commands\main.py')
+execfile('main.py')
 
 def send_msg(mtype, mjid, mnick, mmessage):
         if mtype == 'groupchat':
