@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*- 
+
+#------------------------------------------------
+#             Isida-bot Config file
+#                  v1.0beta
+#------------------------------------------------
+
+# ник бота. он же логин
+name = u'Isida'
+
+# сервер бота
+domain = u'domain.ru'
+
+# пароль
+password = u'pass'
+
+# новый jid. 0 - нет. не 0 - да
+newBotJid = 0
+
+# рессурс бота в конфе
+mainRes = u'isida-bot'
+#mainRes = unicode(randint(0, maxint)) # - random
