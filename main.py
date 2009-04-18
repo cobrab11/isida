@@ -44,12 +44,10 @@ def helpme(type, jid, nick, text):
                  (u'тест',u'хз что это...'),
                  (u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
                  (u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
-                 (u'иннах',u'Завершение работы бота'),
-                 (u'свали',u'Завершение работы бота'),
-                 (u'seeya',u'Завершение работы бота'),
-                 (u'exit',u'Завершение работы бота'),
+                 (u'quit',u'Завершение работы бота'),
                  (u'clear',u'Скрытая очистка истории сообщений'),
-                 (u'pass',u'Установка пароля для входа в конфу')]
+                 (u'pass',u'Установка пароля для входа в конфу')
+		 (u'rss',u'В разработке')]
 
         mesg = u'Доступна справка по командам:\n'
         for hlp in helps:
@@ -59,28 +57,7 @@ def helpme(type, jid, nick, text):
                 if text.lower() == hlp[0]:
                         mesg = hlp[1]
         send_msg(type, jid, nick, mesg)
-        
-"""                mesg = u": отаке [rejoins] [renicks] [server] [conference]\nпример: отаке 10 5 server.ru xxx@conference.server.ru\nбудет 10 заходов по 5 смен ников с сервера в конфу"
-                mesg = u": уг1/уг2 [rejoins] [messages] [server] [nick] [jid]\nпример: уг1 10 5 server.ru nick aaa@bbb.ru\nбудет 10 атак по 5 сообщений с сервера и ника на jid"
-                mesg = u": пыщь [rejoins] [messages] [server] [nick] [conference/botnick]\nпример: пыщь 10 5 server.ru nick xxx@conference.server.ru/aaa\nбудет 10 атак по 5 сообщений с сервера и ника 'aaa' на ник 'nick' в конфе 'xxx'"
-                mesg = u": pass, limit, отаке, otake, уг1, уг2, пыщь, spam, забить" 
-                mesg =u": search, owner, info, where, res, serv, тест, test, иннах/свали, restart/seeya, conv, clear, join, leave" """
-                
-
-def spam(type, jid, nick, text):
-        r = unicode(text)
-        otake = JID(node=getName(jid), domain=getServer(jid), resource=r)
-        otake = unicode(otake)
-        pprint('Spam: '+str(otake))
-        message = u'\u2620'
-        count = 1000
-        while count != 0:
-                cl.send(xmpp.Message(otake, message, "chat"))
-                sleep(0.05)
-                count=count-1
-        send_msg(type, jid, nick, 'done')
-
-def hidden_clear(type, jid, nick):
+        def hidden_clear(type, jid, nick):
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
         cntr = 19                
         while (cntr>0):
@@ -116,7 +93,6 @@ def bot_join(type, jid, nick, text):
                         send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom)
                         pprint(u'already in '+text)
 
-# допилить сообщения о выходе!!!
 def bot_leave(type, jid, nick, text):
         if len(confbase) == 1:
                 send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
@@ -325,17 +301,12 @@ def rss(type, jid, nick, text):
 comms = [(u'test', test, 1),
          (u'тест', test_rus, 1),
          (u'spam '+god, no_spam, 1),
-         (u'seeya', bot_exit, 0, u'Yes, Sir!'),
-         (u'exit', bot_exit, 0, u'Меня выводят из конфы'),
-         (u'иннах', bot_exit, 0, u'Та пох!'),
-         (u'свали', bot_exit, 0, u'И уйду!'),
+         (u'quit', bot_exit, 0, u'Завершаю работу'),
          (u'say', say, 2),
          (u'help', helpme, 2),
-#         (u'spam', spam, 2),
          (u'join', bot_join, 2),
          (u'leave', bot_leave, 2),
          (u'pass', conf_pass, 2),
-#         (u'limit', conf_limit, 2),
          (u'owner', owner, 2),
          (u'where', info_where, 1),
          (u'res', info_res, 2),
