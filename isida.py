@@ -20,12 +20,29 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
+def parser(text):
+        text = unicode(text)
+        ttext = u''
+        i = 0
+        while i<len(text):
+                if (text[i]<='~'): # or (text[i]>=u'А' and text[i]<=u'я'):
+                        ttext+=text[i]
+                else:
+                        ttext+='?'
+                i=i+1
+        ttext = unicode(ttext)
+        return ttext
+
+def pprint(text):
+	print parser(text)
+
 lfrom = 32
 lto = 128
 botName = 'Isida-Bot'
 f = urllib.urlopen('http://isida.googlecode.com/svn')
 ff = f.read()
 botVersion = '1.4'
+capsVersion = botVersion
 
 ver_file = 'version'
 if os.path.isfile(ver_file):
@@ -39,11 +56,13 @@ if os.path.isfile('config.txt'):
 else:
         errorHandler(u'config.txt is missed.')
 
+capsNode = 'http://isida.googlecode.com'
+
 # --- check parameters
 
-baseParameters = [name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf]
+baseParameters = [name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 
-baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf']
+baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 
 for baseCheck in range(0, len(baseParameters)):
         if baseParameters[baseCheck]=='':
@@ -113,9 +132,9 @@ botOs = os_version()
 
 #error handler
 def errorHandler(text):
-        print u'\n*** Error ***'
-        print text
-        print u'more info at http://isida.googlecode.com\n'
+        pprint(u'\n*** Error ***')
+        pprint(text)
+        pprint(u'more info at http://isida.googlecode.com\n')
         exit (0)
 
 #join [conference/nick]
@@ -129,7 +148,7 @@ def joinconf(conference, server):
 	else:
 		cl = Client(jid.getDomain())
         conf = unicode(JID(conference))
-        join(cl, conf)
+        join(conf)
         sleep(1)
 
 #leave [conference/nick]
@@ -158,30 +177,18 @@ def get_space(text):
                 i=i+1
         return spc
         
-def join(conn, conference):
-    global psw
-    j = Presence(conference)
+def join(conference):
+    j = Presence(conference, show=CommStatus, status=StatusMessage, priority=Priority)
     j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
     j.getTag('x').setTagData('password', psw)
+    j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
     cl.send(j)
 
-def leave(conn, conference):
-    j = Presence(conference, 'unavailable')
+def leave(conference):
+    j = Presence(conference, 'unavailable', status=StatusMessage)
     j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
+    j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
     cl.send(j)
-
-def parser(text):
-        text = unicode(text)
-        ttext = u''
-        i = 0
-        while i<len(text):
-                if (text[i]<='~'): # or (text[i]>=u'А' and text[i]<=u'я'):
-                        ttext+=text[i]
-                else:
-                        ttext+='?'
-                i=i+1
-        ttext = unicode(ttext)
-        return ttext
 
 def iqCB(sess,iq):
         nick = iq.getFrom()
@@ -315,18 +322,18 @@ else:
 	confbase = [defaultConf]
 	writefile(confs,str(confbase))
 
-print u''
-print u'\n*****************************************************************'
-print u'*** '+botName+' version '+botVersion+' ('+botOs+') ***' 
-print u'*****************************************************************'
-print u'\n--------------= (c) 2oo9 Disabler Production Lab. =--------------\n'
+pprint(u'')
+pprint(u'\n*****************************************************************')
+pprint(u'*** '+botName+' version '+botVersion+' ('+botOs+') ***')
+pprint(u'*****************************************************************')
+pprint(u'\n--------------= (c) 2oo9 Disabler Production Lab. =--------------\n')
 
 node = unicode(name)
 lastnick = name
 
 jid = JID(node=node, domain=domain, resource=mainRes)
 
-print u'bot jid: '+unicode(jid)
+pprint(u'bot jid: '+unicode(jid))
 
 psw = u''
 
@@ -337,29 +344,38 @@ if dm:
 else:
 	cl = Client(jid.getDomain())
 cl.connect()
-print u'Connected'
+pprint(u'Connected')
 
 if newBotJid:
-        print u'New jid: '+unicode(jid.getNode())+'@'+unicode(domain)
+        pprint(u'New jid: '+unicode(jid.getNode())+'@'+unicode(domain))
         features.register(cl, domain, {'username':node, 'password':password})
-        print u'Registered'
+        pprint(u'Registered')
 
 cl.auth(jid.getNode(), password, jid.getResource())
-print u'Autheticated'
+pprint(u'Autheticated')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
 
-print u'Wait conference'
+pprint(u'Wait conference')
 for tocon in confbase:
         baseArg = unicode(tocon)+u'/'+unicode(name)
         conf = JID(baseArg)
-        print tocon
-        join(cl, conf)
+        pprint(tocon)
+        join(conf)
 
 lastserver = getServer(confbase[0])
 
-print u'Joined'
-while 1:
-        cl.Process(1)
+pprint(u'Joined')
+
+try:
+	while 1:
+        	cl.Process(1)
+except KeyboardInterrupt:
+	StatusMessage = 'Shut down by CTRL+C'
+	send_presence_all(StatusMessage)
+	sleep(1)
+	exit(0)
+except:
+	raise
 
