@@ -387,6 +387,8 @@ while 1:
 		sleep(5)
 		exit(0)
 	except Exception, StatusMessage:
-		pprint('*** ERROR: '+StatusMessage+' ***')
+		pprint('*** Error ***')
+		pprint(StatusMessage)
+
 
 
