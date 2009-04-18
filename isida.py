@@ -9,30 +9,6 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib
 
-lfrom = 32
-lto = 128
-botName = 'Isida-Bot'
-f = urllib.urlopen('http://isida.googlecode.com/svn')
-ff = f.read()
-botVersion = '1.4.'
-if ff.count('Revision'):
-        ff = ff[ff.index('Revision ')+9:]
-        ff = ff[:ff.index(':')]
-        botVersion += ff
-else:
-        botVersion +='xxx'
-botVersion +=' beta'
-god = u'Disаbler'
-
-execfile('main.py')
-
-def send_msg(mtype, mjid, mnick, mmessage):
-        if mtype == 'groupchat':
-                mmessage = mnick+': '+mmessage
-        else:
-                mjid += '/' + mnick
-        cl.send(xmpp.Message(mjid, mmessage, mtype))
-
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -43,6 +19,46 @@ def writefile(filename, data):
 	fp = file(filename, 'w')
 	fp.write(data)
 	fp.close()
+
+lfrom = 32
+lto = 128
+botName = 'Isida-Bot'
+f = urllib.urlopen('http://isida.googlecode.com/svn')
+ff = f.read()
+botVersion = '1.4'
+
+ver_file = 'version'
+if os.path.isfile(ver_file):
+	bvers = str(readfile(ver_file))
+	botVersion += '.' + bvers[:-1]
+
+# --- load config.txt
+
+if os.path.isfile('config.txt'):
+        execfile('config.txt')
+else:
+        errorHandler(u'config.txt is missed.')
+
+# --- check parameters
+
+baseParameters = [name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf]
+
+baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf']
+
+for baseCheck in range(0, len(baseParameters)):
+        if baseParameters[baseCheck]=='':
+                errorHandler(baseErrors[baseCheck]+u' is missed in config.txt')
+
+god = SuperAdmin
+
+execfile('main.py')
+
+def send_msg(mtype, mjid, mnick, mmessage):
+        if mtype == 'groupchat':
+                mmessage = mnick+': '+mmessage
+        else:
+                mjid += '/' + mnick
+        cl.send(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
 	jSys = sys.platform
@@ -275,25 +291,6 @@ def getRoom(jid):
 
 # ---------- HERE WE GO!!! -----------
 
-name, domain, password, newBotJid, mainRes = '', '', '', 0, ''
-
-# --- load config.txt
-
-if os.path.isfile('config.txt'):
-        execfile('config.txt')
-else:
-        errorHandler(u'config.txt is missed.')
-
-# --- check parameters
-
-baseParameters = [name, domain, password, newBotJid, mainRes]
-
-baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes']
-
-for baseCheck in range(0, len(baseParameters)):
-        if baseParameters[baseCheck]=='':
-                errorHandler(baseErrors[baseCheck]+u' is missed in config.txt')
-
 jidbasefile = 'jidbase'
 
 if os.path.isfile(jidbasefile):
@@ -315,7 +312,7 @@ confs = 'conf'
 if os.path.isfile(confs):
 	confbase = eval(readfile(confs))
 else:
-	confbase = [u'japyt@conference.jabber.ru']
+	confbase = [defaultConf]
 	writefile(confs,str(confbase))
 
 print u''
