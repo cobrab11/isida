@@ -9,7 +9,7 @@ def info_comm(type, jid, nick):
 			msg += ccomms[1]+'('+str(ccomms[0])+'), '
 			ccnt += 1
 	msg = msg[:-2]
-	msg = u'Команды парсера: '+str(ccnt)+'\n'+msg
+	msg = u'Команды парсера: '+str(ccnt)+'\n'+msg+u'\nДоступ: 0 - всем, 1 - админам/овнерам, 2 - владельцу бота'
 	send_msg(type, jid, nick, msg)
 
 def test(type, jid, nick):
@@ -331,7 +331,7 @@ comms = [(0, u'test', test, 1),
          (2, u'leave', bot_leave, 2),
          (2, u'pass', conf_pass, 2),
          (2, u'owner', owner, 2),
-         (0, u'where', info_where, 1),
+         (1, u'where', info_where, 1),
          (1, u'res', info_res, 2),
          (1, u'serv', info_serv, 2),
          (2, u'base', info_base, 1),
