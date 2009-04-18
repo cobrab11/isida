@@ -1,25 +1,25 @@
 # -*- coding: utf -*-
 
 def info_comm(type, jid, nick):
-        global comms
-        msg = ''
-        ccnt = 0
-        for ccomms in comms:
-                if not ccomms[0].count(god):
-                        msg += ccomms[0]+', '
-                        ccnt += 1
-        msg = msg[:-2]
-        msg = u'Команды парсера: '+str(ccnt)+'\n'+msg
-        send_msg(type, jid, nick, msg)
+	global comms
+	msg = ''
+	ccnt = 0
+	for ccomms in comms:
+		if not ccomms[0].count(god):
+			msg += ccomms[0]+', '
+			ccnt += 1
+	msg = msg[:-2]
+	msg = u'Команды парсера: '+str(ccnt)+'\n'+msg
+	send_msg(type, jid, nick, msg)
 
 def test(type, jid, nick):
-        send_msg(type, jid, nick, 'passed')
+	send_msg(type, jid, nick, 'passed')
 
 def test_rus(type, jid, nick):
-        send_msg(type, jid, nick, u'две полоски!')
+	send_msg(type, jid, nick, u'две полоски!')
         
 def no_spam(type, jid, nick):
-        send_msg(type, jid, nick, u'Куй тебе по всей морде!')
+	send_msg(type, jid, nick, u'Куй тебе по всей морде!')
 
 def bot_exit(type, jid, nick, text):
         text = text[0]
@@ -29,35 +29,34 @@ def bot_exit(type, jid, nick, text):
 	os._exit(0)
 
 def say(type, jid, nick, text):
-        send_msg(type, jid, nick, text)
+	send_msg(type, jid, nick, text)
 
-# переписать нахуй этот бред!!!
 def helpme(type, jid, nick, text):
+	helps = [(u'search',u'Поиск по внутренней базе'),
+		(u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
+		(u'info',u'Основная инфа о боте'),
+		(u'where',u'Список конференций, в которых находится бот'),
+		(u'res',u'топ10 рессурсов. Возможен поиск через res text'),
+		(u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
+		(u'test',u'хз что это...'),
+		(u'тест',u'хз что это...'),
+		(u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
+		(u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
+		(u'quit',u'Завершение работы бота'),
+		(u'clear',u'Скрытая очистка истории сообщений'),
+		(u'pass',u'Установка пароля для входа в конфу'),
+		(u'rss',u'В разработке')]
 
-        helps = [(u'search',u'Поиск по внутренней базе'),
-                 (u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
-                 (u'info',u'Основная инфа о боте'),
-                 (u'where',u'Список конференций, в которых находится бот'),
-                 (u'res',u'топ10 рессурсов. Возможен поиск через res text'),
-                 (u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
-                 (u'test',u'хз что это...'),
-                 (u'тест',u'хз что это...'),
-                 (u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
-                 (u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
-                 (u'quit',u'Завершение работы бота'),
-                 (u'clear',u'Скрытая очистка истории сообщений'),
-                 (u'pass',u'Установка пароля для входа в конфу')
-		 (u'rss',u'В разработке')]
+	mesg = u'Доступна справка по командам:\n'
+	for hlp in helps:
+		mesg += hlp[0] + ', '
+	mesg = mesg[:-2]
+	for hlp in helps:
+		if text.lower() == hlp[0]:
+			mesg = hlp[1]
+	send_msg(type, jid, nick, mesg)
 
-        mesg = u'Доступна справка по командам:\n'
-        for hlp in helps:
-                mesg += hlp[0] + ', '
-        mesg = mesg[:-2]
-        for hlp in helps:
-                if text.lower() == hlp[0]:
-                        mesg = hlp[1]
-        send_msg(type, jid, nick, mesg)
-        def hidden_clear(type, jid, nick):
+def hidden_clear(type, jid, nick):
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
         cntr = 19                
         while (cntr>0):
