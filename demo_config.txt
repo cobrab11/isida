@@ -26,3 +26,12 @@ SuperAdmin = u'Disаbler'
 
 # стартовая конференция
 defaultConf = u'japyt@conference.jabber.ru'
+
+# статус бота
+CommStatus = u'online'
+
+# статус-сообщение
+StatusMessage = u'Йа аццкое железко!'
+
+# приоритет
+Priority = 777
