@@ -32,6 +32,7 @@ def say(type, jid, nick, text):
 	send_msg(type, jid, nick, text)
 
 def helpme(type, jid, nick, text):
+	pprint(text)
 	helps = [(u'search',u'Поиск по внутренней базе'),
 		(u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
 		(u'info',u'Основная инфа о боте'),

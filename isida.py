@@ -229,7 +229,9 @@ def messageCB(sess,mess):
 
         if (text != 'None') and (len(text)>2) and ownerbase.count(nick):
                 for parse in comms:
-                        if text[:len(parse[0])] == parse[0] or (text[:len(name)] == name and text[len(name)+2:len(parse[0])+len(name)+2] == parse[0]):
+			if text[:len(name)] == name:
+				text = text[len(name)+2:]
+                        if text[:len(parse[0])] == parse[0]:
                                 if not parse[2]:
                                         parse[1](type, room, nick, parse[3:])
                                 elif parse[2] == 1:
