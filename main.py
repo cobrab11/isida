@@ -5,8 +5,8 @@ def info_comm(type, jid, nick):
 	msg = ''
 	ccnt = 0
 	for ccomms in comms:
-		if not ccomms[0].count(god):
-			msg += ccomms[0]+', '
+		if not ccomms[1].count(god):
+			msg += ccomms[1]+'('+str(ccomms[0])+'), '
 			ccnt += 1
 	msg = msg[:-2]
 	msg = u'Команды парсера: '+str(ccnt)+'\n'+msg
@@ -238,6 +238,24 @@ def info_serv(type, jid, nick, text):
                         msg += '\n'+text+u' Not found!'
         send_msg(type, jid, nick, msg)
 
+def info_base(type, jid, nick):
+        msg = u'Чего искать то будем?'
+	if nick != '':
+        	msg = u'Найдено:'
+                fl = 1
+                for base in megabase:
+                        if base[1].lower().count(nick.lower()):
+				if base[0].lower() == jid:
+# 0 - конфа
+# 1 - ник
+# 2 - роль
+# 3 - аффиляция
+# 4 - jid
+	                        	msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] #+' '+base[4]
+	                        	fl = 0
+                if fl:
+                        msg = '\''+nick+u'\' not found!'
+        send_msg(type, jid, nick, msg)
 
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -294,25 +312,30 @@ def rss(type, jid, nick, text):
 
 #------------------------------------------------
 
+# в конце
 # 0 - передавать параметры
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
+# в начале
+# 0 - всем
+# 1 - админам\овнерам
+# 2 - владельцу бота
 
-comms = [(u'test', test, 1),
-         (u'тест', test_rus, 1),
-         (u'spam '+god, no_spam, 1),
-         (u'quit', bot_exit, 0, u'Завершаю работу'),
-         (u'say', say, 2),
-         (u'help', helpme, 2),
-         (u'join', bot_join, 2),
-         (u'leave', bot_leave, 2),
-         (u'pass', conf_pass, 2),
-         (u'owner', owner, 2),
-         (u'where', info_where, 1),
-         (u'res', info_res, 2),
-         (u'serv', info_serv, 2),
-         (u'search', info_search, 2),
-         (u'rss', rss, 2),
-         (u'commands', info_comm, 1),
-         (u'info', info, 1),
-         (u'clear', hidden_clear, 1)]
+comms = [(0, u'test', test, 1),
+         (0, u'тест', test_rus, 1),
+         (1, u'spam '+god, no_spam, 1),
+         (2, u'quit', bot_exit, 0, u'Завершаю работу'),
+         (1, u'say', say, 2),
+         (0, u'help', helpme, 2),
+         (2, u'join', bot_join, 2),
+         (2, u'leave', bot_leave, 2),
+         (2, u'pass', conf_pass, 2),
+         (2, u'owner', owner, 2),
+         (0, u'where', info_where, 1),
+         (1, u'res', info_res, 2),
+         (1, u'serv', info_serv, 2),
+         (1, u'base', info_base, 1),
+         (0, u'rss', rss, 2),
+         (1, u'commands', info_comm, 1),
+         (2, u'info', info, 1),
+         (1, u'clear', hidden_clear, 1)]

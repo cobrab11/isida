@@ -78,6 +78,10 @@ baseParameters = [name, domain, password, newBotJid, mainRes, SuperAdmin, defaul
 
 baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 
+megabase = []
+
+# --- subs ----
+
 for baseCheck in range(0, len(baseParameters)):
         if baseParameters[baseCheck]=='':
                 errorHandler(baseErrors[baseCheck]+u' is missed in config.txt')
@@ -226,26 +230,56 @@ def messageCB(sess,mess):
 
         text=unicode(text)
 
+# 0 - конфа # 1 - ник # 2 - роль # 3 - аффиляция # 4 - jid
 
-        if (text != 'None') and (len(text)>2) and ownerbase.count(nick):
+	access_mode = 0
+	if ownerbase.count(nick):
+		access_mode = 2
+	elif nick != name:
+		for base in megabase:
+			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
+				access_mode = 1
+
+#	print access_mode, text
+
+        if (text != 'None') and (len(text)>2):
                 for parse in comms:
-			if text[:len(name)] == name:
-				text = text[len(name)+2:]
-                        if text[:len(parse[0])] == parse[0]:
-                                if not parse[2]:
-                                        parse[1](type, room, nick, parse[3:])
-                                elif parse[2] == 1:
-                                        parse[1](type, room, nick)
-                                elif parse[2] == 2:
-                                        parse[1](type, room, nick, text[len(parse[0])+1:])
+			if access_mode >= parse[0]:
+				if text[:len(name)] == name:
+					text = text[len(name)+2:]
+        	                if text[:len(parse[1])] == parse[1]:
+        	                        if not parse[3]:
+        	                                parse[2](type, room, nick, parse[4:])
+        	                        elif parse[3] == 1:
+        	                                parse[2](type, room, nick)
+        	                        elif parse[3] == 2:
+        	                                parse[2](type, room, nick, text[len(parse[1])+1:])
 
 
 def presenceCB(sess,mess):
-	global jidbase
-
+	global jidbase, megabase
+        room=unicode(mess.getFrom().getStripped())
+        nick=unicode(mess.getFrom().getResource())
+        text=unicode(mess.getStatus())
+        role=unicode(mess.getRole())
+        affiliation=unicode(mess.getAffiliation())
         jid=unicode(mess.getJid())
+        priority=unicode(mess.getPriority())
+        show=unicode(mess.getShow())
+        reason=unicode(mess.getReason())
+        type=unicode(mess.getType())
+        status=unicode(mess.getStatusCode())
+        actor=unicode(mess.getActor())
 
-#	print jid
+	if type=='unavailable':
+		if megabase.count([room, nick, role, affiliation, jid]):
+			megabase.remove([room, nick, role, affiliation, jid])
+	else:
+		if not megabase.count([room, nick, role, affiliation, jid]):
+			megabase.append([room, nick, role, affiliation, jid])
+
+#        print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
+
 	if not jidbase.count(jid) and jid != 'None':
 		jidbase.append(jid)
 		writefile(jidbasefile,str(jidbase))
