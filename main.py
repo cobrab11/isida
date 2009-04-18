@@ -214,7 +214,7 @@ def info_res(type, jid, nick, text):
 		if len(jidb)>9:
 			jidbmax = 10
 		else:
-			jidbmax = len(jidb)-1
+			jidbmax = len(jidb)
 		for jji in range(0,jidbmax):# jidb:
                         jjid = jidb[jji]
 			msg += '\n'+jjid+' '+str(jidc[jidb.index(jjid)])
