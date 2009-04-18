@@ -43,6 +43,13 @@ def send_presence_all(sm):
 	        leave(conf,sm)
 	        pprint('leave: '+tocon)
 
+#error handler
+def errorHandler(text):
+        pprint(u'\n*** Error ***')
+        pprint(text)
+        pprint(u'more info at http://isida.googlecode.com\n')
+        exit (0)
+
 lfrom = 32
 lto = 128
 botName = 'Isida-Bot'
@@ -136,13 +143,6 @@ def os_version():
 	return japytOs
 
 botOs = os_version()
-
-#error handler
-def errorHandler(text):
-        pprint(u'\n*** Error ***')
-        pprint(text)
-        pprint(u'more info at http://isida.googlecode.com\n')
-        exit (0)
 
 #join [conference/nick]
 def joinconf(conference, server):
