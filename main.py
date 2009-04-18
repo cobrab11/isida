@@ -23,9 +23,10 @@ def no_spam(type, jid, nick):
 
 def bot_exit(type, jid, nick, text):
         text = text[0]
-        send_msg(type, jid, nick, text)
-        sleep(1)
-        os._exit(0)
+	StatusMessage = 'Exit by command from bot owner ('+nick+')'
+	send_presence_all(StatusMessage)
+	sleep(5)
+	os._exit(0)
 
 def say(type, jid, nick, text):
         send_msg(type, jid, nick, text)
@@ -130,8 +131,9 @@ def bot_leave(type, jid, nick, text):
                         confbase.remove(lroom)
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'свалила из '+text)
-                        leaveconf(text, domain)
-                        pprint(u'leave '+text)
+			sm = u'Меня выводит '+nick
+                        leaveconf(text, domain, sm)
+                        pprint(u'leave '+text+' by '+nick)
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
                         pprint(u'never be in '+text)
@@ -209,7 +211,11 @@ def info_res(type, jid, nick, text):
 					jj = jidb[i]
 					jidb[i] = jidb[j]
 					jidb[j] = jj
-		for jji in range(0,10):# jidb:
+		if len(jidb)>9:
+			jidbmax = 10
+		else:
+			jidbmax = len(jidb)-1
+		for jji in range(0,jidbmax):# jidb:
                         jjid = jidb[jji]
 			msg += '\n'+jjid+' '+str(jidc[jidb.index(jjid)])
 	else:

@@ -36,6 +36,13 @@ def parser(text):
 def pprint(text):
 	print parser(text)
 
+def send_presence_all(sm):
+	for tocon in confbase:
+	        baseArg = unicode(tocon)+u'/'+unicode(name)
+	        conf = JID(baseArg)
+	        leave(conf,sm)
+	        pprint('leave: '+tocon)
+
 lfrom = 32
 lto = 128
 botName = 'Isida-Bot'
@@ -152,7 +159,7 @@ def joinconf(conference, server):
         sleep(1)
 
 #leave [conference/nick]
-def leaveconf(conference, server):
+def leaveconf(conference, server, sm):
 	global dm
         node = unicode(JID(conference).getResource())
         domain = server
@@ -162,7 +169,7 @@ def leaveconf(conference, server):
 	else:
 		cl = Client(jid.getDomain())
         conf = unicode(JID(conference))
-        leave(cl, conf)
+        leave(conf, sm)
         sleep(1)
 
 #---------------------------------------
@@ -184,8 +191,8 @@ def join(conference):
     j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
     cl.send(j)
 
-def leave(conference):
-    j = Presence(conference, 'unavailable', status=StatusMessage)
+def leave(conference, sm):
+    j = Presence(conference, 'unavailable', status=sm)
     j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
     j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
     cl.send(j)
@@ -368,14 +375,16 @@ lastserver = getServer(confbase[0])
 
 pprint(u'Joined')
 
-try:
-	while 1:
-        	cl.Process(1)
-except KeyboardInterrupt:
-	StatusMessage = 'Shut down by CTRL+C'
-	send_presence_all(StatusMessage)
-	sleep(1)
-	exit(0)
-except:
-	raise
+while 1:
+	try:
+		while 1:
+        		cl.Process(1)
+	except KeyboardInterrupt:
+		StatusMessage = 'Shut down by CTRL+C'
+		send_presence_all(StatusMessage)
+		sleep(5)
+		exit(0)
+	except Exception, StatusMessage:
+		pprint('*** ERROR: '+StatusMessage+' ***')
+
 
