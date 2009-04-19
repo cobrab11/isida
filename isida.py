@@ -369,6 +369,10 @@ def getResourse(jid):
 def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
+def shelude():
+	gt=gmtime()
+	lt=localtime()
+
 # ---------- HERE WE GO!!! -----------
 
 jidbasefile = 'jidbase'
@@ -447,6 +451,8 @@ while 1:
 	try:
 		while 1:
         		cl.Process(1)
+			shelude()
+
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'
 		send_presence_all(StatusMessage)
@@ -455,8 +461,8 @@ while 1:
 	except Exception, SM:
 		pprint('*** Error ***')
 		pprint(SM)
-#		sleep(1)
-#		raise
+		sleep(1)
+		raise
 
 
 

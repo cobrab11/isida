@@ -320,11 +320,15 @@ def rss(type, jid, nick, text):
 		msg = 'Feeds shelude:'
 		for rs in feedbase:
 			msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
+			lt = rs[3]
+			msg += u' '+str(lt[2])+u'.'+str(lt[1])+u'.'+str(lt[0])+u' '+str(lt[3])+u':'+str(lt[4])+u':'+str(lt[5])
+
 	elif mode == 'add':
+		lt=localtime()
 		link = text[1]
 		if link[:7] != 'http://':
         	        link = 'http://'+link
-		feedbase.append([link, text[2], text[3]]) # url time mode
+		feedbase.append([link, text[2], text[3], lt[:6]]) # url time mode
 		msg = u'Add feed to shelude: '+link+u' ('+text[2]+u') '+text[3]
 		writefile(feeds,str(feedbase))
 	elif mode == 'del':
