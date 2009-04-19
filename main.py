@@ -319,6 +319,12 @@ def rss_replace(ms):
 feeds = 'feed'
 lafeeds = 'lastfeeds'
 
+def tZ(val):
+	rval = str(val)
+        if val<10:
+		rval = '0'+rval
+	return rval
+
 def rss(type, jid, nick, text):
 	nosend = 0
         text = text.split(' ')
@@ -352,7 +358,7 @@ def rss(type, jid, nick, text):
 				if rs[4] == jid:
 					msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
 					lt = rs[3]
-					msg += u' '+str(lt[2])+u'.'+str(lt[1])+u'.'+str(lt[0])+u' '+str(lt[3])+u':'+str(lt[4])+u':'+str(lt[5])
+					msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
 					stt = 0
 			if stt:
 				msg+= u' not found!'

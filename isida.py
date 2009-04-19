@@ -524,7 +524,8 @@ while 1:
 		sleep(5)
 		exit(0)
 	except Exception, SM:
-		pprint('*** Error ***')
+		lt = localtime()
+		pprint('*** Error *** '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])+u' ***')
 		pprint(SM)
 #		raise
 
