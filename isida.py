@@ -7,7 +7,7 @@ from random import *
 from sys import maxint
 from time import *
 from pdb import *
-import os, xmpp, time, sys, time, pdb, urllib
+import os, xmpp, time, sys, time, pdb, urllib, re
 
 def readfile(filename):
 	fp = file(filename)
@@ -38,7 +38,9 @@ def pprint(text):
 
 def send_presence_all(sm):
 	for tocon in confbase:
-	        baseArg = unicode(tocon)+u'/'+unicode(name)
+		baseArg = unicode(tocon)
+		if not tocon.count('/'):
+		        baseArg += u'/'+unicode(name)
 	        conf = JID(baseArg)
 	        leave(conf,sm)
 	        pprint('leave: '+tocon)
@@ -88,6 +90,26 @@ for baseCheck in range(0, len(baseParameters)):
 
 god = SuperAdmin
 
+def arr_semi_find(array, string):
+	astring = [unicode(string)]
+	position = -1
+	for arr in array:
+#		print re.findall(string, arr), astring
+		if re.findall(string, arr) == astring:
+			position = array.index(arr)
+#	print position
+	return position
+
+def arr_del_by_pos(array, position):
+	return array[:position] + array[position+1:]
+
+def arr_del_semi_find(array, string):
+	pos = arr_semi_find(array, string)
+	if pos >= 0:
+		array = arr_del_by_pos(array,pos)
+	return array
+
+# upload addons
 execfile('main.py')
 
 def send_msg(mtype, mjid, mnick, mmessage):
@@ -242,11 +264,19 @@ def messageCB(sess,mess):
 
 #	print access_mode, text
 
+	tmppos = arr_semi_find(confbase, room)
+	if tmppos == -1:
+		nowname = name
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '':
+			nowname = name
+
         if (text != 'None') and (len(text)>2):
                 for parse in comms:
-			if access_mode >= parse[0]:
-				if text[:len(name)] == name:
-					text = text[len(name)+2:]
+			if access_mode >= parse[0] and nick != nowname:
+				if text[:len(nowname)] == nowname:
+					text = text[len(nowname)+2:]
         	                if text[:len(parse[1])] == parse[1]:
         	                        if not parse[3]:
         	                                parse[2](type, room, nick, parse[4:])
@@ -362,7 +392,7 @@ confs = 'conf'
 if os.path.isfile(confs):
 	confbase = eval(readfile(confs))
 else:
-	confbase = [defaultConf]
+	confbase = [defaultConf+u'/'+name]
 	writefile(confs,str(confbase))
 
 pprint(u'')
@@ -402,10 +432,12 @@ cl.RegisterHandler('presence',presenceCB)
 
 pprint(u'Wait conference')
 for tocon in confbase:
-        baseArg = unicode(tocon)+u'/'+unicode(name)
-        conf = JID(baseArg)
-        pprint(tocon)
-        join(conf)
+	baseArg = unicode(tocon)
+	if not tocon.count('/'):
+		baseArg += u'/'+unicode(name)
+	conf = JID(baseArg)
+	pprint(tocon)
+	join(conf)
 
 lastserver = getServer(confbase[0])
 
@@ -423,6 +455,8 @@ while 1:
 	except Exception, StatusMessage:
 		pprint('*** Error ***')
 		pprint(StatusMessage)
+		sleep(1)
+		raise
 
 
 

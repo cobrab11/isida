@@ -82,18 +82,26 @@ def bot_join(type, jid, nick, text):
                                 
                 lroom = text.index('/')
                 lroom = text[:lroom]
-                                
-                if not confbase.count(lroom):
-                        confbase.append(lroom)
+
+		if arr_semi_find(confbase, lroom) == -1:                                
+                        confbase.append(text)
                         joinconf(text, domain)
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'зашла в '+text)
                         pprint(u'join to '+text)
-                else:
-                        send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom)
+                elif confbase.count(text):
+                        send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom+u' с ником '+lastnick)
                         pprint(u'already in '+text)
+		else:
+			confbase = arr_del_semi_find(confbase, lroom)
+                        confbase.append(text)
+			send_msg(type, jid, nick, u'смена ника в '+lroom+u' на '+lastnick)
+                        joinconf(text, domain)
+                        writefile(confs,str(confbase))
+                        pprint(u'change nick '+text)
 
 def bot_leave(type, jid, nick, text):
+        global confs, confbase
         if len(confbase) == 1:
                 send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
         else:
@@ -103,8 +111,10 @@ def bot_leave(type, jid, nick, text):
                         text=jid
                 lroom = text
                                 
-                if confbase.count(lroom):
-                        confbase.remove(lroom)
+		if arr_semi_find(confbase, lroom) >= 0:
+#                if confbase.count(lroom):
+#                        confbase.remove(lroom)
+			confbase = arr_del_semi_find(confbase,lroom)
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'свалила из '+text)
 			sm = u'Меня выводит '+nick
