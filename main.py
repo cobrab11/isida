@@ -319,12 +319,6 @@ def rss_replace(ms):
 feeds = 'feed'
 lafeeds = 'lastfeeds'
 
-def tZ(val):
-	rval = str(val)
-        if val<10:
-		rval = '0'+rval
-	return rval
-
 def rss(type, jid, nick, text):
 	nosend = 0
         text = text.split(' ')

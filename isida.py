@@ -33,8 +33,19 @@ def parser(text):
         ttext = unicode(ttext)
         return ttext
 
+def tZ(val):
+	rval = str(val)
+        if val<10:
+		rval = '0'+rval
+	return rval
+
+def timeadd():
+	lt = localtime()
+	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+	return st
+
 def pprint(text):
-	print parser(text)
+	print parser('['+timeadd()+'] '+text)
 
 def send_presence_all(sm):
 	for tocon in confbase:
@@ -111,11 +122,6 @@ def arr_del_semi_find(array, string):
 
 # upload addons
 execfile('main.py')
-
-def timeadd():
-	lt = localtime()
-	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
-	return st
 
 def send_msg(mtype, mjid, mnick, mmessage):
         if mtype == 'groupchat':
@@ -230,6 +236,7 @@ def leave(conference, sm):
 
 def iqCB(sess,iq):
         nick = iq.getFrom()
+	pprint(u' *** iq:version from '+unicode(nick))
         id = iq.getID()
         if iq.getType()=='get':
                 if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -286,7 +293,7 @@ def messageCB(sess,mess):
 					text = text[len(nowname)+2:]
 
         	                if text[:len(parse[1])] == parse[1]:
-					pprint('['+timeadd()+'] '+jid+' '+room+'/'+nick+'('+str(access_mode)+') : '+text)
+					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
         	                        if not parse[3]:
         	                                parse[2](type, room, nick, parse[4:])
         	                        elif parse[3] == 1:
@@ -415,7 +422,7 @@ def shelude():
 		ll_lo = lttime[3]*3600+lttime[4]*60+lttime[5]
 
 		if ll_lo + ofset <= l_lo:
-			pprint(u'check rss: '+fd[0])
+			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 			type = 'groupchat'
 			jid = fd[4]
 			nick = 'RSS'
@@ -473,11 +480,12 @@ else:
 	confbase = [defaultConf+u'/'+name]
 	writefile(confs,str(confbase))
 
-pprint(u'')
-pprint(u'\n*****************************************************************')
-pprint(u'*** '+botName+' version '+botVersion+' ('+botOs+') ***')
-pprint(u'*****************************************************************')
-pprint(u'\n--------------= (c) 2oo9 Disabler Production Lab. =--------------\n')
+pprint(u'\n****************************')
+pprint(u'*** Bot Name: '+botName)
+pprint(u'*** Version '+botVersion)
+pprint(u'*** OS '+botOs)
+pprint(u'******************************')
+pprint(u'*** (c) 2oo9 Disabler Production Lab.')
 
 node = unicode(name)
 lastnick = name
@@ -529,13 +537,13 @@ while 1:
 
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'
-		pprint('\n'+StatusMessage+'\n')
+		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
 		sleep(5)
 		exit(0)
 	except Exception, SM:
 		lt = localtime()
-		pprint('*** Error *** '+timeadd()+u' ***')
+		pprint('*** Error ***')
 		pprint(SM)
 #		raise
 
