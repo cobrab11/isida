@@ -480,7 +480,7 @@ else:
 	confbase = [defaultConf+u'/'+name]
 	writefile(confs,str(confbase))
 
-pprint(u'\n****************************')
+pprint(u'****************************')
 pprint(u'*** Bot Name: '+botName)
 pprint(u'*** Version '+botVersion)
 pprint(u'*** OS '+botOs)
