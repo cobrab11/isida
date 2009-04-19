@@ -302,11 +302,25 @@ def tmp_search(type, jid, nick, text):
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
 
+def rss_replace(ms):
+	ms = ms.replace('<br>','\n')
+	ms = ms.replace('<br />','\n')
+	ms = ms.replace('<br/>','\n')
+	ms = ms.replace('<![CDATA[','')
+	ms = ms.replace(']]>','')
+	ms = ms.replace('&lt;','<')
+	ms = ms.replace('&gt;','>')
+	ms = ms.replace('&quot;','\"')
+	ms = ms.replace('&amp;','&')
+	return ms
+
 #[room, nick, role, affiliation, jid]
 
 feeds = 'feed'
+lafeeds = 'lastfeeds'
 
 def rss(type, jid, nick, text):
+	nosend = 0
         text = text.split(' ')
 	mode = text[0] # show | add | del | clr | now | get
 
@@ -316,21 +330,85 @@ def rss(type, jid, nick, text):
 		feedbase = []
 		writefile(feeds,str(feedbase))
 
+	if os.path.isfile(lafeeds):
+		lastfeeds = eval(readfile(lafeeds))
+	else:
+		lastfeeds = []
+		writefile(lafeeds,str(lastfeeds))
+
 	if mode == 'show':
-		msg = 'Feeds shelude:'
-		for rs in feedbase:
-			msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
-			lt = rs[3]
-			msg += u' '+str(lt[2])+u'.'+str(lt[1])+u'.'+str(lt[0])+u' '+str(lt[3])+u':'+str(lt[4])+u':'+str(lt[5])
+		msg = u'No RSS found!'
+		if feedbase != []:
+			stt = 1
+			msg = u'Shelude feeds for '+jid+u':'
+			for rs in feedbase:
+				if rs[4] == jid:
+					msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
+					lt = rs[3]
+					msg += u' '+str(lt[2])+u'.'+str(lt[1])+u'.'+str(lt[0])+u' '+str(lt[3])+u':'+str(lt[4])+u':'+str(lt[5])
+					stt = 0
+			if stt:
+				msg+= u' not found!'
 
 	elif mode == 'add':
 		lt=localtime()
 		link = text[1]
 		if link[:7] != 'http://':
         	        link = 'http://'+link
-		feedbase.append([link, text[2], text[3], lt[:6]]) # url time mode
+		feedbase.append([link, text[2], text[3], lt[:6], jid]) # url time mode
 		msg = u'Add feed to shelude: '+link+u' ('+text[2]+u') '+text[3]
+		send_msg(type, jid, nick, msg)
+
 		writefile(feeds,str(feedbase))
+#---------
+		f = urllib.urlopen(link)
+		feed = f.read()
+
+		writefile('tempofeed',str(feed))
+
+		if feed[:100].count('rss') and feed[:100].count('xml'):
+			encidx = feed.index('encoding=')
+			enc = feed[encidx+10:encidx+30]
+			enc = enc[:enc.index('?>')-1]
+			enc = enc.upper()
+
+			feed = unicode(feed, enc)
+			feed = feed.split('<item>')
+			msg = 'Feeds for '+link+' '
+
+			lng = 2
+			if len(feed) <= lng:
+				lng = len(feed)
+			if lng>=11:
+				lng = 11
+
+			if len(text) > 3:
+				submode = text[3]
+			else:
+				submode = 'full'
+			mmsg = feed[0]
+			msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			mmsg = feed[1]
+			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			lastfeeds.append([link,mmsg,jid])
+			writefile(lafeeds,str(lastfeeds))
+			for idx in range(1,lng):
+				mmsg = feed[idx]
+				if submode == 'full':
+					msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
+				elif submode == 'body':
+					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
+				elif submode[:4] == 'head':
+					msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			msg = rss_replace(msg)
+			msg = msg[:-1]
+			if lng > 1 and submode == 'full':
+				msg = msg[:-1]
+		else:
+			msg = u'bad url or rss not found!'
+
+#---------
 
 	elif mode == 'del':
 		link = text[1]
@@ -339,7 +417,7 @@ def rss(type, jid, nick, text):
 
 		bedel = 0
 		for rs in feedbase:
-			if rs[0] == link:
+			if rs[0] == link and rs[4] == jid:
 				feedbase.remove(rs)
 				bedel = 1
 		if bedel:
@@ -380,37 +458,44 @@ def rss(type, jid, nick, text):
 	        	        submode = text[3]
 	        	else:
 	        	        submode = 'full'
-        	        
+
+			tstop = ''
+			for ii in lastfeeds:
+				if ii[2] == jid and ii[0] == link:
+					 tstop = ii[1]
+					 tstop = tstop[:-1]
+
 			mmsg = feed[0]
 	                msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			mmsg = feed[1]
+			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			lastfeeds.append([link,mmsg,jid])
+			writefile(lafeeds,str(lastfeeds))
 			
 	        	for idx in range(1,lng):
 	        	        mmsg = feed[idx]
+				ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
+#				print '['+ttitle+']-['+tstop+']'
+				if ttitle == tstop:
+					nosend = 1
+					break
 				if submode == 'full':
-		        	        msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+		        	        msg += ttitle + '\n'
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
 				elif submode == 'body':
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
 				elif submode[:4] == 'head':
-		        	        msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
-	
-			msg = msg.replace('<br>','\n')
-			msg = msg.replace('<br />','\n')
-			msg = msg.replace('<br/>','\n')
-			msg = msg.replace('<![CDATA[','')
-			msg = msg.replace(']]>','')
-			msg = msg.replace('&lt;','<')
-			msg = msg.replace('&gt;','>')
-			msg = msg.replace('&quot;','\"')
-			msg = msg.replace('&amp;','&')
+		        	        msg += ttitle+ '\n'
+
+			msg = rss_replace(msg)
 			msg = msg[:-1]
 
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
 		else:
 			msg = u'bad url or rss not found!'
-
-        send_msg(type, jid, nick, msg)
+        if not nosend:
+		send_msg(type, jid, nick, msg)
 	
 #------------------------------------------------
 

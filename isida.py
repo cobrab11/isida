@@ -370,8 +370,73 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def shelude():
-	gt=gmtime()
 	lt=localtime()
+	l_hi = lt[0]*400+lt[1]*40+lt[2]
+	l_lo = lt[3]*3600+lt[4]*60+lt[5]
+
+	if os.path.isfile(feeds):
+		feedbase = eval(readfile(feeds))
+	else:
+		feedbase = []
+		writefile(feeds,str(feedbase))
+
+	if os.path.isfile(lafeeds):
+		lastfeeds = eval(readfile(lafeeds))
+	else:
+		lastfeeds = []
+		writefile(lafeeds,str(lastfeeds))
+
+	for fd in feedbase:
+		ltime = fd[1]
+		timetype = ltime[-1:].lower()
+		if not (timetype == 'h' or timetype == 'm'):
+			timetype = 'h'
+		try:
+			ofset = int(ltime[:-1])
+		except:
+			ofset = 4
+
+		if timetype == 'h':
+			ofset *= 3600
+		elif timetype == 'm':
+			ofset *= 60
+
+		lttime = fd[3]
+		ll_hi = lttime[0]*400+lttime[1]*40+lttime[2]
+		ll_lo = lttime[3]*3600+lttime[4]*60+lttime[5]
+
+		if ll_lo + ofset <= l_lo:
+			pprint(u'check rss: '+fd[0])
+			type = 'groupchat'
+			jid = fd[4]
+			nick = 'RSS'
+			text = 'now '+fd[0]+' 10 '+fd[2]
+			rss(type, jid, nick, text)
+			text = 'del '+fd[0]
+
+			text = text.split(' ')
+			link = text[1]
+			if link[:7] != 'http://':
+        		        link = 'http://'+link
+
+			bedel = 0
+			for rs in feedbase:
+				if rs[0] == link and rs[4] == jid:
+					feedbase.remove(rs)
+					bedel = 1
+			if bedel:
+				writefile(feeds,str(feedbase))
+
+			text = 'add '+fd[0]+' '+fd[1]+' '+fd[2]
+
+			lt=localtime()
+			text = text.split(' ')
+			link = text[1]
+			if link[:7] != 'http://':
+        		        link = 'http://'+link
+			feedbase.append([link, text[2], text[3], lt[:6], jid])
+			writefile(feeds,str(feedbase))
+
 
 # ---------- HERE WE GO!!! -----------
 
@@ -461,7 +526,6 @@ while 1:
 	except Exception, SM:
 		pprint('*** Error ***')
 		pprint(SM)
-		sleep(1)
 		raise
 
 
