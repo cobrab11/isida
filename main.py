@@ -422,14 +422,24 @@ def rss(type, jid, nick, text):
 		if link[:7] != 'http://':
         	        link = 'http://'+link
 
-		bedel = 0
+		bedel1 = 0
 		for rs in feedbase:
 			if rs[0] == link and rs[4] == jid:
 				feedbase.remove(rs)
-				bedel = 1
-		if bedel:
+				bedel1 = 1
+
+		bedel2 = 0
+		for rs in lastfeeds:
+			if rs[0] == link and rs[2] == jid:
+				lastfeeds.remove(rs)
+				bedel2 = 1
+
+		if bedel1 or bedel2:
 			msg = u'Delete feed from shelude: '+link
+		if bedel1:
 			writefile(feeds,str(feedbase))
+		if bedel2:
+			writefile(lafeeds,str(lastfeeds))
 		else:
 			msg = u'Can\'t find in shelude: '+link
 
