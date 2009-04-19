@@ -331,6 +331,7 @@ def rss(type, jid, nick, text):
 		feedbase.append([link, text[2], text[3], lt[:6]]) # url time mode
 		msg = u'Add feed to shelude: '+link+u' ('+text[2]+u') '+text[3]
 		writefile(feeds,str(feedbase))
+
 	elif mode == 'del':
 		link = text[1]
 		if link[:7] != 'http://':
@@ -366,7 +367,7 @@ def rss(type, jid, nick, text):
 	        	msg = 'Feeds for '+link+' '
 	
 	        	if len(text) > 2:
-	        	        lng = int(text[2])
+	        	        lng = int(text[2])+1
 	        	else:
 	        	        lng = len(feed)
 	        	        
@@ -402,9 +403,9 @@ def rss(type, jid, nick, text):
 			msg = msg.replace('&gt;','>')
 			msg = msg.replace('&quot;','\"')
 			msg = msg.replace('&amp;','&')
-			if submode == 'full':
-				msg = msg[:-2]
-			else:
+			msg = msg[:-1]
+
+			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
 		else:
 			msg = u'bad url or rss not found!'
