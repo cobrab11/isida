@@ -452,9 +452,9 @@ while 1:
 		send_presence_all(StatusMessage)
 		sleep(5)
 		exit(0)
-	except Exception, StatusMessage:
+	except Exception, SM:
 		pprint('*** Error ***')
-		pprint(StatusMessage)
+		pprint(SM)
 #		sleep(1)
 #		raise
 
