@@ -526,7 +526,7 @@ while 1:
 	except Exception, SM:
 		pprint('*** Error ***')
 		pprint(SM)
-		raise
+#		raise
 
 
 
