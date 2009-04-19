@@ -455,8 +455,8 @@ while 1:
 	except Exception, StatusMessage:
 		pprint('*** Error ***')
 		pprint(StatusMessage)
-		sleep(1)
-		raise
+#		sleep(1)
+#		raise
 
 
 
