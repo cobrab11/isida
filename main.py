@@ -47,7 +47,7 @@ def helpme(type, jid, nick, text):
 		(u'quit',u'Завершение работы бота'),
 		(u'clear',u'Скрытая очистка истории сообщений'),
 		(u'pass',u'Установка пароля для входа в конфу'),
-		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\n')]
+		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
 
 # show | add | del | clr | now | get
 
@@ -336,6 +336,13 @@ def rss(type, jid, nick, text):
 		lastfeeds = []
 		writefile(lafeeds,str(lastfeeds))
 
+	if mode == 'clr':
+		msg = u'All RSS was cleared!'
+		feedbase = []
+		writefile(feeds,str(feedbase))
+		lastfeeds = []
+		writefile(lafeeds,str(lastfeeds))
+
 	if mode == 'show':
 		msg = u'No RSS found!'
 		if feedbase != []:
@@ -525,7 +532,7 @@ comms = [(0, u'test', test, 1),
          (2, u'base', info_base, 1),
          (1, u'search', info_search, 2),
          (1, u'tempo', tmp_search, 2),
-         (0, u'rss', rss, 2),
+         (1, u'rss', rss, 2),
          (1, u'commands', info_comm, 1),
          (2, u'info', info, 1),
          (1, u'clear', hidden_clear, 1)]
