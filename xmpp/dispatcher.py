@@ -129,7 +129,7 @@ class Dispatcher(PlugIn):
 # (c) 2oo9 Disabler Production Lab.
             bss = 0
             bsflag = 1
-            if unicode(data[:9]) == u'<presence':
+            if data[:9] == '<presence':
                 ttext = u''
                 i = 0
                 while i<len(data):
