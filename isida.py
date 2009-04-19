@@ -112,6 +112,11 @@ def arr_del_semi_find(array, string):
 # upload addons
 execfile('main.py')
 
+def timeadd():
+	lt = localtime()
+	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+	return st
+
 def send_msg(mtype, mjid, mnick, mmessage):
         if mtype == 'groupchat':
                 mmessage = mnick+': '+mmessage
@@ -255,11 +260,13 @@ def messageCB(sess,mess):
 # 0 - конфа # 1 - ник # 2 - роль # 3 - аффиляция # 4 - jid
 
 	access_mode = 0
+	jid = 'None'
 	if ownerbase.count(nick):
 		access_mode = 2
 	elif nick != name:
 		for base in megabase:
 			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
+				jid = base[4]
 				access_mode = 1
 
 #	print access_mode, text
@@ -277,7 +284,9 @@ def messageCB(sess,mess):
 			if access_mode >= parse[0] and nick != nowname:
 				if text[:len(nowname)] == nowname:
 					text = text[len(nowname)+2:]
+
         	                if text[:len(parse[1])] == parse[1]:
+					pprint('['+timeadd()+'] '+jid+' '+room+'/'+nick+'('+str(access_mode)+') : '+text)
         	                        if not parse[3]:
         	                                parse[2](type, room, nick, parse[4:])
         	                        elif parse[3] == 1:
@@ -520,12 +529,13 @@ while 1:
 
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'
+		pprint('\n'+StatusMessage+'\n')
 		send_presence_all(StatusMessage)
 		sleep(5)
 		exit(0)
 	except Exception, SM:
 		lt = localtime()
-		pprint('*** Error *** '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])+u' ***')
+		pprint('*** Error *** '+timeadd()+u' ***')
 		pprint(SM)
 #		raise
 
