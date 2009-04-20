@@ -292,7 +292,7 @@ def messageCB(sess,mess):
 				if text[:len(nowname)] == nowname:
 					text = text[len(nowname)+2:]
 
-        	                if text[:len(parse[1])] == parse[1]:
+        	                if text[:len(parse[1])].lower() == parse[1].lower():
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
         	                        if not parse[3]:
         	                                parse[2](type, room, nick, parse[4:])
