@@ -57,6 +57,7 @@ def send_presence_all(sm):
 	        pprint('leave: '+tocon)
 
 #error handler
+debugmode = 0
 def errorHandler(text):
         pprint(u'\n*** Error ***')
         pprint(text)
@@ -390,7 +391,7 @@ def getRoom(jid):
 
 def shelude():
 	lt=localtime()
-	l_hi = lt[0]*400+lt[1]*40+lt[2]
+	l_hi = (lt[0]*400+lt[1]*40+lt[2]) * 86400
 	l_lo = lt[3]*3600+lt[4]*60+lt[5]
 
 	if os.path.isfile(feeds):
@@ -421,10 +422,10 @@ def shelude():
 			ofset *= 60
 
 		lttime = fd[3]
-		ll_hi = lttime[0]*400+lttime[1]*40+lttime[2]
+		ll_hi = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400
 		ll_lo = lttime[3]*3600+lttime[4]*60+lttime[5]
 
-		if ll_lo + ofset <= l_lo:
+		if ll_hi + ll_lo + ofset <= l_lo + l_hi:
 			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 			type = 'groupchat'
 			jid = fd[4]
@@ -547,8 +548,11 @@ while 1:
 	except Exception, SM:
 		lt = localtime()
 		pprint('*** Error ***')
-		pprint(SM)
-#		raise
+                if debugmode:
+        		raise
+        	else:
+        		pprint(SM)
+
 
 
 
