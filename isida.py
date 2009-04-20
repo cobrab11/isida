@@ -51,7 +51,7 @@ def send_presence_all(sm):
 	for tocon in confbase:
 		baseArg = unicode(tocon)
 		if not tocon.count('/'):
-		        baseArg += u'/'+unicode(name)
+		        baseArg += u'/'+unicode(nickname)
 	        conf = JID(baseArg)
 	        leave(conf,sm)
 	        pprint('leave: '+tocon)
@@ -90,9 +90,9 @@ capsNode = 'http://isida.googlecode.com'
 
 # --- check parameters
 
-baseParameters = [name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
+baseParameters = [nickname ,name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 
-baseErrors = [u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
+baseErrors = [u'nickname', u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 
 megabase = []
 
@@ -271,7 +271,7 @@ def messageCB(sess,mess):
 
 	access_mode = 0
 	jid = 'None'
-	if nick != name:
+	if nick != nickname:
 		for base in megabase:
 			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
 				jid = base[4]
@@ -284,11 +284,11 @@ def messageCB(sess,mess):
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1:
-		nowname = name
+		nowname = nickname
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '':
-			nowname = name
+			nowname = nickname
 
         if (text != 'None') and (len(text)>2):
                 for parse in comms:
@@ -481,7 +481,7 @@ confs = 'conf'
 if os.path.isfile(confs):
 	confbase = eval(readfile(confs))
 else:
-	confbase = [defaultConf+u'/'+name]
+	confbase = [defaultConf+u'/'+nickname]
 	writefile(confs,str(confbase))
 
 pprint(u'****************************')
@@ -492,7 +492,7 @@ pprint(u'******************************')
 pprint(u'*** (c) 2oo9 Disabler Production Lab.')
 
 node = unicode(name)
-lastnick = name
+lastnick = nickname
 
 jid = JID(node=node, domain=domain, resource=mainRes)
 
@@ -524,7 +524,7 @@ pprint(u'Wait conference')
 for tocon in confbase:
 	baseArg = unicode(tocon)
 	if not tocon.count('/'):
-		baseArg += u'/'+unicode(name)
+		baseArg += u'/'+unicode(nickname)
 	conf = JID(baseArg)
 	pprint(tocon)
 	join(conf)
