@@ -551,7 +551,7 @@ while 1:
                 if debugmode:
         		raise
         	else:
-        		pprint(SM)
+        		pprint(str(SM))
 
 
 
