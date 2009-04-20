@@ -75,7 +75,8 @@ capsVersion = botVersion
 ver_file = 'version'
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
-	botVersion += '.' + bvers[:-1]
+	if len(bvers[:-1]) > 1:
+        	botVersion += '.' + bvers[:-1]
 
 # --- load config.txt
 
