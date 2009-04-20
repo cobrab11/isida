@@ -547,8 +547,8 @@ while 1:
 	except Exception, SM:
 		lt = localtime()
 		pprint('*** Error ***')
-#		pprint(SM)
-		raise
+		pprint(SM)
+#		raise
 
 
 
