@@ -78,10 +78,12 @@ if os.path.isfile(ver_file):
 
 # --- load config.txt
 
-if os.path.isfile('config.txt'):
-        execfile('config.txt')
+configname = u'config.py'
+
+if os.path.isfile(configname):
+        execfile(configname)
 else:
-        errorHandler(u'config.txt is missed.')
+        errorHandler(configname+u' is missed.')
 
 capsNode = 'http://isida.googlecode.com'
 
@@ -97,7 +99,7 @@ megabase = []
 
 for baseCheck in range(0, len(baseParameters)):
         if baseParameters[baseCheck]=='':
-                errorHandler(baseErrors[baseCheck]+u' is missed in config.txt')
+                errorHandler(baseErrors[baseCheck]+u' is missed in '+configname)
 
 god = SuperAdmin
 
@@ -268,13 +270,14 @@ def messageCB(sess,mess):
 
 	access_mode = 0
 	jid = 'None'
-	if ownerbase.count(nick):
-		access_mode = 2
-	elif nick != name:
+	if nick != name:
 		for base in megabase:
 			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
 				jid = base[4]
 				access_mode = 1
+				
+	if ownerbase.count(getRoom(jid)):
+		access_mode = 2
 
 #	print access_mode, text
 
@@ -544,8 +547,8 @@ while 1:
 	except Exception, SM:
 		lt = localtime()
 		pprint('*** Error ***')
-		pprint(SM)
-#		raise
+#		pprint(SM)
+		raise
 
 
 

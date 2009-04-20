@@ -22,7 +22,7 @@ mainRes = u'isida-bot'
 #mainRes = unicode(randint(0, maxint)) # - random
 
 # ник владельца бота
-SuperAdmin = u'Disаbler'
+SuperAdmin = u'aaa@bbb.ru'
 
 # стартовая конференция
 defaultConf = u'japyt@conference.jabber.ru'

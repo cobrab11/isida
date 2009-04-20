@@ -154,8 +154,8 @@ def owner(type, jid, nick, text):
 	elif do == 'del':
                 if ownerbase.count(nnick) and nnick != god:
                         ownerbase.remove(nnick)
-        elif do == 'clr':
-                ownerbase = [god]
+#        elif do == 'clr':
+#                ownerbase = [god]
 
 	msg = u'Я принимаю команды от: '
 	for jjid in ownerbase:
