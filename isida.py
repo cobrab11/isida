@@ -64,6 +64,7 @@ def errorHandler(text):
         pprint(u'more info at http://isida.googlecode.com\n')
         exit (0)
 
+msg_limit = 1000
 lfrom = 32
 lto = 128
 botName = 'Isida-Bot'
@@ -128,6 +129,10 @@ def arr_del_semi_find(array, string):
 execfile('main.py')
 
 def send_msg(mtype, mjid, mnick, mmessage):
+        if len(mmessage) > msg_limit-5 and mtype == 'groupchat':
+                cl.send(xmpp.Message(mjid+'/'+mnick, mmessage, 'chat'))
+                mmessage = mmessage[:msg_limit]+ u'[...]'
+
         if mtype == 'groupchat':
                 mmessage = mnick+': '+mmessage
         else:
@@ -390,7 +395,7 @@ def getResourse(jid):
 def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
-def shelude():
+def schedule():
 	lt=localtime()
 	l_hi = (lt[0]*400+lt[1]*40+lt[2]) * 86400
 	l_lo = lt[3]*3600+lt[4]*60+lt[5]
@@ -538,7 +543,7 @@ while 1:
 	try:
 		while 1:
         		cl.Process(1)
-			shelude()
+			schedule()
 
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'

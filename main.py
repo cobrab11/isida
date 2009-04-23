@@ -33,21 +33,21 @@ def say(type, jid, nick, text):
 
 def helpme(type, jid, nick, text):
 	pprint(text)
-	helps = [(u'search',u'Поиск по внутренней базе jid\'ов'),
-		(u'tempo',u'Поиск по временной базе ролей/аффиляций'),
-		(u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
-		(u'info',u'Основная инфа о боте'),
-		(u'where',u'Список конференций, в которых находится бот'),
-		(u'res',u'топ10 рессурсов. Возможен поиск через res text'),
-		(u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
-		(u'test',u'хз что это...'),
-		(u'тест',u'хз что это...'),
-		(u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
-		(u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
-		(u'quit',u'Завершение работы бота'),
-		(u'clear',u'Скрытая очистка истории сообщений'),
-		(u'pass',u'Установка пароля для входа в конфу'),
-		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
+	helps = [(u'_search',u'Поиск по внутренней базе jid\'ов'),
+		(u'_tempo',u'Поиск по временной базе ролей/аффиляций'),
+		(u'_owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
+		(u'_info',u'Основная инфа о боте'),
+		(u'_where',u'Список конференций, в которых находится бот'),
+		(u'_res',u'топ10 рессурсов. Возможен поиск через res text'),
+		(u'_serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
+		(u'_test',u'хз что это...'),
+		(u'_тест',u'хз что это...'),
+		(u'_join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
+		(u'_leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
+		(u'_quit',u'Завершение работы бота'),
+		(u'_clear',u'Скрытая очистка истории сообщений'),
+		(u'_pass',u'Установка пароля для входа в конфу'),
+		(u'_rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
 
 # show | add | del | clr | now | get
 
@@ -347,7 +347,7 @@ def rss(type, jid, nick, text):
 		msg = u'No RSS found!'
 		if feedbase != []:
 			stt = 1
-			msg = u'Shelude feeds for '+jid+u':'
+			msg = u'Schedule feeds for '+jid+u':'
 			for rs in feedbase:
 				if rs[4] == jid:
 					msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
@@ -363,7 +363,7 @@ def rss(type, jid, nick, text):
 		if link[:7] != 'http://':
         	        link = 'http://'+link
 		feedbase.append([link, text[2], text[3], lt[:6], jid]) # url time mode
-		msg = u'Add feed to shelude: '+link+u' ('+text[2]+u') '+text[3]
+		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
 
 		writefile(feeds,str(feedbase))
@@ -435,13 +435,13 @@ def rss(type, jid, nick, text):
 				bedel2 = 1
 
 		if bedel1 or bedel2:
-			msg = u'Delete feed from shelude: '+link
+			msg = u'Delete feed from schedule: '+link
 		if bedel1:
 			writefile(feeds,str(feedbase))
 		if bedel2:
 			writefile(lafeeds,str(lastfeeds))
 		else:
-			msg = u'Can\'t find in shelude: '+link
+			msg = u'Can\'t find in schedule: '+link
 
 	elif mode == 'now':
 	        link = text[1]
@@ -526,23 +526,23 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(0, u'test', test, 1),
-         (0, u'тест', test_rus, 1),
-         (1, u'spam '+god, no_spam, 1),
-         (2, u'quit', bot_exit, 0, u'Завершаю работу'),
-         (1, u'say', say, 2),
-         (0, u'help', helpme, 2),
-         (2, u'join', bot_join, 2),
-         (2, u'leave', bot_leave, 2),
-         (2, u'pass', conf_pass, 2),
-         (2, u'owner', owner, 2),
-         (1, u'where', info_where, 1),
-         (1, u'res', info_res, 2),
-         (1, u'serv', info_serv, 2),
-         (2, u'base', info_base, 1),
-         (1, u'search', info_search, 2),
-         (1, u'tempo', tmp_search, 2),
-         (1, u'rss', rss, 2),
-         (1, u'commands', info_comm, 1),
-         (2, u'info', info, 1),
-         (1, u'clear', hidden_clear, 1)]
+comms = [(0, u'_test', test, 1),
+         (0, u'_тест', test_rus, 1),
+         (1, u'_spam '+god, no_spam, 1),
+         (2, u'_quit', bot_exit, 0, u'Завершаю работу'),
+         (1, u'_say', say, 2),
+         (0, u'_help', helpme, 2),
+         (2, u'_join', bot_join, 2),
+         (2, u'_leave', bot_leave, 2),
+         (2, u'_pass', conf_pass, 2),
+         (2, u'_owner', owner, 2),
+         (1, u'_where', info_where, 1),
+         (1, u'_res', info_res, 2),
+         (1, u'_serv', info_serv, 2),
+         (2, u'_base', info_base, 1),
+         (1, u'_search', info_search, 2),
+         (1, u'_tempo', tmp_search, 2),
+         (1, u'_rss', rss, 2),
+         (1, u'_commands', info_comm, 1),
+         (2, u'_info', info, 1),
+         (1, u'_clear', hidden_clear, 1)]
