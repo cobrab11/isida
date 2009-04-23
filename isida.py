@@ -64,6 +64,8 @@ def errorHandler(text):
         pprint(u'more info at http://isida.googlecode.com\n')
         exit (0)
 
+dm = 1
+prefix = u'_'
 msg_limit = 1000
 lfrom = 32
 lto = 128
@@ -505,8 +507,6 @@ jid = JID(node=node, domain=domain, resource=mainRes)
 pprint(u'bot jid: '+unicode(jid))
 
 psw = u''
-
-dm = 1
 
 if dm:
 	cl = Client(jid.getDomain(), debug=[])
