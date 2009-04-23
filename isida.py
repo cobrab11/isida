@@ -51,13 +51,12 @@ def tZ(val):
 		rval = '0'+rval
 	return rval
 
-def timeadd():
-	lt = localtime()
+def timeadd(lt):
 	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
 	return st
 
 def pprint(text):
-	print parser('['+timeadd()+'] '+text)
+	print parser('['+timeadd(localtime())+'] '+text)
 
 def send_presence_all(sm):
 	for tocon in confbase:
@@ -479,6 +478,8 @@ def schedule():
 
 
 # ---------- HERE WE GO!!! -----------
+
+starttime = localtime()
 
 jidbasefile = 'jidbase'
 

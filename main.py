@@ -236,9 +236,47 @@ def info_where(type, jid, nick):
 
 def info(type, jid, nick):
         global confbase        
-        msg = u'Активных конференций: '+str(len(confbase))+u' (подробнее where)\n'
-        msg += u'Активный сервер: '+lastserver+'\n'
-        msg += u'Активный ник: '+lastnick
+        msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
+        msg += u'Сервер: '+lastserver+'\n'
+        msg += u'Ник: '+lastnick+'\n'
+	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
+	msg += u'Время запуска: '+timeadd(starttime)+'\n'
+	nowtime = localtime()
+	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
+
+	difftime = [0,0,0,0,0,0]
+
+	difftime[5] = nowtime[5]-starttime[5]
+	if difftime[5] < 0:
+		difftime[5] += 60
+		difftime[4] -= 1
+
+	difftime[4] += nowtime[4]-starttime[4]
+	if difftime[4] < 0:
+		difftime[4] += 60
+		difftime[3] -= 1
+
+	difftime[3] += nowtime[3]-starttime[3]
+	if difftime[3] < 0:
+		difftime[3] += 24
+		difftime[2] -= 1
+
+	timemonth = [31,28,31,30,31,30,31,31,30,31,30,31]
+
+	difftime[2] += nowtime[2]-starttime[2]
+	if difftime[2] < 0:
+		difftime[2] += timemonth(nowtime[2])
+		difftime[1] -= 1
+
+	difftime[1] += nowtime[1]-starttime[1]
+	if difftime[1] < 0:
+		difftime[1] += 12
+		difftime[0] -= 1
+
+	difftime[0] += nowtime[0]-starttime[0]
+
+	msg += u'Время работы: '+timeadd(difftime)
+
         send_msg(type, jid, nick, msg)
 
 def info_res(type, jid, nick, text):
