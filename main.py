@@ -1,5 +1,66 @@
 # -*- coding: utf -*-
 
+def get_log(type, jid, nick, text):
+	text = text.split(' ')
+	if len(text)>0:
+		cmd = text[0]
+	else:
+		cmd = ''
+	if len(text)>1:
+		arg = text[1]
+	else:
+		arg = ''
+	logt=localtime()
+
+	if cmd == 'len':
+		if arg == '':
+			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
+		else:
+			logfile = 'log/'+arg
+		if os.path.isfile(logfile):
+			log = eval(readfile(logfile))
+		else:
+			log = []
+			writefile(logfile,str(log))
+		msg = u'Log length for '+logfile+' is '+str(len(log))+' record(s)'
+		send_msg(type, jid, nick, msg)
+	
+	if cmd == 'show':
+		if arg == '':
+			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
+		else:
+			logfile = 'log/'+arg
+		if os.path.isfile(logfile):
+			log = eval(readfile(logfile))
+		else:
+			log = []
+			writefile(logfile,str(log))
+		if len(text)>2:
+			arg1 = text[2]
+		else:
+			arg1 = '0-'+str(len(log)-1)
+		if arg == '':
+			llog = len(log)
+			if llog >= 5:
+				lllim = 5
+			else:
+				lllim = llog
+			arg1 = str(len(log)-lllim)+'-'+str(len(log))
+
+		print arg1
+
+		arg1 = arg1.split('-')
+		log_from = int(arg1[0])
+		log_to = int(arg1[1])
+		msg = u'Log:'
+		for clog in range(log_from, log_to):
+			msg += '\n'+log[clog]
+		send_msg(type, jid, nick, msg)
+	
+
+	
+
+
 def info_comm(type, jid, nick):
 	global comms
 	msg = ''
@@ -23,7 +84,7 @@ def no_spam(type, jid, nick):
 
 def bot_exit(type, jid, nick, text):
         text = text[0]
-	StatusMessage = 'Exit by command from bot owner ('+nick+')'
+	StatusMessage = u'Exit by \''+prefix+u'quit\' command from bot owner ('+nick+u')'
 	send_presence_all(StatusMessage)
 	sleep(5)
 	os._exit(0)
@@ -128,24 +189,25 @@ def bot_leave(type, jid, nick, text):
                         pprint(u'never be in '+text)
 
 def conf_pass(type, jid, nick, text):
-        global psw
-        text=unicode(text)
-        if text!='':
-                psw = text
-        send_msg(type, jid, nick, u'пароль \''+psw+'\'')
+	global psw
+	text=unicode(text)
+	if text!='':
+		psw = text
+	send_msg(type, jid, nick, u'пароль \''+psw+'\'')
 
 def conf_limit(type, jid, nick, text):
-        global lfrom, lto
-        text=unicode(text)
-        if text!='':
-		text = text.split(' ')
-                lfrom = int(text[0])
-		lto = int(text[1])
-        send_msg(type, jid, nick, u'limit from '+str(lfrom)+' to '+str(lto))
+	global msg_limit
+	text=unicode(text)
+	if text!='':
+		try:
+			msg_limit = int(text)
+		except:
+			msg_limit = 1000
+	send_msg(type, jid, nick, u'Message limit is '+str(msg_limit))
 
 def owner(type, jid, nick, text):
-        global ownerbase, owners, god
-        do = text[:3]
+	global ownerbase, owners, god
+	do = text[:3]
 	nnick = text[4:]
 	pprint('owner '+do+' '+nnick)
 	if do == 'add':
@@ -545,4 +607,6 @@ comms = [(0, prefix+u'test', test, 1),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'commands', info_comm, 1),
          (2, prefix+u'info', info, 1),
+         (2, prefix+u'log', get_log, 2),
+         (2, prefix+u'limit', conf_limit, 2),
          (1, prefix+u'clear', hidden_clear, 1)]

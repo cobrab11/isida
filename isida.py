@@ -21,6 +21,18 @@ def writefile(filename, data):
 	fp.close()
 
 def parser(text):
+	logt=localtime()
+	logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
+
+	if os.path.isfile(logfile):
+		log = eval(readfile(logfile))
+	else:
+		log = []
+		writefile(logfile,str(log))
+
+	log.append(text)
+	writefile(logfile,str(log))
+
         text = unicode(text)
         ttext = u''
         i = 0
@@ -247,7 +259,7 @@ def leave(conference, sm):
 
 def iqCB(sess,iq):
         nick = iq.getFrom()
-	pprint(u' *** iq:version from '+unicode(nick))
+	pprint(u'*** iq:version from '+unicode(nick))
         id = iq.getID()
         if iq.getType()=='get':
                 if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -553,11 +565,9 @@ while 1:
 		exit(0)
 	except Exception, SM:
 		lt = localtime()
-		pprint('*** Error ***')
+		pprint('*** Error *** '+str(SM)+' ***')
                 if debugmode:
         		raise
-        	else:
-        		pprint(str(SM))
 
 
 
