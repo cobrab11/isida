@@ -274,6 +274,7 @@ def iqCB(sess,iq):
 
 def messageCB(sess,mess):
         global otakeRes, mainRes, psw, lfrom, lto, jidbase, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
+        global ignorebase, ignores
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
         text=unicode(mess.getBody())
@@ -297,15 +298,18 @@ def messageCB(sess,mess):
 				jid = base[4]
 				access_mode = 1
 
+	if ownerbase.count(getRoom(jid)):
+		access_mode = 2
+
+	if ignorebase.count(getRoom(jid)):
+		access_mode = -1
+
 	jid2 = 'None'
 	if nick != nickname:
 		for base in megabase:
 			if (base[1].count(nick) and base[0].lower()==room):
 				jid2 = base[4]
 				
-	if ownerbase.count(getRoom(jid)):
-		access_mode = 2
-
 #	print access_mode, text
 
 	tmppos = arr_semi_find(confbase, room)
@@ -319,7 +323,7 @@ def messageCB(sess,mess):
         if type == 'groupchat' and nick != '' and jid2 != 'None':
                 talk_count(room,jid2,nick,text)
 
-        if (text != 'None') and (len(text)>2):
+        if (text != 'None') and (len(text)>2) and access_mode >= 0:
                 for parse in comms:
 			if access_mode >= parse[0] and nick != nowname:
 				if text[:len(nowname)] == nowname:
@@ -534,6 +538,15 @@ if os.path.isfile(owners):
 else:
 	ownerbase = [god]
 	writefile(owners,str(ownerbase))
+
+ignores = 'ignore'
+
+if os.path.isfile(ignores):
+	ignorebase = eval(readfile(ignores))
+else:
+	ignorebase = []
+	writefile(ignores,str(ignorebase))
+
 
 confs = 'conf'
 

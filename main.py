@@ -152,6 +152,20 @@ def info_comm(type, jid, nick):
 	ccnt = 0
 	jidc = comms
 
+	access_mode = 0
+	jid2 = 'None'
+	if nick != nickname:
+		for base in megabase:
+			if (base[1].count(nick) and base[0].lower()==jid and (base[3]==u'admin' or base[3]==u'owner')):
+				jid2 = base[4]
+				access_mode = 1
+
+	if ownerbase.count(getRoom(jid2)):
+		access_mode = 2
+
+	if ignorebase.count(getRoom(jid2)):
+		access_mode = -1
+
         accs = [u'всем', u'админам/овнерам', u'владельцу бота']
 
         for i in range(0,3):
@@ -165,7 +179,7 @@ def info_comm(type, jid, nick):
         			ccnt+= 1
                 msg = msg[:-2] + '\n'
 			
-	msg = u'Команды парсера: '+str(ccnt)+u', префикс: '+prefix+'\n'+msg
+	msg = u'Команды парсера: '+str(ccnt)+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+prefix+'\n'+msg
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
 
@@ -351,6 +365,28 @@ def owner(type, jid, nick, text):
 	msg = msg[:-2]
 	writefile(owners,str(ownerbase))
         send_msg(type, jid, nick, msg)
+
+def ignore(type, jid, nick, text):
+	global ignorebase, ignores, god
+	do = text[:3]
+	nnick = text[4:]
+	pprint('ignore '+do+' '+nnick)
+	if do == 'add':
+                if not ignorebase.count(nnick):
+                        ignorebase.append(nnick)
+	elif do == 'del':
+                if ignorebase.count(nnick) and nnick != god:
+                        ignorebase.remove(nnick)
+#        elif do == 'clr':
+#                ignorebase = []
+
+	msg = u'Я не принимаю команды от: '
+	for jjid in ignorebase:
+			msg += jjid+', '
+	msg = msg[:-2]
+	writefile(ignores,str(ignorebase))
+        send_msg(type, jid, nick, msg)
+
 
 def info_where(type, jid, nick):
         global confbase
@@ -771,6 +807,7 @@ comms = [(0, prefix+u'test', test, 1),
          (2, prefix+u'leave', bot_leave, 2),
          (2, prefix+u'pass', conf_pass, 2),
          (2, prefix+u'owner', owner, 2),
+         (2, prefix+u'ignore', ignore, 2),
          (1, prefix+u'where', info_where, 1),
          (1, prefix+u'res', info_res, 2),
          (1, prefix+u'serv', info_serv, 2),
