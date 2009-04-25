@@ -1,5 +1,28 @@
 # -*- coding: utf -*-
 
+def stats(type, jid, nick):
+        msg = u'Найдено:'
+        vars = {'none/visitor':0,
+                'none/participant':0,
+                'none/moderator':0,
+                'member/visitor':0,
+                'member/participant':0,
+                'member/moderator':0,
+                'admin/moderator':0,
+                'owner/moderator':0}
+        
+#megabase.remove([room, nick, role, affiliation, jid])        
+        for mega in megabase2:
+                if mega[0] == jid:
+                        ta = mega[3]+'/'+mega[2]
+                        vars[ta]+=1
+        for va in vars:
+                if vars[va]:
+                        msg += '\n'+str(va)+' '+str(vars[va])
+
+
+        send_msg(type, jid, nick, msg)
+
 def gtalkers(type, jid, nick, text):
 	tbasefile = 'talkers'
         if os.path.isfile(tbasefile):
@@ -127,12 +150,23 @@ def info_comm(type, jid, nick):
 	global comms
 	msg = ''
 	ccnt = 0
-	for ccomms in comms:
-		if not ccomms[1].count(god):
-			msg += ccomms[1]+'('+str(ccomms[0])+'), '
-			ccnt += 1
-	msg = msg[:-2]
-	msg = u'Команды парсера: '+str(ccnt)+'\n'+msg+u'\nДоступ: 0 - всем, 1 - админам/овнерам, 2 - владельцу бота'
+	jidc = comms
+
+        accs = [u'всем', u'админам/овнерам', u'владельцу бота']
+
+        for i in range(0,3):
+                msg += '['+str(i)+'] '+accs[i]+': '
+        	for ccomms in jidc:
+        		if not ccomms[1].count(god) and ccomms[0] == i:
+                                ccc = ccomms[1]
+                                if ccc[:len(prefix)] == prefix:
+                                        ccc = ccc[len(prefix):]
+        			msg += ccc +', '
+        			ccnt+= 1
+                msg = msg[:-2] + '\n'
+			
+	msg = u'Команды парсера: '+str(ccnt)+u', префикс: '+prefix+'\n'+msg
+	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
 
 def test(type, jid, nick):
@@ -145,16 +179,18 @@ def no_spam(type, jid, nick):
 	send_msg(type, jid, nick, u'Куй тебе по всей морде!')
 
 def bot_exit(type, jid, nick, text):
-        text = text[0]
-	StatusMessage = u'Exit by \''+prefix+u'quit\' command from bot owner ('+nick+u') ['+text+u']'
+	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
+	if text != '':
+                StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile('tmp',str('exit'))
 	sleep(3)
         0/0 # :-"
 
 def bot_restart(type, jid, nick, text):
-        text = text[0]
-	StatusMessage = u'Restart by \''+prefix+u'restart\' command from bot owner ('+nick+u') ['+text+u']'
+	StatusMessage = u'Restart by \'restart\' command from bot owner ('+nick+u')'
+	if text != '':
+                StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile('tmp',str('restart'))
 	sleep(1)
@@ -179,17 +215,33 @@ def helpme(type, jid, nick, text):
 		(u'quit',u'Завершение работы бота'),
 		(u'clear',u'Скрытая очистка истории сообщений'),
 		(u'pass',u'Установка пароля для входа в конфу'),
-		(u'suck',u'Пока это бот не умеет ;)'),
+		(u'suck',u'Бот этого пока не умеет ;)'),
 		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
 
 	mesg = u'Префикс команд: '+prefix+u'\nДоступна справка по командам:\n'
-	for hlp in helps:
-                hidx = u'Ошибка! Команда не найдена!'
-                for cmdd in comms:
-                        if cmdd[1] == prefix+hlp[0]:
-                                hidx = str(cmdd[0])
-		mesg += hlp[0] +'['+ hidx +']' + ', '
-	mesg = mesg[:-2]
+
+        cnt = 0
+        for i in range(0,3):
+                mesg += '['+str(i)+'] '
+        	for hlp in helps:
+                        for cmdd in comms:
+                                if cmdd[1] == prefix+hlp[0] and cmdd[0] == i:
+                                        mesg += hlp[0] + ', '
+                                        cnt += 1
+                mesg = mesg[:-2]
+                mesg += '\n'
+        if cnt != len(helps):
+                mesg += '[?] '
+                for hlp in helps:
+                        fl = 1
+                        for cmdd in comms:
+                                if cmdd[1] == prefix+hlp[0]:
+                                        fl = 0
+                        if fl:
+                                mesg += hlp[0] + ', '
+                mesg = mesg[:-1]
+	mesg = mesg[:-1]
+
 	for hlp in helps:
 		if text.lower() == hlp[0]:
 			mesg = hlp[1]
@@ -349,7 +401,14 @@ def info(type, jid, nick):
 
 	difftime[0] += nowtime[0]-starttime[0]
 
-	msg += u'Время работы: '+timeadd(difftime)
+	msg += u'Время работы: '
+	if difftime[0] >0:
+                msg += str(difftime[0])+'y '
+	if difftime[1] >0:
+                msg += str(difftime[1])+'m '
+	if difftime[2] >0:
+                msg += str(difftime[0])+'d '
+        msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
 
         send_msg(type, jid, nick, msg)
 
@@ -702,9 +761,10 @@ def rss(type, jid, nick, text):
 
 comms = [(0, prefix+u'test', test, 1),
          (0, prefix+u'тест', test_rus, 1),
+         (1, prefix+u'stats', stats, 1),
          (1, prefix+u'spam '+god, no_spam, 1),
-         (2, prefix+u'quit', bot_exit, 0, u'Завершаю работу'),
-         (2, prefix+u'restart', bot_restart, 0, u'Перезапускаюсь'),
+         (2, prefix+u'quit', bot_exit, 2),
+         (2, prefix+u'restart', bot_restart, 2),
          (1, prefix+u'say', say, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),

@@ -110,6 +110,7 @@ baseParameters = [nickname ,name, domain, password, newBotJid, mainRes, SuperAdm
 baseErrors = [u'nickname', u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 
 megabase = []
+megabase2 = []
 
 # --- subs ----
 
@@ -335,7 +336,7 @@ def messageCB(sess,mess):
 
 
 def presenceCB(sess,mess):
-	global jidbase, megabase
+	global jidbase, megabase, megabase2
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
         text=unicode(mess.getStatus())
@@ -355,6 +356,9 @@ def presenceCB(sess,mess):
 	else:
 		if not megabase.count([room, nick, role, affiliation, jid]):
 			megabase.append([room, nick, role, affiliation, jid])
+
+	if not megabase2.count([room, nick, role, affiliation, jid]):
+		megabase2.append([room, nick, role, affiliation, jid])
 
 #        print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 
