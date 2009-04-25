@@ -1,1 +1,0 @@
-..\python25\python isida.py

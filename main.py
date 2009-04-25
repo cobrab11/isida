@@ -1,5 +1,70 @@
 # -*- coding: utf -*-
 
+def gtalkers(type, jid, nick, text):
+	tbasefile = 'talkers'
+        if os.path.isfile(tbasefile):
+        	tbase = eval(readfile(tbasefile))
+        else:
+        	tbase = []
+        	writefile(tbasefile,str(tbase))
+        jidc = []
+        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.\tКонфа'
+        
+        if text == '':
+                for tt in tbase:
+                        jidc.append(tt)
+        else:
+                for tt in tbase:
+                        if tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
+                                jidc.append(tt)                                
+
+	for i in range(0,len(jidc)):
+		for j in range(i,len(jidc)):
+			if jidc[i][3] < jidc[j][3]:
+				jj = jidc[i]
+				jidc[i] = jidc[j]
+				jidc[j] = jj
+
+        if len(jidc)> 10:
+                jidc = jidc[:10]
+        for tt in jidc:
+                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+	send_msg(type, jid, nick, msg)
+
+
+def talkers(type, jid, nick, text):
+	tbasefile = 'talkers'
+        if os.path.isfile(tbasefile):
+        	tbase = eval(readfile(tbasefile))
+        else:
+        	tbase = []
+        	writefile(tbasefile,str(tbase))
+        jidc = []
+        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.'
+        
+        if text == '':
+                for tt in tbase:
+                        if jid == tt[0]:
+                                jidc.append(tt)
+        else:
+                for tt in tbase:
+                        if jid == tt[0] and tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
+                                jidc.append(tt)                                
+
+	for i in range(0,len(jidc)):
+		for j in range(i,len(jidc)):
+			if jidc[i][3] < jidc[j][3]:
+				jj = jidc[i]
+				jidc[i] = jidc[j]
+				jidc[j] = jj
+
+        if len(jidc)> 10:
+                jidc = jidc[:10]
+        for tt in jidc:
+                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+	send_msg(type, jid, nick, msg)
+	
+
 def get_log(type, jid, nick, text):
 	text = text.split(' ')
 	if len(text)>0:
@@ -58,9 +123,6 @@ def get_log(type, jid, nick, text):
 		send_msg(type, jid, nick, msg)
 	
 
-	
-
-
 def info_comm(type, jid, nick):
 	global comms
 	msg = ''
@@ -84,37 +146,49 @@ def no_spam(type, jid, nick):
 
 def bot_exit(type, jid, nick, text):
         text = text[0]
-	StatusMessage = u'Exit by \''+prefix+u'quit\' command from bot owner ('+nick+u')'
+	StatusMessage = u'Exit by \''+prefix+u'quit\' command from bot owner ('+nick+u') ['+text+u']'
 	send_presence_all(StatusMessage)
-	sleep(5)
-	os._exit(0)
+	writefile('tmp',str('exit'))
+	sleep(3)
+        0/0 # :-"
+
+def bot_restart(type, jid, nick, text):
+        text = text[0]
+	StatusMessage = u'Restart by \''+prefix+u'restart\' command from bot owner ('+nick+u') ['+text+u']'
+	send_presence_all(StatusMessage)
+	writefile('tmp',str('restart'))
+	sleep(1)
+        0/0 # :-"
 
 def say(type, jid, nick, text):
 	send_msg(type, jid, nick, text)
 
 def helpme(type, jid, nick, text):
 	pprint(text)
-	helps = [(prefix+u'search',u'Поиск по внутренней базе jid\'ов'),
-		(prefix+u'tempo',u'Поиск по временной базе ролей/аффиляций'),
-		(prefix+u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
-		(prefix+u'info',u'Основная инфа о боте'),
-		(prefix+u'where',u'Список конференций, в которых находится бот'),
-		(prefix+u'res',u'топ10 рессурсов. Возможен поиск через res text'),
-		(prefix+u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
-		(prefix+u'test',u'хз что это...'),
-		(prefix+u'тест',u'хз что это...'),
-		(prefix+u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
-		(prefix+u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
-		(prefix+u'quit',u'Завершение работы бота'),
-		(prefix+u'clear',u'Скрытая очистка истории сообщений'),
-		(prefix+u'pass',u'Установка пароля для входа в конфу'),
-		(prefix+u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
+	helps = [(u'search',u'Поиск по внутренней базе jid\'ов'),
+		(u'tempo',u'Поиск по временной базе ролей/аффиляций'),
+		(u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
+		(u'info',u'Основная инфа о боте'),
+		(u'where',u'Список конференций, в которых находится бот'),
+		(u'res',u'топ10 рессурсов. Возможен поиск через res text'),
+		(u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
+		(u'test',u'хз что это...'),
+		(u'тест',u'хз что это...'),
+		(u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
+		(u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
+		(u'quit',u'Завершение работы бота'),
+		(u'clear',u'Скрытая очистка истории сообщений'),
+		(u'pass',u'Установка пароля для входа в конфу'),
+		(u'suck',u'Пока это бот не умеет ;)'),
+		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
 
-# show | add | del | clr | now | get
-
-	mesg = u'Доступна справка по командам:\n'
+	mesg = u'Префикс команд: '+prefix+u'\nДоступна справка по командам:\n'
 	for hlp in helps:
-		mesg += hlp[0] + ', '
+                hidx = u'Ошибка! Команда не найдена!'
+                for cmdd in comms:
+                        if cmdd[1] == prefix+hlp[0]:
+                                hidx = str(cmdd[0])
+		mesg += hlp[0] +'['+ hidx +']' + ', '
 	mesg = mesg[:-2]
 	for hlp in helps:
 		if text.lower() == hlp[0]:
@@ -630,6 +704,7 @@ comms = [(0, prefix+u'test', test, 1),
          (0, prefix+u'тест', test_rus, 1),
          (1, prefix+u'spam '+god, no_spam, 1),
          (2, prefix+u'quit', bot_exit, 0, u'Завершаю работу'),
+         (2, prefix+u'restart', bot_restart, 0, u'Перезапускаюсь'),
          (1, prefix+u'say', say, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),
@@ -646,5 +721,7 @@ comms = [(0, prefix+u'test', test, 1),
          (1, prefix+u'commands', info_comm, 1),
          (2, prefix+u'info', info, 1),
          (2, prefix+u'log', get_log, 2),
+         (1, prefix+u'talkers', talkers, 2),
+         (1, prefix+u'gtalkers', gtalkers, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (1, prefix+u'clear', hidden_clear, 1)]

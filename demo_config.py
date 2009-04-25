@@ -23,9 +23,8 @@ newBotJid = 0
 
 # рессурс бота в конфе
 mainRes = u'isida-bot'
-#mainRes = unicode(randint(0, maxint)) # - random
 
-# ник владельца бота
+# jid владельца бота
 SuperAdmin = u'aaa@bbb.ru'
 
 # стартовая конференция

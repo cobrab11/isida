@@ -295,6 +295,12 @@ def messageCB(sess,mess):
 			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
 				jid = base[4]
 				access_mode = 1
+
+	jid2 = 'None'
+	if nick != nickname:
+		for base in megabase:
+			if (base[1].count(nick) and base[0].lower()==room):
+				jid2 = base[4]
 				
 	if ownerbase.count(getRoom(jid)):
 		access_mode = 2
@@ -308,6 +314,9 @@ def messageCB(sess,mess):
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '':
 			nowname = nickname
+
+        if type == 'groupchat' and nick != '' and jid2 != 'None':
+                talk_count(room,jid2,nick,text)
 
         if (text != 'None') and (len(text)>2):
                 for parse in comms:
@@ -476,6 +485,31 @@ def schedule():
 			feedbase.append([link, text[2], text[3], lt[:6], jid])
 			writefile(feeds,str(feedbase))
 
+def talk_count(room,jid,nick,text):
+
+        tbasefile = 'talkers'
+        if os.path.isfile(tbasefile):
+        	tbase = eval(readfile(tbasefile))
+        else:
+        	tbase = []
+        	writefile(tbasefile,str(tbase))
+        wtext = text.split(' ')
+        wtext = len(wtext)
+        beadd = 1
+        if len(tbase):
+                for st in tbase:
+                        if st[0]==room and st[1]==jid:
+                                tind = tbase.index(st)
+                                rec = [st[0],st[1],nick,st[3]+wtext,st[4]+1]
+                                tbase.remove(st)
+                                tbase.append(rec)
+                                beadd = 0
+
+        if beadd:
+                tbase.append([room, jid, nick, wtext, 1])
+        writefile(tbasefile,str(tbase))        	
+
+
 
 # ---------- HERE WE GO!!! -----------
 
@@ -562,12 +596,16 @@ while 1:
 		StatusMessage = 'Shut down by CTRL+C'
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
-		sleep(5)
-		exit(0)
+        	writefile('tmp',str('exit'))
+		sleep(2)
+		sys.exit(0)
+	except ZeroDivisionError:
+		0/0
 	except Exception, SM:
 		lt = localtime()
 		pprint('*** Error *** '+str(SM)+' ***')
                 if debugmode:
+                        writefile('tmp',str('exit'))
         		raise
 
 

@@ -5,4 +5,4 @@ svn up
 echo `svnversion` > version
 
 #launch bot
-python isida.py
+python start.py
