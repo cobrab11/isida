@@ -281,15 +281,19 @@ def conf_limit(type, jid, nick, text):
 
 def bot_plugin(type, jid, nick, text):
 	global plname, plugins, execute
-
-	do = text[:3]
-	nnick = text[4:]
+	text = text.split(' ')
+	do = ''
+	nnick = ''
+	if len(text)>0:
+		do = text[0]
+	if len(text)>1:
+		nnick = text[1]
 	pprint('plugin '+do+' '+nnick)
 	msg = ''
 	if do == 'add':
-                if not plugins.count(nnick) and os.path.isfile('plugins\\'+nnick):
+                if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
                         plugins.append(nnick)
-                        execfile('plugins\\'+nnick)
+                        execfile('plugins/'+nnick)
                         msg = u'Загружен плагин: '+nnick+u'\nДоступны комманды: '
                         for commmm in execute:
                                 msg += commmm[1]+'['+str(commmm[0])+'], '
@@ -297,9 +301,9 @@ def bot_plugin(type, jid, nick, text):
                         msg = msg[:-2]
                         
 	elif do == 'del':
-                if plugins.count(nnick) and os.path.isfile('plugins\\'+nnick):
+                if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
                         plugins.remove(nnick)
-                        execfile('plugins\\'+nnick)
+                        execfile('plugins/'+nnick)
                         msg = u'Удалён плагин: '+nnick+u'\nУдалены комманды: '
                         for commmm in execute:
                                 msg += commmm[1]+'['+str(commmm[0])+'], '
@@ -308,20 +312,26 @@ def bot_plugin(type, jid, nick, text):
                                                 comms.remove(i)
                         msg = msg[:-2]
 
-	msg += u'\nАктивные плагины: '
-	for jjid in plugins:
-			msg += jjid+', '
-	msg = msg[:-2]
+	elif do == 'local':
+		a = os.listdir('plugins/')
+		b = []
+		for c in a:
+			if c[-3:] == u'.py' and c != 'main.py':
+				b.append(c)
+		msg = u'Доступные плагины: '
+		for c in b:
+				msg += c+', '
+		msg = msg[:-2]
+		
+	else:
+		msg = u'Активные плагины: '
+		for jjid in plugins:
+				msg += jjid+', '
+		msg = msg[:-2]
+
+
 	writefile(plname,str(plugins))
         send_msg(type, jid, nick, msg)
-
-
-
-
-
-
-
-
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
