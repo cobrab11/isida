@@ -14,3 +14,12 @@ cp tempofeed settings/tempofeed
 cp jidbase settings/jidbase
 cp tmp settings/tmp
 
+rm -r feed
+rm -r lastfeeds
+rm -r talkers
+rm -r version
+rm -r conf
+rm -r owner
+rm -r tempofeed
+rm -r jidbase
+rm -r tmp
