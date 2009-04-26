@@ -13,7 +13,7 @@ cp owner settings/owner
 cp tempofeed settings/tempofeed
 cp jidbase settings/jidbase
 cp tmp settings/tmp
-cp config.py settings.config.py
+cp config.py settings/config.py
 
 rm -r feed
 rm -r lastfeeds
