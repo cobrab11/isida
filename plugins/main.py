@@ -15,7 +15,9 @@ def stats(type, jid, nick):
         for mega in megabase2:
                 if mega[0] == jid:
                         ta = mega[3]+'/'+mega[2]
-                        vars[ta]+=1
+			for va in vars:
+				if va == ta:
+		                        vars[ta]+=1
         for va in vars:
                 if vars[va]:
                         msg += '\n'+str(va)+' '+str(vars[va])
