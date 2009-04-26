@@ -37,7 +37,7 @@ def parser(text):
         ttext = u''
         i = 0
         while i<len(text):
-                if (text[i]<='~') or (text[i]>=u'А' and text[i]<=u'я'):
+                if (text[i]<='~'):# or (text[i]>=u'А' and text[i]<=u'я'):
                         ttext+=text[i]
                 else:
                         ttext+='?'
