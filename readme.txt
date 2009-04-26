@@ -9,7 +9,10 @@ svn co http://isida.googlecode.com/svn/trunk isida
 
 1. rename defaul_config.py to config.py and fill look inside
 2. for linux type in console: sh launch.sh
-3. for windows type in console: launch.cmd
+
+- update -
+
+after global bot update - launch sh update script for correct update.
 
 that's all :)
 
