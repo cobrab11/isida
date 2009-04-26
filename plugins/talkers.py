@@ -3,7 +3,7 @@
 
 # Поиск по глобальной базе "болтунов"
 def gtalkers(type, jid, nick, text):
-	tbasefile = 'talkers'
+	tbasefile = 'settings/talkers'
         if os.path.isfile(tbasefile):
         	tbase = eval(readfile(tbasefile))
         else:
@@ -36,7 +36,7 @@ def gtalkers(type, jid, nick, text):
 
 # Поиск по базе "блтунов" в пределах одной конференции
 def talkers(type, jid, nick, text):
-	tbasefile = 'talkers'
+	tbasefile = 'settings/talkers'
         if os.path.isfile(tbasefile):
         	tbase = eval(readfile(tbasefile))
         else:
