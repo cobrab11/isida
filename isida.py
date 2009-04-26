@@ -140,7 +140,19 @@ def arr_del_semi_find(array, string):
 	return array
 
 # upload addons
-execfile('main.py')
+execfile('plugins\main.py')
+plname = u'plugins\list.txt'
+
+if os.path.isfile(plname):
+        plugins = eval(readfile(plname))
+        for pl in plugins:
+                pprint('Append plugin: '+pl)
+                execfile('plugins\\'+pl)
+                for commmm in execute:
+                        comms.append(commmm)
+else:
+	plugins = []
+	writefile(plname,str(plugins))
 
 def send_msg(mtype, mjid, mnick, mmessage):
         if len(mmessage) > msg_limit-5 and mtype == 'groupchat':

@@ -23,71 +23,6 @@ def stats(type, jid, nick):
 
         send_msg(type, jid, nick, msg)
 
-def gtalkers(type, jid, nick, text):
-	tbasefile = 'talkers'
-        if os.path.isfile(tbasefile):
-        	tbase = eval(readfile(tbasefile))
-        else:
-        	tbase = []
-        	writefile(tbasefile,str(tbase))
-        jidc = []
-        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.\tКонфа'
-        
-        if text == '':
-                for tt in tbase:
-                        jidc.append(tt)
-        else:
-                for tt in tbase:
-                        if tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
-                                jidc.append(tt)                                
-
-	for i in range(0,len(jidc)):
-		for j in range(i,len(jidc)):
-			if jidc[i][3] < jidc[j][3]:
-				jj = jidc[i]
-				jidc[i] = jidc[j]
-				jidc[j] = jj
-
-        if len(jidc)> 10:
-                jidc = jidc[:10]
-        for tt in jidc:
-                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
-	send_msg(type, jid, nick, msg)
-
-
-def talkers(type, jid, nick, text):
-	tbasefile = 'talkers'
-        if os.path.isfile(tbasefile):
-        	tbase = eval(readfile(tbasefile))
-        else:
-        	tbase = []
-        	writefile(tbasefile,str(tbase))
-        jidc = []
-        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.'
-        
-        if text == '':
-                for tt in tbase:
-                        if jid == tt[0]:
-                                jidc.append(tt)
-        else:
-                for tt in tbase:
-                        if jid == tt[0] and tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
-                                jidc.append(tt)                                
-
-	for i in range(0,len(jidc)):
-		for j in range(i,len(jidc)):
-			if jidc[i][3] < jidc[j][3]:
-				jj = jidc[i]
-				jidc[i] = jidc[j]
-				jidc[j] = jj
-
-        if len(jidc)> 10:
-                jidc = jidc[:10]
-        for tt in jidc:
-                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
-	send_msg(type, jid, nick, msg)
-	
-
 def get_log(type, jid, nick, text):
 	text = text.split(' ')
 	if len(text)>0:
@@ -189,9 +124,6 @@ def test(type, jid, nick):
 def test_rus(type, jid, nick):
 	send_msg(type, jid, nick, u'две полоски!')
         
-def no_spam(type, jid, nick):
-	send_msg(type, jid, nick, u'Куй тебе по всей морде!')
-
 def bot_exit(type, jid, nick, text):
 	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
 	if text != '':
@@ -344,6 +276,50 @@ def conf_limit(type, jid, nick, text):
 		except:
 			msg_limit = 1000
 	send_msg(type, jid, nick, u'Message limit is '+str(msg_limit))
+
+def bot_plugin(type, jid, nick, text):
+	global plname, plugins, execute
+
+	do = text[:3]
+	nnick = text[4:]
+	pprint('plugin '+do+' '+nnick)
+	msg = ''
+	if do == 'add':
+                if not plugins.count(nnick) and os.path.isfile('plugins\\'+nnick):
+                        plugins.append(nnick)
+                        execfile('plugins\\'+nnick)
+                        msg = u'Загружен плагин: '+nnick+u'\nДоступны комманды: '
+                        for commmm in execute:
+                                msg += commmm[1]+'['+str(commmm[0])+'], '
+                                comms.append(commmm)
+                        msg = msg[:-2]
+                        
+	elif do == 'del':
+                if plugins.count(nnick) and os.path.isfile('plugins\\'+nnick):
+                        plugins.remove(nnick)
+                        execfile('plugins\\'+nnick)
+                        msg = u'Удалён плагин: '+nnick+u'\nУдалены комманды: '
+                        for commmm in execute:
+                                msg += commmm[1]+'['+str(commmm[0])+'], '
+                                for i in comms:
+                                        if i[1] == commmm[1]:
+                                                comms.remove(i)
+                        msg = msg[:-2]
+
+	msg += u'\nАктивные плагины: '
+	for jjid in plugins:
+			msg += jjid+', '
+	msg = msg[:-2]
+	writefile(plname,str(plugins))
+        send_msg(type, jid, nick, msg)
+
+
+
+
+
+
+
+
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -798,7 +774,6 @@ def rss(type, jid, nick, text):
 comms = [(0, prefix+u'test', test, 1),
          (0, prefix+u'тест', test_rus, 1),
          (1, prefix+u'stats', stats, 1),
-         (1, prefix+u'spam '+god, no_spam, 1),
          (2, prefix+u'quit', bot_exit, 2),
          (2, prefix+u'restart', bot_restart, 2),
          (1, prefix+u'say', say, 2),
@@ -818,7 +793,6 @@ comms = [(0, prefix+u'test', test, 1),
          (1, prefix+u'commands', info_comm, 1),
          (2, prefix+u'info', info, 1),
          (2, prefix+u'log', get_log, 2),
-         (1, prefix+u'talkers', talkers, 2),
-         (1, prefix+u'gtalkers', gtalkers, 2),
          (2, prefix+u'limit', conf_limit, 2),
+         (2, prefix+u'plugin', bot_plugin, 2),
          (1, prefix+u'clear', hidden_clear, 1)]
