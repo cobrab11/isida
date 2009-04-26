@@ -129,7 +129,7 @@ def bot_exit(type, jid, nick, text):
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
-	writefile('tmp',str('exit'))
+	writefile('settings/tmp',str('exit'))
 	sleep(3)
         0/0 # :-"
 
@@ -138,7 +138,7 @@ def bot_restart(type, jid, nick, text):
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
-	writefile('tmp',str('restart'))
+	writefile('settings/tmp',str('restart'))
 	sleep(1)
         0/0 # :-"
 
@@ -561,8 +561,8 @@ def rss_replace(ms):
 
 #[room, nick, role, affiliation, jid]
 
-feeds = 'settings\feed'
-lafeeds = 'settings\lastfeeds'
+feeds = 'settings/feed'
+lafeeds = 'settings/lastfeeds'
 
 def rss(type, jid, nick, text):
 	nosend = 0
@@ -616,7 +616,7 @@ def rss(type, jid, nick, text):
 		f = urllib.urlopen(link)
 		feed = f.read()
 
-		writefile('tempofeed',str(feed))
+		writefile('settings/tempofeed',str(feed))
 
 		if feed[:100].count('rss') and feed[:100].count('xml'):
 			encidx = feed.index('encoding=')
@@ -695,7 +695,7 @@ def rss(type, jid, nick, text):
         	f = urllib.urlopen(link)
         	feed = f.read()
 
-		writefile('tempofeed',str(feed))
+		writefile('settings/tempofeed',str(feed))
 		if feed[:100].count('rss') and feed[:100].count('xml'):
 			encidx = feed.index('encoding=')
 			enc = feed[encidx+10:encidx+30]
@@ -771,9 +771,7 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(0, prefix+u'test', test, 1),
-         (0, prefix+u'тест', test_rus, 1),
-         (1, prefix+u'stats', stats, 1),
+comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'quit', bot_exit, 2),
          (2, prefix+u'restart', bot_restart, 2),
          (1, prefix+u'say', say, 2),

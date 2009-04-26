@@ -86,7 +86,7 @@ ff = f.read()
 botVersion = '1.5'
 capsVersion = botVersion
 
-ver_file = 'version'
+ver_file = 'settings/version'
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1:
@@ -94,7 +94,7 @@ if os.path.isfile(ver_file):
 
 # --- load config.txt
 
-configname = u'config.py'
+configname = u'settings/config.py'
 
 if os.path.isfile(configname):
         execfile(configname)
@@ -140,14 +140,14 @@ def arr_del_semi_find(array, string):
 	return array
 
 # upload addons
-execfile('plugins\main.py')
-plname = u'plugins\list.txt'
+execfile('plugins/main.py')
+plname = u'plugins/list.txt'
 
 if os.path.isfile(plname):
         plugins = eval(readfile(plname))
         for pl in plugins:
                 pprint('Append plugin: '+pl)
-                execfile('plugins\\'+pl)
+                execfile('plugins/'+pl)
                 for commmm in execute:
                         comms.append(commmm)
 else:
@@ -507,7 +507,7 @@ def schedule():
 
 def talk_count(room,jid,nick,text):
 
-        tbasefile = 'talkers'
+        tbasefile = 'settings/talkers'
         if os.path.isfile(tbasefile):
         	tbase = eval(readfile(tbasefile))
         else:
@@ -535,7 +535,7 @@ def talk_count(room,jid,nick,text):
 
 starttime = localtime()
 
-jidbasefile = 'jidbase'
+jidbasefile = 'settings/jidbase'
 
 if os.path.isfile(jidbasefile):
 	jidbase = eval(readfile(jidbasefile))
@@ -543,7 +543,7 @@ else:
 	jidbase = []
 	writefile(jidbasefile,str(jidbase))
 
-owners = 'owner'
+owners = 'settings/owner'
 
 if os.path.isfile(owners):
 	ownerbase = eval(readfile(owners))
@@ -551,7 +551,7 @@ else:
 	ownerbase = [god]
 	writefile(owners,str(ownerbase))
 
-ignores = 'ignore'
+ignores = 'settings/ignore'
 
 if os.path.isfile(ignores):
 	ignorebase = eval(readfile(ignores))
@@ -560,7 +560,7 @@ else:
 	writefile(ignores,str(ignorebase))
 
 
-confs = 'conf'
+confs = 'settings/conf'
 
 if os.path.isfile(confs):
 	confbase = eval(readfile(confs))
@@ -625,7 +625,7 @@ while 1:
 		StatusMessage = 'Shut down by CTRL+C'
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
-        	writefile('tmp',str('exit'))
+        	writefile('settings/tmp',str('exit'))
 		sleep(2)
 		sys.exit(0)
 	except ZeroDivisionError:
@@ -634,7 +634,7 @@ while 1:
 		lt = localtime()
 		pprint('*** Error *** '+str(SM)+' ***')
                 if debugmode:
-                        writefile('tmp',str('exit'))
+                        writefile('settings/tmp',str('exit'))
         		raise
 
 

@@ -13,8 +13,8 @@ while 1:
     try:
         execfile('isida.py')
     except Exception, SM:
-        if os.path.isfile('tmp'):
-            mode = str(readfile('tmp'))
+        if os.path.isfile('settings/tmp'):
+            mode = str(readfile('settings/tmp'))
             if mode == 'exit':
                 os._exit(0)
             
