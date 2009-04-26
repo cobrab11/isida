@@ -83,7 +83,7 @@ lto = 128
 botName = 'Isida-Bot'
 f = urllib.urlopen('http://isida.googlecode.com/svn')
 ff = f.read()
-botVersion = '1.4'
+botVersion = '1.5'
 capsVersion = botVersion
 
 ver_file = 'version'

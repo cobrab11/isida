@@ -561,8 +561,8 @@ def rss_replace(ms):
 
 #[room, nick, role, affiliation, jid]
 
-feeds = 'feed'
-lafeeds = 'lastfeeds'
+feeds = 'settings\feed'
+lafeeds = 'settings\lastfeeds'
 
 def rss(type, jid, nick, text):
 	nosend = 0
