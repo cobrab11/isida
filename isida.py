@@ -37,7 +37,7 @@ def parser(text):
         ttext = u''
         i = 0
         while i<len(text):
-                if (text[i]<='~'): # or (text[i]>=u'А' and text[i]<=u'я'):
+                if (text[i]<='~') or (text[i]>=u'А' and text[i]<=u'я'):
                         ttext+=text[i]
                 else:
                         ttext+='?'
@@ -155,6 +155,7 @@ else:
 	writefile(plname,str(plugins))
 
 def send_msg(mtype, mjid, mnick, mmessage):
+	pprint('['+mtype+'] '+mmessage+' ['+mjid+'/'+mnick+']')
         if len(mmessage) > msg_limit-5 and mtype == 'groupchat':
                 cl.send(xmpp.Message(mjid+'/'+mnick, mmessage, 'chat'))
                 mmessage = mmessage[:msg_limit]+ u'[...]'
@@ -331,6 +332,9 @@ def messageCB(sess,mess):
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '':
 			nowname = nickname
+
+	if jid == 'None' and ownerbase.count(getRoom(room)):
+		access_mode = 2
 
         if type == 'groupchat' and nick != '' and jid2 != 'None':
                 talk_count(room,jid2,nick,text)
@@ -614,6 +618,13 @@ for tocon in confbase:
 lastserver = getServer(confbase[0])
 
 pprint(u'Joined')
+
+j = Presence(show=CommStatus, status=StatusMessage, priority=Priority)
+j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
+j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+cl.send(j)
+
+pprint(u'Unhide')
 
 while 1:
 	try:
