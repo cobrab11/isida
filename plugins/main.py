@@ -25,6 +25,25 @@ def stats(type, jid, nick):
 
         send_msg(type, jid, nick, msg)
 
+def show_error(type, jid, nick, text):
+	if len(text)>0:
+		cmd = int(text)
+	else:
+		cmd = 1
+
+	if os.path.isfile(LOG_FILENAME):
+		log = str(readfile(LOG_FILENAME))
+                log = log.split('ERROR:')
+
+                lll = len(log)
+        	msg = u'Total Error(s): '+str(lll-1)+', Last:\n'
+                for aa in range(lll-cmd,lll):
+                        msg += log[aa]+'\n'
+                msg = msg[:-2]
+        else:
+                msg = u'No Errors'
+	send_msg(type, jid, nick, msg)
+
 def get_log(type, jid, nick, text):
 	text = text.split(' ')
 	if len(text)>0:
@@ -113,9 +132,12 @@ def info_access(type, jid, nick):
         access_mode = ta[0]
         realjid =ta[1]
 
-	msg = u'Ваш доступ: '+str(access_mode)
+	msg = u'Доступ: '+str(access_mode)
+        tb = [u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
+        msg += ', ' + tb[access_mode]
+	
         if realjid != 'None':
-                msg += u' (Ваш jid мне виден)'
+                msg += u', jid опознан'
 
 	msg += u', Префикс команд: '+prefix
 	send_msg(type, jid, nick, msg)
@@ -618,9 +640,33 @@ feeds = 'settings/feed'
 lafeeds = 'settings/lastfeeds'
 
 def rss(type, jid, nick, text):
+        msg = u'rss show|add|del|clear|new|get'
 	nosend = 0
+	text = text.lower()
         text = text.split(' ')
-	mode = text[0] # show | add | del | clr | now | get
+        tl = len(text)
+
+        if tl == 4:
+                text.append('!')
+                
+	mode = text[0] # show | add | del | clear | new | get
+
+	if mode == 'add':
+                if tl < 4:
+                        msg = 'rss add [http://]url timeH|M [full|body|head]'
+                        mode = ''
+        elif mode == 'del':
+                if tl < 2:
+                        msg = 'rss del [http://]url'
+                        mode = ''
+        elif mode == 'new':
+                if tl < 4:
+                        msg = 'rss new [http://]url max_feed_humber [full|body|head]'
+                        mode = ''
+        elif mode == 'get':
+                if tl < 4:
+                        msg = 'rss get [http://]url max_feed_humber [full|body|head]'
+                        mode = ''
 
 	if os.path.isfile(feeds):
 		feedbase = eval(readfile(feeds))
@@ -634,7 +680,7 @@ def rss(type, jid, nick, text):
 		lastfeeds = []
 		writefile(lafeeds,str(lastfeeds))
 
-	if mode == 'clr':
+	if mode == 'clear':
 		msg = u'All RSS was cleared!'
 		feedbase = []
 		writefile(feeds,str(feedbase))
@@ -656,10 +702,14 @@ def rss(type, jid, nick, text):
 				msg+= u' not found!'
 
 	elif mode == 'add':
+                        
 		lt=localtime()
 		link = text[1]
 		if link[:7] != 'http://':
         	        link = 'http://'+link
+        	for dd in feedbase:
+                        if dd[0] == link and dd[4] == jid:
+                                feedbase.remove(dd)
 		feedbase.append([link, text[2], text[3], lt[:6], jid]) # url time mode
 		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
@@ -695,6 +745,9 @@ def rss(type, jid, nick, text):
 			msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			mmsg = feed[1]
 			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			for dd in lastfeeds:
+                                if dd[0] == link and dd[2] == jid:
+                                        lastfeeds.remove(dd)
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
 			for idx in range(1,lng):
@@ -741,7 +794,7 @@ def rss(type, jid, nick, text):
 		else:
 			msg = u'Can\'t find in schedule: '+link
 
-	elif mode == 'now':
+	elif mode == 'new' or mode == 'get':
 	        link = text[1]
        		if link[:7] != 'http://':
         	        link = 'http://'+link
@@ -774,6 +827,7 @@ def rss(type, jid, nick, text):
 	        	else:
 	        	        submode = 'full'
 
+
 			tstop = ''
 			for ii in lastfeeds:
 				if ii[2] == jid and ii[0] == link:
@@ -784,16 +838,20 @@ def rss(type, jid, nick, text):
 	                msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			mmsg = feed[1]
 			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			for dd in lastfeeds:
+                                if dd[0] == link and dd[2] == jid:
+                                        lastfeeds.remove(dd)
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
-			
+
 	        	for idx in range(1,lng):
+                                over = idx
 	        	        mmsg = feed[idx]
 				ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
 #				print '['+ttitle+']-['+tstop+']'
-				if ttitle == tstop:
-					nosend = 1
-					break
+                                if mode == 'new':
+        				if ttitle == tstop:
+        					break
 				if submode == 'full':
 		        	        msg += ttitle + '\n'
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
@@ -801,6 +859,12 @@ def rss(type, jid, nick, text):
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
 				elif submode[:4] == 'head':
 		        	        msg += ttitle+ '\n'
+
+                        if mode == 'new':
+        		        if over == 1 and text[4] == 'silent':
+                                        nosend = 1
+                                else:
+                                        msg = 'New feeds not found! '
 
 			msg = rss_replace(msg)
 			msg = msg[:-1]
@@ -847,6 +911,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
+         (2, prefix+u'error', show_error, 2),
          (0, prefix+u'whoami', info_access, 1),
          (0, u'whoami', info_access, 1),
          (1, prefix+u'clear', hidden_clear, 1)]

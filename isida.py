@@ -8,6 +8,10 @@ from sys import maxint
 from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re
+import logging
+
+LOG_FILENAME = 'log/error.txt'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 def readfile(filename):
 	fp = file(filename)
@@ -179,6 +183,8 @@ def send_msg(mtype, mjid, mnick, mmessage):
                 cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
                 if mtype == 'chat':
                         no_send = 0
+                else:
+                        mmessage = mmessage[:msg_limit] + '[...]'
 
         if no_send:
                 if mtype == 'groupchat':
@@ -504,7 +510,7 @@ def schedule():
 			type = 'groupchat'
 			jid = fd[4]
 			nick = 'RSS'
-			text = 'now '+fd[0]+' 10 '+fd[2]
+			text = 'new '+fd[0]+' 10 '+fd[2]+' silent'
 			rss(type, jid, nick, text)
 			text = 'del '+fd[0]
 
@@ -530,6 +536,7 @@ def schedule():
         		        link = 'http://'+link
 			feedbase.append([link, text[2], text[3], lt[:6], jid])
 			writefile(feeds,str(feedbase))
+			sleep(1)
 
 def talk_count(room,jid,nick,text):
 
@@ -661,15 +668,14 @@ while 1:
         	writefile('settings/tmp',str('exit'))
 		sleep(2)
 		sys.exit(0)
+
 	except ZeroDivisionError:
 		0/0
 	except Exception, SM:
-		lt = localtime()
 		pprint('*** Error *** '+str(SM)+' ***')
+                logging.exception(' ['+timeadd(localtime())+'] ')
                 if debugmode:
                         writefile('settings/tmp',str('exit'))
         		raise
-
-
 
 
