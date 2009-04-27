@@ -92,7 +92,7 @@ def get_log(type, jid, nick, text):
 				lllim = llog
 			arg1 = str(len(log)-lllim)+'-'+str(len(log))
 
-		print arg1
+#		print arg1
 
 		arg1 = arg1.split('-')
 		log_from = int(arg1[0])
@@ -908,7 +908,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'commands', info_comm, 1),
          (2, prefix+u'info', info, 1),
-         (2, prefix+u'log', get_log, 2),
+#         (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
          (2, prefix+u'error', show_error, 2),

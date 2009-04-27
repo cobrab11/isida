@@ -60,7 +60,7 @@ def timeadd(lt):
 	return st
 
 def pprint(text):
-	print parser('['+timeadd(localtime())+'] '+text)
+#	print parser('['+timeadd(localtime())+'] '+text)
 
 def send_presence_all(sm):
 	for tocon in confbase:
