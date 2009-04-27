@@ -60,6 +60,7 @@ def timeadd(lt):
 	return st
 
 def pprint(text):
+        text = text
 #	print parser('['+timeadd(localtime())+'] '+text)
 
 def send_presence_all(sm):
