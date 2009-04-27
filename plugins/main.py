@@ -47,7 +47,8 @@ def get_log(type, jid, nick, text):
 		else:
 			log = []
 			writefile(logfile,str(log))
-		msg = u'Log length for '+logfile+' is '+str(len(log))+' record(s)'
+		log_lm = len(str(log))/msg_limit
+		msg = u'Log length for '+logfile+' is '+str(len(log))+' record(s) / '+str(log_lm)+' Messages with limit: '+str(msg_limit)
 		send_msg(type, jid, nick, msg)
 	
 	if cmd == 'show':
@@ -81,6 +82,43 @@ def get_log(type, jid, nick, text):
 		for clog in range(log_from, log_to):
 			msg += '\n'+log[clog]
 		send_msg(type, jid, nick, msg)
+
+def get_access(cjid, cnick):
+	access_mode = 0
+	jid = 'None'
+	if cnick != nickname:
+		for base in megabase:
+			if base[1].count(cnick) and base[0].lower()==cjid:
+				jid = base[4]
+				if base[3]==u'admin' or base[3]==u'owner':
+        				access_mode = 1
+
+	if ownerbase.count(getRoom(jid)):
+		access_mode = 2
+
+	if ignorebase.count(getRoom(jid)):
+		access_mode = -1
+
+	if jid == 'None' and ownerbase.count(getRoom(cjid)):
+		access_mode = 2
+
+        return (access_mode, jid)
+
+
+def info_access(type, jid, nick):
+	global comms
+
+        ta = get_access(jid,nick)
+
+        access_mode = ta[0]
+        realjid =ta[1]
+
+	msg = u'Ваш доступ: '+str(access_mode)
+        if realjid != 'None':
+                msg += u' (Ваш jid мне виден)'
+
+	msg += u', Префикс команд: '+prefix
+	send_msg(type, jid, nick, msg)
 	
 
 def info_comm(type, jid, nick):
@@ -102,6 +140,9 @@ def info_comm(type, jid, nick):
 
 	if ignorebase.count(getRoom(jid2)):
 		access_mode = -1
+
+	if jid2 == 'None' and ownerbase.count(getRoom(jid)):
+		access_mode = 2
 
         accs = [u'всем', u'админам/овнерам', u'владельцу бота']
 
@@ -806,4 +847,6 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
+         (0, prefix+u'whoami', info_access, 1),
+         (0, u'whoami', info_access, 1),
          (1, prefix+u'clear', hidden_clear, 1)]

@@ -155,16 +155,37 @@ else:
 	writefile(plname,str(plugins))
 
 def send_msg(mtype, mjid, mnick, mmessage):
-	pprint('['+mtype+'] '+mmessage+' ['+mjid+'/'+mnick+']')
-        if len(mmessage) > msg_limit-5 and mtype == 'groupchat':
-                cl.send(xmpp.Message(mjid+'/'+mnick, mmessage, 'chat'))
-                mmessage = mmessage[:msg_limit]+ u'[...]'
-
-        if mtype == 'groupchat':
-                mmessage = mnick+': '+mmessage
+        no_send = 1
+        log_limit = 50
+        if len(mmessage) <= log_limit:
+                log_record = mmessage
         else:
-                mjid += '/' + mnick
-        cl.send(xmpp.Message(mjid, mmessage, mtype))
+                log_record = mmessage[:log_limit] + ' [+' + str(len(mmessage)) +']'
+
+	pprint('['+mtype+'] '+log_record+' ['+mjid+'/'+mnick+']')
+        if len(mmessage) > msg_limit:
+                cnt = 0
+                maxcnt = len(mmessage)/msg_limit + 1
+                mmsg = mmessage
+                while len(mmsg) > msg_limit:
+                        tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg[:msg_limit]+'[...]'
+                        
+                        cnt += 1
+                        cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+                        mmsg = mmsg[msg_limit:]
+                        sleep(1)
+                        
+                tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
+                cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+                if mtype == 'chat':
+                        no_send = 0
+
+        if no_send:
+                if mtype == 'groupchat':
+                        mmessage = mnick+': '+mmessage
+                else:
+                        mjid += '/' + mnick
+                cl.send(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
 	jSys = sys.platform
@@ -307,9 +328,10 @@ def messageCB(sess,mess):
 	jid = 'None'
 	if nick != nickname:
 		for base in megabase:
-			if (base[1].count(nick) and base[0].lower()==room and (base[3]==u'admin' or base[3]==u'owner')):
+			if base[1].count(nick) and base[0].lower()==room:
 				jid = base[4]
-				access_mode = 1
+				if base[3]==u'admin' or base[3]==u'owner':
+        				access_mode = 1
 
 	if ownerbase.count(getRoom(jid)):
 		access_mode = 2
