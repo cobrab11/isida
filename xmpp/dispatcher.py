@@ -1,4 +1,3 @@
-# -*- coding: cp1251 -*-
 ##   transports.py
 ##
 ##   Copyright (C) 2003-2005 Alexey "Snake" Nezhdanov
@@ -13,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: dispatcher.py,v 1.41 2006/06/03 13:53:27 normanr Exp $
+# $Id: dispatcher.py,v 1.42 2007/05/18 23:18:36 normanr Exp $
 
 """
 Main xmpppy mechanism. Provides library with methods to assign different handlers
@@ -23,10 +22,8 @@ Dispatcher.SendAndWaitForResponce method will wait for reply stanza before givin
 """
 
 import simplexml,time,sys
-import xml.parsers.expat
 from protocol import *
 from client import PlugIn
-import re
 
 DefaultTimeout=25
 ID=0
@@ -122,52 +119,7 @@ class Dispatcher(PlugIn):
         if self._owner.Connection.pending_data(timeout):
             try: data=self._owner.Connection.receive()
             except IOError: return
-#-------------------------------------------------------------------------------            
-#            self.Stream.Parse(data)
-#-------------------------------------------------------------------------------
-#-------------- begin of bad stanza fixer -----------------
-# (c) 2oo9 Disabler Production Lab.
-            bss = 0
-            bsflag = 1
-            if data[:9] == '<presence':
-                ttext = u''
-                i = 0
-                while i<len(data):
-                        if (data[i]<='~'):
-                                ttext+=data[i]
-                        else:
-                                ttext+='?'
-                        i=i+1
-                ttext = unicode(ttext)
-                while bss < len(ttext)-2:
-                    if ttext[bss:bss+6] == u'<item ':
-                        while (bss < len(ttext)-2) and not ((ttext[bss] == '/') and (ttext[bss+1] == '>')):
-                            bss+=1
-                    elif ttext[bss:bss+8] == u'<c xmlns':
-                        while (bss < len(ttext)-2) and not ((ttext[bss] == '/') and (ttext[bss+1] == '>')):
-                            bss+=1
-                    elif ttext[bss:bss+8] == u'<x xmlns':
-                        while (bss < len(ttext)-2) and not ((ttext[bss] == '/') and (ttext[bss+1] == '>')):
-                            bss+=1
-                    elif (ttext[bss] == '/') and (ttext[bss+1] == '>'):
-                        bsflag=0
-                        bsss = bss
-                    bss+=1
-            if not bsflag:
-                bss = bsss
-                while bss>1 and ttext[bss] != '<':
-                    bss-=1
-                data = data[:bss]+data[bsss+2:]
-                
-            data = data.replace('><', '>\n<')
-            try:
-                self.Stream.Parse(data)
-            except:
-#                print '*** Error stanza!\n', data
-                data = None
-                return '0'
-
-#-------------------------------------------------------------------------------
+            self.Stream.Parse(data)
             if len(self._pendingExceptions) > 0:
                 _pendingException = self._pendingExceptions.pop()
                 raise _pendingException[0], _pendingException[1], _pendingException[2]
@@ -230,6 +182,7 @@ class Dispatcher(PlugIn):
     def UnregisterHandler(self,name,handler,typ='',ns='',xmlns=None):
         """ Unregister handler. "typ" and "ns" must be specified exactly the same as with registering."""
         if not xmlns: xmlns=self._owner.defaultNamespace
+        if not self.handlers.has_key(xmlns): return
         if not typ and not ns: typ='default'
         for pack in self.handlers[xmlns][name][typ+ns]:
             if handler==pack['func']: break
