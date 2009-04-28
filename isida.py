@@ -543,6 +543,8 @@ def schedule():
 
 def talk_count(room,jid,nick,text):
 
+        jid = getRoom(jid)
+
         tbasefile = 'settings/talkers'
         if os.path.isfile(tbasefile):
         	tbase = eval(readfile(tbasefile))
