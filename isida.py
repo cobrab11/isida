@@ -13,6 +13,8 @@ import logging
 LOG_FILENAME = 'log/error.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
+global execute, prefix, comms
+
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()

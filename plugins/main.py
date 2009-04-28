@@ -172,10 +172,11 @@ def info_comm(type, jid, nick):
                 msg += '['+str(i)+'] '+accs[i]+': '
         	for ccomms in jidc:
         		if not ccomms[1].count(god) and ccomms[0] == i:
-                                ccc = ccomms[1]
-                                if ccc[:len(prefix)] == prefix:
-                                        ccc = ccc[len(prefix):]
-        			msg += ccc +', '
+#                                ccc = ccomms[1]
+#                                if ccc[:len(prefix)] == prefix:
+#                                        ccc = ccc[len(prefix):]
+#        			msg += ccc +', '
+        			msg += ccomms[1] +', '
         			ccnt+= 1
                 msg = msg[:-2] + '\n'
 			
@@ -646,7 +647,7 @@ def rss(type, jid, nick, text):
         text = text.split(' ')
         tl = len(text)
 
-        if tl == 4:
+        if tl < 5:
                 text.append('!')
                 
 	mode = text[0] # show | add | del | clear | new | get
