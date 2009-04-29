@@ -387,7 +387,7 @@ def messageCB(sess,mess):
 
 
 def presenceCB(sess,mess):
-	global jidbase, megabase, megabase2
+	global jidbase, megabase, megabase2, ownerbase
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
         text=unicode(mess.getStatus())
@@ -400,6 +400,13 @@ def presenceCB(sess,mess):
         type=unicode(mess.getType())
         status=unicode(mess.getStatusCode())
         actor=unicode(mess.getActor())
+
+#	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
+
+	if ownerbase.count(getRoom(room)) and type != 'unavailable':
+		j = Presence(room, show=CommStatus, status=StatusMessage, priority=Priority)
+		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+		cl.send(j)
 
 	if type=='unavailable':
 		if megabase.count([room, nick, role, affiliation, jid]):
