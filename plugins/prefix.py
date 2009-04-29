@@ -22,25 +22,30 @@ def set_prefix(type, jid, nick, text):
         old_prefix = prefix
 	msg = u'Префикс комманд: '
         if os.path.isfile(preffile):
-        	prefix = readfile(preffile)
-        else:
-        	prefix = '_'
-        	writefile(preffile,prefix)
+		pref = eval(readfile(preffile))
+		prefix = pref[0]
+	else:
+		pref = [(u'_')]
+		writefile(preffile,pref)
+		prefix = pref[0]
 
         if text != '':
                 prefix = text
         msg += prefix
-        writefile(preffile,str(prefix))
+	pref = [(prefix)]
+        writefile(preffile,str(pref))
 	send_msg(type, jid, nick, msg)
 
         comms = update_prefix(old_prefix, prefix, comms)
 
 old_prefix = prefix
 if os.path.isfile(preffile):
-        prefix = readfile(preffile)
+	pref = eval(readfile(preffile))
+	prefix = pref[0]
 else:
-        prefix = '_'
-        writefile(preffile,prefix)
+	pref = [(u'_')]
+	writefile(preffile,str(pref))
+	prefix = pref[0]
 
 comms = update_prefix(old_prefix, prefix, comms)
 

@@ -802,7 +802,7 @@ def rss(type, jid, nick, text):
         	f = urllib.urlopen(link)
         	feed = f.read()
 
-		writefile('settings/tempofeed',str(feed))
+#		writefile('settings/tempofeed',str(feed))
 		if feed[:100].count('rss') and feed[:100].count('xml'):
 			encidx = feed.index('encoding=')
 			enc = feed[encidx+10:encidx+30]
@@ -864,7 +864,7 @@ def rss(type, jid, nick, text):
                         if mode == 'new':
         		        if over == 1 and text[4] == 'silent':
                                         nosend = 1
-                                else:
+                                elif over == 1 and text[4] != 'silent':
                                         msg = 'New feeds not found! '
 
 			msg = rss_replace(msg)
