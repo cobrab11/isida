@@ -894,6 +894,8 @@ def rss(type, jid, nick, text):
 				elif submode[:4] == 'head':
 					msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			msg = rss_replace(msg)
+			msg = rss_del_html(msg)
+			msg = rss_replace(msg)
 			msg = msg[:-1]
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
