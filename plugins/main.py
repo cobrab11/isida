@@ -750,7 +750,22 @@ def rss_replace(ms):
 	ms = ms.replace('&lt;','<')
 	ms = ms.replace('&gt;','>')
 	ms = ms.replace('&quot;','\"')
+	ms = ms.replace('&apos;','\'')
 	ms = ms.replace('&amp;','&')
+	return ms
+
+def rss_del_html(ms):
+	i=0
+	lms = len(ms)
+	while i < lms:
+		if ms[i] == '<':
+			for j in range(i, lms):
+				if ms[j] == '>':
+					break
+			ms = ms[:i] + ms[j+1:]
+			lms = len(ms)
+			i -= 1
+		i += 1
 	return ms
 
 #[room, nick, role, affiliation, jid]
@@ -986,6 +1001,9 @@ def rss(type, jid, nick, text):
                                         msg = 'New feeds not found! '
 
 			msg = rss_replace(msg)
+			msg = rss_del_html(msg)
+			msg = rss_replace(msg)
+
 			msg = msg[:-1]
 
 			if lng > 1 and submode == 'full':
@@ -994,7 +1012,7 @@ def rss(type, jid, nick, text):
 			msg = u'bad url or rss not found!'
         if not nosend:
 		send_msg(type, jid, nick, msg)
-	
+
 #------------------------------------------------
 
 # в начале
