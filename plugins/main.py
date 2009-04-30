@@ -369,6 +369,8 @@ def bot_leave(type, jid, nick, text):
         if len(confbase) == 1:
                 send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
         else:
+		if text == '':
+			text = getName(jid)
                 if toSymbolPosition(text,'@')<0:
                         text+='@'+lastserver
                 if toSymbolPosition(text,'/')<0:
@@ -390,11 +392,11 @@ def bot_leave(type, jid, nick, text):
 		if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 #                if confbase.count(lroom):
 #                        confbase.remove(lroom)
-			confbase = arr_del_semi_find(confbase,lroom)
+			confbase = arr_del_semi_find(confbase,getRoom(lroom))
                         writefile(confs,str(confbase))
                         send_msg(type, jid, nick, u'свалила из '+text)
 			sm = u'Меня выводит '+nick
-                        leaveconf(text, domain, sm)
+                        leaveconf(getRoom(text), domain, sm)
                         pprint(u'leave '+text+' by '+nick)
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)

@@ -419,6 +419,11 @@ def messageCB(sess,mess):
 			if access_mode >= parse[0] and nick != nowname:
 				if text[:len(nowname)] == nowname:
 					text = text[len(nowname)+2:]
+					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+						text = prefix + text
+
+				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+					text = prefix + text
 
         	                if text[:len(parse[1])].lower() == parse[1].lower():
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
