@@ -707,7 +707,7 @@ def info_search(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 
-def tmp_search(type, jid, nick, text):
+def gtmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
 	if text != '':
         	msg = u'Найдено:'
@@ -721,6 +721,25 @@ def tmp_search(type, jid, nick, text):
 					msg += ' in '+unicode(mega1[0])
         	                	fl = 0
 					break
+                if fl:
+                        msg = '\''+text+u'\' not found!'
+        send_msg(type, jid, nick, msg)
+
+def tmp_search(type, jid, nick, text):
+        msg = u'Чего искать то будем?'
+	if text != '':
+        	msg = u'Найдено:'
+                fl = 1
+                for mega1 in megabase2:
+			if getRoom(mega1[0]) == getRoom(jid):
+				for mega2 in mega1:
+		                        if mega2.lower().count(text.lower()):
+        		                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+						if mega1[4] != 'None':
+							msg += u' ('+unicode(mega1[4])+u')'
+						msg += ' in '+unicode(mega1[0])
+        		                	fl = 0
+						break
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
@@ -1047,10 +1066,11 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'where', info_where, 1),
          (1, prefix+u'res', info_res, 2),
          (1, prefix+u'serv', info_serv, 2),
-         (2, prefix+u'base', info_base, 1),
+         (1, prefix+u'inbase', info_base, 1),
          (2, prefix+u'search', info_search, 2),
          (1, prefix+u'look', real_search, 2),
-         (2, prefix+u'tempo', tmp_search, 2),
+         (1, prefix+u'tempo', tmp_search, 2),
+         (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'commands', info_comm, 1),
          (1, prefix+u'uptime', uptime, 1),
