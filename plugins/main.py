@@ -18,7 +18,7 @@ def null_vars():
 	return vars
 
 def gstats(type, jid, nick):
-        msg = u'Найдено:'
+        msg = u'За время работы ('+get_uptime_str()+u') я видела всего:'
 	vars = null_vars()
 
         for mega in megabase2:
@@ -33,7 +33,7 @@ def gstats(type, jid, nick):
         send_msg(type, jid, nick, msg)
 
 def stats(type, jid, nick):
-        msg = u'Найдено:'
+        msg = u'За время работы ('+get_uptime_str()+u') я видела здесь:'
 	vars = null_vars()
 
         for mega in megabase2:
@@ -232,7 +232,17 @@ def bot_restart(type, jid, nick, text):
         0/0 # :-"
 
 def say(type, jid, nick, text):
+	nick = ''
 	send_msg(type, jid, nick, text)
+
+def gsay(type, jid, nick, text):
+        global confbase
+
+	type = 'groupchat'
+        msg = text
+	nick = ''
+        for jjid in confbase:
+	        send_msg(type, getRoom(jjid), nick, msg)
 
 def helpme(type, jid, nick, text):
 	pprint(text)
@@ -927,6 +937,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'quit', bot_exit, 2),
          (2, prefix+u'restart', bot_restart, 2),
          (1, prefix+u'say', say, 2),
+         (2, prefix+u'gsay', gsay, 2),
          (0, u'help', helpme, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),

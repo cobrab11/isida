@@ -85,11 +85,7 @@ def errorHandler(text):
 dm = 1
 prefix = u'_'
 msg_limit = 1000
-lfrom = 32
-lto = 128
 botName = 'Isida-Bot'
-f = urllib.urlopen('http://isida.googlecode.com/svn')
-ff = f.read()
 botVersion = '1.5'
 capsVersion = botVersion
 
@@ -200,7 +196,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
                         mmessage = mmessage[:msg_limit] + '[...]'
 
         if no_send:
-                if mtype == 'groupchat':
+                if mtype == 'groupchat' and mnick != '':
                         mmessage = mnick+': '+mmessage
                 else:
                         mjid += '/' + mnick
