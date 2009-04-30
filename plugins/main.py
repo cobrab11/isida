@@ -319,9 +319,6 @@ def bot_rejoin(type, jid, nick, text):
 	lastserver = getServer(text)
 	lastnick = getResourse(text)
 	lroom = text
-
-	print lroom
-	print confbase
                                 
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 		pprint(u'rejoin '+text+' by '+nick)
@@ -367,17 +364,29 @@ def bot_join(type, jid, nick, text):
                         pprint(u'change nick '+text)
 
 def bot_leave(type, jid, nick, text):
-        global confs, confbase
+        global confs, confbase, lastserver, lastnick
         if len(confbase) == 1:
                 send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
         else:
+                if toSymbolPosition(text,'@')<0:
+                        text+='@'+lastserver
+                if toSymbolPosition(text,'/')<0:
+                        text+='/'+lastnick
+                             
+                lastserver = getServer(text)
+                lastnick = getResourse(text)
+
                 if len(text):
                         text=unicode(text)
                 else:
                         text=jid
                 lroom = text
-                                
-		if arr_semi_find(confbase, lroom) >= 0:
+                              
+
+		if ownerbase.count(getRoom(jid)):
+			nick = getName(jid)
+  
+		if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 #                if confbase.count(lroom):
 #                        confbase.remove(lroom)
 			confbase = arr_del_semi_find(confbase,lroom)
@@ -571,7 +580,7 @@ def get_uptime_str():
 	if difftime[1] >0:
                 msg += str(difftime[1])+'m '
 	if difftime[2] >0:
-                msg += str(difftime[0])+'d '
+                msg += str(difftime[2])+'d '
         msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
 	return msg
 
