@@ -93,6 +93,16 @@ ff = f.read()
 botVersion = '1.5'
 capsVersion = botVersion
 
+gt=gmtime()
+lt=localtime()
+
+if lt[0:3] == gt[0:3]:
+        timeofset = int(lt[3])-int(gt[3])
+elif lt[0:3] > gt[0:3]:
+        timeofset = int(lt[3])-int(gt[3]) + 24
+else:
+        timeofset = int(gt[3])-int(lt[3]) + 24
+
 ver_file = 'settings/version'
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
@@ -300,12 +310,25 @@ def leave(conference, sm):
     j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
     cl.send(j)
 
+def timeZero(val):
+    rval = []
+    for iv in range(0,len(val)):
+        if val[iv]<10:
+            rval.append('0'+str(val[iv]))
+        else:
+            rval.append(str(val[iv]))
+    return rval
+
 def iqCB(sess,iq):
+	global timeofset
         nick = iq.getFrom()
-	pprint(u'*** iq:version from '+unicode(nick))
+        id = iq.getID()
+        query = iq.getTag('query')
+
         id = iq.getID()
         if iq.getType()=='get':
                 if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
+			pprint(u'*** iq:version from '+unicode(nick))
                         i=xmpp.Iq(to=nick, typ='result')
                         i.setAttr(key='id', val=id)
                         i.setQueryNS(namespace=xmpp.NS_VERSION)
@@ -313,7 +336,32 @@ def iqCB(sess,iq):
                         i.getTag('query').setTagData(tag='version', val=botVersion)
                         i.getTag('query').setTagData(tag='os', val=botOs)
                         cl.send(i)
+                if iq.getTag(name='query', namespace=xmpp.NS_TIME):
+			pprint(u'*** iq:time from '+unicode(nick))
+                        gt=timeZero(gmtime())
+                        t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
+                        
+                        lt=localtime()
+                        ltt=timeZero(lt)
+                        wday = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+                        wlight = ['Winter','Summer']
+                        wmonth = ['Jan','Fed','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+                        
+                        t_display = ltt[3]+':'+ltt[4]+':'+ltt[5]+', '+ltt[2]+'.'+wmonth[lt[1]-1]+'\''+ltt[0]+', '+wday[lt[6]]+', '
 
+                        if timeofset < 0:
+                                t_tz = 'GMT'+str(timeofset)
+                        else:
+                                t_tz = 'GMT+'+str(timeofset)
+			t_display += t_tz + ', ' +wlight[lt[8]]+' time'
+                        
+                        i=xmpp.Iq(to=nick, typ='result')
+                        i.setAttr(key='id', val=id)
+                        i.setQueryNS(namespace=xmpp.NS_TIME)
+                        i.getTag('query').setTagData(tag='utc', val=t_utc)
+                        i.getTag('query').setTagData(tag='tz', val=t_tz)
+                        i.getTag('query').setTagData(tag='display', val=t_display)
+                        cl.send(i)
 
 def messageCB(sess,mess):
         global otakeRes, mainRes, psw, lfrom, lto, jidbase, owners, ownerbase, confbase, confs, lastserver, lastnick, comms

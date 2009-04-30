@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
-def stats(type, jid, nick):
-        msg = u'Найдено:'
+def uptime(type, jid, nick):
+	msg = u'Время работы: '
+	msg += get_uptime_str()
+
+        send_msg(type, jid, nick, msg)
+
+def null_vars():
         vars = {'none/visitor':0,
                 'none/participant':0,
                 'none/moderator':0,
@@ -10,8 +15,27 @@ def stats(type, jid, nick):
                 'member/moderator':0,
                 'admin/moderator':0,
                 'owner/moderator':0}
-        
-#megabase.remove([room, nick, role, affiliation, jid])        
+	return vars
+
+def gstats(type, jid, nick):
+        msg = u'Найдено:'
+	vars = null_vars()
+
+        for mega in megabase2:
+                        ta = mega[3]+'/'+mega[2]
+			for va in vars:
+				if va == ta:
+		                        vars[ta]+=1
+        for va in vars:
+                if vars[va]:
+                        msg += '\n'+str(va)+' '+str(vars[va])
+
+        send_msg(type, jid, nick, msg)
+
+def stats(type, jid, nick):
+        msg = u'Найдено:'
+	vars = null_vars()
+
         for mega in megabase2:
                 if mega[0] == jid:
                         ta = mega[3]+'/'+mega[2]
@@ -21,7 +45,6 @@ def stats(type, jid, nick):
         for va in vars:
                 if vars[va]:
                         msg += '\n'+str(va)+' '+str(vars[va])
-
 
         send_msg(type, jid, nick, msg)
 
@@ -448,15 +471,8 @@ def info_where(type, jid, nick):
         msg = msg[:-2]
         send_msg(type, jid, nick, msg)
 
-def info(type, jid, nick):
-        global confbase        
-        msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
-        msg += u'Сервер: '+lastserver+'\n'
-        msg += u'Ник: '+lastnick+'\n'
-	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
-	msg += u'Время запуска: '+timeadd(starttime)+'\n'
+def get_uptime_raw():
 	nowtime = localtime()
-	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
 
 	difftime = [0,0,0,0,0,0]
 
@@ -488,8 +504,11 @@ def info(type, jid, nick):
 		difftime[0] -= 1
 
 	difftime[0] += nowtime[0]-starttime[0]
+	return difftime
 
-	msg += u'Время работы: '
+def get_uptime_str():
+	difftime = get_uptime_raw()
+	msg = u''
 	if difftime[0] >0:
                 msg += str(difftime[0])+'y '
 	if difftime[1] >0:
@@ -497,6 +516,20 @@ def info(type, jid, nick):
 	if difftime[2] >0:
                 msg += str(difftime[0])+'d '
         msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
+	return msg
+
+def info(type, jid, nick):
+        global confbase        
+        msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
+        msg += u'Сервер: '+lastserver+'\n'
+        msg += u'Ник: '+lastnick+'\n'
+	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
+	msg += u'Время запуска: '+timeadd(starttime)+'\n'
+	nowtime = localtime()
+	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
+
+	msg += u'Время работы: '
+	msg += get_uptime_str()
 
         send_msg(type, jid, nick, msg)
 
@@ -890,6 +923,7 @@ def rss(type, jid, nick, text):
 # 2 - передавать остаток текста
 
 comms = [(1, prefix+u'stats', stats, 1),
+	 (1, prefix+u'gstats', gstats, 1),
          (2, prefix+u'quit', bot_exit, 2),
          (2, prefix+u'restart', bot_restart, 2),
          (1, prefix+u'say', say, 2),
@@ -908,6 +942,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'tempo', tmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'commands', info_comm, 1),
+         (1, prefix+u'uptime', uptime, 1),
          (2, prefix+u'info', info, 1),
 #         (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
