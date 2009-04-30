@@ -301,6 +301,37 @@ def hidden_clear(type, jid, nick):
                 cntr=cntr-1
         send_msg(type, jid, nick, u'стирильно!!!')
 
+
+def bot_rejoin(type, jid, nick, text):
+        global lastserver, lastnick, confbase
+        text=unicode(text)
+
+	if len(text):
+		text=unicode(text)
+	else:
+		text=jid
+
+	if toSymbolPosition(text,'@')<0:
+		text+='@'+lastserver
+	if toSymbolPosition(text,'/')<0:
+		text+='/'+lastnick
+                             
+	lastserver = getServer(text)
+	lastnick = getResourse(text)
+	lroom = text
+
+	print lroom
+	print confbase
+                                
+	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
+		pprint(u'rejoin '+text+' by '+nick)
+		sm = u'Перезахожу по команде от '+nick
+		leaveconf(text, domain, sm)
+		joinconf(text, domain)
+	else:
+		send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+getRoom(lroom))
+		pprint(u'never be in '+text)
+
 def bot_join(type, jid, nick, text):
         global lastserver, lastnick, confs, confbase
         text=unicode(text)
@@ -476,9 +507,25 @@ def ignore(type, jid, nick, text):
 def info_where(type, jid, nick):
         global confbase
         msg = u'Активных конференций: '+str(len(confbase))+'\n'
+	wbase = []
         for jjid in confbase:
-                msg += jjid+', '
-        msg = msg[:-2]
+		cnt = 0
+		rjid = getRoom(jjid)
+		for mega in megabase:
+			if mega[0] == rjid:
+				cnt += 1
+		wbase.append((jjid, cnt))
+
+	for i in range(0,len(wbase)-1):
+		for j in range(i,len(wbase)):
+			if wbase[i][1] < wbase[j][1]:
+				jj = wbase[i]
+				wbase[i] = wbase[j]
+				wbase[j] = jj
+	for i in wbase:
+		msg += i[0]+' ['+str(i[1])+']\n'
+
+        msg = msg[:-1]
         send_msg(type, jid, nick, msg)
 
 def get_uptime_raw():
@@ -653,7 +700,7 @@ def tmp_search(type, jid, nick, text):
 	if text != '':
         	msg = u'Найдено:'
                 fl = 1
-                for mega1 in megabase:
+                for mega1 in megabase2:
 			for mega2 in mega1:
 	                        if mega2.lower().count(text.lower()):
         	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
@@ -662,6 +709,25 @@ def tmp_search(type, jid, nick, text):
 					msg += ' in '+unicode(mega1[0])
         	                	fl = 0
 					break
+                if fl:
+                        msg = '\''+text+u'\' not found!'
+        send_msg(type, jid, nick, msg)
+
+def real_search(type, jid, nick, text):
+        msg = u'Чего искать то будем?'
+	if text != '':
+        	msg = u'Найдено:'
+                fl = 1
+                for mega1 in megabase:
+			if mega1[2] != 'None' and mega1[3] != 'None':
+				for mega2 in mega1:
+		                        if mega2.lower().count(text.lower()):
+	        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+#						if mega1[4] != 'None':
+#							msg += u' ('+unicode(mega1[4])+u')'
+						msg += ' in '+unicode(mega1[0])
+	        	                	fl = 0
+						break
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
@@ -942,6 +1008,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),
          (2, prefix+u'leave', bot_leave, 2),
+         (2, prefix+u'rejoin', bot_rejoin, 2),
          (2, prefix+u'pass', conf_pass, 2),
          (2, prefix+u'owner', owner, 2),
          (2, prefix+u'ignore', ignore, 2),
@@ -950,6 +1017,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'serv', info_serv, 2),
          (2, prefix+u'base', info_base, 1),
          (1, prefix+u'search', info_search, 2),
+         (1, prefix+u'look', real_search, 2),
          (1, prefix+u'tempo', tmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'commands', info_comm, 1),

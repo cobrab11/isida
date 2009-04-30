@@ -453,11 +453,21 @@ def presenceCB(sess,mess):
 		cl.send(j)
 
 	if type=='unavailable':
-		if megabase.count([room, nick, role, affiliation, jid]):
-			megabase.remove([room, nick, role, affiliation, jid])
+#		if megabase.count([room, nick, role, affiliation, jid]):
+#			megabase.remove([room, nick, role, affiliation, jid])
+		for mmb in megabase:
+			if mmb[0]==room and mmb[1]==nick:
+				megabase.remove(mmb)
 	else:
-		if not megabase.count([room, nick, role, affiliation, jid]):
+		not_found = 1
+		for mmb in megabase:
+			if mmb[0]==room and mmb[1]==nick:
+				not_found = 0
+		if not_found:
 			megabase.append([room, nick, role, affiliation, jid])
+
+#		if not megabase.count([room, nick, role, affiliation, jid]):
+#			megabase.append([room, nick, role, affiliation, jid])
 
 	if not megabase2.count([room, nick, role, affiliation, jid]):
 		megabase2.append([room, nick, role, affiliation, jid])
