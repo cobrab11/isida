@@ -233,6 +233,7 @@ def bot_restart(type, jid, nick, text):
 
 def say(type, jid, nick, text):
 	nick = ''
+	type = 'groupchat'
 	send_msg(type, jid, nick, text)
 
 def gsay(type, jid, nick, text):
