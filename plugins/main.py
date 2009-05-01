@@ -247,22 +247,16 @@ def gsay(type, jid, nick, text):
 
 def helpme(type, jid, nick, text):
 	pprint(text)
-	helps = [(u'search',u'Поиск по внутренней базе jid\'ов'),
-		(u'tempo',u'Поиск по временной базе ролей/аффиляций'),
-		(u'owner',u'Изменение владельцев бота:\nowner add nick - добавить ник в список\nowner del nick - удалить ник из списка\nowner clr - быстрая очистка списка'),
-		(u'info',u'Основная инфа о боте'),
-		(u'where',u'Список конференций, в которых находится бот'),
-		(u'res',u'топ10 рессурсов. Возможен поиск через res text'),
-		(u'serv',u'Список серверов, которые бот видел. Возможен поиск через serv text'),
-		(u'test',u'хз что это...'),
-		(u'тест',u'хз что это...'),
-		(u'join',u'Вход в конфу.\njoin room - зайти в конфу room на последнем активном сервере и с последним активным ником\njoin 	room@conference.server.ru - зайти в конфу с последним активным ником\njoin room@conference.server.ru/nick - зайти в конфу'),
-		(u'leave',u'Выход из конфы.\nleave [room@conference.server.ru] - если не указанна конфа, то выход из текущей конфы.'),
-		(u'quit',u'Завершение работы бота'),
-		(u'clear',u'Скрытая очистка истории сообщений'),
-		(u'pass',u'Установка пароля для входа в конфу'),
-		(u'suck',u'Бот этого пока не умеет ;)'),
-		(u'rss',u'Каналы новостей:\nrss show\nrss add url time [full|body|headers]\nrss del url\nrss now url [количество] [full|body|headers]\nrss clr')]
+	hlpfile = 'help/help.txt'
+	helps = []
+	if os.path.isfile(hlpfile):
+		hlp = readfile(hlpfile)
+		hlp = hlp.split('[')
+		for hh in hlp:
+			if len(hh):
+				hh = hh.decode('utf-8')
+				hhh = hh.split(']')
+				helps.append((hhh[0],hhh[1][:-1]))
 
 	mesg = u'Префикс команд: '+prefix+u'\nДоступна справка по командам:\n'
 
@@ -271,7 +265,10 @@ def helpme(type, jid, nick, text):
                 mesg += '['+str(i)+'] '
         	for hlp in helps:
                         for cmdd in comms:
-                                if cmdd[1] == prefix+hlp[0] and cmdd[0] == i:
+				tc = cmdd[1]
+				if tc[:len(prefix)]==prefix:
+					tc = tc[len(prefix):]
+                                if tc == hlp[0] and cmdd[0] == i:
                                         mesg += hlp[0] + ', '
                                         cnt += 1
                 mesg = mesg[:-2]
@@ -281,7 +278,10 @@ def helpme(type, jid, nick, text):
                 for hlp in helps:
                         fl = 1
                         for cmdd in comms:
-                                if cmdd[1] == prefix+hlp[0]:
+				tc = cmdd[1]
+				if tc[:len(prefix)]==prefix:
+					tc = tc[len(prefix):]
+                                if tc == hlp[0]:
                                         fl = 0
                         if fl:
                                 mesg += hlp[0] + ', '
@@ -290,7 +290,14 @@ def helpme(type, jid, nick, text):
 
 	for hlp in helps:
 		if text.lower() == hlp[0]:
-			mesg = hlp[1]
+			mesg = u'Справочная информация: ' + hlp[1]
+			for cmdd in comms:
+				tc = cmdd[1]
+				if tc[:len(prefix)]==prefix:
+					tc = tc[len(prefix):]
+                                if tc == hlp[0]:
+                                        mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
+
 	send_msg(type, jid, nick, mesg)
 
 def hidden_clear(type, jid, nick):
