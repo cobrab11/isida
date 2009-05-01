@@ -318,13 +318,13 @@ def timeZero(val):
 
 def iqCB(sess,iq):
 	global timeofset
-        nick = iq.getFrom()
+        nick = unicode(iq.getFrom())
         id = iq.getID()
         query = iq.getTag('query')
-
         id = iq.getID()
-        if iq.getType()=='get':
-                if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
+ 
+	if iq.getType()=='get':
+		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
 			pprint(u'*** iq:version from '+unicode(nick))
                         i=xmpp.Iq(to=nick, typ='result')
                         i.setAttr(key='id', val=id)
@@ -333,6 +333,8 @@ def iqCB(sess,iq):
                         i.getTag('query').setTagData(tag='version', val=botVersion)
                         i.getTag('query').setTagData(tag='os', val=botOs)
                         cl.send(i)
+			raise xmpp.NodeProcessed
+
                 if iq.getTag(name='query', namespace=xmpp.NS_TIME):
 			pprint(u'*** iq:time from '+unicode(nick))
                         gt=timeZero(gmtime())
@@ -359,6 +361,7 @@ def iqCB(sess,iq):
                         i.getTag('query').setTagData(tag='tz', val=t_tz)
                         i.getTag('query').setTagData(tag='display', val=t_display)
                         cl.send(i)
+			raise xmpp.NodeProcessed
 
 def messageCB(sess,mess):
         global otakeRes, mainRes, psw, lfrom, lto, jidbase, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
@@ -706,6 +709,7 @@ pprint(u'Autheticated')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
+cl.sendInitPresence()
 
 pprint(u'Wait conference')
 for tocon in confbase:
@@ -720,12 +724,12 @@ lastserver = getServer(confbase[0])
 
 pprint(u'Joined')
 
-j = Presence(show=CommStatus, status=StatusMessage, priority=Priority)
-j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-cl.send(j)
+#j = Presence(show=CommStatus, status=StatusMessage, priority=Priority)
+#j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
+#j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+#cl.send(j)
 
-pprint(u'Unhide')
+#pprint(u'Unhide')
 
 while 1:
 	try:
