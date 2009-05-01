@@ -355,7 +355,7 @@ def helpme(type, jid, nick, text):
 				tc = cmdd[2]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
-                                if tc == hlp[0] and cmdd[0] == i:
+                                if tc == hlp[0] and cmdd[1] == i:
                                         mesg += hlp[0] + ', '
                                         cnt += 1
                 mesg = mesg[:-2]
@@ -379,11 +379,11 @@ def helpme(type, jid, nick, text):
 		if text.lower() == hlp[0]:
 			mesg = u'Справочная информация: ' + hlp[1]
 			for cmdd in comms:
-				tc = cmdd[1]
+				tc = cmdd[2]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
-                                        mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
+                                        mesg = u'Уровень доступа: '+str(cmdd[1]) + hlp[1]
 
 	send_msg(type, jid, nick, mesg)
 
