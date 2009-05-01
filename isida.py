@@ -9,6 +9,7 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re
 import logging
+import threading
 
 LOG_FILENAME = 'log/error.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
@@ -419,11 +420,11 @@ def messageCB(sess,mess):
         	                if text[:len(parse[1])].lower() == parse[1].lower():
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
         	                        if not parse[3]:
-        	                                parse[2](type, room, nick, parse[4:])
+        	                                threading.Thread(None, parse[2](type, room, nick, parse[4:])).start()
         	                        elif parse[3] == 1:
-        	                                parse[2](type, room, nick)
+        	                                threading.Thread(None, parse[2](type, room, nick)).start()
         	                        elif parse[3] == 2:
-        	                                parse[2](type, room, nick, text[len(parse[1])+1:])
+        	                                threading.Thread(None, parse[2](type, room, nick, text[len(parse[1])+1:])).start()
 
 
 def presenceCB(sess,mess):
