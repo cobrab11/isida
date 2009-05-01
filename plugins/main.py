@@ -11,7 +11,7 @@ def smile(type, jid, nick):
 	is_found = 1
 	for sm in smiles:
 		if sm[0] == getRoom(jid):
-			tsm = (sm[0],not sm[1])
+			tsm = (sm[0],int(not sm[1]))
 			msg += onoff(not sm[1])
 			smiles.remove(sm)
 			smiles.append(tsm)
