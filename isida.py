@@ -84,7 +84,7 @@ def errorHandler(text):
         pprint(u'more info at http://isida.googlecode.com\n')
         exit (0)
 
-dm = 0
+dm = 1
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
