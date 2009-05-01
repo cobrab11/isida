@@ -18,6 +18,7 @@ def inban(type, jid, nick, text):
 		msg = msg[:-1]
 		if fnd:
 			msg = u'Не найдено!'
+		banbase = []
         send_msg(type, jid, nick, msg)
 
 def youtube(type, jid, nick, text):
