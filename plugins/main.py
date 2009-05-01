@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+
+def inban(type, jid, nick, text):
+	global banbase
+        msg = u'Чего искать то будем?'
+	if text != '':
+		i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
+		cl.send(i)
+		while banbase == []:
+			sleep(0.5)
+		msg = u'Найдено:\n'
+		fnd = 1
+		for i in banbase:
+			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
+				msg += i[0]+' - '+i[1]+'\n'
+				fnd = 0
+		msg = msg[:-1]
+		if fnd:
+			msg = u'Не найдено!'
+        send_msg(type, jid, nick, msg)
+
 def youtube(type, jid, nick, text):
 	text = text.lower()
 	text = text.encode('utf-8')
@@ -1153,6 +1173,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
          (1, prefix+u'smile', smile, 1),
+         (1, prefix+u'inban', inban, 2),
 #         (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),

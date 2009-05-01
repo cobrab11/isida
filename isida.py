@@ -9,7 +9,7 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re
 import logging
-import threading
+import threading, thread
 
 LOG_FILENAME = 'log/error.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
@@ -84,12 +84,13 @@ def errorHandler(text):
         pprint(u'more info at http://isida.googlecode.com\n')
         exit (0)
 
-dm = 1
+dm = 0
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
 botVersion = '1.5'
 capsVersion = botVersion
+banbase = []
 
 gt=gmtime()
 lt=localtime()
@@ -323,11 +324,29 @@ def timeZero(val):
     return rval
 
 def iqCB(sess,iq):
-	global timeofset
+	global timeofset, banbase
         nick = unicode(iq.getFrom())
         id = iq.getID()
         query = iq.getTag('query')
         id = iq.getID()
+
+	if iq.getType()=='result':
+		nspace = query.getNamespace()
+                if nspace == NS_MUC_ADMIN:
+                        cparse = unicode(iq)
+                        ccount = cparse.count('<item affiliation=\"outcast\"')
+                        cparse = cparse.split('</item><item')
+			banbase = []
+                        for banm in cparse:
+				st_index = banm.find('jid=\"')+5
+				cjid=banm[st_index:banm.find('\"',st_index)]
+				if banm.count('<reason />') or banm.count('<reason/>'):
+					creason = u'No reason'
+				else:
+					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
+				banbase.append((cjid, creason))
+				print cjid, creason
+#			raise xmpp.NodeProcessed
  
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -420,11 +439,21 @@ def messageCB(sess,mess):
         	                if text[:len(parse[1])].lower() == parse[1].lower():
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
         	                        if not parse[3]:
-        	                                threading.Thread(None, parse[2](type, room, nick, parse[4:])).start()
+        	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
         	                        elif parse[3] == 1:
-        	                                threading.Thread(None, parse[2](type, room, nick)).start()
+        	                                thread.start_new_thread(parse[2],(type, room, nick))
         	                        elif parse[3] == 2:
-        	                                threading.Thread(None, parse[2](type, room, nick, text[len(parse[1])+1:])).start()
+        	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
+
+
+#        	                if text[:len(parse[1])].lower() == parse[1].lower():
+#					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+#        	                        if not parse[3]:
+#        	                                threading.Thread(None, parse[2](type, room, nick, parse[4:])).start()
+#        	                        elif parse[3] == 1:
+#        	                                threading.Thread(None, parse[2](type, room, nick)).start()
+#        	                        elif parse[3] == 2:
+#        	                                threading.Thread(None, parse[2](type, room, nick, text[len(parse[1])+1:])).start()
 
 
 def presenceCB(sess,mess):
