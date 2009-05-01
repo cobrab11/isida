@@ -1,5 +1,50 @@
 # -*- coding: utf-8 -*-
 
+def youtube(type, jid, nick, text):
+	text = text.lower()
+	text = text.encode('utf-8')
+	text = text.replace('\\x','%')
+	text = text.replace(' ','%20')
+	link = 'http://www.youtube.com/results?search_type=&search_query='+text+'&aq=f'
+	f = urllib.urlopen(link)
+	tube = f.read()
+	f.close()
+#	tube = tube.split('video-title video-title-results')
+	tube = tube.split('video-run-time')
+
+	tmass = []
+	ltube = len(tube)
+	smsg = u'Всего найдено: '+str(ltube-1)
+	if ltube > 4:
+		ltube=4
+	for i in range(1,ltube):
+
+		msg = tube[i].decode('utf')
+		idx = msg.index('>')
+		imsg = msg[idx+1:]
+		idx = imsg.index('<')
+		mtime = imsg[:idx]
+
+		idx = msg.index('/watch?v=')
+		imsg = msg[idx:]
+		idx = imsg.index('\"')
+		imsg = imsg[:idx]
+		murl = 'http://www.youtube.com'+imsg
+
+		idx = msg.index('title=\"')
+		imsg = msg[idx+7:]
+		idx = imsg.index('\"')
+		imsg = imsg[:idx]
+		imsg = rss_replace(imsg)
+		msg = murl +'\t'+ imsg +' ('+ mtime +')'
+		tmass.append(msg)
+	
+	msg = smsg + '\n'
+	for i in tmass:
+		msg += i + '\n'
+	msg = msg[:-1]
+        send_msg(type, jid, nick, msg)
+
 def smile(type, jid, nick):
 	sml = 'settings/smile'
 	if os.path.isfile(sml):
@@ -196,22 +241,10 @@ def info_comm(type, jid, nick):
 	ccnt = 0
 	jidc = comms
 
-	access_mode = 0
-	jid2 = 'None'
-	if nick != nickname:
-		for base in megabase:
-			if (base[1].count(nick) and base[0].lower()==jid and (base[3]==u'admin' or base[3]==u'owner')):
-				jid2 = base[4]
-				access_mode = 1
+        ta = get_access(jid,nick)
 
-	if ownerbase.count(getRoom(jid2)):
-		access_mode = 2
-
-	if ignorebase.count(getRoom(jid2)):
-		access_mode = -1
-
-	if jid2 == 'None' and ownerbase.count(getRoom(jid)):
-		access_mode = 2
+        access_mode = ta[0]
+        jid2 =ta[1]
 
         accs = [u'всем', u'админам/овнерам', u'владельцу бота']
 
@@ -914,6 +947,7 @@ def rss(type, jid, nick, text):
 #---------
 		f = urllib.urlopen(link)
 		feed = f.read()
+		f.close()
 
 		writefile('settings/tempofeed',str(feed))
 
@@ -998,6 +1032,7 @@ def rss(type, jid, nick, text):
         	        link = 'http://'+link
         	f = urllib.urlopen(link)
         	feed = f.read()
+		f.close()
 
 #		writefile('settings/tempofeed',str(feed))
 		if feed[:100].count('rss') and feed[:100].count('xml'):
@@ -1113,6 +1148,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'tempo', tmp_search, 2),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
+         (1, prefix+u'youtube', youtube, 2),
          (1, prefix+u'commands', info_comm, 1),
          (1, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),

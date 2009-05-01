@@ -386,28 +386,10 @@ def messageCB(sess,mess):
 
 # 0 - конфа # 1 - ник # 2 - роль # 3 - аффиляция # 4 - jid
 
-	access_mode = 0
-	jid = 'None'
-	if nick != nickname:
-		for base in megabase:
-			if base[1].count(nick) and base[0].lower()==room:
-				jid = base[4]
-				if base[3]==u'admin' or base[3]==u'owner':
-        				access_mode = 1
+        ta = get_access(room,nick)
 
-	if ownerbase.count(getRoom(jid)):
-		access_mode = 2
-
-	if ignorebase.count(getRoom(jid)):
-		access_mode = -1
-
-	jid2 = 'None'
-	if nick != nickname:
-		for base in megabase:
-			if (base[1].count(nick) and base[0].lower()==room):
-				jid2 = base[4]
-				
-#	print access_mode, text
+        access_mode = ta[0]
+        jid =ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1:
@@ -420,8 +402,8 @@ def messageCB(sess,mess):
 	if jid == 'None' and ownerbase.count(getRoom(room)):
 		access_mode = 2
 
-        if type == 'groupchat' and nick != '' and jid2 != 'None':
-                talk_count(room,jid2,nick,text)
+        if type == 'groupchat' and nick != '' and jid != 'None':
+                talk_count(room,jid,nick,text)
 
         if (text != 'None') and (len(text)>2) and access_mode >= 0:
                 for parse in comms:
