@@ -231,6 +231,15 @@ def bot_restart(type, jid, nick, text):
 	sleep(1)
         0/0 # :-"
 
+def bot_update(type, jid, nick, text):
+	StatusMessage = u'Self update by \'update\' command from bot owner ('+nick+u')'
+	if text != '':
+                StatusMessage += ' ['+text+u']'
+	send_presence_all(StatusMessage)
+	writefile('settings/tmp',str('update'))
+	sleep(1)
+        0/0 # :-"
+
 def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
@@ -1060,6 +1069,7 @@ comms = [(1, prefix+u'stats', stats, 1),
 	 (1, prefix+u'gstats', gstats, 1),
          (2, prefix+u'quit', bot_exit, 2),
          (2, prefix+u'restart', bot_restart, 2),
+         (2, prefix+u'update', bot_update, 2),
          (1, prefix+u'say', say, 2),
          (2, prefix+u'gsay', gsay, 2),
          (0, u'help', helpme, 2),
