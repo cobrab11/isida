@@ -345,8 +345,6 @@ def iqCB(sess,iq):
 				else:
 					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 				banbase.append((cjid, creason))
-				print cjid, creason
-#			raise xmpp.NodeProcessed
  
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -427,34 +425,33 @@ def messageCB(sess,mess):
 
         if (text != 'None') and (len(text)>2) and access_mode >= 0:
                 for parse in comms:
-			if access_mode >= parse[0] and nick != nowname:
+			if access_mode >= parse[1] and nick != nowname:
 				if text[:len(nowname)] == nowname:
 					text = text[len(nowname)+2:]
-					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+					if text[:len(prefix)] != prefix and parse[2][:len(prefix)] == prefix:
 						text = prefix + text
 
-				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+				if type == 'chat' and text[:len(prefix)] != prefix and parse[2][:len(prefix)] == prefix:
 					text = prefix + text
 
-        	                if text[:len(parse[1])].lower() == parse[1].lower():
-					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-        	                        if not parse[3]:
-        	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
-        	                        elif parse[3] == 1:
-        	                                thread.start_new_thread(parse[2],(type, room, nick))
-        	                        elif parse[3] == 2:
-        	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
-
-
-#        	                if text[:len(parse[1])].lower() == parse[1].lower():
-#					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-#        	                        if not parse[3]:
-#        	                                threading.Thread(None, parse[2](type, room, nick, parse[4:])).start()
-#        	                        elif parse[3] == 1:
-#        	                                threading.Thread(None, parse[2](type, room, nick)).start()
-#        	                        elif parse[3] == 2:
-#        	                                threading.Thread(None, parse[2](type, room, nick, text[len(parse[1])+1:])).start()
-
+				if not parse[0]:
+        		                if text[:len(parse[2])].lower() == parse[2].lower():
+						pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+        		                        if not parse[4]:
+        		                                parse[3](type, room, nick, parse[5:])
+        		                        elif parse[4] == 1:
+        		                                parse[3](type, room, nick)
+	        	                        elif parse[4] == 2:
+        	                     	           parse[3](type, room, nick, text[len(parse[2])+1:])
+				else:
+        		                if text[:len(parse[2])].lower() == parse[2].lower():
+						pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+        		                        if not parse[4]:
+        		                                thread.start_new_thread(parse[3],(type, room, nick, parse[5:]))
+        		                        elif parse[4] == 1:
+        		                                thread.start_new_thread(parse[3],(type, room, nick))
+        		                        elif parse[4] == 2:
+	        	                                thread.start_new_thread(parse[3],(type, room, nick, text[len(parse[2])+1:]))
 
 def presenceCB(sess,mess):
 	global jidbase, megabase, megabase2, ownerbase

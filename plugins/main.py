@@ -271,12 +271,12 @@ def info_comm(type, jid, nick):
         for i in range(0,3):
                 msg += '['+str(i)+'] '+accs[i]+': '
         	for ccomms in jidc:
-        		if not ccomms[1].count(god) and ccomms[0] == i:
-#                                ccc = ccomms[1]
+        		if not ccomms[2].count(god) and ccomms[1] == i:
+#                                ccc = ccomms[2]
 #                                if ccc[:len(prefix)] == prefix:
 #                                        ccc = ccc[len(prefix):]
 #        			msg += ccc +', '
-        			msg += ccomms[1] +', '
+        			msg += ccomms[2] +', '
         			ccnt+= 1
                 msg = msg[:-2] + '\n'
 			
@@ -351,7 +351,7 @@ def helpme(type, jid, nick, text):
                 mesg += '['+str(i)+'] '
         	for hlp in helps:
                         for cmdd in comms:
-				tc = cmdd[1]
+				tc = cmdd[2]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
                                 if tc == hlp[0] and cmdd[0] == i:
@@ -364,7 +364,7 @@ def helpme(type, jid, nick, text):
                 for hlp in helps:
                         fl = 1
                         for cmdd in comms:
-				tc = cmdd[1]
+				tc = cmdd[2]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
@@ -529,7 +529,7 @@ def bot_plugin(type, jid, nick, text):
                         execfile('plugins/'+nnick)
                         msg = u'Загружен плагин: '+nnick+u'\nДоступны комманды: '
                         for commmm in execute:
-                                msg += commmm[1]+'['+str(commmm[0])+'], '
+                                msg += commmm[2]+'['+str(commmm[1])+'], '
                                 comms.append(commmm)
                         msg = msg[:-2]
                         
@@ -539,9 +539,9 @@ def bot_plugin(type, jid, nick, text):
                         execfile('plugins/'+nnick)
                         msg = u'Удалён плагин: '+nnick+u'\nУдалены комманды: '
                         for commmm in execute:
-                                msg += commmm[1]+'['+str(commmm[0])+'], '
+                                msg += commmm[2]+'['+str(commmm[1])+'], '
                                 for i in comms:
-                                        if i[1] == commmm[1]:
+                                        if i[2] == commmm[2]:
                                                 comms.remove(i)
                         msg = msg[:-2]
 
@@ -1144,40 +1144,40 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(1, prefix+u'stats', stats, 1),
-	 (1, prefix+u'gstats', gstats, 1),
-         (2, prefix+u'quit', bot_exit, 2),
-         (2, prefix+u'restart', bot_restart, 2),
-         (2, prefix+u'update', bot_update, 2),
-         (1, prefix+u'say', say, 2),
-         (2, prefix+u'gsay', gsay, 2),
-         (0, u'help', helpme, 2),
-         (0, prefix+u'help', helpme, 2),
-         (2, prefix+u'join', bot_join, 2),
-         (2, prefix+u'leave', bot_leave, 2),
-         (2, prefix+u'rejoin', bot_rejoin, 2),
-         (2, prefix+u'pass', conf_pass, 2),
-         (2, prefix+u'owner', owner, 2),
-         (2, prefix+u'ignore', ignore, 2),
-         (1, prefix+u'where', info_where, 1),
-         (1, prefix+u'res', info_res, 2),
-         (1, prefix+u'serv', info_serv, 2),
-         (1, prefix+u'inbase', info_base, 1),
-         (2, prefix+u'search', info_search, 2),
-         (1, prefix+u'look', real_search, 2),
-         (1, prefix+u'tempo', tmp_search, 2),
-         (2, prefix+u'gtempo', gtmp_search, 2),
-         (1, prefix+u'rss', rss, 2),
-         (1, prefix+u'youtube', youtube, 2),
-         (1, prefix+u'commands', info_comm, 1),
-         (1, prefix+u'uptime', uptime, 1),
-         (1, prefix+u'info', info, 1),
-         (1, prefix+u'smile', smile, 1),
-         (1, prefix+u'inban', inban, 2),
-#         (2, prefix+u'log', get_log, 2),
-         (2, prefix+u'limit', conf_limit, 2),
-         (2, prefix+u'plugin', bot_plugin, 2),
-         (2, prefix+u'error', show_error, 2),
-         (0, prefix+u'whoami', info_access, 1),
-         (0, u'whoami', info_access, 1),
-         (1, prefix+u'clear', hidden_clear, 1)]
+comms = [(0, 1, prefix+u'stats', stats, 1),
+	 (0, 1, prefix+u'gstats', gstats, 1),
+         (0, 2, prefix+u'quit', bot_exit, 2),
+         (0, 2, prefix+u'restart', bot_restart, 2),
+         (0, 2, prefix+u'update', bot_update, 2),
+         (0, 1, prefix+u'say', say, 2),
+         (0, 2, prefix+u'gsay', gsay, 2),
+         (0, 0, u'help', helpme, 2),
+         (0, 0, prefix+u'help', helpme, 2),
+         (0, 2, prefix+u'join', bot_join, 2),
+         (0, 2, prefix+u'leave', bot_leave, 2),
+         (0, 2, prefix+u'rejoin', bot_rejoin, 2),
+         (0, 2, prefix+u'pass', conf_pass, 2),
+         (0, 2, prefix+u'owner', owner, 2),
+         (0, 2, prefix+u'ignore', ignore, 2),
+         (0, 1, prefix+u'where', info_where, 1),
+         (1, 1, prefix+u'res', info_res, 2),
+         (1, 1, prefix+u'serv', info_serv, 2),
+         (0, 1, prefix+u'inbase', info_base, 1),
+         (1, 2, prefix+u'search', info_search, 2),
+         (1, 1, prefix+u'look', real_search, 2),
+         (1, 1, prefix+u'tempo', tmp_search, 2),
+         (1, 2, prefix+u'gtempo', gtmp_search, 2),
+         (1, 1, prefix+u'rss', rss, 2),
+         (1, 1, prefix+u'youtube', youtube, 2),
+         (0, 1, prefix+u'commands', info_comm, 1),
+         (0, 1, prefix+u'uptime', uptime, 1),
+         (0, 1, prefix+u'info', info, 1),
+         (0, 1, prefix+u'smile', smile, 1),
+         (1, 1, prefix+u'inban', inban, 2),
+#        (0, 2, prefix+u'log', get_log, 2),
+         (0, 2, prefix+u'limit', conf_limit, 2),
+         (0, 2, prefix+u'plugin', bot_plugin, 2),
+         (1, 2, prefix+u'error', show_error, 2),
+         (0, 0, prefix+u'whoami', info_access, 1),
+         (0, 0, u'whoami', info_access, 1),
+         (1, 1, prefix+u'clear', hidden_clear, 1)]
