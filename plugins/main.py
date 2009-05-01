@@ -1,5 +1,23 @@
 # -*- coding: utf-8 -*-
 
+def smile(type, jid, nick):
+	sml = 'settings/smile'
+	if os.path.isfile(sml):
+		smiles = eval(readfile(sml))
+	else:
+		smiles = [(getRoom(jid),0)]
+		writefile(sml,str(smiles))
+	msg = u'Smiles is '
+	for sm in smiles:
+		if sm[0] == getRoom(jid):
+			tsm = (sm[0],not sm[1])
+			msg += onoff(not sm[1])
+			smiles.remove(sm)
+			smiles.append(tsm)
+
+	writefile(sml,str(smiles))
+        send_msg(type, jid, nick, msg)
+
 def uptime(type, jid, nick):
 	msg = u'Время работы: '
 	msg += get_uptime_str()
@@ -1092,6 +1110,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'commands', info_comm, 1),
          (1, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
+         (1, prefix+u'smile', smile, 1),
 #         (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),

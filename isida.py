@@ -283,6 +283,11 @@ def leaveconf(conference, server, sm):
         sleep(1)
 
 #---------------------------------------
+def onoff(msg):
+        if msg:
+                return 'ON'
+        else:
+                return 'OFF'
 
 def get_space(text):
         lenrig = len(text)
@@ -453,6 +458,36 @@ def presenceCB(sess,mess):
         type=unicode(mess.getType())
         status=unicode(mess.getStatusCode())
         actor=unicode(mess.getActor())
+
+	tmppos = arr_semi_find(confbase, room)
+	if tmppos == -1:
+		nowname = nickname
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '':
+			nowname = nickname
+
+	if room != selfjid and nick == nowname:
+		sml = 'settings/smile'
+		if os.path.isfile(sml):
+			smiles = eval(readfile(sml))
+		else:
+			smiles = [(getRoom(room),0)]
+			writefile(sml,str(smiles))
+		for sm in smiles:
+			if sm[0] == getRoom(room) and sm[1]:
+				msg = u':-|'
+				if role == 'participant' and affiliation == 'member':
+					msg = u':-)'
+				if role == 'moderator' or affiliation == 'admin':
+					msg = u':-D'
+				if affiliation == 'owner':
+					msg = u'8-D'
+				nick = ''
+				type = 'groupchat'
+				send_msg(type, room, nick, msg)
+				break
+
 
 #	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 
@@ -687,6 +722,7 @@ node = unicode(name)
 lastnick = nickname
 
 jid = JID(node=node, domain=domain, resource=mainRes)
+selfjid = jid
 
 pprint(u'bot jid: '+unicode(jid))
 
