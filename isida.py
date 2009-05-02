@@ -776,16 +776,9 @@ lastserver = getServer(confbase[0])
 
 pprint(u'Joined')
 
-#j = Presence(show=CommStatus, status=StatusMessage, priority=Priority)
-#j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-#j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-#cl.send(j)
-
-#pprint(u'Unhide')
-
-writefile('settings/tmp',str(''))
-global game_over
 game_over = 0
+
+sleep(1)
 
 while 1:
 	try:
