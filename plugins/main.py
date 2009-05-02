@@ -1014,14 +1014,33 @@ def rss(type, jid, nick, text):
 
 	if mode == 'clear':
 		msg = u'All RSS was cleared!'
+		tf = []
 		for taa in feedbase:
-			if taa[4] == jid:
-				feedbase.remove(taa)
+			if taa[4] != jid:
+				tf.append(taa)
+		feedbase = tf
 		writefile(feeds,str(feedbase))
+
+		tf = []
 		for taa in lastfeeds:
 			if taa[2] == jid:
-				lastfeeds.remove(taa)
+				tf.append(taa)
+		lastfeeds = tf
 		writefile(lafeeds,str(lastfeeds))
+
+
+	if mode == 'all':
+		msg = u'No RSS found!'
+		if feedbase != []:
+			stt = 1
+			msg = u'All schedule feeds:'
+			for rs in feedbase:
+				msg += u'\n'+getName(rs[4])+'\t'+rs[0]+u' ('+rs[1]+u') '+rs[2]
+				lt = rs[3]
+				msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+				stt = 0
+			if stt:
+				msg+= u' not found!'
 
 	if mode == 'show':
 		msg = u'No RSS found!'
@@ -1101,7 +1120,7 @@ def rss(type, jid, nick, text):
 			msg = rss_replace(msg)
 			msg = rss_del_nn(msg)
 
-			writefile('settings/tmpfeed',str(msg))
+#			writefile('settings/tmpfeed',str(msg))
 
 			msg = msg[:-1]
 			if lng > 1 and submode == 'full':
