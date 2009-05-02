@@ -1078,10 +1078,14 @@ def rss(type, jid, nick, text):
 #		writefile('settings/tempofeed',str(feed))
 
 		if feed[:100].count('rss') and feed[:100].count('xml'):
-			encidx = feed.index('encoding=')
-			enc = feed[encidx+10:encidx+30]
-			enc = enc[:enc.index('?>')-1]
-			enc = enc.upper()
+
+			encidx = feed.find('encoding=')
+			if encidx >= 0:
+				enc = feed[encidx+10:encidx+30]
+				enc = enc[:enc.index('?>')-1]
+				enc = enc.upper()
+			else:
+				enc = 'WINDOWS-1251'
 
 			feed = unicode(feed, enc)
 			feed = feed.split('<item>')
@@ -1166,10 +1170,13 @@ def rss(type, jid, nick, text):
 
 #		writefile('settings/tempofeed',str(feed))
 		if feed[:100].count('rss') and feed[:100].count('xml'):
-			encidx = feed.index('encoding=')
-			enc = feed[encidx+10:encidx+30]
-			enc = enc[:enc.index('?>')-1]
-			enc = enc.upper()
+			encidx = feed.find('encoding=')
+			if encidx >= 0:
+				enc = feed[encidx+10:encidx+30]
+				enc = enc[:enc.index('?>')-1]
+				enc = enc.upper()
+			else:
+				enc = 'WINDOWS-1251'
 		
 	        	feed = unicode(feed, enc)
 	        	feed = feed.split('<item>')
