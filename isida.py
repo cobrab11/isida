@@ -780,11 +780,10 @@ game_over = 0
 
 while 1:
 	try:
-		while 1:
+		while not game_over:
         		cl.Process(1)
 			schedule()
-			if game_over:
-				sys.exit(0)
+		break
 
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'

@@ -348,7 +348,7 @@ def bot_exit(type, jid, nick, text):
 	writefile('settings/tmp',str('exit'))
 	sleep(3)
 	game_over = 1
-	
+	sys.exit(0)	
 
 def bot_restart(type, jid, nick, text):
 	global game_over
@@ -358,7 +358,7 @@ def bot_restart(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('restart'))
 	game_over = 1
-	
+	sys.exit(0)	
 
 def bot_update(type, jid, nick, text):
 	global game_over
@@ -368,7 +368,7 @@ def bot_update(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('update'))
 	game_over = 1
-	
+	sys.exit(0)	
 
 def say(type, jid, nick, text):
 	nick = ''
