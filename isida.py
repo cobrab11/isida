@@ -492,16 +492,21 @@ def presenceCB(sess,mess):
 			writefile(sml,str(smiles))
 		for sm in smiles:
 			if sm[0] == getRoom(room) and sm[1]:
-				msg = u':-|'
+				msg = u''
+				if role == 'participant' and affiliation == 'none':
+					msg = u' :-|'
 				if role == 'participant' and affiliation == 'member':
-					msg = u':-)'
-				if role == 'moderator' or affiliation == 'admin':
-					msg = u':-D'
-				if affiliation == 'owner':
-					msg = u'8-D'
+					msg = u' :-)'
+				if role == 'moderator' and affiliation == 'member':
+					msg = u' :-"'
+				if role == 'moderator' and affiliation == 'admin':
+					msg = u' :-D'
+				if role == 'moderator' and affiliation == 'owner':
+					msg = u' 8-D'
 				nick = ''
 				type = 'groupchat'
-				send_msg(type, room, nick, msg)
+				if msg != u''
+					send_msg(type, room, nick, msg)
 				break
 
 
