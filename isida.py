@@ -9,7 +9,7 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re
 import logging
-import threading, thread
+import thread
 
 LOG_FILENAME = 'log/error.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
