@@ -8,18 +8,18 @@ def update_prefix(old,new,com):
         tcom = []
         for ccom in com:
                 ttcom = ccom
-                if ccom[2][:len(old)] == old:
+                if ccom[1][:len(old)] == old:
                         ttcom = []
                         ttcom.append(ccom[0])
-                        ttcom.append(ccom[1])
-                        ttcom.append(new + ccom[2][len(old):])
-                        for tapp in ccom[3:]:
+                        ttcom.append(new + ccom[1][len(old):])
+                        for tapp in ccom[2:]:
                                 ttcom.append(tapp)
                 tcom.append(ttcom)
         return tcom
 
 def set_prefix(type, jid, nick, text):
         global preffile, prefix, comms
+	print '********** prefix', prefix
         old_prefix = prefix
 	msg = u'Префикс комманд: '
         if os.path.isfile(preffile):
@@ -38,6 +38,7 @@ def set_prefix(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
         comms = update_prefix(old_prefix, prefix, comms)
+	sys.exit()
 
 old_prefix = prefix
 if os.path.isfile(preffile):
@@ -64,4 +65,4 @@ comms = update_prefix(old_prefix, prefix, comms)
 
 #global execute
 
-execute = [(0, 2, u'prefix', set_prefix, 2)]
+execute = [(2, u'prefix', set_prefix, 2)]

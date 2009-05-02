@@ -1,25 +1,73 @@
 # -*- coding: utf-8 -*-
 
+def get_prefix():
+	global prefix
+	if prefix != u'':
+	        return prefix
+	else:
+		return u'отсутствует'
+
+def update_prefix(old,new,com):
+        tcom = []
+        for ccom in com:
+                ttcom = ccom
+                if ccom[1][:len(old)] == old:
+                        ttcom = []
+                        ttcom.append(ccom[0])
+                        ttcom.append(new + ccom[1][len(old):])
+                        for tapp in ccom[2:]:
+                                ttcom.append(tapp)
+                tcom.append(ttcom)
+        return tcom
+
+def set_prefix(type, jid, nick, text):
+        global preffile, prefix, comms
+        old_prefix = prefix
+	msg = u'Префикс комманд: '
+        if os.path.isfile(preffile):
+		pref = eval(readfile(preffile))
+		prefix = pref[0]
+	else:
+		pref = [(u'_')]
+		writefile(preffile,pref)
+		prefix = pref[0]
+
+        if text != '':
+                prefix = text
+
+	if text.lower() == 'none':
+		prefix = u''
+
+	msg += get_prefix()
+
+	pref = [(prefix)]
+        writefile(preffile,str(pref))
+	send_msg(type, jid, nick, msg)
+
+        comms = update_prefix(old_prefix, prefix, comms)
+	sys.exit()
 
 def inban(type, jid, nick, text):
 	global banbase
-        msg = u'Чего искать то будем?'
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
+	cl.send(i)
+	while banbase == []:
+		sleep(0.5)
+	msg = u'Всего в бане: '+str(len(banbase))
 	if text != '':
-		i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
-		cl.send(i)
-		while banbase == []:
-			sleep(0.5)
-		msg = u'Найдено:\n'
+		mmsg = u', найдено:\n'
 		fnd = 1
 		for i in banbase:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				msg += i[0]+' - '+i[1]+'\n'
+				mmsg += i[0]+' - '+i[1]+'\n'
 				fnd = 0
-		msg = msg[:-1]
+		mmsg = mmsg[:-1]
 		if fnd:
-			msg = u'Не найдено!'
-		banbase = []
+			mmsg = u', совпадений нет!'
+		msg += mmsg
+	banbase = []
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def youtube(type, jid, nick, text):
 	text = text.lower()
@@ -65,6 +113,7 @@ def youtube(type, jid, nick, text):
 		msg += i + '\n'
 	msg = msg[:-1]
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def smile(type, jid, nick):
 	sml = 'settings/smile'
@@ -89,12 +138,14 @@ def smile(type, jid, nick):
 
 	writefile(sml,str(smiles))
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def uptime(type, jid, nick):
 	msg = u'Время работы: '
 	msg += get_uptime_str()
 
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def null_vars():
         vars = {'none/visitor':0,
@@ -121,6 +172,7 @@ def gstats(type, jid, nick):
                         msg += '\n'+str(va)+' '+str(vars[va])
 
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def stats(type, jid, nick):
         msg = u'За время работы ('+get_uptime_str()+u') я видела здесь:'
@@ -137,6 +189,7 @@ def stats(type, jid, nick):
                         msg += '\n'+str(va)+' '+str(vars[va])
 
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def show_error(type, jid, nick, text):
 	if len(text)>0:
@@ -156,6 +209,7 @@ def show_error(type, jid, nick, text):
         else:
                 msg = u'No Errors'
 	send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def get_log(type, jid, nick, text):
 	text = text.split(' ')
@@ -214,6 +268,7 @@ def get_log(type, jid, nick, text):
 		for clog in range(log_from, log_to):
 			msg += '\n'+log[clog]
 		send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def get_access(cjid, cnick):
 	access_mode = 0
@@ -236,7 +291,6 @@ def get_access(cjid, cnick):
 
         return (access_mode, jid)
 
-
 def info_access(type, jid, nick):
 	global comms
 
@@ -252,9 +306,9 @@ def info_access(type, jid, nick):
         if realjid != 'None':
                 msg += u', jid опознан'
 
-	msg += u', Префикс команд: '+prefix
+	msg += u', Префикс: ' + get_prefix()
 	send_msg(type, jid, nick, msg)
-	
+	sys.exit()	
 
 def info_comm(type, jid, nick):
 	global comms
@@ -272,56 +326,56 @@ def info_comm(type, jid, nick):
         for i in range(0,3):
                 msg += '['+str(i)+'] '+accs[i]+': '
         	for ccomms in jidc:
-        		if not ccomms[2].count(god) and ccomms[1] == i:
-#                                ccc = ccomms[2]
-#                                if ccc[:len(prefix)] == prefix:
-#                                        ccc = ccc[len(prefix):]
-#        			msg += ccc +', '
-        			msg += ccomms[2] +', '
+        		if not ccomms[1].count(god) and ccomms[0] == i:
+                                ccc = ccomms[1]
+                                if ccc[:len(prefix)] == prefix:
+                                        ccc = ccc[len(prefix):]
+        			msg += ccc +', '
+#        			msg += ccomms[1] +', '
         			ccnt+= 1
                 msg = msg[:-2] + '\n'
 			
-	msg = u'Команды парсера: '+str(ccnt)+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+prefix+'\n'+msg
+	msg = u'Команды парсера: '+str(ccnt)+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_prefix()+'\n'+msg
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
-
-def test(type, jid, nick):
-	send_msg(type, jid, nick, 'passed')
-
-def test_rus(type, jid, nick):
-	send_msg(type, jid, nick, u'две полоски!')
+	sys.exit()
         
 def bot_exit(type, jid, nick, text):
+	global game_over
 	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('exit'))
 	sleep(3)
-        0/0 # :-"
+	game_over = 1
+	sys.exit()
 
 def bot_restart(type, jid, nick, text):
+	global game_over
 	StatusMessage = u'Restart by \'restart\' command from bot owner ('+nick+u')'
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('restart'))
-	sleep(1)
-        0/0 # :-"
+	game_over = 1
+	sys.exit()
 
 def bot_update(type, jid, nick, text):
+	global game_over
 	StatusMessage = u'Self update by \'update\' command from bot owner ('+nick+u')'
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('update'))
-	sleep(1)
-        0/0 # :-"
+	game_over = 1
+	sys.exit()
 
 def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
 	send_msg(type, jid, nick, text)
+	sys.exit()
 
 def gsay(type, jid, nick, text):
         global confbase
@@ -331,6 +385,7 @@ def gsay(type, jid, nick, text):
 	nick = ''
         for jjid in confbase:
 	        send_msg(type, getRoom(jjid), nick, msg)
+	sys.exit()
 
 def helpme(type, jid, nick, text):
 	pprint(text)
@@ -345,17 +400,17 @@ def helpme(type, jid, nick, text):
 				hhh = hh.split(']')
 				helps.append((hhh[0],hhh[1][:-1]))
 
-	mesg = u'Префикс команд: '+prefix+u'\nДоступна справка по командам:\n'
+	mesg = u'Префикс команд: '+get_prefix()+u'\nДоступна справка по командам:\n'
 
         cnt = 0
         for i in range(0,3):
                 mesg += '['+str(i)+'] '
         	for hlp in helps:
                         for cmdd in comms:
-				tc = cmdd[2]
+				tc = cmdd[1]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
-                                if tc == hlp[0] and cmdd[1] == i:
+                                if tc == hlp[0] and cmdd[0] == i:
                                         mesg += hlp[0] + ', '
                                         cnt += 1
                 mesg = mesg[:-2]
@@ -365,7 +420,7 @@ def helpme(type, jid, nick, text):
                 for hlp in helps:
                         fl = 1
                         for cmdd in comms:
-				tc = cmdd[2]
+				tc = cmdd[1]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
@@ -379,13 +434,14 @@ def helpme(type, jid, nick, text):
 		if text.lower() == hlp[0]:
 			mesg = u'Справочная информация: ' + hlp[1]
 			for cmdd in comms:
-				tc = cmdd[2]
+				tc = cmdd[1]
 				if tc[:len(prefix)]==prefix:
 					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
-                                        mesg = u'Уровень доступа: '+str(cmdd[1]) + hlp[1]
+                                        mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
 
 	send_msg(type, jid, nick, mesg)
+	sys.exit()
 
 def hidden_clear(type, jid, nick):
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
@@ -395,7 +451,7 @@ def hidden_clear(type, jid, nick):
                 time.sleep(1.05)
                 cntr=cntr-1
         send_msg(type, jid, nick, u'стирильно!!!')
-
+	sys.exit()
 
 def bot_rejoin(type, jid, nick, text):
         global lastserver, lastnick, confbase
@@ -423,6 +479,7 @@ def bot_rejoin(type, jid, nick, text):
 	else:
 		send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+getRoom(lroom))
 		pprint(u'never be in '+text)
+	sys.exit()
 
 def bot_join(type, jid, nick, text):
         global lastserver, lastnick, confs, confbase
@@ -457,6 +514,7 @@ def bot_join(type, jid, nick, text):
                         joinconf(text, domain)
                         writefile(confs,str(confbase))
                         pprint(u'change nick '+text)
+	sys.exit()
 
 def bot_leave(type, jid, nick, text):
         global confs, confbase, lastserver, lastnick
@@ -495,6 +553,7 @@ def bot_leave(type, jid, nick, text):
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
                         pprint(u'never be in '+text)
+	sys.exit()
 
 def conf_pass(type, jid, nick, text):
 	global psw
@@ -502,6 +561,7 @@ def conf_pass(type, jid, nick, text):
 	if text!='':
 		psw = text
 	send_msg(type, jid, nick, u'пароль \''+psw+'\'')
+	sys.exit()
 
 def conf_limit(type, jid, nick, text):
 	global msg_limit
@@ -512,6 +572,7 @@ def conf_limit(type, jid, nick, text):
 		except:
 			msg_limit = 1000
 	send_msg(type, jid, nick, u'Message limit is '+str(msg_limit))
+	sys.exit()
 
 def bot_plugin(type, jid, nick, text):
 	global plname, plugins, execute
@@ -530,7 +591,7 @@ def bot_plugin(type, jid, nick, text):
                         execfile('plugins/'+nnick)
                         msg = u'Загружен плагин: '+nnick+u'\nДоступны комманды: '
                         for commmm in execute:
-                                msg += commmm[2]+'['+str(commmm[1])+'], '
+                                msg += commmm[1]+'['+str(commmm[0])+'], '
                                 comms.append(commmm)
                         msg = msg[:-2]
                         
@@ -540,9 +601,9 @@ def bot_plugin(type, jid, nick, text):
                         execfile('plugins/'+nnick)
                         msg = u'Удалён плагин: '+nnick+u'\nУдалены комманды: '
                         for commmm in execute:
-                                msg += commmm[2]+'['+str(commmm[1])+'], '
+                                msg += commmm[1]+'['+str(commmm[0])+'], '
                                 for i in comms:
-                                        if i[2] == commmm[2]:
+                                        if i[1] == commmm[1]:
                                                 comms.remove(i)
                         msg = msg[:-2]
 
@@ -566,6 +627,7 @@ def bot_plugin(type, jid, nick, text):
 
 	writefile(plname,str(plugins))
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -587,6 +649,7 @@ def owner(type, jid, nick, text):
 	msg = msg[:-2]
 	writefile(owners,str(ownerbase))
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def ignore(type, jid, nick, text):
 	global ignorebase, ignores, god
@@ -608,7 +671,7 @@ def ignore(type, jid, nick, text):
 	msg = msg[:-2]
 	writefile(ignores,str(ignorebase))
         send_msg(type, jid, nick, msg)
-
+	sys.exit()
 
 def info_where(type, jid, nick):
         global confbase
@@ -633,6 +696,7 @@ def info_where(type, jid, nick):
 
         msg = msg[:-1]
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def get_uptime_raw():
 	nowtime = localtime()
@@ -695,6 +759,7 @@ def info(type, jid, nick):
 	msg += get_uptime_str()
 
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def info_res(type, jid, nick, text):
 	jidb = []
@@ -733,6 +798,7 @@ def info_res(type, jid, nick, text):
                 if fl:
                         msg += '\n'+text+u' Not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def info_serv(type, jid, nick, text):
 	jidb = []
@@ -767,6 +833,7 @@ def info_serv(type, jid, nick, text):
                 if fl:
                         msg += '\n'+text+u' Not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def info_base(type, jid, nick):
         msg = u'Чего искать то будем?'
@@ -786,6 +853,7 @@ def info_base(type, jid, nick):
                 if fl:
                         msg = '\''+nick+u'\' not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -799,7 +867,7 @@ def info_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-
+	sys.exit()
 
 def gtmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -818,6 +886,7 @@ def gtmp_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def tmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -837,6 +906,7 @@ def tmp_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def real_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -856,6 +926,7 @@ def real_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
+	sys.exit()
 
 def rss_replace(ms):
 	ms = ms.replace('<br>','\n')
@@ -882,6 +953,18 @@ def rss_del_html(ms):
 			lms = len(ms)
 			i -= 1
 		i += 1
+	return ms
+
+def rss_del_nn(ms):
+	while ms.count('  '):
+		ms = ms.replace('  ',' ')
+	ms = ms.replace('\r','')
+	ms = ms.replace('\t','')
+	ms = ms.replace('\n \n','\n')
+	ms = ms.replace('\n\n','\n')
+
+	ms += '\n'
+
 	return ms
 
 #[room, nick, role, affiliation, jid]
@@ -1004,15 +1087,19 @@ def rss(type, jid, nick, text):
 			for idx in range(1,lng):
 				mmsg = feed[idx]
 				if submode == 'full':
-					msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+					msg += u' • ' + mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
 				elif submode == 'body':
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
 				elif submode[:4] == 'head':
-					msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+					msg += u' • ' + mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			msg = rss_replace(msg)
 			msg = rss_del_html(msg)
 			msg = rss_replace(msg)
+			msg = rss_del_nn(msg)
+
+			writefile('settings/tmpfeed',str(msg))
+
 			msg = msg[:-1]
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
@@ -1107,12 +1194,12 @@ def rss(type, jid, nick, text):
         				if ttitle == tstop:
         					break
 				if submode == 'full':
-		        	        msg += ttitle + '\n'
+		        	        msg += u' • ' + ttitle + '\n'
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
 				elif submode == 'body':
 					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
 				elif submode[:4] == 'head':
-		        	        msg += ttitle+ '\n'
+		        	        msg += u' • ' + ttitle+ '\n'
 
                         if mode == 'new':
         		        if over == 1 and text[4] == 'silent':
@@ -1123,6 +1210,7 @@ def rss(type, jid, nick, text):
 			msg = rss_replace(msg)
 			msg = rss_del_html(msg)
 			msg = rss_replace(msg)
+			msg = rss_del_nn(msg)
 
 			msg = msg[:-1]
 
@@ -1132,6 +1220,7 @@ def rss(type, jid, nick, text):
 			msg = u'bad url or rss not found!'
         if not nosend:
 		send_msg(type, jid, nick, msg)
+	sys.exit()
 
 #------------------------------------------------
 
@@ -1145,40 +1234,39 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(0, 1, prefix+u'stats', stats, 1),
-	 (0, 1, prefix+u'gstats', gstats, 1),
-         (0, 2, prefix+u'quit', bot_exit, 2),
-         (0, 2, prefix+u'restart', bot_restart, 2),
-         (0, 2, prefix+u'update', bot_update, 2),
-         (0, 1, prefix+u'say', say, 2),
-         (0, 2, prefix+u'gsay', gsay, 2),
-         (0, 0, u'help', helpme, 2),
-         (0, 0, prefix+u'help', helpme, 2),
-         (0, 2, prefix+u'join', bot_join, 2),
-         (0, 2, prefix+u'leave', bot_leave, 2),
-         (0, 2, prefix+u'rejoin', bot_rejoin, 2),
-         (0, 2, prefix+u'pass', conf_pass, 2),
-         (0, 2, prefix+u'owner', owner, 2),
-         (0, 2, prefix+u'ignore', ignore, 2),
-         (0, 1, prefix+u'where', info_where, 1),
-         (1, 1, prefix+u'res', info_res, 2),
-         (1, 1, prefix+u'serv', info_serv, 2),
-         (0, 0, prefix+u'inbase', info_base, 1),
-         (1, 2, prefix+u'search', info_search, 2),
-         (1, 1, prefix+u'look', real_search, 2),
-         (1, 1, prefix+u'tempo', tmp_search, 2),
-         (1, 2, prefix+u'gtempo', gtmp_search, 2),
-         (1, 1, prefix+u'rss', rss, 2),
-         (1, 1, prefix+u'youtube', youtube, 2),
-         (0, 1, prefix+u'commands', info_comm, 1),
-         (0, 1, prefix+u'uptime', uptime, 1),
-         (0, 1, prefix+u'info', info, 1),
-         (0, 1, prefix+u'smile', smile, 1),
-         (1, 1, prefix+u'inban', inban, 2),
-#        (0, 2, prefix+u'log', get_log, 2),
-         (0, 2, prefix+u'limit', conf_limit, 2),
-         (0, 2, prefix+u'plugin', bot_plugin, 2),
-         (1, 2, prefix+u'error', show_error, 2),
-         (0, 0, prefix+u'whoami', info_access, 1),
-         (0, 0, u'whoami', info_access, 1),
-         (1, 1, prefix+u'clear', hidden_clear, 1)]
+comms = [(1, prefix+u'stats', stats, 1),
+	 (1, prefix+u'gstats', gstats, 1),
+         (2, prefix+u'quit', bot_exit, 2),
+         (2, prefix+u'restart', bot_restart, 2),
+         (2, prefix+u'update', bot_update, 2),
+         (1, prefix+u'say', say, 2),
+         (2, prefix+u'gsay', gsay, 2),
+         (0, prefix+u'help', helpme, 2),
+         (2, prefix+u'join', bot_join, 2),
+         (2, prefix+u'leave', bot_leave, 2),
+         (2, prefix+u'rejoin', bot_rejoin, 2),
+         (2, prefix+u'pass', conf_pass, 2),
+         (2, prefix+u'owner', owner, 2),
+         (2, prefix+u'ignore', ignore, 2),
+         (1, prefix+u'where', info_where, 1),
+         (1, prefix+u'res', info_res, 2),
+         (1, prefix+u'serv', info_serv, 2),
+         (0, prefix+u'inbase', info_base, 1),
+         (2, prefix+u'search', info_search, 2),
+         (1, prefix+u'look', real_search, 2),
+         (1, prefix+u'tempo', tmp_search, 2),
+         (2, prefix+u'gtempo', gtmp_search, 2),
+         (1, prefix+u'rss', rss, 2),
+         (1, prefix+u'youtube', youtube, 2),
+         (1, prefix+u'commands', info_comm, 1),
+         (1, prefix+u'uptime', uptime, 1),
+         (1, prefix+u'info', info, 1),
+         (1, prefix+u'smile', smile, 1),
+         (1, prefix+u'inban', inban, 2),
+#        (2, prefix+u'log', get_log, 2),
+         (2, prefix+u'limit', conf_limit, 2),
+         (2, prefix+u'plugin', bot_plugin, 2),
+         (2, prefix+u'error', show_error, 2),
+         (0, prefix+u'whoami', info_access, 1),
+	 (2, prefix+u'prefix', set_prefix, 2),
+         (1, prefix+u'clear', hidden_clear, 1)]

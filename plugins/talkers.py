@@ -32,7 +32,7 @@ def gtalkers(type, jid, nick, text):
         for tt in jidc:
                 msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
 	send_msg(type, jid, nick, msg)
-
+	sys.exit()
 
 # Поиск по базе "блтунов" в пределах одной конференции
 def talkers(type, jid, nick, text):
@@ -66,6 +66,7 @@ def talkers(type, jid, nick, text):
         for tt in jidc:
                 msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
 	send_msg(type, jid, nick, msg)
+	sys.exit()
 
 #------------------------------------------------
 
@@ -81,5 +82,5 @@ def talkers(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 1, prefix+u'talkers', talkers, 2),
-	   (0, 1, prefix+u'gtalkers', gtalkers, 2)]
+execute = [(1, prefix+u'talkers', talkers, 2),
+	   (1, prefix+u'gtalkers', gtalkers, 2)]

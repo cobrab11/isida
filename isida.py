@@ -170,6 +170,21 @@ else:
 	plugins = []
 	writefile(plname,str(plugins))
 
+
+preffile = 'settings/prefix'
+
+old_prefix = prefix
+if os.path.isfile(preffile):
+	pref = eval(readfile(preffile))
+	prefix = pref[0]
+else:
+	pref = [(u'_')]
+	writefile(preffile,str(pref))
+	prefix = pref[0]
+
+comms = update_prefix(old_prefix, prefix, comms)
+
+
 def send_msg(mtype, mjid, mnick, mmessage):
         no_send = 1
         log_limit = 50
@@ -425,33 +440,25 @@ def messageCB(sess,mess):
 
         if (text != 'None') and (len(text)>2) and access_mode >= 0:
                 for parse in comms:
-			if access_mode >= parse[1] and nick != nowname:
+			if access_mode >= parse[0] and nick != nowname:
 				if text[:len(nowname)] == nowname:
 					text = text[len(nowname)+2:]
-					if text[:len(prefix)] != prefix and parse[2][:len(prefix)] == prefix:
+					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
 						text = prefix + text
 
-				if type == 'chat' and text[:len(prefix)] != prefix and parse[2][:len(prefix)] == prefix:
+				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
 					text = prefix + text
 
-				if not parse[0]:
-        		                if text[:len(parse[2])].lower() == parse[2].lower():
-						pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-        		                        if not parse[4]:
-        		                                parse[3](type, room, nick, parse[5:])
-        		                        elif parse[4] == 1:
-        		                                parse[3](type, room, nick)
-	        	                        elif parse[4] == 2:
-        	                     	           parse[3](type, room, nick, text[len(parse[2])+1:])
-				else:
-        		                if text[:len(parse[2])].lower() == parse[2].lower():
-						pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-        		                        if not parse[4]:
-        		                                thread.start_new_thread(parse[3],(type, room, nick, parse[5:]))
-        		                        elif parse[4] == 1:
-        		                                thread.start_new_thread(parse[3],(type, room, nick))
-        		                        elif parse[4] == 2:
-	        	                                thread.start_new_thread(parse[3],(type, room, nick, text[len(parse[2])+1:]))
+
+        		        if text[:len(parse[1])].lower() == parse[1].lower():
+					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+        	                        if not parse[3]:
+        	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
+       		                        elif parse[3] == 1:
+       		                                thread.start_new_thread(parse[2],(type, room, nick))
+       		                        elif parse[3] == 2:
+        	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
+					break
 
 def presenceCB(sess,mess):
 	global jidbase, megabase, megabase2, ownerbase
@@ -776,11 +783,17 @@ pprint(u'Joined')
 
 #pprint(u'Unhide')
 
+writefile('settings/tmp',str(''))
+global game_over
+game_over = 0
+
 while 1:
 	try:
 		while 1:
         		cl.Process(1)
 			schedule()
+			if game_over:
+				sys.exit(0)
 
 	except KeyboardInterrupt:
 		StatusMessage = 'Shut down by CTRL+C'
