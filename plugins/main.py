@@ -1014,9 +1014,13 @@ def rss(type, jid, nick, text):
 
 	if mode == 'clear':
 		msg = u'All RSS was cleared!'
-		feedbase = []
+		for taa in feedbase:
+			if taa[4] == jid:
+				feedbase.remove(taa)
 		writefile(feeds,str(feedbase))
-		lastfeeds = []
+		for taa in lastfeeds:
+			if taa[4] == jid:
+				lastfeeds.remove(taa)
 		writefile(lafeeds,str(lastfeeds))
 
 	if mode == 'show':
