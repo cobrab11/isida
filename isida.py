@@ -505,7 +505,7 @@ def presenceCB(sess,mess):
 					msg = u' 8-D'
 				nick = ''
 				type = 'groupchat'
-				if msg != u''
+				if msg != u'':
 					send_msg(type, room, nick, msg)
 				break
 
