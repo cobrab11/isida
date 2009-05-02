@@ -1019,7 +1019,7 @@ def rss(type, jid, nick, text):
 				feedbase.remove(taa)
 		writefile(feeds,str(feedbase))
 		for taa in lastfeeds:
-			if taa[4] == jid:
+			if taa[2] == jid:
 				lastfeeds.remove(taa)
 		writefile(lafeeds,str(lastfeeds))
 
@@ -1056,7 +1056,7 @@ def rss(type, jid, nick, text):
 		feed = f.read()
 		f.close()
 
-		writefile('settings/tempofeed',str(feed))
+#		writefile('settings/tempofeed',str(feed))
 
 		if feed[:100].count('rss') and feed[:100].count('xml'):
 			encidx = feed.index('encoding=')
