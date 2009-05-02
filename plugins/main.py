@@ -45,7 +45,7 @@ def set_prefix(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
         comms = update_prefix(old_prefix, prefix, comms)
-	thread.exit()
+	
 
 def inban(type, jid, nick, text):
 	global banbase
@@ -67,7 +67,6 @@ def inban(type, jid, nick, text):
 		msg += mmsg
 	banbase = []
         send_msg(type, jid, nick, msg)
-	thread.exit()
 
 def youtube(type, jid, nick, text):
 	text = text.lower()
@@ -113,7 +112,7 @@ def youtube(type, jid, nick, text):
 		msg += i + '\n'
 	msg = msg[:-1]
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def smile(type, jid, nick):
 	sml = 'settings/smile'
@@ -138,14 +137,14 @@ def smile(type, jid, nick):
 
 	writefile(sml,str(smiles))
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def uptime(type, jid, nick):
 	msg = u'Время работы: '
 	msg += get_uptime_str()
 
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def null_vars():
         vars = {'none/visitor':0,
@@ -172,7 +171,7 @@ def gstats(type, jid, nick):
                         msg += '\n'+str(va)+' '+str(vars[va])
 
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def stats(type, jid, nick):
         msg = u'За время работы ('+get_uptime_str()+u') я видела здесь:'
@@ -189,7 +188,7 @@ def stats(type, jid, nick):
                         msg += '\n'+str(va)+' '+str(vars[va])
 
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def show_error(type, jid, nick, text):
 	if len(text)>0:
@@ -209,7 +208,7 @@ def show_error(type, jid, nick, text):
         else:
                 msg = u'No Errors'
 	send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def get_log(type, jid, nick, text):
 	text = text.split(' ')
@@ -268,7 +267,7 @@ def get_log(type, jid, nick, text):
 		for clog in range(log_from, log_to):
 			msg += '\n'+log[clog]
 		send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def get_access(cjid, cnick):
 	access_mode = 0
@@ -308,7 +307,7 @@ def info_access(type, jid, nick):
 
 	msg += u', Префикс: ' + get_prefix()
 	send_msg(type, jid, nick, msg)
-	thread.exit()	
+		
 
 def info_comm(type, jid, nick):
 	global comms
@@ -338,7 +337,7 @@ def info_comm(type, jid, nick):
 	msg = u'Команды парсера: '+str(ccnt)+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_prefix()+'\n'+msg
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
-	thread.exit()
+	
         
 def bot_exit(type, jid, nick, text):
 	global game_over
@@ -349,7 +348,7 @@ def bot_exit(type, jid, nick, text):
 	writefile('settings/tmp',str('exit'))
 	sleep(3)
 	game_over = 1
-	thread.exit()
+	
 
 def bot_restart(type, jid, nick, text):
 	global game_over
@@ -359,7 +358,7 @@ def bot_restart(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('restart'))
 	game_over = 1
-	thread.exit()
+	
 
 def bot_update(type, jid, nick, text):
 	global game_over
@@ -369,13 +368,13 @@ def bot_update(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('update'))
 	game_over = 1
-	thread.exit()
+	
 
 def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
 	send_msg(type, jid, nick, text)
-	thread.exit()
+	
 
 def gsay(type, jid, nick, text):
         global confbase
@@ -385,7 +384,7 @@ def gsay(type, jid, nick, text):
 	nick = ''
         for jjid in confbase:
 	        send_msg(type, getRoom(jjid), nick, msg)
-	thread.exit()
+	
 
 def helpme(type, jid, nick, text):
 	pprint(text)
@@ -441,7 +440,7 @@ def helpme(type, jid, nick, text):
                                         mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
 
 	send_msg(type, jid, nick, mesg)
-	thread.exit()
+	
 
 def hidden_clear(type, jid, nick):
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
@@ -451,7 +450,7 @@ def hidden_clear(type, jid, nick):
                 time.sleep(1.05)
                 cntr=cntr-1
         send_msg(type, jid, nick, u'стирильно!!!')
-	thread.exit()
+	
 
 def bot_rejoin(type, jid, nick, text):
         global lastserver, lastnick, confbase
@@ -479,7 +478,7 @@ def bot_rejoin(type, jid, nick, text):
 	else:
 		send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+getRoom(lroom))
 		pprint(u'never be in '+text)
-	thread.exit()
+	
 
 def bot_join(type, jid, nick, text):
         global lastserver, lastnick, confs, confbase
@@ -514,7 +513,7 @@ def bot_join(type, jid, nick, text):
                         joinconf(text, domain)
                         writefile(confs,str(confbase))
                         pprint(u'change nick '+text)
-	thread.exit()
+	
 
 def bot_leave(type, jid, nick, text):
         global confs, confbase, lastserver, lastnick
@@ -553,7 +552,7 @@ def bot_leave(type, jid, nick, text):
                 else:
                         send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
                         pprint(u'never be in '+text)
-	thread.exit()
+	
 
 def conf_pass(type, jid, nick, text):
 	global psw
@@ -561,7 +560,7 @@ def conf_pass(type, jid, nick, text):
 	if text!='':
 		psw = text
 	send_msg(type, jid, nick, u'пароль \''+psw+'\'')
-	thread.exit()
+	
 
 def conf_limit(type, jid, nick, text):
 	global msg_limit
@@ -572,7 +571,7 @@ def conf_limit(type, jid, nick, text):
 		except:
 			msg_limit = 1000
 	send_msg(type, jid, nick, u'Message limit is '+str(msg_limit))
-	thread.exit()
+	
 
 def bot_plugin(type, jid, nick, text):
 	global plname, plugins, execute
@@ -627,7 +626,7 @@ def bot_plugin(type, jid, nick, text):
 
 	writefile(plname,str(plugins))
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -649,7 +648,7 @@ def owner(type, jid, nick, text):
 	msg = msg[:-2]
 	writefile(owners,str(ownerbase))
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def ignore(type, jid, nick, text):
 	global ignorebase, ignores, god
@@ -671,7 +670,7 @@ def ignore(type, jid, nick, text):
 	msg = msg[:-2]
 	writefile(ignores,str(ignorebase))
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def info_where(type, jid, nick):
         global confbase
@@ -696,7 +695,7 @@ def info_where(type, jid, nick):
 
         msg = msg[:-1]
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def get_uptime_raw():
 	nowtime = localtime()
@@ -759,7 +758,7 @@ def info(type, jid, nick):
 	msg += get_uptime_str()
 
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def info_res(type, jid, nick, text):
 	jidb = []
@@ -798,7 +797,7 @@ def info_res(type, jid, nick, text):
                 if fl:
                         msg += '\n'+text+u' Not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def info_serv(type, jid, nick, text):
 	jidb = []
@@ -833,7 +832,7 @@ def info_serv(type, jid, nick, text):
                 if fl:
                         msg += '\n'+text+u' Not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def info_base(type, jid, nick):
         msg = u'Чего искать то будем?'
@@ -853,7 +852,7 @@ def info_base(type, jid, nick):
                 if fl:
                         msg = '\''+nick+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -867,7 +866,7 @@ def info_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def gtmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -886,7 +885,7 @@ def gtmp_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def tmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -906,7 +905,7 @@ def tmp_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def real_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -926,7 +925,7 @@ def real_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 def rss_replace(ms):
 	ms = ms.replace('<br>','\n')
@@ -1220,7 +1219,7 @@ def rss(type, jid, nick, text):
 			msg = u'bad url or rss not found!'
         if not nosend:
 		send_msg(type, jid, nick, msg)
-	thread.exit()
+	
 
 #------------------------------------------------
 

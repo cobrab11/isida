@@ -778,8 +778,6 @@ pprint(u'Joined')
 
 game_over = 0
 
-sleep(1)
-
 while 1:
 	try:
 		while 1:
@@ -796,8 +794,6 @@ while 1:
 		sleep(2)
 		sys.exit(0)
 
-	except ZeroDivisionError:
-		0/0
 	except Exception, SM:
 		pprint('*** Error *** '+str(SM)+' ***')
                 logging.exception(' ['+timeadd(localtime())+'] ')

@@ -3,11 +3,11 @@
 
 def test(type, jid, nick):
 	send_msg(type, jid, nick, 'passed')
-	sys.exit()
+	
 
 def test_rus(type, jid, nick):
 	send_msg(type, jid, nick, u'две полоски!')
-	sys.exit()
+	
 
 #------------------------------------------------
 
