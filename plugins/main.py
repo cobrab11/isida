@@ -126,14 +126,14 @@ def smile(type, jid, nick):
 	for sm in smiles:
 		if sm[0] == getRoom(jid):
 			tsm = (sm[0],int(not sm[1]))
-			msg += onoff(not sm[1])
 			smiles.remove(sm)
 			smiles.append(tsm)
 			is_found = 0
+			ssta = tsm[1]
 	if is_found:
 		smiles.append((getRoom(jid),1))
-		msg += onoff(1)
-
+		ssta = 1
+	msg += onoff(ssta)
 
 	writefile(sml,str(smiles))
         send_msg(type, jid, nick, msg)
