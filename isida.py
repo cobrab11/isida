@@ -788,28 +788,28 @@ global game_over
 game_over = 0
 
 while 1:
-	try:
-		while 1:
+#	try:
+#		while 1:
         		cl.Process(1)
 			schedule()
 			if game_over:
 				sys.exit(0)
 
-	except KeyboardInterrupt:
-		StatusMessage = 'Shut down by CTRL+C'
-		pprint(StatusMessage)
-		send_presence_all(StatusMessage)
-        	writefile('settings/tmp',str('exit'))
-		sleep(2)
-		sys.exit(0)
-
-	except ZeroDivisionError:
-		0/0
-	except Exception, SM:
-		pprint('*** Error *** '+str(SM)+' ***')
-                logging.exception(' ['+timeadd(localtime())+'] ')
-                if debugmode:
-                        writefile('settings/tmp',str('exit'))
-        		raise
+#	except KeyboardInterrupt:
+#		StatusMessage = 'Shut down by CTRL+C'
+#		pprint(StatusMessage)
+#		send_presence_all(StatusMessage)
+ #       	writefile('settings/tmp',str('exit'))
+#		sleep(2)
+#		sys.exit(0)
+#
+#	except ZeroDivisionError:
+#		0/0
+#	except Exception, SM:
+#		pprint('*** Error *** '+str(SM)+' ***')
+ #               logging.exception(' ['+timeadd(localtime())+'] ')
+  #              if debugmode:
+   #                     writefile('settings/tmp',str('exit'))
+    #    		raise
 
 
