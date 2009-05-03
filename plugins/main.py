@@ -46,7 +46,7 @@ def weather(type, jid, nick, text):
 		wzz1 = wzz[7].find('(')
 		wzz2 = wzz[7].find(':',wzz1)
 		wzz3 = wzz[7].find('(',wzz2)
-		msg += '\n'+ wzz[7][:wzz1-1]+': '+wzz[7][wzz3+1:-1]
+		msg += ', '+ wzz[7][:wzz1-1]+': '+wzz[7][wzz3+1:-1]
 
         send_msg(type, jid, nick, msg)
 
@@ -1373,8 +1373,8 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'youtube', youtube, 2),
-         (1, prefix+u'wz', weather, 2),
          (1, prefix+u'wzz', weather_raw, 2),
+         (1, prefix+u'wz', weather, 2),
          (1, prefix+u'commands', info_comm, 1),
          (1, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
