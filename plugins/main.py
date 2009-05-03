@@ -1,5 +1,49 @@
 # -*- coding: utf-8 -*-
 
+def defcode(type, jid, nick, text):
+	dcnt = text[0]
+	ddef = text[1:4]
+	dnumber = text[4:]
+	if text[:2] != '79':
+		msg = u'Поиск только по мобильным телефонам России!'
+	else:
+		link = 'http://www.mtt.ru/info/def/index.wbp?def='+ddef+'&number='+dnumber+'&region=&standard=&date=&operator='
+		f = urllib.urlopen(link)
+		msg = f.read()
+		f.close()
+
+		encidx = msg.find('charset=')
+		if encidx >= 0:
+			enc = msg[encidx+8:encidx+30]
+			enc = enc[:enc.index('\">')]
+			enc = enc.upper()
+		else:
+			enc = 'UTF-8'
+
+		msg = unicode(msg, enc)
+
+		mbeg = msg.find('<INPUT TYPE=\"submit\" CLASS=\"submit\"')
+		msg = msg[mbeg:msg.find('</table>',mbeg)]
+		msg = msg.split('<tr')
+		
+		if msg[0].count(u'не найдено'):
+			msg = u'Не найдено!'
+		else:
+			msg.remove(msg[0])
+			mmsg = u'Найдено:\n'
+			for mm in msg:
+				tmm = mm
+				tmm = rss_replace(tmm)
+				tmm = rss_del_html(tmm)
+				tmm = rss_replace(tmm)
+				tmm = rss_del_nn(tmm)
+				tmm = tmm[tmm.find('>')+1:]
+				tmm = tmm.replace('\n','\t')
+				mmsg += tmm[1:-2] + '\n'
+			msg = mmsg[:-1]
+	
+       	send_msg(type, jid, nick, msg)
+	
 def weather_raw(type, jid, nick, text):
 	text = text.upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
@@ -28,6 +72,12 @@ def weather(type, jid, nick, text):
 		msg = wzz[0][:wzz[0].find(')')+1]
 		msg += '\n'+ wzz[1]
 
+		if wzz[5][:6] == 'Weathe':
+			wzzclo = wzz[5]
+			wzz.remove(wzz[5])
+		else:
+			wzzclo = ''
+
 		if wzz[4][:3] == 'Sky':
 			wzzsky = wzz[4]
 			wzz.remove(wzz[4])
@@ -39,10 +89,10 @@ def weather(type, jid, nick, text):
 		wzz3 = wzz[4].find(')',wzz2)
 		msg += '\n'+ wzz[4][:wzz1] + ' ' + wzz[4][wzz2+1:wzz3]
 
-		wzz1 = wzz[5].find(':')+1
-		wzz2 = wzz[5].find('(',wzz1)
-		wzz3 = wzz[5].find(')',wzz2)
-		msg += ', '+ wzz[5][:wzz1] + ' ' + wzz[5][wzz2+1:wzz3]
+#		wzz1 = wzz[5].find(':')+1
+#		wzz2 = wzz[5].find('(',wzz1)
+#		wzz3 = wzz[5].find(')',wzz2)
+#		msg += ', '+ wzz[5][:wzz1] + ' ' + wzz[5][wzz2+1:wzz3]
 
 		wzz1 = wzz[2].find('(')
 		wzz2 = wzz[2].find(')',wzz1)
@@ -51,7 +101,10 @@ def weather(type, jid, nick, text):
 
 		msg += '\n'+ wzz[6]
 		if len(wzzsky):
-			msg += ', '+ wzzsky
+			msg += ', '+ wzzsky[wzzsky.find(':')+1:]
+		if len(wzzclo):
+			msg += ', '+ wzzclo[wzzclo.find(':')+1:]
+
 
 		msg += '\n'+ wzz[3][:-2]
 		
@@ -1395,6 +1448,7 @@ comms = [(1, prefix+u'stats', stats, 1),
 #        (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
+         (1, prefix+u'def', defcode, 2),
          (2, prefix+u'error', show_error, 2),
          (0, prefix+u'whoami', info_access, 1),
 	 (2, prefix+u'prefix', set_prefix, 2),
