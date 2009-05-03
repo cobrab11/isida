@@ -1,5 +1,55 @@
 # -*- coding: utf-8 -*-
 
+def weather_raw(type, jid, nick, text):
+	text = text.upper()
+	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
+	f = urllib.urlopen(link)
+	msg = f.read()
+	f.close()
+
+	if msg.count('Not Found'):
+		msg = u'Город не найден!'
+
+        send_msg(type, jid, nick, msg)
+
+def weather(type, jid, nick, text):
+	text = text.upper()
+	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
+	f = urllib.urlopen(link)
+	wzz = f.read()
+	f.close()
+
+	if wzz.count('Not Found'):
+		msg = u'Город не найден!'
+	else:
+		wzz = wzz.split('\n')
+		msg = wzz[0][:wzz[0].find(')')+1]
+		msg += '\n'+ wzz[1]
+
+		wzz1 = wzz[2].find('(')
+		wzz2 = wzz[2].find(')',wzz1)
+		wzz3 = wzz[2].find(':',wzz2)
+		msg += '\n'+ wzz[2][:wzz1-1] + wzz[2][wzz2+1:wzz3]
+
+		msg += '\n'+ wzz[3][:-2]
+
+		wzz1 = wzz[4].find(':')+1
+		wzz2 = wzz[4].find('(',wzz1)
+		wzz3 = wzz[4].find(')',wzz2)
+		msg += '\n'+ wzz[4][:wzz1] + ' ' + wzz[4][wzz2+1:wzz3]
+
+		wzz1 = wzz[5].find(':')+1
+		wzz2 = wzz[5].find('(',wzz1)
+		wzz3 = wzz[5].find(')',wzz2)
+		msg += ', '+ wzz[5][:wzz1] + ' ' + wzz[5][wzz2+1:wzz3]
+		msg += '\n'+ wzz[6]
+		wzz1 = wzz[7].find('(')
+		wzz2 = wzz[7].find(':',wzz1)
+		wzz3 = wzz[7].find('(',wzz2)
+		msg += '\n'+ wzz[7][:wzz1-1]+': '+wzz[7][wzz3+1:-1]
+
+        send_msg(type, jid, nick, msg)
+
 def get_prefix():
 	global prefix
 	if prefix != u'':
@@ -1112,7 +1162,7 @@ def rss(type, jid, nick, text):
 			if is_rss:
 				mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			if is_atom:
-				mmsg = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]+ '\n'
+				mmsg = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]+ '\n'
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
@@ -1124,8 +1174,8 @@ def rss(type, jid, nick, text):
 					ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
 					tbody = mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')]
 				if is_atom:
-					ttitle = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]
-					tbody = mmsg[mmsg.index('<title type=\"html\">')+19:mmsg.index('</title>')]
+					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
+					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
 
 				if submode == 'full':
 					msg += u' • ' + ttitle+ '\n'
@@ -1323,6 +1373,8 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'youtube', youtube, 2),
+         (1, prefix+u'wz', weather, 2),
+         (1, prefix+u'wzz', weather_raw, 2),
          (1, prefix+u'commands', info_comm, 1),
          (1, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
