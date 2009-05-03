@@ -70,11 +70,10 @@ def send_presence_all(sm):
 		baseArg = unicode(tocon)
 		if not tocon.count('/'):
 		        baseArg += u'/'+unicode(nickname)
-			sleep(0,2)
 	        conf = JID(baseArg)
 	        leave(conf,sm)
-		sleep(1)
 	        pprint('leave: '+tocon)
+	sleep(len(confbase)/2)
 
 #error handler
 debugmode = 0
@@ -218,6 +217,10 @@ def send_msg(mtype, mjid, mnick, mmessage):
                         mmessage = mnick+': '+mmessage
                 else:
                         mjid += '/' + mnick
+
+		while mmessage[-1:] == '\n' or mmessage[-1:] == '\t' or mmessage[-1:] == '\r' or mmessage[-1:] == ' ':
+			mmessage = mmessage[:-1]
+
                 cl.send(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
