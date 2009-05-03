@@ -1292,8 +1292,8 @@ def rss(type, jid, nick, text):
 
 #		writefile('settings/tempofeed',str(feed))
 
-		is_atom = feed[:100].count('http://www.w3.org/2005/Atom') and feed[:100].count('xml')
-		is_rss = feed[:100].count('rss') and feed[:100].count('xml')
+		is_atom = feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml')
+		is_rss = feed[:256].count('rss') and feed[:200].count('256')
 
 		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
@@ -1306,7 +1306,7 @@ def rss(type, jid, nick, text):
 
 			feed = unicode(feed, enc)
 			if is_rss:
-		        	feed = feed.split('<item>')
+		        	feed = feed.split('<item')
 			if is_atom:
 		        	feed = feed.split('<entry>')
 			msg = 'Feeds for '+link+' '
@@ -1401,8 +1401,8 @@ def rss(type, jid, nick, text):
         	feed = f.read()
 		f.close()
 
-		is_atom = feed[:100].count('http://www.w3.org/2005/Atom') and feed[:100].count('xml')
-		is_rss = feed[:100].count('rss') and feed[:100].count('xml')
+		is_atom = feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml')
+		is_rss = feed[:256].count('rss') and feed[:256].count('xml')
 
 		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
@@ -1414,8 +1414,10 @@ def rss(type, jid, nick, text):
 				enc = 'UTF-8'
 		
 	        	feed = unicode(feed, enc)
+			feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
+
 			if is_rss:
-		        	feed = feed.split('<item>')
+		        	feed = feed.split('<item')
 			if is_atom:
 		        	feed = feed.split('<entry>')
 	        	msg = 'Feeds for '+link+' '
@@ -1441,12 +1443,14 @@ def rss(type, jid, nick, text):
 				if ii[2] == jid and ii[0] == link:
 					 tstop = ii[1]
 					 tstop = tstop[:-1]
+			for fff in feed:
+				print '***',fff,'\n'
 
 			mmsg = feed[0]
-	                msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+	                msg += mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
 			mmsg = feed[1]
 			if is_rss:
-				mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+				mmsg = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
 			if is_atom:
 				mmsg = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]+ '\n'
 			for dd in lastfeeds:
@@ -1459,8 +1463,8 @@ def rss(type, jid, nick, text):
                                 over = idx
 	        	        mmsg = feed[idx]
 				if is_rss:
-					ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
-					tbody = mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')]
+					ttitle = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
+					tbody = mmsg[mmsg.find('>',mmsg.index('<description'))+1:mmsg.index('</description>')]
 				if is_atom:
 					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
 					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]

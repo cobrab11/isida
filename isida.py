@@ -6,9 +6,7 @@ from random import *
 from sys import maxint
 from time import *
 from pdb import *
-import os, xmpp, time, sys, time, pdb, urllib, re
-import logging
-import thread
+import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator
 
 LOG_FILENAME = 'log/error.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
@@ -185,43 +183,45 @@ comms = update_prefix(old_prefix, prefix, comms)
 
 
 def send_msg(mtype, mjid, mnick, mmessage):
-        no_send = 1
-        log_limit = 50
-        if len(mmessage) <= log_limit:
-                log_record = mmessage
-        else:
-                log_record = mmessage[:log_limit] + ' [+' + str(len(mmessage)) +']'
+	if len(mmessage):
+	        no_send = 1
+	        log_limit = 50
+        	if len(mmessage) <= log_limit:
+        	        log_record = mmessage
+        	else:
+        	        log_record = mmessage[:log_limit] + ' [+' + str(len(mmessage)) +']'
 
-	pprint('['+mtype+'] '+log_record+' ['+mjid+'/'+mnick+']')
-        if len(mmessage) > msg_limit:
-                cnt = 0
-                maxcnt = len(mmessage)/msg_limit + 1
-                mmsg = mmessage
-                while len(mmsg) > msg_limit:
-                        tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg[:msg_limit]+'[...]'
+#		pprint('['+mtype+'] '+log_record+' ['+mjid+'/'+mnick+']')
+        	if len(mmessage) > msg_limit:
+        	        cnt = 0
+        	        maxcnt = len(mmessage)/msg_limit + 1
+        	        mmsg = mmessage
+        	        while len(mmsg) > msg_limit:
+        	                tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg[:msg_limit]+'[...]'
                         
-                        cnt += 1
-                        cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
-                        mmsg = mmsg[msg_limit:]
-                        sleep(1)
-                        
-                tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
-                cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
-                if mtype == 'chat':
-                        no_send = 0
-                else:
-                        mmessage = mmessage[:msg_limit] + '[...]'
-
-        if no_send:
-                if mtype == 'groupchat' and mnick != '':
-                        mmessage = mnick+': '+mmessage
-                else:
-                        mjid += '/' + mnick
-
-		while mmessage[-1:] == '\n' or mmessage[-1:] == '\t' or mmessage[-1:] == '\r' or mmessage[-1:] == ' ':
-			mmessage = mmessage[:-1]
-
-                cl.send(xmpp.Message(mjid, mmessage, mtype))
+        	                cnt += 1
+        	                cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+        	                mmsg = mmsg[msg_limit:]
+        	                sleep(1)
+        	                
+        	        tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
+        	        cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+        	        if mtype == 'chat':
+        	                no_send = 0
+        	        else:
+        	                mmessage = mmessage[:msg_limit] + '[...]'
+	
+        	if no_send:
+        	        if mtype == 'groupchat' and mnick != '':
+        	                mmessage = mnick+': '+mmessage
+        	        else:
+        	                mjid += '/' + mnick
+	
+			while mmessage[-1:] == '\n' or mmessage[-1:] == '\t' or mmessage[-1:] == '\r' or mmessage[-1:] == ' ':
+				mmessage = mmessage[:-1]
+	
+			if len(mmessage):
+		                cl.send(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
 	jSys = sys.platform
@@ -440,7 +440,7 @@ def messageCB(sess,mess):
 
         if type == 'groupchat' and nick != '' and jid != 'None':
                 talk_count(room,jid,nick,text)
-
+	no_comm = 1
         if (text != 'None') and (len(text)>2) and access_mode >= 0:
                 for parse in comms:
 			if access_mode >= parse[0] and nick != nowname:
@@ -455,6 +455,7 @@ def messageCB(sess,mess):
 
         		        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+					no_comm = 0
         	                        if not parse[3]:
         	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
        		                        elif parse[3] == 1:
@@ -462,6 +463,50 @@ def messageCB(sess,mess):
        		                        elif parse[3] == 2:
         	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
 					break
+
+#	if no_comm and text[:len(prefix)] == prefix and can_answer:
+#		text = text[len(prefix):]
+#		if len(text)>100:
+#			text = u'В руки тебе бы насрать за такие сообщения!'
+#		else:
+#			text = getAnswer(text)
+#		send_msg(type, room, nick, text)
+
+def getAnswer(tx):
+	maxcom = 0
+	poscom = 0
+	if len(answers):
+		anscom = answers[randint(0,len(answers)-1)]
+	else:
+		anscom = u':-\"'
+	for i in range(0,len(answers)):
+		ii = answers[i]
+		cmpr = compare(tx,ii[0])
+		if cmpr > maxcom:
+			maxcom = cmpr
+			poscom = i
+			anscom = answers[poscom][0]
+	answers.append((tx,poscom))
+	writefile(answ,str(answers))
+	return anscom
+
+def compare(aa,bb):
+	kpd = 0
+	if len(aa) > len(bb):
+		aa += aa
+	else:
+		bb += bb
+	if len(aa) > len(bb):
+		ab = len(bb)
+	else:
+		ab = len(aa)
+
+	for z in range(0,ab):
+		a = aa[z]
+		b = bb[z]
+		if operator.xor(ord(a),ord(b)) > 5:
+			kpd += 1
+	return kpd
 
 def presenceCB(sess,mess):
 	global jidbase, megabase, megabase2, ownerbase, agebase
@@ -757,6 +802,14 @@ if os.path.isfile(confs):
 else:
 	confbase = [defaultConf+u'/'+nickname]
 	writefile(confs,str(confbase))
+
+answ = 'settings/answers'
+
+if os.path.isfile(answ):
+	can_answer = 1
+	answers = eval(readfile(answ))
+else:
+	can_answer = 0
 
 pprint(u'****************************')
 pprint(u'*** Bot Name: '+botName)
