@@ -233,6 +233,7 @@ def set_prefix(type, jid, nick, text):
 
 def inban(type, jid, nick, text):
 	global banbase
+	banbase = []
 	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
 	cl.send(i)
 	while banbase == []:
