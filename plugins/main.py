@@ -1077,18 +1077,23 @@ def rss(type, jid, nick, text):
 
 #		writefile('settings/tempofeed',str(feed))
 
-		if feed[:100].count('rss') and feed[:100].count('xml'):
+		is_atom = feed[:100].count('http://www.w3.org/2005/Atom') and feed[:100].count('xml')
+		is_rss = feed[:100].count('rss') and feed[:100].count('xml')
 
+		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
 			if encidx >= 0:
 				enc = feed[encidx+10:encidx+30]
 				enc = enc[:enc.index('?>')-1]
 				enc = enc.upper()
 			else:
-				enc = 'WINDOWS-1251'
+				enc = 'UTF-8'
 
 			feed = unicode(feed, enc)
-			feed = feed.split('<item>')
+			if is_rss:
+		        	feed = feed.split('<item>')
+			if is_atom:
+		        	feed = feed.split('<entry>')
 			msg = 'Feeds for '+link+' '
 
 			lng = 2
@@ -1104,7 +1109,10 @@ def rss(type, jid, nick, text):
 			mmsg = feed[0]
 			msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			mmsg = feed[1]
-			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			if is_rss:
+				mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			if is_atom:
+				mmsg = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]+ '\n'
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
@@ -1112,17 +1120,27 @@ def rss(type, jid, nick, text):
 			writefile(lafeeds,str(lastfeeds))
 			for idx in range(1,lng):
 				mmsg = feed[idx]
+				if is_rss:
+					ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
+					tbody = mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')]
+				if is_atom:
+					ttitle = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]
+					tbody = mmsg[mmsg.index('<title type=\"html\">')+19:mmsg.index('</title>')]
+
 				if submode == 'full':
-					msg += u' • ' + mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
-					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
+					msg += u' • ' + ttitle+ '\n'
+					msg += tbody + '\n\n'
 				elif submode == 'body':
-					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
+					msg += tbody + '\n'
 				elif submode[:4] == 'head':
-					msg += u' • ' + mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+					msg += u' • ' + ttitle + '\n'
 			msg = rss_replace(msg)
 			msg = rss_del_html(msg)
 			msg = rss_replace(msg)
 			msg = rss_del_nn(msg)
+
+			if submode == 'body' or submode == 'head':
+				msg = msg[:-1]
 
 #			writefile('settings/tmpfeed',str(msg))
 
@@ -1168,18 +1186,23 @@ def rss(type, jid, nick, text):
         	feed = f.read()
 		f.close()
 
-#		writefile('settings/tempofeed',str(feed))
-		if feed[:100].count('rss') and feed[:100].count('xml'):
+		is_atom = feed[:100].count('http://www.w3.org/2005/Atom') and feed[:100].count('xml')
+		is_rss = feed[:100].count('rss') and feed[:100].count('xml')
+
+		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
 			if encidx >= 0:
 				enc = feed[encidx+10:encidx+30]
 				enc = enc[:enc.index('?>')-1]
 				enc = enc.upper()
 			else:
-				enc = 'WINDOWS-1251'
+				enc = 'UTF-8'
 		
 	        	feed = unicode(feed, enc)
-	        	feed = feed.split('<item>')
+			if is_rss:
+		        	feed = feed.split('<item>')
+			if is_atom:
+		        	feed = feed.split('<entry>')
 	        	msg = 'Feeds for '+link+' '
 	
 	        	if len(text) > 2:
@@ -1207,7 +1230,10 @@ def rss(type, jid, nick, text):
 			mmsg = feed[0]
 	                msg += mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			mmsg = feed[1]
-			mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			if is_rss:
+				mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
+			if is_atom:
+				mmsg = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]+ '\n'
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
@@ -1217,16 +1243,21 @@ def rss(type, jid, nick, text):
 	        	for idx in range(1,lng):
                                 over = idx
 	        	        mmsg = feed[idx]
-				ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
-#				print '['+ttitle+']-['+tstop+']'
+				if is_rss:
+					ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
+					tbody = mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')]
+				if is_atom:
+					ttitle = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]
+					tbody = mmsg[mmsg.index('<title type=\"html\">')+19:mmsg.index('</title>')]
+
                                 if mode == 'new':
         				if ttitle == tstop:
         					break
 				if submode == 'full':
 		        	        msg += u' • ' + ttitle + '\n'
-					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n\n'
+					msg += tbody + '\n\n'
 				elif submode == 'body':
-					msg += mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')] + '\n'
+					msg += tbody + '\n'
 				elif submode[:4] == 'head':
 		        	        msg += u' • ' + ttitle+ '\n'
 
@@ -1235,6 +1266,9 @@ def rss(type, jid, nick, text):
                                         nosend = 1
                                 elif over == 1 and text[4] != 'silent':
                                         msg = 'New feeds not found! '
+
+			if submode == 'body' or submode == 'head':
+				msg = msg[:-1]
 
 			msg = rss_replace(msg)
 			msg = rss_del_html(msg)
@@ -1245,6 +1279,8 @@ def rss(type, jid, nick, text):
 
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
+
+
 		else:
 			msg = u'bad url or rss not found!'
         if not nosend:
