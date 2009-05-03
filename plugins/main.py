@@ -1,5 +1,32 @@
 # -*- coding: utf-8 -*-
 
+def weather_city(type, jid, nick, text):
+	text = text.upper()
+	text = text.split(' ')
+
+	link = 'http://weather.noaa.gov/weather/'+text[0]+'_cc.html'
+	f = urllib.urlopen(link)
+	wzz = f.read()
+	f.close()
+
+	if wzz.count('Not Found'):
+		msg = u'Я не знаю такой страны!'
+	else:
+		wzpos = wzz.find('<select name=\"cccc\">')
+		wzz = wzz[wzpos:wzz.find('</select>',wzpos)]
+
+		wzz = wzz.split('<OPTION VALUE=\"')
+		msg = u'Города по запросу: '
+		not_add = 1
+		for wzzz in wzz:
+			if wzzz.lower().count(text[1].lower()):
+				msg += '\n'+wzzz.replace('\">',' -')[:-1]
+				not_add = 0
+		if not_add:
+			msg = u'Такой город не найден!'
+
+        send_msg(type, jid, nick, msg)
+
 def defcode(type, jid, nick, text):
 	dcnt = text[0]
 	ddef = text[1:4]
@@ -1438,6 +1465,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (1, prefix+u'youtube', youtube, 2),
+         (0, prefix+u'wzcity', weather_city, 2),
          (1, prefix+u'wzz', weather_raw, 2),
          (0, prefix+u'wz', weather, 2),
          (1, prefix+u'commands', info_comm, 1),
