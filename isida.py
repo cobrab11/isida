@@ -2,7 +2,6 @@
 # -*- coding: utf -*-
 from xmpp import *
 from sys import argv
-from time import sleep
 from random import *
 from sys import maxint
 from time import *
@@ -451,7 +450,7 @@ def messageCB(sess,mess):
 					text = prefix + text
 
 
-        		        if text[:len(parse[1])].lower() == parse[1].lower():
+        		        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
         	                        if not parse[3]:
         	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
@@ -462,7 +461,7 @@ def messageCB(sess,mess):
 					break
 
 def presenceCB(sess,mess):
-	global jidbase, megabase, megabase2, ownerbase
+	global jidbase, megabase, megabase2, ownerbase, agebase
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
         text=unicode(mess.getStatus())
@@ -543,6 +542,24 @@ def presenceCB(sess,mess):
 	if not jidbase.count(jid) and jid != 'None':
 		jidbase.append(jid)
 		writefile(jidbasefile,str(jidbase))
+
+	if jid != 'None':
+		tt = int(time.time())
+		was_found = 0
+		for ab in agebase:
+			if ab[2]==getRoom(jid.lower()) and ab[0]==room:
+				agebase.remove(ab)
+				if type=='unavailable':
+					agebase.append((room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1))
+				else:
+					if ab[5]:
+						agebase.append((room, nick,getRoom(jid.lower()),tt,ab[4],0))
+					else:
+						agebase.append((room, nick,getRoom(jid.lower()),ab[3],ab[4],0))
+				was_found = 1
+		if not was_found:		
+			agebase.append((room, nick,getRoom(jid.lower()),tt,0,0))
+		writefile(agest,unicode(agebase))
 
 def onoff(msg):
         if msg:
@@ -727,6 +744,13 @@ else:
 	ignorebase = []
 	writefile(ignores,str(ignorebase))
 
+agest = 'settings/agestat'
+
+if os.path.isfile(agest):
+	agebase = eval(readfile(agest))
+else:
+	agebase = []
+	writefile(agest,str(agebase))
 
 confs = 'settings/conf'
 
@@ -792,9 +816,11 @@ while 1:
 		while not game_over:
         		cl.Process(1)
 			schedule()
+		close_age()
 		break
 
 	except KeyboardInterrupt:
+		close_age()
 		StatusMessage = 'Shut down by CTRL+C'
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
@@ -803,6 +829,7 @@ while 1:
 		sys.exit(0)
 
 	except Exception, SM:
+		close_age()
 		pprint('*** Error *** '+str(SM)+' ***')
                 logging.exception(' ['+timeadd(localtime())+'] ')
                 if debugmode:

@@ -1,5 +1,46 @@
 # -*- coding: utf-8 -*-
 
+def true_age(type, jid, nick, text):
+	if text == '':
+		text = nick
+	is_found = 0
+	ms = []
+	for aa in agebase:
+		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
+			if aa[5]:
+				r_age = aa[4]
+			else:
+				r_age = int(time.time())-aa[3]+aa[4]
+			ms.append((aa[1],r_age))
+			is_found = 1
+	if is_found:
+		lms = len(ms)
+		for i in range(0,lms-1):
+			for j in range(i,lms):
+				if ms[i][1] < ms[j][1]:
+					jj = ms[i]
+					ms[i] = ms[j]
+					ms[j] = jj
+		if lms > 10:
+			lms = 10
+		msg = u'Возраст:'
+		for i in range(0,lms):
+			msg += '\n'+ms[i][0]+'\t'+str(ms[i][1])
+	else:
+		msg = u'Не найдено!'
+
+#agebase.append((room, nick,getRoom(jid),tt,ab[4],0))
+        send_msg(type, jid, nick, msg)
+
+def close_age():
+	global agest, agebase
+	taa = []
+	tt = int(time.time())
+	for ab in agebase:
+		taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
+	agebase = taa
+	writefile(agest,unicode(agebase))
+
 def weather_city(type, jid, nick, text):
 	text = text.upper()
 	text = text.split(' ')
@@ -1448,6 +1489,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'restart', bot_restart, 2),
          (2, prefix+u'update', bot_update, 2),
          (1, prefix+u'say', say, 2),
+         (1, prefix+u'age', true_age, 2),
          (2, prefix+u'gsay', gsay, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),
