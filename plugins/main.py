@@ -1,6 +1,20 @@
 # -*- coding: utf-8 -*-
 
 def true_age(type, jid, nick, text):
+	text = text.split(' ')
+	llim = 10
+	if len(text)>=2:
+		try:
+			llim = int(text[0])
+		except:
+			llim = 10
+
+		text = text[1]
+	else:
+		text = text[0]
+
+	if llim > 100:
+		llim = 100
 	if text == '':
 		text = nick
 	is_found = 0
@@ -21,8 +35,8 @@ def true_age(type, jid, nick, text):
 					jj = ms[i]
 					ms[i] = ms[j]
 					ms[j] = jj
-		if lms > 10:
-			lms = 10
+		if lms > llim:
+			lms = llim
 		msg = u'Возраст:'
 		for i in range(0,lms):
 			msg += '\n'+ms[i][0]+'\t'+str(ms[i][1])
