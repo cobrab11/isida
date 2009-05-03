@@ -128,10 +128,11 @@ def weather(type, jid, nick, text):
 
 		msg += '\n'+ wzz[6]
 		if len(wzzsky):
-			msg += ', '+ wzzsky[wzzsky.find(':')+1:]
+			msg += ','+ wzzsky[wzzsky.find(':')+1:]
 		if len(wzzclo):
-			msg += ', '+ wzzclo[wzzclo.find(':')+1:]
-
+			msg += ','+ wzzclo[wzzclo.find(':')+1:]
+		if not (len(wzzsky)+len(wzzclo)):
+			msg += ', clear'
 
 		msg += '\n'+ wzz[3][:-2]
 		
