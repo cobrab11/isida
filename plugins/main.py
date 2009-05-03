@@ -1233,7 +1233,7 @@ def rss(type, jid, nick, text):
 			if is_rss:
 				mmsg = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]+ '\n'
 			if is_atom:
-				mmsg = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]+ '\n'
+				mmsg = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]+ '\n'
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
@@ -1247,8 +1247,8 @@ def rss(type, jid, nick, text):
 					ttitle = mmsg[mmsg.index('<title>')+7:mmsg.index('</title>')]
 					tbody = mmsg[mmsg.index('<description>')+13:mmsg.index('</description>')]
 				if is_atom:
-					ttitle = mmsg[mmsg.index('<content type=\"html\">')+21:mmsg.index('</content>')]
-					tbody = mmsg[mmsg.index('<title type=\"html\">')+19:mmsg.index('</title>')]
+					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
+					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
 
                                 if mode == 'new':
         				if ttitle == tstop:
