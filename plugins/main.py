@@ -7,6 +7,8 @@ def weather_raw(type, jid, nick, text):
 	msg = f.read()
 	f.close()
 
+	msg = msg[:-1]
+
 	if msg.count('Not Found'):
 		msg = u'Город не найден!'
 
@@ -26,12 +28,11 @@ def weather(type, jid, nick, text):
 		msg = wzz[0][:wzz[0].find(')')+1]
 		msg += '\n'+ wzz[1]
 
-		wzz1 = wzz[2].find('(')
-		wzz2 = wzz[2].find(')',wzz1)
-		wzz3 = wzz[2].find(':',wzz2)
-		msg += '\n'+ wzz[2][:wzz1-1] + wzz[2][wzz2+1:wzz3]
-
-		msg += '\n'+ wzz[3][:-2]
+		if wzz[4][:3] == 'Sky':
+			wzzsky = wzz[4]
+			wzz.remove(wzz[4])
+		else:
+			wzzsky = ''
 
 		wzz1 = wzz[4].find(':')+1
 		wzz2 = wzz[4].find('(',wzz1)
@@ -42,7 +43,18 @@ def weather(type, jid, nick, text):
 		wzz2 = wzz[5].find('(',wzz1)
 		wzz3 = wzz[5].find(')',wzz2)
 		msg += ', '+ wzz[5][:wzz1] + ' ' + wzz[5][wzz2+1:wzz3]
+
+		wzz1 = wzz[2].find('(')
+		wzz2 = wzz[2].find(')',wzz1)
+		wzz3 = wzz[2].find(':',wzz2)
+		msg += '\n'+ wzz[2][:wzz1-1] + wzz[2][wzz2+1:wzz3]
+
 		msg += '\n'+ wzz[6]
+		if len(wzzsky):
+			msg += ', '+ wzzsky
+
+		msg += '\n'+ wzz[3][:-2]
+		
 		wzz1 = wzz[7].find('(')
 		wzz2 = wzz[7].find(':',wzz1)
 		wzz3 = wzz[7].find('(',wzz2)
