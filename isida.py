@@ -71,9 +71,10 @@ def send_presence_all(sm):
 		baseArg = unicode(tocon)
 		if not tocon.count('/'):
 		        baseArg += u'/'+unicode(nickname)
-			sleep(0,05)
+			sleep(0,2)
 	        conf = JID(baseArg)
 	        leave(conf,sm)
+		sleep(1)
 	        pprint('leave: '+tocon)
 
 #error handler
