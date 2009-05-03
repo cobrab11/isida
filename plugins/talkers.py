@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+tab_size = 12
+
 # Поиск по глобальной базе "болтунов"
 def gtalkers(type, jid, nick, text):
 	tbasefile = 'settings/talkers'
@@ -10,7 +12,6 @@ def gtalkers(type, jid, nick, text):
         	tbase = []
         	writefile(tbasefile,str(tbase))
         jidc = []
-        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.\tКонфа'
         
         if text == '':
                 for tt in tbase:
@@ -29,8 +30,24 @@ def gtalkers(type, jid, nick, text):
 
         if len(jidc)> 10:
                 jidc = jidc[:10]
+	maxlen = 0
+	for tt in jidc:
+		if len(tt[2])>maxlen:
+			maxlen=len(tt[2])
+	tabz = ''
+	while maxlen >=0:
+		tabz+='\t'
+		maxlen -= tab_size
+
+        msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.\tКонфа'
+
         for tt in jidc:
-                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+		ml = len(tt[2])
+		ttz = tabz
+		while ml >= tab_size:
+			ttz = ttz[:-1]
+			ml -= tab_size
+                msg += u'\n'+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
 	send_msg(type, jid, nick, msg)
 	
 
@@ -63,8 +80,25 @@ def talkers(type, jid, nick, text):
 
         if len(jidc)> 10:
                 jidc = jidc[:10]
+
+	maxlen = 0
+	for tt in jidc:
+		if len(tt[2])>maxlen:
+			maxlen=len(tt[2])
+	tabz = ''
+	while maxlen >=0:
+		tabz+='\t'
+		maxlen -= tab_size
+
+        msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.'
+
         for tt in jidc:
-                msg += u'\n'+tt[2] +u'\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+		ml = len(tt[2])
+		ttz = tabz
+		while ml >= tab_size:
+			ttz = ttz[:-1]
+			ml -= tab_size
+                msg += u'\n'+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
 	send_msg(type, jid, nick, msg)
 	
 
