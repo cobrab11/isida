@@ -496,11 +496,17 @@ def get_access(cjid, cnick):
 				if base[3]==u'admin' or base[3]==u'owner':
         				access_mode = 1
 
+	for iib in ignorebase:
+		grj = getRoom(jid)
+		if iib == grj:
+			access_mode = -1
+			break
+		if not (iib.count('.')+iib.count('@')) and grj.count(iib):
+			access_mode = -1
+			break
+
 	if ownerbase.count(getRoom(jid)):
 		access_mode = 2
-
-	if ignorebase.count(getRoom(jid)):
-		access_mode = -1
 
 	if jid == 'None' and ownerbase.count(getRoom(cjid)):
 		access_mode = 2
@@ -883,7 +889,10 @@ def ignore(type, jid, nick, text):
 
 	msg = u'Я не принимаю команды от: '
 	for jjid in ignorebase:
-			msg += jjid+', '
+			if jjid.count('@') and jjid.count('.'):
+				msg += jjid+', '
+			else:
+				msg += '*'+jjid+'*, '
 	msg = msg[:-2]
 	writefile(ignores,str(ignorebase))
         send_msg(type, jid, nick, msg)

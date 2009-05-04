@@ -465,14 +465,12 @@ def messageCB(sess,mess):
         	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
 					break
 
-	if no_comm and text[:len(prefix)] == prefix and can_answer:
-#		text = text[len(prefix):]
-#		if len(text)>100:
-#			text = u'В руки тебе бы насрать за такие сообщения!'
-#		else:
-#			text = getAnswer(text)
-
-		text = u'Хватит к девушке приставать не пойми с чем...'
+	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0:
+		text = text[len(prefix):]
+		if len(text)>100:
+			text = u'В руки тебе бы насрать за такие сообщения!'
+		else:
+			text = u'Хватит к девушке приставать не пойми с чем...' # text = getAnswer(text)
 		send_msg(type, room, nick, text)
 
 def getAnswer(tx):
