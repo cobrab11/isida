@@ -609,11 +609,11 @@ def helpme(type, jid, nick, text):
 	helps = []
 	if os.path.isfile(hlpfile):
 		hlp = readfile(hlpfile)
-		hlp = hlp.split('[')
+		hlp = hlp.split('{')
 		for hh in hlp:
 			if len(hh):
 				hh = hh.decode('utf-8')
-				hhh = hh.split(']')
+				hhh = hh.split('}')
 				helps.append((hhh[0],hhh[1][:-1]))
 
 	mesg = u'Префикс команд: '+get_prefix()+u'\nДоступна справка по командам:\n'
