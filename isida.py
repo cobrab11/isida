@@ -363,6 +363,7 @@ def iqCB(sess,iq):
 				else:
 					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 				banbase.append((cjid, creason))
+			banbase.append((u'TheEnd', u'None'))
  
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):

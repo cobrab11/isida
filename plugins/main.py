@@ -37,9 +37,12 @@ def true_age(type, jid, nick, text):
 					ms[j] = jj
 		if lms > llim:
 			lms = llim
-		msg = u'Возраст:'
-		for i in range(0,lms):
-			msg += '\n'+ms[i][0]+'\t'+str(ms[i][1])
+		if lms == 1 and nick == text:
+			msg = u'Время твоего нахождения в конфе: '+str(ms[0][1])
+		else:
+			msg = u'Время нахождения в конфе:'
+			for i in range(0,lms):
+				msg += '\n'+ms[i][0]+'\t'+str(ms[i][1])
 	else:
 		msg = u'Не найдено!'
 
@@ -52,6 +55,18 @@ def close_age():
 	tt = int(time.time())
 	for ab in agebase:
 		taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
+	agebase = taa
+	writefile(agest,unicode(agebase))
+
+def close_age_room(room):
+	global agest, agebase
+	taa = []
+	tt = int(time.time())
+	for ab in agebase:
+		if getRoom(ab[0]) == getRoom(room):
+			taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
+		else:
+			taa.append(ab)
 	agebase = taa
 	writefile(agest,unicode(agebase))
 
@@ -252,6 +267,9 @@ def inban(type, jid, nick, text):
 	cl.send(i)
 	while banbase == []:
 		sleep(0.5)
+	while banbase[-1] != (u'TheEnd', u'None'):
+		sleep(0.1)
+
 	msg = u'Всего в бане: '+str(len(banbase))
 	if text != '':
 		mmsg = u', найдено:\n'
@@ -1292,8 +1310,12 @@ def rss(type, jid, nick, text):
 
 #		writefile('settings/tempofeed',str(feed))
 
-		is_atom = feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml')
-		is_rss = feed[:256].count('rss') and feed[:256].count('xml')
+		if feed[:256].count('rss') and feed[:256].count('xml'):
+			is_rss = 1
+			is_atom = 0
+		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
+			is_atom = 1
+			is_rss = 0
 
 		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
@@ -1305,7 +1327,8 @@ def rss(type, jid, nick, text):
 				enc = 'UTF-8'
 
 			feed = unicode(feed, enc)
-			feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
+			if feed.count('<items>'):
+				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
 
 			if is_rss:
 		        	feed = feed.split('<item')
@@ -1404,8 +1427,12 @@ def rss(type, jid, nick, text):
         	feed = f.read()
 		f.close()
 
-		is_atom = feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml')
-		is_rss = feed[:256].count('rss') and feed[:256].count('xml')
+		if feed[:256].count('rss') and feed[:256].count('xml'):
+			is_rss = 1
+			is_atom = 0
+		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
+			is_atom = 1
+			is_rss = 0
 
 		if is_atom or is_rss:
 			encidx = feed.find('encoding=')
@@ -1417,7 +1444,8 @@ def rss(type, jid, nick, text):
 				enc = 'UTF-8'
 		
 	        	feed = unicode(feed, enc)
-			feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
+			if feed.count('<items>'):
+				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
 
 			if is_rss:
 		        	feed = feed.split('<item')
