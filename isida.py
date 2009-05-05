@@ -467,7 +467,8 @@ def messageCB(sess,mess):
         	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
 					break
 
-	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname:
+#	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname:
+	if no_comm and text[:len(prefix)] == prefix and access_mode >= 0 and ft[:len(nowname)] == nowname:
 		text = text[len(prefix):]
 		if len(text)>100:
 			text = u'В руки тебе бы насрать за такие сообщения!'
