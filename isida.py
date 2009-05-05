@@ -423,6 +423,8 @@ def messageCB(sess,mess):
 
 # 0 - конфа # 1 - ник # 2 - роль # 3 - аффиляция # 4 - jid
 
+        ft = text
+
         ta = get_access(room,nick)
 
         access_mode = ta[0]
@@ -458,20 +460,36 @@ def messageCB(sess,mess):
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 					no_comm = 0
         	                        if not parse[3]:
-        	                                thread.start_new_thread(parse[2],(type, room, nick, parse[4:]))
+        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, parse[4:]))
        		                        elif parse[3] == 1:
-       		                                thread.start_new_thread(parse[2],(type, room, nick))
+       		                                thread.start_new_thread(thread_log,(parse[2], type, room, nick))
        		                        elif parse[3] == 2:
-        	                                thread.start_new_thread(parse[2],(type, room, nick, text[len(parse[1])+1:]))
+        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
 					break
 
-	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0:
+	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname:
 		text = text[len(prefix):]
 		if len(text)>100:
 			text = u'В руки тебе бы насрать за такие сообщения!'
 		else:
-			text = u'Хватит к девушке приставать не пойми с чем...' # text = getAnswer(text)
+			text = breds[randint(0,len(breds)-1)] # text = getAnswer(text)
 		send_msg(type, room, nick, text)
+
+breds = [u'Хватит к девушке приставать не пойми с чем...',
+         u'Ща папу позову - он тебя зобанит!',
+         u'Нихьт ферштеен!',
+         u'Отстань',
+         u'Мая твая нипанимает никуя!']
+
+# исправить этот костыль!!!
+def thread_log(proc, *params):
+        try:
+                if len(params) == 3:
+                        proc(params[0], params[1], params[2])
+                else:
+                        proc(params[0], params[1], params[2], params[3])
+        except:
+                logging.exception(' ['+timeadd(localtime())+'] ')
 
 def getAnswer(tx):
 	maxcom = 0

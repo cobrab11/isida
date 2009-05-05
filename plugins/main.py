@@ -405,22 +405,30 @@ def stats(type, jid, nick):
                         msg += '\n'+str(va)+' '+str(vars[va])
 
         send_msg(type, jid, nick, msg)
+
 	
-
 def show_error(type, jid, nick, text):
-	if len(text)>0:
+        if text.lower() == 'clear':
+                writefile(LOG_FILENAME,'')
+        try:
 		cmd = int(text)
-	else:
-		cmd = 1
+        except:
+                cmd = 1
 
-	if os.path.isfile(LOG_FILENAME):
+	if os.path.isfile(LOG_FILENAME) and text.lower() != 'clear':
 		log = str(readfile(LOG_FILENAME))
                 log = log.split('ERROR:')
 
                 lll = len(log)
-        	msg = u'Total Error(s): '+str(lll-1)+', Last:\n'
-                for aa in range(lll-cmd,lll):
-                        msg += log[aa]+'\n'
+                if cmd > lll:
+                        cmd = lll
+                
+        	msg = u'Total Error(s): '+str(lll-1)+'\n'
+        	if text != '':
+                        for aa in range(lll-cmd,lll):
+                                msg += log[aa]+'\n'
+                else:
+                        msg += ' '
                 msg = msg[:-2]
         else:
                 msg = u'No Errors'
@@ -497,11 +505,11 @@ def get_access(cjid, cnick):
         				access_mode = 1
 
 	for iib in ignorebase:
-		grj = getRoom(jid)
-		if iib == grj:
+		grj = getRoom(jid.lower())
+		if iib.lower() == grj:
 			access_mode = -1
 			break
-		if not (iib.count('.')+iib.count('@')) and grj.count(iib):
+		if not (iib.count('.')+iib.count('@')) and grj.count(iib.lower()):
 			access_mode = -1
 			break
 
@@ -691,7 +699,8 @@ def bot_rejoin(type, jid, nick, text):
                              
 	lastserver = getServer(text)
 	lastnick = getResourse(text)
-	lroom = text
+
+	lroom = text
                                 
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 		pprint(u'rejoin '+text+' by '+nick)
@@ -876,7 +885,7 @@ def owner(type, jid, nick, text):
 def ignore(type, jid, nick, text):
 	global ignorebase, ignores, god
 	do = text[:3]
-	nnick = text[4:]
+	nnick = text[4:].lower()
 	pprint('ignore '+do+' '+nnick)
 	if do == 'add':
                 if not ignorebase.count(nnick):
@@ -1161,7 +1170,8 @@ def real_search(type, jid, nick, text):
 			if mega1[2] != 'None' and mega1[3] != 'None':
 				for mega2 in mega1:
 		                        if mega2.lower().count(text.lower()):
-	        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])						msg += ' in '+unicode(mega1[0])
+	        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+						msg += ' in '+unicode(mega1[0])
 	        	                	fl = 0
 						break
                 if fl:
@@ -1216,14 +1226,13 @@ lafeeds = 'settings/lastfeeds'
 def rss(type, jid, nick, text):
         msg = u'rss show|add|del|clear|new|get'
 	nosend = 0
-	text = text.lower()
         text = text.split(' ')
         tl = len(text)
 
         if tl < 5:
                 text.append('!')
                 
-	mode = text[0] # show | add | del | clear | new | get
+	mode = text[0].lower() # show | add | del | clear | new | get
 
 	if mode == 'add':
                 if tl < 4:
@@ -1324,6 +1333,9 @@ def rss(type, jid, nick, text):
 			is_atom = 0
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
 			is_atom = 1
+			is_rss = 0
+                else: 
+			is_atom = 0
 			is_rss = 0
 
 		if is_atom or is_rss:
@@ -1441,6 +1453,9 @@ def rss(type, jid, nick, text):
 			is_atom = 0
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
 			is_atom = 1
+			is_rss = 0
+                else: 
+			is_atom = 0
 			is_rss = 0
 
 		if is_atom or is_rss:

@@ -127,6 +127,9 @@ wzcity страна город, где страна - двухбуквенное
 age [number][word]
 number - максимальное количество при поиске,
 word - поиск слова в нике/jid'е
+{error}
+Обработчик ошибок.
+error [number|clear]
 {about}
       Isida Jabber-bot
  основана на библиотеке xmpppy
