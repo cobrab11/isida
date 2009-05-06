@@ -145,9 +145,13 @@ error [number|clear]
 {wtf}
 Показ определения.
 {dfn}
-Установка определния.
+Установка определения.
 dfn word=definition - запоминает definition как определение word
 dfn word= - удаляет определение word
+{gdfn}
+Установка глобального определения.
+gdfn word=definition - запоминает definition как определение word
+gdfn word= - удаляет определение word
 {about}
       Isida Jabber-bot
  основана на библиотеке xmpppy
