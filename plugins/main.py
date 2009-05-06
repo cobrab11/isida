@@ -120,38 +120,38 @@ def wtf_get(ff,type, jid, nick, text):
 
 def dfn(type, jid, nick, text):
 	global wbase, wtfbase
-	ta = get_access(jid,nick)
-	msg = u'Алярма! Тебе низя это делать!'
-	if ta[0]>=1:
-		realjid =ta[1]
-		msg = u'Чего запомнить то надо?'
-		if len(text) and text.count('='):
+	msg = u'Чего запомнить то надо?'
+	if len(text) and text.count('='):
 
-			ti = text.index('=')
-			what = text[:ti]
-			text = text[ti+1:]
+	        ta = get_access(jid,nick)
 
-			if os.path.isfile(wbase):
-				wtfbase = eval(readfile(wbase))
-			else:
-				wtfbase = []
+	        realjid =ta[1]
+
+		ti = text.index('=')
+		what = text[:ti]
+		text = text[ti+1:]
+
+		if os.path.isfile(wbase):
+			wtfbase = eval(readfile(wbase))
+		else:
+			wtfbase = []
+			writefile(wbase,str(wtfbase))
+
+		was_found = 0
+		for ww in wtfbase:
+			if jid == ww[0] and what == ww[3]:
+				if text == '':
+					msg = u'Жаль, что такую полезную хренотень надо забыть...'
+				else:
+					msg = u'Боян, но я запомню!'
+				wtfbase.remove(ww)
 				writefile(wbase,str(wtfbase))
-
-			was_found = 0
-			for ww in wtfbase:
-				if jid == ww[0] and what == ww[3]:
-					if text == '':
-						msg = u'Жаль, что такую полезную хренотень надо забыть...'
-					else:
-						msg = u'Боян, но я запомню!'
-					wtfbase.remove(ww)
-					writefile(wbase,str(wtfbase))
-					was_found = 1			
-			if not was_found:
-				msg = u'Ммм.. что то новенькое, ща запомню!'
-			if text != '':
-				wtfbase.append((jid, realjid, nick, what, text, timeadd(localtime())))
-				writefile(wbase,str(wtfbase))
+				was_found = 1			
+		if not was_found:
+			msg = u'Ммм.. что то новенькое, ща запомню!'
+		if text != '':
+			wtfbase.append((jid, realjid, nick, what, text, timeadd(localtime())))
+			writefile(wbase,str(wtfbase))
 
         send_msg(type, jid, nick, msg)
 
