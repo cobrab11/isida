@@ -184,14 +184,15 @@ def gdfn(type, jid, nick, text):
 
 		was_found = 0
 		for ww in wtfbase:
-			if jid == 'global' and what == ww[3]:
+			if (ww[0] == 'global' or ww[0] == jid) and what == ww[3]:
 				if text == '':
 					msg = u'Жаль, что такую полезную хренотень надо забыть...'
 				else:
 					msg = u'Боян, но я запомню!'
 				wtfbase.remove(ww)
 				writefile(wbase,str(wtfbase))
-				was_found = 1			
+				was_found = 1
+		
 		if not was_found:
 			msg = u'Ммм.. что то новенькое, ща запомню!'
 		if text != '':
@@ -880,7 +881,7 @@ def hidden_clear(type, jid, nick):
                 cl.send(xmpp.Message(jid, '', "groupchat"))
                 time.sleep(1.05)
                 cntr=cntr-1
-        send_msg(type, jid, nick, u'стирильно!!!')
+        send_msg(type, jid, nick, u'стерильно!!!')
 	
 
 def bot_rejoin(type, jid, nick, text):
