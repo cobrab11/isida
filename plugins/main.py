@@ -1,5 +1,162 @@
 # -*- coding: utf-8 -*-
 
+def wtfsearch(type, jid, nick, text):
+	msg = u'Чего искать то будем?'
+	if len(text):
+		if os.path.isfile(wbase):
+			wtfbase = eval(readfile(wbase))
+		else:
+			wtfbase = []
+			writefile(wbase,str(wtfbase))
+
+		msg = ''
+		for ww in wtfbase:
+			if jid == ww[0]:
+				for www in ww[1:]:
+					if www.lower().count(text.lower()):
+						msg += ww[3]+', '
+						break
+		if len(msg):
+			msg = u'Нечто похожее я видела в: '+msg[:-2]
+		else:
+			msg = u'Хм. Ничего похожего я не знаю...'
+
+        send_msg(type, jid, nick, msg)
+
+def wwtf(type, jid, nick, text):
+	msg = u'Чего искать то будем?'
+	if len(text):
+		if os.path.isfile(wbase):
+			wtfbase = eval(readfile(wbase))
+		else:
+			wtfbase = []
+			writefile(wbase,str(wtfbase))
+
+		msg = ''
+		for ww in wtfbase:
+			if jid == ww[0] and text == ww[3]:
+
+				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
+		if not len(msg):
+			msg = u'Хм. Мне про это никто не рассказывал...'
+
+        send_msg(type, jid, nick, msg)
+
+def wtfrand(type, jid, nick):
+	if os.path.isfile(wbase):
+		wtfbase = eval(readfile(wbase))
+	else:
+		wtfbase = []
+		writefile(wbase,str(wtfbase))
+
+	msg = []
+	for ww in wtfbase:
+		if jid == ww[0]:
+			msg.append(ww)
+	msg = msg[randint(0,len(msg)-1)]
+	msg = u'Я знаю, что '+msg[3]+u' - '+msg[4]
+
+        send_msg(type, jid, nick, msg)
+
+def wtfnames(type, jid, nick):
+	msg = u'Всё, что я знаю это: '
+	if os.path.isfile(wbase):
+		wtfbase = eval(readfile(wbase))
+	else:
+		wtfbase = []
+		writefile(wbase,str(wtfbase))
+
+	for ww in wtfbase:
+		if jid == ww[0]:
+			msg += ww[3]+', '
+
+	msg=msg[:-2]
+
+        send_msg(type, jid, nick, msg)
+
+def wtfcount(type, jid, nick):
+	msg = u'В этой конфе определений: '	if os.path.isfile(wbase):
+		wtfbase = eval(readfile(wbase))
+	else:
+		wtfbase = []
+		writefile(wbase,str(wtfbase))
+
+	cnt = 0
+	for ww in wtfbase:
+		if jid == ww[0]:
+			cnt += 1
+
+	msg += str(cnt)+u', Всего: '+str(len(wtfbase))
+
+        send_msg(type, jid, nick, msg)
+
+def wtf(type, jid, nick, text):
+	ff = 0
+	wtf_get(ff,type, jid, nick, text)
+
+def wtff(type, jid, nick, text):
+	ff = 1
+	wtf_get(ff,type, jid, nick, text)
+
+def wtf_get(ff,type, jid, nick, text):
+	msg = u'Чего искать то будем?'
+	if len(text):
+		if os.path.isfile(wbase):
+			wtfbase = eval(readfile(wbase))
+		else:
+			wtfbase = []
+			writefile(wbase,str(wtfbase))
+
+		msg = ''
+		for ww in wtfbase:
+			if jid == ww[0] and text == ww[3]:
+				msg = u'Я знаю, что '+text+u' - '+ww[4]
+				if ff:
+					msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
+		if not len(msg):
+			msg = u'Хм. Мне про это никто не рассказывал...'
+
+        send_msg(type, jid, nick, msg)
+
+def dfn(type, jid, nick, text):
+	global wbase, wtfbase
+	ta = get_access(jid,nick)
+	msg = u'Алярма! Тебе низя это делать!'
+	if ta[0]>=1:
+		realjid =ta[1]
+		msg = u'Чего запомнить то надо?'
+		if len(text) and text.count('='):
+
+			ti = text.index('=')
+			what = text[:ti]
+			text = text[ti+1:]
+
+			if os.path.isfile(wbase):
+				wtfbase = eval(readfile(wbase))
+			else:
+				wtfbase = []
+				writefile(wbase,str(wtfbase))
+
+			was_found = 0
+			for ww in wtfbase:
+				if jid == ww[0] and what == ww[3]:
+					if text == '':
+						msg = u'Жаль, что такую полезную хренотень надо забыть...'
+					else:
+						msg = u'Боян, но я запомню!'
+					wtfbase.remove(ww)
+					writefile(wbase,str(wtfbase))
+					was_found = 1			
+			if not was_found:
+				msg = u'Ммм.. что то новенькое, ща запомню!'
+			if text != '':
+				wtfbase.append((jid, realjid, nick, what, text, timeadd(localtime())))
+				writefile(wbase,str(wtfbase))
+
+        send_msg(type, jid, nick, msg)
+
+#--------
+
 def true_age(type, jid, nick, text):
 	text = text.split(' ')
 	llim = 10
@@ -579,7 +736,6 @@ def bot_exit(type, jid, nick, text):
 	writefile('settings/tmp',str('exit'))
 	sleep(3)
 	game_over = 1
-	sys.exit(0)	
 
 def bot_restart(type, jid, nick, text):
 	global game_over
@@ -589,7 +745,6 @@ def bot_restart(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('restart'))
 	game_over = 1
-	sys.exit(0)	
 
 def bot_update(type, jid, nick, text):
 	global game_over
@@ -599,7 +754,6 @@ def bot_update(type, jid, nick, text):
 	send_presence_all(StatusMessage)
 	writefile('settings/tmp',str('update'))
 	game_over = 1
-	sys.exit(0)	
 
 def say(type, jid, nick, text):
 	nick = ''
@@ -1072,17 +1226,18 @@ def info_serv(type, jid, nick, text):
 def info_base(type, jid, nick):
         msg = u'Чего искать то будем?'
 	if nick != '':
-        	msg = u'Найдено:'
+        	msg = u'Ты виден мне как '
                 fl = 1
                 for base in megabase:
-                        if base[1].lower().count(nick.lower()):
+                        if base[1].count(nick):
 				if base[0].lower() == jid:
 # 0 - конфа
 # 1 - ник
 # 2 - роль
 # 3 - аффиляция
 # 4 - jid
-	                        	msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] #+' '+base[4]
+#	                        	msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] +' '+base[4]
+	                        	msg += base[2]+'/'+base[3]
 	                        	fl = 0
                 if fl:
                         msg = '\''+nick+u'\' not found!'
@@ -1134,7 +1289,7 @@ def tmp_search(type, jid, nick, text):
         		                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
 						if mega1[4] != 'None':
 							msg += u' ('+unicode(mega1[4])+u')'
-						msg += ' in '+unicode(mega1[0])
+#						msg += ' in '+unicode(mega1[0])
         		                	fl = 0
 						break
                 if fl:
@@ -1596,6 +1751,14 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'tempo', tmp_search, 2),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
+         (0, prefix+u'wtfrand', wtfrand, 1),
+         (1, prefix+u'wtfnames', wtfnames, 1),
+         (1, prefix+u'wtfcount', wtfcount, 1),
+         (1, prefix+u'wtfsearch', wtfsearch, 2),
+         (2, prefix+u'wwtf', wwtf, 2),
+         (0, prefix+u'wtff', wtff, 2),
+         (0, prefix+u'wtf', wtf, 2),
+         (1, prefix+u'dfn', dfn, 2),
          (1, prefix+u'youtube', youtube, 2),
          (0, prefix+u'wzcity', weather_city, 2),
          (1, prefix+u'wzz', weather_raw, 2),

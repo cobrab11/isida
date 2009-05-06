@@ -823,6 +823,14 @@ else:
 	confbase = [defaultConf+u'/'+nickname]
 	writefile(confs,str(confbase))
 
+wbase = 'settings/wtfbase'
+
+if os.path.isfile(wbase):
+	wtfbase = eval(readfile(wbase))
+else:
+	wtfbase = []
+	writefile(wbase,str(wtfbase))
+
 answ = 'settings/answers'
 
 if os.path.isfile(answ):
