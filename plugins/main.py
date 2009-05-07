@@ -1560,7 +1560,6 @@ def rss(type, jid, nick, text):
 		        	feed = feed.split('<item')
 			if is_atom:
 		        	feed = feed.split('<entry>')
-			msg = 'Feeds for '+link+' '
 
 			lng = 2
 			if len(feed) <= lng:
@@ -1572,6 +1571,15 @@ def rss(type, jid, nick, text):
 				submode = text[3]
 			else:
 				submode = 'full'
+
+			msg = 'Feeds for '
+			if submode[-4:] == '-url':
+				submode = submode[:-4]
+				urlmode = 1
+
+			else:
+				urlmode = 0
+				msg += link+' '
 
 			mmsg = feed[0]
 			msg += mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
@@ -1590,9 +1598,14 @@ def rss(type, jid, nick, text):
 				if is_rss:
 					ttitle = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
 					tbody = mmsg[mmsg.find('>',mmsg.index('<description'))+1:mmsg.index('</description>')]
+					turl = mmsg[mmsg.find('>',mmsg.index('<link'))+1:mmsg.index('</link>')]
 				if is_atom:
 					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
 					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
+					tu1 = mmsg.index('<link')
+					tu2 = mmsg.find('href=\"',tu1)+6
+					tu3 = mmsg.find('\"',tu2)
+					turl = mmsg[tu2:tu3]
 
 				if submode == 'full':
 					msg += u' • ' + ttitle+ '\n'
@@ -1601,6 +1614,8 @@ def rss(type, jid, nick, text):
 					msg += tbody + '\n'
 				elif submode[:4] == 'head':
 					msg += u' • ' + ttitle + '\n'
+				if urlmode:
+					msg += turl+'\n'
 			msg = rss_replace(msg)
 			msg = rss_del_html(msg)
 			msg = rss_replace(msg)
@@ -1680,7 +1695,6 @@ def rss(type, jid, nick, text):
 		        	feed = feed.split('<item')
 			if is_atom:
 		        	feed = feed.split('<entry>')
-	        	msg = 'Feeds for '+link+' '
 	
 	        	if len(text) > 2:
 	        	        lng = int(text[2])+1
@@ -1697,6 +1711,14 @@ def rss(type, jid, nick, text):
 	        	else:
 	        	        submode = 'full'
 
+			msg = 'Feeds for '
+			if submode[-4:] == '-url':
+				submode = submode[:-4]
+				urlmode = 1
+
+			else:
+				urlmode = 0
+				msg += link+' '
 
 			tstop = ''
 			for ii in lastfeeds:
@@ -1723,9 +1745,14 @@ def rss(type, jid, nick, text):
 				if is_rss:
 					ttitle = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
 					tbody = mmsg[mmsg.find('>',mmsg.index('<description'))+1:mmsg.index('</description>')]
+					turl = mmsg[mmsg.find('>',mmsg.index('<link'))+1:mmsg.index('</link>')]
 				if is_atom:
 					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
 					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
+					tu1 = mmsg.index('<link')
+					tu2 = mmsg.find('href=\"',tu1)+6
+					tu3 = mmsg.find('\"',tu2)
+					turl = mmsg[tu2:tu3]
 
                                 if mode == 'new':
         				if ttitle == tstop:
@@ -1737,6 +1764,8 @@ def rss(type, jid, nick, text):
 					msg += tbody + '\n'
 				elif submode[:4] == 'head':
 		        	        msg += u' • ' + ttitle+ '\n'
+				if urlmode:
+					msg += turl+'\n'
 
                         if mode == 'new':
         		        if over == 1 and text[4] == 'silent':
