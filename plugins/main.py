@@ -92,7 +92,7 @@ def wtfcount(type, jid, nick):
 		elif ww[0] == 'import':
 			imp += 1
 
-	msg += str(cnt)+u', Всего: '+str(len(wtfbase))+u', Глобальных: '+str(glb)+u', Импортировано: '+str(imp)
+	msg += str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(len(wtfbase))
 
         send_msg(type, jid, nick, msg)
 
