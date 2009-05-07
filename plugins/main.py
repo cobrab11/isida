@@ -11,7 +11,7 @@ def wtfsearch(type, jid, nick, text):
 
 		msg = ''
 		for ww in wtfbase:
-			if jid == ww[0] or ww[0] == 'global':
+			if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
 				for www in ww[1:]:
 					if www.lower().count(text.lower()):
 						msg += ww[3]+', '
@@ -34,7 +34,7 @@ def wwtf(type, jid, nick, text):
 
 		msg = ''
 		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global') and text == ww[3]:
+			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and text == ww[3]:
 
 				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
 		if not len(msg):
@@ -51,7 +51,7 @@ def wtfrand(type, jid, nick):
 
 	msg = []
 	for ww in wtfbase:
-		if jid == ww[0] or ww[0] == 'global':
+		if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
 			msg.append(ww)
 	msg = msg[randint(0,len(msg)-1)]
 	msg = u'Я знаю, что '+msg[3]+u' - '+msg[4]
@@ -67,7 +67,7 @@ def wtfnames(type, jid, nick):
 		writefile(wbase,str(wtfbase))
 
 	for ww in wtfbase:
-		if jid == ww[0] or ww[0] == 'global':
+		if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
 			msg += ww[3]+', '
 
 	msg=msg[:-2]
@@ -83,13 +83,16 @@ def wtfcount(type, jid, nick):
 
 	cnt = 0
 	glb = 0
+	imp = 0
 	for ww in wtfbase:
 		if jid == ww[0]:
 			cnt += 1
 		elif ww[0] == 'global':
 			glb += 1
+		elif ww[0] == 'import':
+			imp += 1
 
-	msg += str(cnt)+u', Всего: '+str(len(wtfbase))+u', Глобальных: '+str(glb)
+	msg += str(cnt)+u', Всего: '+str(len(wtfbase))+u', Глобальных: '+str(glb)+u', Импортировано: '+str(imp)
 
         send_msg(type, jid, nick, msg)
 
@@ -112,7 +115,7 @@ def wtf_get(ff,type, jid, nick, text):
 
 		msg = ''
 		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global') and text == ww[3]:
+			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and text == ww[3]:
 				msg = u'Я знаю, что '+text+u' - '+ww[4]
 				if ff:
 					msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
@@ -142,7 +145,7 @@ def dfn(type, jid, nick, text):
 
 		was_found = 0
 		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global') and what == ww[3]:
+			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and what == ww[3]:
 				was_found = 1
 				if ww[0] == 'global':
 					msg = u'Это глобальное определение и его нельзя изменить!'
@@ -184,7 +187,7 @@ def gdfn(type, jid, nick, text):
 
 		was_found = 0
 		for ww in wtfbase:
-			if (ww[0] == 'global' or ww[0] == jid) and what == ww[3]:
+			if (ww[0] == 'global' or ww[0] == jid or ww[0] == 'import') and what == ww[3]:
 				if text == '':
 					msg = u'Жаль, что такую полезную хренотень надо забыть...'
 				else:
