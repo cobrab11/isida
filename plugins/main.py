@@ -1,10 +1,33 @@
 # -*- coding: utf-8 -*-
 
-def calc(type, jid, nick, text):
+def execute(type, jid, nick, text):
         try:
                 text = str(eval(text))
         except:
-                text = u'Я не могу это посчитать'
+                text = u'Я не могу это исполнить'
+	send_msg(type, jid, nick, text)
+
+
+def calc(type, jid, nick, text):
+        legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>']
+        ppc = 1
+        for tt in text:
+                all_ok = 0
+                for ll in legal:
+                        if tt==ll:
+                                all_ok = 1
+                                break
+                if not all_ok:
+                        ppc = 0
+                        break
+
+        if ppc:        
+                try:
+                        text = str(eval(text))
+                except:
+                        text = u'Я не могу это посчитать'
+        else:
+                text = u'Выражение недопустимо!'
 	send_msg(type, jid, nick, text)
 
 def wtfsearch(type, jid, nick, text):
@@ -1822,7 +1845,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'update', bot_update, 2),
          (1, prefix+u'say', say, 2),
          (0, prefix+u'calc', calc, 2),
-         (0, prefix+u'age', true_age, 2),
+         (2, prefix+u'exec', execute, 2),
          (2, prefix+u'gsay', gsay, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),

@@ -154,6 +154,8 @@ gdfn word=definition - запоминает definition как определен
 gdfn word= - удаляет определение word
 {calc}
 Калькулятор.
+{exec}
+Исполнение внешнего кода.
 {about}
       Isida Jabber-bot
  основана на библиотеке xmpppy
