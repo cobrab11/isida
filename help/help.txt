@@ -152,6 +152,8 @@ dfn word= - удаляет определение word
 Установка глобального определения.
 gdfn word=definition - запоминает definition как определение word
 gdfn word= - удаляет определение word
+{calc}
+Калькулятор.
 {about}
       Isida Jabber-bot
  основана на библиотеке xmpppy

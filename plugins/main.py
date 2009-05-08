@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+def calc(type, jid, nick, text):
+        try:
+                text = str(eval(text))
+        except:
+                text = u'Я не могу это посчитать'
+	send_msg(type, jid, nick, text)
+
 def wtfsearch(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
@@ -75,7 +82,8 @@ def wtfnames(type, jid, nick):
         send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
-	msg = u'В этой конфе определений: '	if os.path.isfile(wbase):
+	msg = u'В этой конфе определений: '
+	if os.path.isfile(wbase):
 		wtfbase = eval(readfile(wbase))
 	else:
 		wtfbase = []
@@ -208,6 +216,9 @@ def gdfn(type, jid, nick, text):
 #--------
 
 def true_age(type, jid, nick, text):
+        while text[-1:] == ' ':
+                text = text[:-1]
+        
 	text = text.split(' ')
 	llim = 10
 	if len(text)>=2:
@@ -808,8 +819,7 @@ def bot_update(type, jid, nick, text):
 def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
-	send_msg(type, jid, nick, text)
-	
+	send_msg(type, jid, nick, text)	
 
 def gsay(type, jid, nick, text):
         global confbase
@@ -1811,7 +1821,8 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'restart', bot_restart, 2),
          (2, prefix+u'update', bot_update, 2),
          (1, prefix+u'say', say, 2),
-         (1, prefix+u'age', true_age, 2),
+         (0, prefix+u'calc', calc, 2),
+         (0, prefix+u'age', true_age, 2),
          (2, prefix+u'gsay', gsay, 2),
          (0, prefix+u'help', helpme, 2),
          (2, prefix+u'join', bot_join, 2),
@@ -1831,27 +1842,27 @@ comms = [(1, prefix+u'stats', stats, 1),
          (2, prefix+u'gtempo', gtmp_search, 2),
          (1, prefix+u'rss', rss, 2),
          (0, prefix+u'wtfrand', wtfrand, 1),
-         (1, prefix+u'wtfnames', wtfnames, 1),
-         (1, prefix+u'wtfcount', wtfcount, 1),
-         (1, prefix+u'wtfsearch', wtfsearch, 2),
+         (0, prefix+u'wtfnames', wtfnames, 1),
+         (0, prefix+u'wtfcount', wtfcount, 1),
+         (0, prefix+u'wtfsearch', wtfsearch, 2),
          (2, prefix+u'wwtf', wwtf, 2),
          (0, prefix+u'wtff', wtff, 2),
          (0, prefix+u'wtf', wtf, 2),
          (1, prefix+u'dfn', dfn, 2),
          (2, prefix+u'gdfn', gdfn, 2),
-         (1, prefix+u'youtube', youtube, 2),
+         (0, prefix+u'youtube', youtube, 2),
          (0, prefix+u'wzcity', weather_city, 2),
-         (1, prefix+u'wzz', weather_raw, 2),
+         (0, prefix+u'wzz', weather_raw, 2),
          (0, prefix+u'wz', weather, 2),
-         (1, prefix+u'commands', info_comm, 1),
-         (1, prefix+u'uptime', uptime, 1),
+         (0, prefix+u'commands', info_comm, 1),
+         (0, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
          (1, prefix+u'smile', smile, 1),
          (1, prefix+u'inban', inban, 2),
 #        (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
-         (1, prefix+u'def', defcode, 2),
+         (0, prefix+u'def', defcode, 2),
          (2, prefix+u'error', show_error, 2),
          (0, prefix+u'whoami', info_access, 1),
 	 (2, prefix+u'prefix', set_prefix, 2),
