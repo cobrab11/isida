@@ -156,10 +156,12 @@ gdfn word= - удаляет определение word
 Калькулятор.
 {exec}
 Исполнение внешнего кода.
+{flood}
+Включение/выключение самообучающегося автоответчика.
 {about}
-      Isida Jabber-bot
- основана на библиотеке xmpppy
+        Isida Jabber-bot
 © 2oo9 Disabler Production Lab.
+  http://isida.googlecode.com
 {donations}
 При желании отблагодарить/помочь Вы можете перечислить любую сумму, не накладную для Вас, на мой Мобильный Кошелёк.
 MWallet id: 9034035371
