@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 
+def fspace(mass):
+	bdd = []
+	for b in mass:
+		if len(b) and len(b) != b.count(' '):
+			while b[0] == ' ':
+				b = b[1:]
+		bdd.append(b)
+	return bdd
+
 def html_encode(text):
 	encidx = text.find('charset=')
 	if encidx >= 0:
