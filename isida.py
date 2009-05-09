@@ -467,13 +467,27 @@ def messageCB(sess,mess):
         	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
 					break
 
-#	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname:
-	if no_comm and text[:len(prefix)] == prefix and access_mode >= 0 and ft[:len(nowname)] == nowname:
+	is_flood = 0
+	if room != selfjid:
+		fld = 'settings/flood'
+		if os.path.isfile(fld):
+			floods = eval(readfile(fld))
+		else:
+			floods = [(getRoom(room),0)]
+			writefile(fld,str(floods))
+		for sm in floods:
+			if sm[0] == getRoom(room) and sm[1]:
+				is_flood = 1
+				break
+
+	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname and is_flood:
+#	if no_comm and text[:len(prefix)] == prefix and access_mode >= 0 and ft[:len(nowname)] == nowname:
 		text = text[len(prefix):]
 		if len(text)>100:
 			text = u'В руки тебе бы насрать за такие сообщения!'
 		else:
-			text = breds[randint(0,len(breds)-1)] # text = getAnswer(text)
+#			text = breds[randint(0,len(breds)-1)]
+			text = getAnswer(text)
 		send_msg(type, room, nick, text)
 
 breds = [u'Хватит к девушке приставать не пойми с чем...',
@@ -495,37 +509,50 @@ def thread_log(proc, *params):
 def getAnswer(tx):
 	maxcom = 0
 	poscom = 0
-	if len(answers):
-		anscom = answers[randint(0,len(answers)-1)]
-	else:
-		anscom = u':-\"'
+
+#	for aa in answers:
+#		if tx == aa[0]:
+#			answers.remove(aa)
+
 	for i in range(0,len(answers)):
 		ii = answers[i]
 		cmpr = compare(tx,ii[0])
-		if cmpr > maxcom:
+		if cmpr >= maxcom:
 			maxcom = cmpr
-			poscom = i
+			poscom = answers[i][1]
 			anscom = answers[poscom][0]
+
+	if poscom == 0:
+		if len(answers):
+			anscom = answers[randint(0,len(answers)-1)][0]
+		else:
+			anscom = u':-\"'
+
 	answers.append((tx,poscom))
 	writefile(answ,str(answers))
+
+	if len(anscom)<=1:
+		if len(answers):
+			anscom = answers[randint(0,len(answers)-1)][0]
+		else:
+			anscom = u':-\"'
+	#print '***',anscom,'***'
+
 	return anscom
 
 def compare(aa,bb):
 	kpd = 0
-	if len(aa) > len(bb):
-		aa += aa
-	else:
-		bb += bb
-	if len(aa) > len(bb):
-		ab = len(bb)
-	else:
-		ab = len(aa)
-
-	for z in range(0,ab):
-		a = aa[z]
-		b = bb[z]
-		if operator.xor(ord(a),ord(b)) > 5:
-			kpd += 1
+	aa = aa.split(' ')
+	bb = bb.split(' ')
+	for a in aa:
+		for b in bb:
+			if len(a)>len(b):
+				ll = len(b)
+			else:
+				ll = len(a)
+			for c in range(0,ll):
+				if operator.xor(ord(a[c]),ord(b[c])) <= 3:
+					kpd += 1
 	return kpd
 
 def presenceCB(sess,mess):

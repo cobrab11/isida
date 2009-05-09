@@ -1,5 +1,30 @@
 # -*- coding: utf-8 -*-
 
+def autoflood(type, jid, nick):
+	fld = 'settings/flood'
+	if os.path.isfile(fld):
+		floods = eval(readfile(fld))
+	else:
+		floods = [(getRoom(jid),0)]
+		writefile(fld,str(floods))
+	msg = u'Flood is '
+	is_found = 1
+	for sm in floods:
+		if sm[0] == getRoom(jid):
+			tsm = (sm[0],int(not sm[1]))
+			floods.remove(sm)
+			floods.append(tsm)
+			is_found = 0
+			ssta = tsm[1]
+	if is_found:
+		floods.append((getRoom(jid),1))
+		ssta = 1
+	msg += onoff(ssta)
+
+	writefile(fld,str(floods))
+        send_msg(type, jid, nick, msg)
+	
+
 def execute(type, jid, nick, text):
         try:
                 text = str(eval(text))
@@ -1881,6 +1906,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (0, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
          (1, prefix+u'smile', smile, 1),
+         (1, prefix+u'flood', autoflood, 1),
          (1, prefix+u'inban', inban, 2),
 #        (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
