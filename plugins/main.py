@@ -1,5 +1,81 @@
 # -*- coding: utf-8 -*-
 
+def html_encode(text):
+	encidx = text.find('charset=')
+	if encidx >= 0:
+		enc = text[encidx+8:encidx+30]
+		enc = enc[:enc.index('\">')]
+		enc = enc.upper()
+	else:
+		enc = 'UTF-8'
+
+	return unicode(text, enc)
+
+
+def weather_gis(type, jid, nick, text):
+	ft = ord(text[0].upper())-1040+192
+	ft = hex(ft).replace('0x','%')
+	link = 'http://search.gismeteo.ru/?req=findtown&town='+ft+'&pda=1'
+	f = urllib.urlopen(link)
+	msg = f.read()
+	f.close()
+
+	msg = html_encode(msg)
+
+	if msg.count(u'не найдено'):
+		msg = u'Город не найден!'
+	else:
+		pos = msg.lower().find(text.lower())-34
+		if pos < 0:
+			msg = u'Город не найден!'
+		else:
+			link = msg[pos:pos+32]			f = urllib.urlopen(link)
+			msg = f.read()
+			f.close()
+			msg = html_encode(msg)
+			msg = msg.split('</table>')
+
+			he = rss_del_html(msg[1])
+			he = he.split('\r\n')
+			bdd = []
+			for b in he:
+				if len(b) and len(b) != b.count(' '):
+					while b[0] == ' ':
+						b = b[1:]
+				bdd.append(b)
+			he = bdd[13]+u', '+bdd[16]
+
+			bd = rss_del_html(msg[2].replace('&deg;',u'°'))
+			bd = bd.split('\r\n')
+			bdd = []
+			for b in bd:
+				if len(b) and len(b) != b.count(' '):
+					while b[0] == ' ':
+						b = b[1:]
+				bdd.append(b)
+			bd = bdd
+
+			osad = msg[2].split('alt=\"')
+			osad = osad[1][:osad[1].find('\"')]+'\t'+osad[2][:osad[2].find('\"')]+'\t'+osad[3][:osad[3].find('\"')]
+			osad = osad.replace(u'облачно',u'обл.')
+			osad = osad.replace(u'небольшой',u'неб.')
+			osad = osad.replace(u'пасмурно',u'пасм.')
+			osad = osad.replace(u'временами',u'врем.')
+			osad = osad.replace(u',без осадков',u'')
+
+			bdd = '\t\t'+bd[7]+'\t'+bd[8]+'\t'+bd[9]
+			bdd += u'\nОсадки\t\t'+ osad
+			bdd += '\n'+bd[18]+'\t\t'+bd[19]+'\t'+bd[20]+'\t'+bd[21]
+			bdd += '\n'+bd[24]+'\t\t'+bd[25]+'\t'+bd[26]+'\t'+bd[27]
+			bdd += '\n'+bd[30]+'\t\t'+bd[31]+'\t'+bd[32]+'\t'+bd[33]
+			bdd += '\n'+bd[36]+'\t\t'+bd[37]+'\t'+bd[38]+'\t'+bd[39]
+			bdd += '\n'+bd[42]+'\t\t'+bd[43]+'\t'+bd[44]+'\t'+bd[45]
+
+			msg = he
+			msg += '\n'+ bdd
+
+        send_msg(type, jid, nick, msg)
+
 def autoflood(type, jid, nick):
 	fld = 'settings/flood'
 	if os.path.isfile(fld):
@@ -1902,6 +1978,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (0, prefix+u'wzcity', weather_city, 2),
          (0, prefix+u'wzz', weather_raw, 2),
          (0, prefix+u'wz', weather, 2),
+         (0, prefix+u'gis', weather_gis, 2),
          (0, prefix+u'commands', info_comm, 1),
          (0, prefix+u'uptime', uptime, 1),
          (1, prefix+u'info', info, 1),
