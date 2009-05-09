@@ -13,7 +13,6 @@ def lf_api(method, user, splitter):
 	user = user.replace('\\x','%')
 	user = user.replace(' ','%20')
 	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+lfm_api
-	print link
 	f = urllib.urlopen(link)
 	lfxml = f.read()
 	f.close()
@@ -186,7 +185,6 @@ def tasteometer(type, jid, nick, text):
 	user1 = text[0]
 	user2 = text[1]
 	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+lfm_api
-	print link
 	f = urllib.urlopen(link)
 	lfxml = f.read()
 	f.close()
@@ -203,7 +201,6 @@ def tasteometer(type, jid, nick, text):
 			msg += get_tag(a,'name')+', '
 		msg = msg[:-2]
         send_msg(type, jid, nick, msg)
-
 
 def no_api(type, jid, nick):
         send_msg(type, jid, nick, u'Не найден файл LastFM.api')
