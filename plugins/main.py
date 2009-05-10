@@ -454,6 +454,18 @@ def wtf_get(ff,type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
+def del_space_begin(text):
+	if len(text):
+		while text[:1] == ' ':
+			text = text[1:]
+	return text
+
+def del_space_end(text):
+	if len(text):
+		while text[-1:] == ' ':
+			text = text[:-1]
+	return text
+
 def dfn(type, jid, nick, text):
 	global wbase, wtfbase
 	msg = u'Чего запомнить то надо?'
@@ -464,8 +476,8 @@ def dfn(type, jid, nick, text):
 	        realjid =ta[1]
 
 		ti = text.index('=')
-		what = text[:ti]
-		text = text[ti+1:]
+		what = del_space_end(text[:ti])
+		text = del_space_begin(text[ti+1:])
 
 		if os.path.isfile(wbase):
 			wtfbase = eval(readfile(wbase))
@@ -506,8 +518,8 @@ def gdfn(type, jid, nick, text):
 	        realjid =ta[1]
 
 		ti = text.index('=')
-		what = text[:ti]
-		text = text[ti+1:]
+		what = del_space_end(text[:ti])
+		text = del_space_begin(text[ti+1:])
 
 		if os.path.isfile(wbase):
 			wtfbase = eval(readfile(wbase))
