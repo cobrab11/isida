@@ -506,6 +506,12 @@ def weather_raw(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
+def sfind(mass,stri):
+	for a in mass:
+		if a.count(stri):
+			return a
+	return ''
+
 def weather(type, jid, nick, text):
 	text = text.upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
@@ -516,51 +522,46 @@ def weather(type, jid, nick, text):
 	if wzz.count('Not Found'):
 		msg = u'Город не найден!'
 	else:
+		print wzz
 		wzz = wzz.split('\n')
-		msg = wzz[0][:wzz[0].find(')')+1]
-		msg += '\n'+ wzz[1]
 
-		if wzz[5][:6] == 'Weathe':
-			wzzclo = wzz[5]
-			wzz.remove(wzz[5])
-		else:
-			wzzclo = ''
+		wzr = []
+		wzr.append(wzz[0])			# 0
+		wzr.append(wzz[1])			# 1
+		wzr.append(sfind(wzz,'Temperature'))	# 2
+		wzr.append(sfind(wzz,'Wind'))		# 3
+		wzr.append(sfind(wzz,'Relative'))	# 4
+		wzr.append(sfind(wzz,'Sky'))		# 5
+		wzr.append(sfind(wzz,'Weather'))	# 6
+		wzr.append(sfind(wzz,'Visibility'))	# 7
+		wzr.append(sfind(wzz,'Pressure'))	# 8
 
-		if wzz[4][:3] == 'Sky':
-			wzzsky = wzz[4]
-			wzz.remove(wzz[4])
-		else:
-			wzzsky = ''
+		msg = wzr[0][:wzr[0].find(')')+1]
+		msg += '\n'+ wzr[1]
+		wzz1 = wzr[2].find(':')+1 # Temperature
+		wzz2 = wzr[2].find('(',wzz1)
+		wzz3 = wzr[2].find(')',wzz2)
+		msg += '\n'+ wzr[2][:wzz1] + ' ' + wzr[2][wzz2+1:wzz3]
 
-		wzz1 = wzz[4].find(':')+1
-		wzz2 = wzz[4].find('(',wzz1)
-		wzz3 = wzz[4].find(')',wzz2)
-		msg += '\n'+ wzz[4][:wzz1] + ' ' + wzz[4][wzz2+1:wzz3]
+		wzz1 = wzr[3].find('(')
+		wzz2 = wzr[3].find(')',wzz1)
+		wzz3 = wzr[3].find(':',wzz2)
+		msg += '\n'+ wzr[3][:wzz1-1] + wzr[3][wzz2+1:wzz3]
 
-#		wzz1 = wzz[5].find(':')+1
-#		wzz2 = wzz[5].find('(',wzz1)
-#		wzz3 = wzz[5].find(')',wzz2)
-#		msg += ', '+ wzz[5][:wzz1] + ' ' + wzz[5][wzz2+1:wzz3]
-
-		wzz1 = wzz[2].find('(')
-		wzz2 = wzz[2].find(')',wzz1)
-		wzz3 = wzz[2].find(':',wzz2)
-		msg += '\n'+ wzz[2][:wzz1-1] + wzz[2][wzz2+1:wzz3]
-
-		msg += '\n'+ wzz[6]
-		if len(wzzsky):
-			msg += ','+ wzzsky[wzzsky.find(':')+1:]
-		if len(wzzclo):
-			msg += ','+ wzzclo[wzzclo.find(':')+1:]
-		if not (len(wzzsky)+len(wzzclo)):
+		msg += '\n'+ wzr[4]
+		if len(wzr[5]):
+			msg += ','+ wzr[5][wzr[5].find(':')+1:]
+		if len(wzr[6]):
+			msg += ','+ wzr[6][wzr[6].find(':')+1:]
+		if not (len(wzr[5])+len(wzr[6])):
 			msg += ', clear'
 
-		msg += '\n'+ wzz[3][:-2]
+		msg += '\n'+ wzr[7][:-2]
 		
-		wzz1 = wzz[7].find('(')
-		wzz2 = wzz[7].find(':',wzz1)
-		wzz3 = wzz[7].find('(',wzz2)
-		msg += ', '+ wzz[7][:wzz1-1]+': '+wzz[7][wzz3+1:-1]
+		wzz1 = wzr[8].find('(')
+		wzz2 = wzr[8].find(':',wzz1)
+		wzz3 = wzr[8].find('(',wzz2)
+		msg += ', '+ wzr[8][:wzz1-1]+': '+wzr[8][wzz3+1:-1]
 
         send_msg(type, jid, nick, msg)
 

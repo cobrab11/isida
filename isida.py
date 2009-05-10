@@ -481,20 +481,12 @@ def messageCB(sess,mess):
 				break
 
 	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname and is_flood:
-#	if no_comm and text[:len(prefix)] == prefix and access_mode >= 0 and ft[:len(nowname)] == nowname:
 		text = text[len(prefix):]
 		if len(text)>100:
-			text = u'В руки тебе бы насрать за такие сообщения!'
+			text = u'Слишком многа букаф!'
 		else:
-#			text = breds[randint(0,len(breds)-1)]
 			text = getAnswer(text)
 		send_msg(type, room, nick, text)
-
-breds = [u'Хватит к девушке приставать не пойми с чем...',
-         u'Ща папу позову - он тебя зобанит!',
-         u'Нихьт ферштеен!',
-         u'Отстань',
-         u'Мая твая нипанимает никуя!']
 
 # исправить этот костыль!!!
 def thread_log(proc, *params):
