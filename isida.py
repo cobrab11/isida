@@ -356,9 +356,9 @@ def iqCB(sess,iq):
                 if nspace == NS_MUC_ADMIN:
                         cparse = unicode(iq)
 #                        ccount = cparse.count('<item affiliation=\"outcast\"')
-                        cparse = cparse.split('</item><item')
+                        cparse = cparse.split('<item')
 			banbase = []
-                        for banm in cparse:
+                        for banm in cparse[1:]:
 				st_index = banm.find('jid=\"')+5
 				cjid=banm[st_index:banm.find('\"',st_index)]
 				if banm.count('<reason />') or banm.count('<reason/>'):

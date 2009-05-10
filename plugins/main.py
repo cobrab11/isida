@@ -119,7 +119,9 @@ def inowner(type, jid, nick, text):
 	while banbase[-1] != (u'TheEnd', u'None'):
 		sleep(0.1)
 
-	msg = u'Всего владельцев: '+str(len(banbase)-1)
+	banbase = banbase[:-1]
+	msg = u'Всего владельцев: '+str(len(banbase))
+	print banbase
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
@@ -144,7 +146,8 @@ def inadmin(type, jid, nick, text):
 	while banbase[-1] != (u'TheEnd', u'None'):
 		sleep(0.1)
 
-	msg = u'Всего админов: '+str(len(banbase)-1)
+	banbase = banbase[:-1]
+	msg = u'Всего админов: '+str(len(banbase))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
@@ -169,7 +172,8 @@ def inmember(type, jid, nick, text):
 	while banbase[-1] != (u'TheEnd', u'None'):
 		sleep(0.1)
 
-	msg = u'Всего мемберов: '+str(len(banbase)-1)
+	banbase = banbase[:-1]
+	msg = u'Всего мемберов: '+str(len(banbase))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
@@ -814,6 +818,7 @@ def inban(type, jid, nick, text):
 	while banbase[-1] != (u'TheEnd', u'None'):
 		sleep(0.1)
 
+	banbase = banbase[:-1]
 	msg = u'Всего в бане: '+str(len(banbase))
 	if text != '':
 		mmsg = u', найдено:\n'
