@@ -1,5 +1,113 @@
 # -*- coding: utf-8 -*-
 
+def exe_alias(type, room, nick, text):
+#	print 'exec_alias is works'
+#	print type, room, nick, text
+
+	text = text[0]
+        ta = get_access(room,nick)
+
+        access_mode = ta[0]
+        jid =ta[1]
+
+	tmppos = arr_semi_find(confbase, room)
+	if tmppos == -1:
+		nowname = nickname
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '':
+			nowname = nickname
+
+	if jid == 'None' and ownerbase.count(getRoom(room)):
+		access_mode = 2
+
+        if type == 'groupchat' and nick != '' and jid != 'None':
+                talk_count(room,jid,nick,text)
+	no_comm = 1
+        if (text != 'None') and (len(text)>=1) and access_mode >= 0:
+
+		for parse in comms:
+			if access_mode >= parse[0] and nick != nowname:
+				if text[:len(nowname)] == nowname:
+					text = text[len(nowname)+2:]
+					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+						text = prefix + text
+	
+				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
+					text = prefix + text
+
+				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+					no_comm = 0
+       		                        if not parse[3]:
+						parse[2](type, room, nick, parse[4:])
+		                        elif parse[3] == 1:
+						parse[2](type, room, nick)
+					elif parse[3] == 2:
+						parse[2](type, room, nick, text[len(parse[1])+1:])
+					break
+
+def alias(type, jid, nick, text):
+	alfile = 'settings/aliases'
+	if os.path.isfile(alfile):
+		aliases = eval(readfile(alfile))
+	else:
+		aliases = []
+		writefile(alfile,str(aliases))
+
+	gs = text.find(' ')
+	if gs >= 0:
+		mode = text[:gs]
+		text = text[gs+1:]
+		gs = text.find('=')
+		cmd = text[:gs]
+		cbody = text[gs+1:]
+	else:
+		mode = text
+		cmd = ''
+		cbody = ''
+
+	msg = u'Режим '+mode+u' не опознан!'
+
+	if mode=='add':
+		comms.append([1,prefix+cmd, exe_alias, 0, prefix+cbody])
+		aliases.append([1,cmd, str(exe_alias), 0, cbody])
+		msg = u'Добавлено: '+cmd+u' == '+cbody
+
+	if mode=='del':
+		msg = u'Не возможно удалить '+cbody
+		for i in aliases:
+			if i[1] == cbody:
+				aliases.remove(i)
+				msg = u'Удалено: '+cbody
+				for i in comms:
+					if i[1] == prefix+cbody:
+						comms.remove(i)
+				break
+
+	if mode=='show':
+		if cbody == '':
+			msg = u'Сокращения: '
+			for i in aliases:
+				msg += i[1] + ', '
+			msg = msg[:-2]
+		else:
+			msg = cbody
+			isf = 1
+			for i in aliases:
+				if i[1].lower().count(cbody.lower()):
+					msg += '\n'+i[1]+' = '+i[4]
+					isf = 0
+			if isf:
+				msg+=u' не найдено'
+	
+
+	writefile(alfile,str(aliases))
+        send_msg(type, jid, nick, msg)
+
+
+
+##########################
 
 def inowner(type, jid, nick, text):
 	global banbase
@@ -648,6 +756,9 @@ def get_prefix():
 	else:
 		return u'отсутствует'
 
+#  0     1            2     3      4
+# [1,prefix+cmd, exe_alias, 0, prefix+cbody])
+
 def update_prefix(old,new,com):
         tcom = []
         for ccom in com:
@@ -656,8 +767,13 @@ def update_prefix(old,new,com):
                         ttcom = []
                         ttcom.append(ccom[0])
                         ttcom.append(new + ccom[1][len(old):])
-                        for tapp in ccom[2:]:
-                                ttcom.append(tapp)
+                        ttcom.append(ccom[2])
+                        ttcom.append(ccom[3])
+			if ccom[3] == 0:
+				if ccom[4][:len(old)] == old:
+		                        ttcom.append(new + ccom[4][len(old):])
+				else:
+		                        ttcom.append(ccom[4])
                 tcom.append(ttcom)
         return tcom
 
@@ -2061,6 +2177,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (0, prefix+u'wtf', wtf, 2),
          (1, prefix+u'dfn', dfn, 2),
          (2, prefix+u'gdfn', gdfn, 2),
+         (1, prefix+u'alias', alias, 2),
          (0, prefix+u'youtube', youtube, 2),
          (0, prefix+u'wzcity', weather_city, 2),
          (0, prefix+u'wzz', weather_raw, 2),

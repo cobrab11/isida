@@ -167,7 +167,6 @@ else:
 	plugins = []
 	writefile(plname,str(plugins))
 
-
 preffile = 'settings/prefix'
 
 old_prefix = prefix
@@ -180,7 +179,11 @@ else:
 	prefix = pref[0]
 
 comms = update_prefix(old_prefix, prefix, comms)
-
+alfile = 'settings/aliases'
+if os.path.isfile(alfile):
+	aliases = eval(readfile(alfile))
+	for al in aliases:
+		comms.append([al[0],prefix+al[1], exe_alias, al[3], prefix+al[4]])
 
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
@@ -444,7 +447,8 @@ def messageCB(sess,mess):
         if type == 'groupchat' and nick != '' and jid != 'None':
                 talk_count(room,jid,nick,text)
 	no_comm = 1
-        if (text != 'None') and (len(text)>2) and access_mode >= 0:
+        if (text != 'None') and (len(text)>=1) and access_mode >= 0:
+
                 for parse in comms:
 			if access_mode >= parse[0] and nick != nowname:
 				if text[:len(nowname)] == nowname:
@@ -459,12 +463,20 @@ def messageCB(sess,mess):
         		        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 					no_comm = 0
+					sp = parse
         	                        if not parse[3]:
-        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, parse[4:]))
+						ppr = parse[-1:]
+						ppr = ppr[0]
+						if ppr[-2:] == '%*':
+							par = [ppr[:-2]+text[len(parse[1])+1:]]
+						else:
+							par = parse[4:]
+        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, par))
        		                        elif parse[3] == 1:
        		                                thread.start_new_thread(thread_log,(parse[2], type, room, nick))
        		                        elif parse[3] == 2:
         	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
+					parse = sp
 					break
 
 	is_flood = 0
