@@ -467,8 +467,8 @@ def messageCB(sess,mess):
         	                        if not parse[3]:
 						ppr = parse[-1:]
 						ppr = ppr[0]
-						if ppr[-2:] == '%*':
-							par = [ppr[:-2]+text[len(parse[1])+1:]]
+						if ppr.count('%*'):
+							par = [ppr[:ppr.find('%*')]+text[len(parse[1])+1:]+ppr[ppr.find('%*')+2:]]
 						else:
 							par = parse[4:]
         	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, par))
