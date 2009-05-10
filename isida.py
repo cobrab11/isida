@@ -352,7 +352,7 @@ def iqCB(sess,iq):
 		nspace = query.getNamespace()
                 if nspace == NS_MUC_ADMIN:
                         cparse = unicode(iq)
-                        ccount = cparse.count('<item affiliation=\"outcast\"')
+#                        ccount = cparse.count('<item affiliation=\"outcast\"')
                         cparse = cparse.split('</item><item')
 			banbase = []
                         for banm in cparse:

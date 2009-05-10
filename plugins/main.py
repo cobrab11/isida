@@ -1,5 +1,82 @@
 # -*- coding: utf-8 -*-
 
+
+def inowner(type, jid, nick, text):
+	global banbase
+	banbase = []
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'owner'})])])
+	cl.send(i)
+	while banbase == []:
+		sleep(0.5)
+	while banbase[-1] != (u'TheEnd', u'None'):
+		sleep(0.1)
+
+	msg = u'Всего владельцев: '+str(len(banbase)-1)
+	if text != '':
+		mmsg = u', найдено:\n'
+		fnd = 1
+		for i in banbase[:-1]:
+			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
+				mmsg += i[0]+'\n'
+				fnd = 0
+		mmsg = mmsg[:-1]
+		if fnd:
+			mmsg = u', совпадений нет!'
+		msg += mmsg
+	banbase = []
+        send_msg(type, jid, nick, msg)
+
+def inadmin(type, jid, nick, text):
+	global banbase
+	banbase = []
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin'})])])
+	cl.send(i)
+	while banbase == []:
+		sleep(0.5)
+	while banbase[-1] != (u'TheEnd', u'None'):
+		sleep(0.1)
+
+	msg = u'Всего админов: '+str(len(banbase)-1)
+	if text != '':
+		mmsg = u', найдено:\n'
+		fnd = 1
+		for i in banbase[:-1]:
+			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
+				mmsg += i[0]+'\n'
+				fnd = 0
+		mmsg = mmsg[:-1]
+		if fnd:
+			mmsg = u', совпадений нет!'
+		msg += mmsg
+	banbase = []
+        send_msg(type, jid, nick, msg)
+
+def inmember(type, jid, nick, text):
+	global banbase
+	banbase = []
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'member'})])])
+	cl.send(i)
+	while banbase == []:
+		sleep(0.5)
+	while banbase[-1] != (u'TheEnd', u'None'):
+		sleep(0.1)
+
+	msg = u'Всего мемберов: '+str(len(banbase)-1)
+	if text != '':
+		mmsg = u', найдено:\n'
+		fnd = 1
+		for i in banbase[:-1]:
+			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
+				mmsg += i[0]+'\n'
+				fnd = 0
+		mmsg = mmsg[:-1]
+		if fnd:
+			mmsg = u', совпадений нет!'
+		msg += mmsg
+	banbase = []
+        send_msg(type, jid, nick, msg)
+
+
 def fspace(mass):
 	bdd = []
 	for b in mass:
@@ -522,7 +599,6 @@ def weather(type, jid, nick, text):
 	if wzz.count('Not Found'):
 		msg = u'Город не найден!'
 	else:
-		print wzz
 		wzz = wzz.split('\n')
 
 		wzr = []
@@ -1996,6 +2072,9 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'smile', smile, 1),
          (1, prefix+u'flood', autoflood, 1),
          (1, prefix+u'inban', inban, 2),
+         (1, prefix+u'inmember', inmember, 2),
+         (1, prefix+u'inadmin', inadmin, 2),
+         (1, prefix+u'inowner', inowner, 2),
 #        (2, prefix+u'log', get_log, 2),
          (2, prefix+u'limit', conf_limit, 2),
          (2, prefix+u'plugin', bot_plugin, 2),
