@@ -471,17 +471,21 @@ def messageCB(sess,mess):
                 talk_count(room,jid,nick,text)
 	no_comm = 1
         if (text != 'None') and (len(text)>=1) and access_mode >= 0:
-
 		no_comm = 1
 		is_par = 0
 		if text[:len(nowname)] == nowname:
 			text = text[len(nowname)+2:]
 			is_par = 1
-		if text[:len(lprefix)] == lprefix or (type == 'chat' and text[:len(lprefix)] == lprefix):
+		if text[:len(lprefix)] == lprefix:
 			text = text[len(lprefix):]
+			is_par = 1
+		if type == 'chat':
 			is_par = 1
 		if is_par:
 			no_comm = com_parser(access_mode, nowname, type, room, nick, text, jid)
+
+
+
 		if no_comm and is_par:
 			for parse in aliases:
 				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
