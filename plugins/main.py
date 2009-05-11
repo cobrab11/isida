@@ -1,5 +1,64 @@
 # -*- coding: utf-8 -*-
 
+def seen(type, jid, nick, text):
+        while text[-1:] == ' ':
+                text = text[:-1]
+        
+	text = text.split(' ')
+	llim = 10
+	if len(text)>=2:
+		try:
+			llim = int(text[0])
+		except:
+			llim = 10
+
+		text = text[1]
+	else:
+		text = text[0]
+
+	if llim > 100:
+		llim = 100
+	if text == '':
+		text = nick
+	is_found = 0
+	ms = []
+	for aa in agebase:
+		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
+			if aa[5]:
+				r_age = aa[4]
+				r_was = int(time.time())-aa[3]
+			else:
+				r_age = int(time.time())-aa[3]
+				r_was = 0
+			ms.append((aa[1],r_age,r_was))
+			is_found = 1
+	if is_found:
+		lms = len(ms)
+		for i in range(0,lms-1):
+			for j in range(i,lms):
+				if ms[i][1] < ms[j][1]:
+					jj = ms[i]
+					ms[i] = ms[j]
+					ms[j] = jj
+		if lms > llim:
+			lms = llim
+		if lms == 1 and nick == text:
+			msg = u'Я тебя вижу!!!'
+		else:
+			msg = u'Я видела:'
+			cnt = 1
+			for i in range(0,lms):
+				msg += '\n'+str(cnt)+'. '+ms[i][0]
+				if ms[i][2]:
+					msg += u'\tвышел '+un_unix(ms[i][2])+u' назад'
+				else:
+					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
+				cnt += 1
+	else:
+		msg = u'Не найдено!'
+
+        send_msg(type, jid, nick, msg)
+
 def exe_alias(type, room, nick, text):
 #	print 'exec_alias is works'
 #	print type, room, nick, text
@@ -554,6 +613,18 @@ def gdfn(type, jid, nick, text):
 
 #--------
 
+def un_unix(val):
+	tsec = int(val)-int(val/60)*60
+	val = int(val/60)
+	tmin = int(val)-int(val/60)*60
+	val = int(val/60)
+	thour = int(val)-int(val/24)*24
+	tday = int(val/24)
+	ret = tZ(thour)+':'+tZ(tmin)+':'+tZ(tsec)
+	if tday:
+		ret = str(tday)+'d '+ret
+	return ret
+
 def true_age(type, jid, nick, text):
         while text[-1:] == ' ':
                 text = text[:-1]
@@ -580,10 +651,10 @@ def true_age(type, jid, nick, text):
 		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
 			if aa[5]:
 				r_age = aa[4]
-				r_was = str(int(time.time())-aa[3])
+				r_was = int(time.time())-aa[3]
 			else:
 				r_age = int(time.time())-aa[3]+aa[4]
-				r_was = u''
+				r_was = 0
 			ms.append((aa[1],r_age,r_was))
 			is_found = 1
 	if is_found:
@@ -602,9 +673,9 @@ def true_age(type, jid, nick, text):
 			msg = u'Время нахождения в конфе:'
 			cnt = 1
 			for i in range(0,lms):
-				msg += '\n'+str(cnt)+'. '+ms[i][0]+'\t'+str(ms[i][1])
-				if len(ms[i][2]):
-					msg += ' ('+ms[i][2]+u' сек. назад)'
+				msg += '\n'+str(cnt)+'. '+ms[i][0]+'\t'+un_unix(ms[i][1])
+				if ms[i][2]:
+					msg += u' ('+un_unix(ms[i][2])+u' назад)'
 				cnt += 1
 	else:
 		msg = u'Не найдено!'
@@ -2192,6 +2263,7 @@ comms = [(1, prefix+u'stats', stats, 1),
          (1, prefix+u'say', say, 2),
          (0, prefix+u'calc', calc, 2),
          (0, prefix+u'age', true_age, 2),
+         (0, prefix+u'seen', seen, 2),
          (2, prefix+u'exec', execute, 2),
          (2, prefix+u'gsay', gsay, 2),
          (0, prefix+u'help', helpme, 2),
