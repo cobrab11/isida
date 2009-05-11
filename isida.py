@@ -8,7 +8,28 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator
 
-LOG_FILENAME = 'log/error.txt'
+LOG_FILENAME = u'log/error.txt'		# логи
+
+set_folder = u'settings/'		# папка настроек
+
+preffile = set_folder+u'prefix'		# префиксы
+ver_file = set_folder+u'version'	# версия бота
+configname = set_folder+u'config.py'	# конфиг бота
+alfile = set_folder+u'aliases'		# сокращения
+fld = set_folder+u'flood'		# автоответчик
+sml = set_folder+u'smile'		# смайлы на роли
+tbasefile = set_folder+u'talkers'	# база болтунов
+jidbasefile = set_folder+u'jidbase'	# база jid'ов
+owners = set_folder+u'owner'		# база владельцев
+ignores = set_folder+u'ignore'		# черный список
+agest = set_folder+u'agestat'		# база возрастов
+confs = set_folder+u'conf'		# список активных конф
+wbase = set_folder+u'wtfbase'		# база wtf
+answ = set_folder+u'answers'		# база автоответчика
+tmpf = set_folder+u'tmp'		# флаг завершения бота
+feeds = set_folder+u'feed'		# список rss каналов
+lafeeds = set_folder+u'lastfeeds'	# посделние новости по каждому каналу
+
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
 global execute, prefix, comms
@@ -85,7 +106,7 @@ dm = 1
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
-botVersion = 'v1.5'
+botVersion = 'v1.6'
 capsVersion = botVersion[1:]
 banbase = []
 
@@ -99,15 +120,12 @@ elif lt[0:3] > gt[0:3]:
 else:
         timeofset = int(gt[3])-int(lt[3]) + 24
 
-ver_file = 'settings/version'
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1:
         	botVersion += '.' + bvers[:-1]
 
 # --- load config.txt
-
-configname = u'settings/config.py'
 
 if os.path.isfile(configname):
         execfile(configname)
@@ -167,23 +185,10 @@ else:
 	plugins = []
 	writefile(plname,str(plugins))
 
-preffile = 'settings/prefix'
-
-old_prefix = prefix
-if os.path.isfile(preffile):
-	pref = eval(readfile(preffile))
-	prefix = pref[0]
-else:
-	pref = [(u'_')]
-	writefile(preffile,str(pref))
-	prefix = pref[0]
-
-comms = update_prefix(old_prefix, prefix, comms)
-alfile = 'settings/aliases'
 if os.path.isfile(alfile):
 	aliases = eval(readfile(alfile))
-	for al in aliases:
-		comms.append([al[0],prefix+al[1], exe_alias, al[3], prefix+al[4]])
+else:
+	aliases = []
 
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
@@ -408,6 +413,22 @@ def iqCB(sess,iq):
                         cl.send(i)
 			raise xmpp.NodeProcessed
 
+def com_parser(access_mode, nowname, type, room, nick, text, jid):
+	no_comm = 1
+	for parse in comms:
+		if access_mode >= parse[0] and nick != nowname:
+        	        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+				no_comm = 0
+                                if not parse[3]:
+                                        thread.start_new_thread(thread_log,(parse[2], type, room, nick, par))
+       	                        elif parse[3] == 1:
+       	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick))
+       	                        elif parse[3] == 2:
+                                        thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
+				break
+	return no_comm
+
 def messageCB(sess,mess):
         global otakeRes, mainRes, psw, lfrom, lto, jidbase, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
         global ignorebase, ignores
@@ -417,6 +438,8 @@ def messageCB(sess,mess):
         type=unicode(mess.getType())
         towh=unicode(mess.getTo().getStripped())
 	stamp=unicode(mess.getTimestamp())
+
+	lprefix = get_local_prefix(room)
 
 #        print '---\n',parser(room), parser(nick), parser(text), parser(type), parser(towh), parser(stamp)
 
@@ -449,39 +472,26 @@ def messageCB(sess,mess):
 	no_comm = 1
         if (text != 'None') and (len(text)>=1) and access_mode >= 0:
 
-                for parse in comms:
-			if access_mode >= parse[0] and nick != nowname:
-				if text[:len(nowname)] == nowname:
-					text = text[len(nowname)+2:]
-					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
-						text = prefix + text
+		if text[:len(nowname)] == nowname:
+			text = text[len(nowname)+2:]
+		if text[:len(lprefix)] == lprefix:
+			text = text[len(lprefix):]
 
-				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
-					text = prefix + text
+		if type == 'chat' and text[:len(lprefix)] == lprefix:
+			text = text[len(lprefix):]
 
+		no_comm = com_parser(access_mode, nowname, type, room, nick, text, jid)
 
-        		        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+		if no_comm:
+			for parse in aliases:
+				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-					no_comm = 0
-					sp = parse
-        	                        if not parse[3]:
-						ppr = parse[-1:]
-						ppr = ppr[0]
-						if ppr.count('%*'):
-							par = [ppr.replace('%*',text[len(parse[1])+1:])]
-						else:
-							par = parse[4:]
-        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, par))
-       		                        elif parse[3] == 1:
-       		                                thread.start_new_thread(thread_log,(parse[2], type, room, nick))
-       		                        elif parse[3] == 2:
-        	                                thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
-					parse = sp
+					ppr = parse[2].replace('%*',text[len(parse[1])+1:])
+					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
 	is_flood = 0
 	if room != selfjid:
-		fld = 'settings/flood'
 		if os.path.isfile(fld):
 			floods = eval(readfile(fld))
 		else:
@@ -492,8 +502,7 @@ def messageCB(sess,mess):
 				is_flood = 1
 				break
 
-	if no_comm and text[:len(prefix)] == prefix and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname and is_flood:
-		text = text[len(prefix):]
+	if no_comm and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname and is_flood:
 		if len(text)>100:
 			text = u'Слишком многа букаф!'
 		else:
@@ -583,7 +592,6 @@ def presenceCB(sess,mess):
 			nowname = nickname
 
 	if room != selfjid and nick == nowname:
-		sml = 'settings/smile'
 		if os.path.isfile(sml):
 			smiles = eval(readfile(sml))
 		else:
@@ -786,7 +794,6 @@ def talk_count(room,jid,nick,text):
 
         jid = getRoom(jid)
 
-        tbasefile = 'settings/talkers'
         if os.path.isfile(tbasefile):
         	tbase = eval(readfile(tbasefile))
         else:
@@ -814,15 +821,11 @@ def talk_count(room,jid,nick,text):
 
 starttime = localtime()
 
-jidbasefile = 'settings/jidbase'
-
 if os.path.isfile(jidbasefile):
 	jidbase = eval(readfile(jidbasefile))
 else:
 	jidbase = []
 	writefile(jidbasefile,str(jidbase))
-
-owners = 'settings/owner'
 
 if os.path.isfile(owners):
 	ownerbase = eval(readfile(owners))
@@ -830,15 +833,11 @@ else:
 	ownerbase = [god]
 	writefile(owners,str(ownerbase))
 
-ignores = 'settings/ignore'
-
 if os.path.isfile(ignores):
 	ignorebase = eval(readfile(ignores))
 else:
 	ignorebase = []
 	writefile(ignores,str(ignorebase))
-
-agest = 'settings/agestat'
 
 if os.path.isfile(agest):
 	agebase = eval(readfile(agest))
@@ -848,23 +847,17 @@ else:
 
 close_age_null()
 
-confs = 'settings/conf'
-
 if os.path.isfile(confs):
 	confbase = eval(readfile(confs))
 else:
 	confbase = [defaultConf+u'/'+nickname]
 	writefile(confs,str(confbase))
 
-wbase = 'settings/wtfbase'
-
 if os.path.isfile(wbase):
 	wtfbase = eval(readfile(wbase))
 else:
 	wtfbase = []
 	writefile(wbase,str(wtfbase))
-
-answ = 'settings/answers'
 
 if os.path.isfile(answ):
 	can_answer = 1
@@ -936,7 +929,7 @@ while 1:
 		StatusMessage = 'Shut down by CTRL+C'
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
-        	writefile('settings/tmp',str('exit'))
+        	writefile(tmpf,str('exit'))
 		sleep(2)
 		sys.exit(0)
 
@@ -945,7 +938,7 @@ while 1:
 		pprint('*** Error *** '+str(SM)+' ***')
                 logging.exception(' ['+timeadd(localtime())+'] ')
                 if debugmode:
-                        writefile('settings/tmp',str('exit'))
+                        writefile(tmpf,str('exit'))
         		raise
 
 

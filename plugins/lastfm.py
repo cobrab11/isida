@@ -17,6 +17,7 @@ def lf_api(method, user, splitter):
 	lfxml = f.read()
 	f.close()
 	lfxml = html_encode(lfxml)
+	lfxml = rss_replace(lfxml)
 	lfxml = lfxml.split(splitter)
 	return lfxml
 
@@ -207,27 +208,27 @@ def no_api(type, jid, nick):
 
 apifile = 'plugins/LastFM.api'
 
-exec_yes = [(0, prefix+u'lasttracks', lasttracks, 2),
-	    (0, prefix+u'lastfriends', lastfriends, 2),
-	    (0, prefix+u'lastloved', lastloved, 2),
-	    (0, prefix+u'lastneighbours', lastneighbours, 2),
-	    (0, prefix+u'lastplaylist', lastplaylist, 2),
-	    (0, prefix+u'topalbums', topalbums, 2),
-	    (0, prefix+u'topartists', topartists, 2),
-	    (0, prefix+u'toptags', toptags, 2),
-	    (0, prefix+u'toptracks', toptracks, 2),
-	    (0, prefix+u'tasteometer', tasteometer, 2)]
+exec_yes = [(0, u'lasttracks', lasttracks, 2),
+	    (0, u'lastfriends', lastfriends, 2),
+	    (0, u'lastloved', lastloved, 2),
+	    (0, u'lastneighbours', lastneighbours, 2),
+	    (0, u'lastplaylist', lastplaylist, 2),
+	    (0, u'topalbums', topalbums, 2),
+	    (0, u'topartists', topartists, 2),
+	    (0, u'toptags', toptags, 2),
+	    (0, u'toptracks', toptracks, 2),
+	    (0, u'tasteometer', tasteometer, 2)]
 
-exec_no = [(0, prefix+u'lasttracks', no_api, 1),
-	   (0, prefix+u'lastfriends', no_api, 1),
-	   (0, prefix+u'lastloved', no_api, 1),
-	   (0, prefix+u'lastneighbours', no_api, 1),
-	   (0, prefix+u'lastplaylist', no_api, 1),
-	   (0, prefix+u'topalbums', no_api, 1),
-	   (0, prefix+u'topartists', no_api, 1),
-	   (0, prefix+u'toptags', no_api, 1),
-	   (0, prefix+u'toptracks', no_api, 1),
-	   (0, prefix+u'tasteometer', no_api, 1)]
+exec_no = [(0, u'lasttracks', no_api, 1),
+	   (0, u'lastfriends', no_api, 1),
+	   (0, u'lastloved', no_api, 1),
+	   (0, u'lastneighbours', no_api, 1),
+	   (0, u'lastplaylist', no_api, 1),
+	   (0, u'topalbums', no_api, 1),
+	   (0, u'topartists', no_api, 1),
+	   (0, u'toptags', no_api, 1),
+	   (0, u'toptracks', no_api, 1),
+	   (0, u'tasteometer', no_api, 1)]
 
 if os.path.isfile(apifile):
 	lfm_api = str(readfile(apifile))

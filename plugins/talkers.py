@@ -116,5 +116,5 @@ def talkers(type, jid, nick, text):
 
 global execute
 
-execute = [(1, prefix+u'talkers', talkers, 2),
-	   (1, prefix+u'gtalkers', gtalkers, 2)]
+execute = [(1, u'talkers', talkers, 2),
+	   (1, u'gtalkers', gtalkers, 2)]

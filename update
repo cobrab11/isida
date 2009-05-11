@@ -1,27 +1,10 @@
 #!/bin/sh
 
-# updater for 0.4 to 0.5
+# updater for 0.5 to 0.6
 
 svn up
 
-cp feed settings/feed
-cp lastfeeds settings/lastfeeds
-cp talkers settings/talkers
-cp version settings/version
-cp conf settings/conf
-cp owner settings/owner
-cp tempofeed settings/tempofeed
-cp jidbase settings/jidbase
-cp tmp settings/tmp
-cp config.py settings/config.py
+rm -r settings/prefix
+rm -r settings/aliases
 
-rm -r feed
-rm -r lastfeeds
-rm -r talkers
-rm -r version
-rm -r conf
-rm -r owner
-rm -r tempofeed
-rm -r jidbase
-rm -r tmp
-rm -r config.py
+

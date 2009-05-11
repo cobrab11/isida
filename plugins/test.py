@@ -23,5 +23,5 @@ def test_rus(type, jid, nick):
 
 global execute
 
-execute = [(0, prefix+u'test', test, 1),
-	   (0, prefix+u'тест', test_rus, 1)]
+execute = [(0, u'test', test, 1),
+	   (0, u'тест', test_rus, 1)]

@@ -59,55 +59,7 @@ def seen(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
-def exe_alias(type, room, nick, text):
-#	print 'exec_alias is works'
-#	print type, room, nick, text
-
-	text = text[0]
-        ta = get_access(room,nick)
-
-        access_mode = ta[0]
-        jid =ta[1]
-
-	tmppos = arr_semi_find(confbase, room)
-	if tmppos == -1:
-		nowname = nickname
-	else:
-		nowname = getResourse(confbase[tmppos])
-		if nowname == '':
-			nowname = nickname
-
-	if jid == 'None' and ownerbase.count(getRoom(room)):
-		access_mode = 2
-
-        if type == 'groupchat' and nick != '' and jid != 'None':
-                talk_count(room,jid,nick,text)
-	no_comm = 1
-        if (text != 'None') and (len(text)>=1) and access_mode >= 0:
-
-		for parse in comms:
-			if access_mode >= parse[0] and nick != nowname:
-				if text[:len(nowname)] == nowname:
-					text = text[len(nowname)+2:]
-					if text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
-						text = prefix + text
-	
-				if type == 'chat' and text[:len(prefix)] != prefix and parse[1][:len(prefix)] == prefix:
-					text = prefix + text
-
-				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
-					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-					no_comm = 0
-       		                        if not parse[3]:
-						parse[2](type, room, nick, parse[4:])
-		                        elif parse[3] == 1:
-						parse[2](type, room, nick)
-					elif parse[3] == 2:
-						parse[2](type, room, nick, text[len(parse[1])+1:])
-					break
-
 def alias(type, jid, nick, text):
-	alfile = 'settings/aliases'
 	if os.path.isfile(alfile):
 		aliases = eval(readfile(alfile))
 	else:
@@ -129,8 +81,7 @@ def alias(type, jid, nick, text):
 	msg = u'Режим '+mode+u' не опознан!'
 
 	if mode=='add':
-		comms.append([1,prefix+cmd, exe_alias, 0, prefix+cbody])
-		aliases.append([1,cmd, str(exe_alias), 0, cbody])
+		aliases.append([jid, cmd, cbody])
 		msg = u'Добавлено: '+cmd+u' == '+cbody
 
 	if mode=='del':
@@ -140,31 +91,34 @@ def alias(type, jid, nick, text):
 				aliases.remove(i)
 				msg = u'Удалено: '+cbody
 				for i in comms:
-					if i[1] == prefix+cbody:
+					if i[1] == cbody:
 						comms.remove(i)
 				break
 
 	if mode=='show':
 		if cbody == '':
 			msg = u'Сокращения: '
+			isf = 1
 			for i in aliases:
-				msg += i[1] + ', '
-			msg = msg[:-2]
+				if i[0] == jid:
+					msg += i[1] + ', '
+					isf = 0
+			if isf:
+				msg+=u'не найдены'
+			else:
+				msg = msg[:-2]
 		else:
 			msg = cbody
 			isf = 1
 			for i in aliases:
 				if i[1].lower().count(cbody.lower()):
-					msg += '\n'+i[1]+' = '+i[4]
+					msg += '\n'+i[1]+' = '+i[2]
 					isf = 0
 			if isf:
 				msg+=u' не найдено'
 	
-
 	writefile(alfile,str(aliases))
         send_msg(type, jid, nick, msg)
-
-
 
 ##########################
 
@@ -339,7 +293,6 @@ def weather_gis(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def autoflood(type, jid, nick):
-	fld = 'settings/flood'
 	if os.path.isfile(fld):
 		floods = eval(readfile(fld))
 	else:
@@ -858,8 +811,17 @@ def weather(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
-def get_prefix():
-	global prefix
+def get_local_prefix(jid):
+	lprefix = prefix
+	if os.path.isfile(preffile):
+		pref = eval(readfile(preffile))
+		for pp in pref:
+			if pp[0] == getRoom(jid):
+				lprefix = pp[1]
+				break
+	return lprefix
+
+def get_prefix(prefix):
 	if prefix != u'':
 	        return prefix
 	else:
@@ -868,51 +830,37 @@ def get_prefix():
 #  0     1            2     3      4
 # [1,prefix+cmd, exe_alias, 0, prefix+cbody])
 
-def update_prefix(old,new,com):
-        tcom = []
-        for ccom in com:
-                ttcom = ccom
-                if ccom[1][:len(old)] == old:
-                        ttcom = []
-                        ttcom.append(ccom[0])
-                        ttcom.append(new + ccom[1][len(old):])
-                        ttcom.append(ccom[2])
-                        ttcom.append(ccom[3])
-			if ccom[3] == 0:
-				if ccom[4][:len(old)] == old:
-		                        ttcom.append(new + ccom[4][len(old):])
-				else:
-		                        ttcom.append(ccom[4])
-                tcom.append(ttcom)
-        return tcom
-
 def set_prefix(type, jid, nick, text):
-        global preffile, prefix, comms
-        old_prefix = prefix
+        global preffile, prefix
 	msg = u'Префикс комманд: '
-        if os.path.isfile(preffile):
-		pref = eval(readfile(preffile))
-		prefix = pref[0]
-	else:
-		pref = [(u'_')]
-		writefile(preffile,pref)
-		prefix = pref[0]
 
         if text != '':
-                prefix = text
+                lprefix = text
 
 	if text.lower() == 'none':
-		prefix = u''
+		lprefix = u''
 
-	msg += get_prefix()
+	if text.lower() == 'del':
+		lprefix = prefix
 
-	pref = [(prefix)]
-        writefile(preffile,str(pref))
+	if len(text):
+	        if os.path.isfile(preffile):
+			pref = eval(readfile(preffile))
+			for pp in pref:
+				if pp[0] == getRoom(jid):
+					pref.remove(pp)
+					break
+			pref.append((getRoom(jid),lprefix))
+			writefile(preffile,str(pref))
+		else:
+			pref = [(getRoom(jid),lprefix)]
+			writefile(preffile,str(pref))
+	else:
+		get_local_prefix(jid)
+	msg += get_prefix(lprefix)
+
 	send_msg(type, jid, nick, msg)
-
-        comms = update_prefix(old_prefix, prefix, comms)
 	
-
 def inban(type, jid, nick, text):
 	global banbase
 	banbase = []
@@ -988,7 +936,6 @@ def youtube(type, jid, nick, text):
 	
 
 def smile(type, jid, nick):
-	sml = 'settings/smile'
 	if os.path.isfile(sml):
 		smiles = eval(readfile(sml))
 	else:
@@ -1192,47 +1139,37 @@ def info_access(type, jid, nick):
         if realjid != 'None':
                 msg += u', jid опознан'
 
-	msg += u', Префикс: ' + get_prefix()
+	msg += u', Префикс: ' + get_local_prefix(jid)
 	send_msg(type, jid, nick, msg)
 		
 
 def info_comm(type, jid, nick):
 	global comms
 	msg = ''
-	ccnt = 0
-	jidc = comms
-
         ta = get_access(jid,nick)
-
         access_mode = ta[0]
-        jid2 =ta[1]
-
         accs = [u'всем', u'админам/овнерам', u'владельцу бота']
-
+	print '*'
         for i in range(0,3):
                 msg += '['+str(i)+'] '+accs[i]+': '
-        	for ccomms in jidc:
-        		if not ccomms[1].count(god) and ccomms[0] == i:
-                                ccc = ccomms[1]
-                                if ccc[:len(prefix)] == prefix:
-                                        ccc = ccc[len(prefix):]
-        			msg += ccc +', '
-#        			msg += ccomms[1] +', '
-        			ccnt+= 1
+        	for ccomms in comms:
+        		if ccomms[0] == i:
+        			msg += ccomms[1] +', '
                 msg = msg[:-2] + '\n'
-			
-	msg = u'Команды парсера: '+str(ccnt)+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_prefix()+'\n'+msg
+	print '*'			
+	msg = u'Команды парсера: '+str(len(comms))+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_local_prefix(jid)+'\n'+msg
+	print '*'
 	msg = msg[:-1]
+	print '*'
 	send_msg(type, jid, nick, msg)
-	
-        
+
 def bot_exit(type, jid, nick, text):
 	global game_over
 	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
-	writefile('settings/tmp',str('exit'))
+	writefile(tmpf,str('exit'))
 	sleep(3)
 	game_over = 1
 
@@ -1242,7 +1179,7 @@ def bot_restart(type, jid, nick, text):
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
-	writefile('settings/tmp',str('restart'))
+	writefile(tmpf,str('restart'))
 	game_over = 1
 
 def bot_update(type, jid, nick, text):
@@ -1251,7 +1188,7 @@ def bot_update(type, jid, nick, text):
 	if text != '':
                 StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
-	writefile('settings/tmp',str('update'))
+	writefile(tmpf,str('update'))
 	game_over = 1
 
 def say(type, jid, nick, text):
@@ -1282,7 +1219,7 @@ def helpme(type, jid, nick, text):
 				hhh = hh.split('}')
 				helps.append((hhh[0],hhh[1][:-1]))
 
-	mesg = u'Префикс команд: '+get_prefix()+u'\nДоступна справка по командам:\n'
+	mesg = u'Префикс команд: '+get_local_prefix(jid)+u'\nДоступна справка по командам:\n'
 
         cnt = 0
         for i in range(0,3):
@@ -1290,8 +1227,6 @@ def helpme(type, jid, nick, text):
         	for hlp in helps:
                         for cmdd in comms:
 				tc = cmdd[1]
-				if tc[:len(prefix)]==prefix:
-					tc = tc[len(prefix):]
                                 if tc == hlp[0] and cmdd[0] == i:
                                         mesg += hlp[0] + ', '
                                         cnt += 1
@@ -1303,8 +1238,6 @@ def helpme(type, jid, nick, text):
                         fl = 1
                         for cmdd in comms:
 				tc = cmdd[1]
-				if tc[:len(prefix)]==prefix:
-					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
                                         fl = 0
                         if fl:
@@ -1317,8 +1250,6 @@ def helpme(type, jid, nick, text):
 			mesg = u'Справочная информация: ' + hlp[1]
 			for cmdd in comms:
 				tc = cmdd[1]
-				if tc[:len(prefix)]==prefix:
-					tc = tc[len(prefix):]
                                 if tc == hlp[0]:
                                         mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
 
@@ -1875,9 +1806,6 @@ def rss_del_nn(ms):
 
 #[room, nick, role, affiliation, jid]
 
-feeds = 'settings/feed'
-lafeeds = 'settings/lastfeeds'
-
 def rss(type, jid, nick, text):
         msg = u'rss show|add|del|clear|new|get'
 	nosend = 0
@@ -2255,63 +2183,63 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(1, prefix+u'stats', stats, 1),
-	 (1, prefix+u'gstats', gstats, 1),
-         (2, prefix+u'quit', bot_exit, 2),
-         (2, prefix+u'restart', bot_restart, 2),
-         (2, prefix+u'update', bot_update, 2),
-         (1, prefix+u'say', say, 2),
-         (0, prefix+u'calc', calc, 2),
-         (0, prefix+u'age', true_age, 2),
-         (0, prefix+u'seen', seen, 2),
-         (2, prefix+u'exec', execute, 2),
-         (2, prefix+u'gsay', gsay, 2),
-         (0, prefix+u'help', helpme, 2),
-         (2, prefix+u'join', bot_join, 2),
-         (2, prefix+u'leave', bot_leave, 2),
-         (2, prefix+u'rejoin', bot_rejoin, 2),
-         (2, prefix+u'pass', conf_pass, 2),
-         (2, prefix+u'owner', owner, 2),
-         (2, prefix+u'ignore', ignore, 2),
-         (1, prefix+u'where', info_where, 1),
-         (1, prefix+u'res', info_res, 2),
-         (1, prefix+u'serv', info_serv, 2),
-         (0, prefix+u'inbase', info_base, 1),
-         (2, prefix+u'search', info_search, 2),
-         (1, prefix+u'look', real_search, 2),
-         (2, prefix+u'glook', real_search_owner, 2),
-         (1, prefix+u'tempo', tmp_search, 2),
-         (2, prefix+u'gtempo', gtmp_search, 2),
-         (1, prefix+u'rss', rss, 2),
-         (0, prefix+u'wtfrand', wtfrand, 1),
-         (0, prefix+u'wtfnames', wtfnames, 1),
-         (0, prefix+u'wtfcount', wtfcount, 1),
-         (0, prefix+u'wtfsearch', wtfsearch, 2),
-         (2, prefix+u'wwtf', wwtf, 2),
-         (0, prefix+u'wtff', wtff, 2),
-         (0, prefix+u'wtf', wtf, 2),
-         (1, prefix+u'dfn', dfn, 2),
-         (2, prefix+u'gdfn', gdfn, 2),
-         (1, prefix+u'alias', alias, 2),
-         (0, prefix+u'youtube', youtube, 2),
-         (0, prefix+u'wzcity', weather_city, 2),
-         (0, prefix+u'wzz', weather_raw, 2),
-         (0, prefix+u'wz', weather, 2),
-         (0, prefix+u'gis', weather_gis, 2),
-         (0, prefix+u'commands', info_comm, 1),
-         (0, prefix+u'uptime', uptime, 1),
-         (1, prefix+u'info', info, 1),
-         (1, prefix+u'smile', smile, 1),
-         (1, prefix+u'flood', autoflood, 1),
-         (1, prefix+u'inban', inban, 2),
-         (1, prefix+u'inmember', inmember, 2),
-         (1, prefix+u'inadmin', inadmin, 2),
-         (1, prefix+u'inowner', inowner, 2),
-#        (2, prefix+u'log', get_log, 2),
-         (2, prefix+u'limit', conf_limit, 2),
-         (2, prefix+u'plugin', bot_plugin, 2),
-         (0, prefix+u'def', defcode, 2),
-         (2, prefix+u'error', show_error, 2),
-         (0, prefix+u'whoami', info_access, 1),
-	 (2, prefix+u'prefix', set_prefix, 2),
-         (1, prefix+u'clear', hidden_clear, 1)]
+comms = [(1, u'stats', stats, 1),
+	 (1, u'gstats', gstats, 1),
+         (2, u'quit', bot_exit, 2),
+         (2, u'restart', bot_restart, 2),
+         (2, u'update', bot_update, 2),
+         (1, u'say', say, 2),
+         (0, u'calc', calc, 2),
+         (0, u'age', true_age, 2),
+         (0, u'seen', seen, 2),
+         (2, u'exec', execute, 2),
+         (2, u'gsay', gsay, 2),
+         (0, u'help', helpme, 2),
+         (2, u'join', bot_join, 2),
+         (2, u'leave', bot_leave, 2),
+         (2, u'rejoin', bot_rejoin, 2),
+         (2, u'pass', conf_pass, 2),
+         (2, u'owner', owner, 2),
+         (2, u'ignore', ignore, 2),
+         (1, u'where', info_where, 1),
+         (1, u'res', info_res, 2),
+         (1, u'serv', info_serv, 2),
+         (0, u'inbase', info_base, 1),
+         (2, u'search', info_search, 2),
+         (1, u'look', real_search, 2),
+         (2, u'glook', real_search_owner, 2),
+         (1, u'tempo', tmp_search, 2),
+         (2, u'gtempo', gtmp_search, 2),
+         (1, u'rss', rss, 2),
+         (0, u'wtfrand', wtfrand, 1),
+         (0, u'wtfnames', wtfnames, 1),
+         (0, u'wtfcount', wtfcount, 1),
+         (0, u'wtfsearch', wtfsearch, 2),
+         (2, u'wwtf', wwtf, 2),
+         (0, u'wtff', wtff, 2),
+         (0, u'wtf', wtf, 2),
+         (1, u'dfn', dfn, 2),
+         (2, u'gdfn', gdfn, 2),
+         (1, u'alias', alias, 2),
+         (0, u'youtube', youtube, 2),
+         (0, u'wzcity', weather_city, 2),
+         (0, u'wzz', weather_raw, 2),
+         (0, u'wz', weather, 2),
+         (0, u'gis', weather_gis, 2),
+         (0, u'commands', info_comm, 1),
+         (0, u'uptime', uptime, 1),
+         (1, u'info', info, 1),
+         (1, u'smile', smile, 1),
+         (1, u'flood', autoflood, 1),
+         (1, u'inban', inban, 2),
+         (1, u'inmember', inmember, 2),
+         (1, u'inadmin', inadmin, 2),
+         (1, u'inowner', inowner, 2),
+#        (2, u'log', get_log, 2),
+         (2, u'limit', conf_limit, 2),
+         (2, u'plugin', bot_plugin, 2),
+         (0, u'def', defcode, 2),
+         (2, u'error', show_error, 2),
+         (0, u'whoami', info_access, 1),
+	 (2, u'prefix', set_prefix, 2),
+         (1, u'clear', hidden_clear, 1)]
