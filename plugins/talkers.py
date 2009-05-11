@@ -41,13 +41,15 @@ def gtalkers(type, jid, nick, text):
 
         msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.\tКонфа'
 
+	cnd = 1
         for tt in jidc:
 		ml = len(tt[2])
 		ttz = tabz
 		while ml >= tab_size:
 			ttz = ttz[:-1]
 			ml -= tab_size
-                msg += u'\n'+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+                msg += u'\n'+str(cnd)+'. '+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+		cnd += 1
 	send_msg(type, jid, nick, msg)
 	
 
@@ -92,13 +94,15 @@ def talkers(type, jid, nick, text):
 
         msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.'
 
+	cnd = 1
         for tt in jidc:
 		ml = len(tt[2])
 		ttz = tabz
 		while ml >= tab_size:
 			ttz = ttz[:-1]
 			ml -= tab_size
-                msg += u'\n'+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+                msg += u'\n'+str(cnd)+'. '+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+		cnd += 1
 	send_msg(type, jid, nick, msg)
 	
 

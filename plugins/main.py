@@ -60,6 +60,7 @@ def seen(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def alias(type, jid, nick, text):
+	global aliases
 	if os.path.isfile(alfile):
 		aliases = eval(readfile(alfile))
 	else:
@@ -71,8 +72,12 @@ def alias(type, jid, nick, text):
 		mode = text[:gs]
 		text = text[gs+1:]
 		gs = text.find('=')
-		cmd = text[:gs]
-		cbody = text[gs+1:]
+		if gs >= 0:
+			cmd = text[:gs]
+			cbody = text[gs+1:]
+		else:
+			cmd = text
+			cbody = ''
 	else:
 		mode = text
 		cmd = ''
@@ -85,18 +90,14 @@ def alias(type, jid, nick, text):
 		msg = u'Добавлено: '+cmd+u' == '+cbody
 
 	if mode=='del':
-		msg = u'Не возможно удалить '+cbody
+		msg = u'Не возможно удалить '+cmd
 		for i in aliases:
-			if i[1] == cbody:
+			if i[1] == cmd:
 				aliases.remove(i)
-				msg = u'Удалено: '+cbody
-				for i in comms:
-					if i[1] == cbody:
-						comms.remove(i)
-				break
+				msg = u'Удалено: '+cmd
 
 	if mode=='show':
-		if cbody == '':
+		if cmd == '':
 			msg = u'Сокращения: '
 			isf = 1
 			for i in aliases:
@@ -108,10 +109,10 @@ def alias(type, jid, nick, text):
 			else:
 				msg = msg[:-2]
 		else:
-			msg = cbody
+			msg = cmd
 			isf = 1
 			for i in aliases:
-				if i[1].lower().count(cbody.lower()):
+				if i[1].lower().count(cmd.lower()):
 					msg += '\n'+i[1]+' = '+i[2]
 					isf = 0
 			if isf:
