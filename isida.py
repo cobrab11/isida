@@ -85,8 +85,8 @@ dm = 1
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
-botVersion = '1.5'
-capsVersion = botVersion
+botVersion = 'v1.5'
+capsVersion = botVersion[1:]
 banbase = []
 
 gt=gmtime()
@@ -845,6 +845,8 @@ if os.path.isfile(agest):
 else:
 	agebase = []
 	writefile(agest,str(agebase))
+
+close_age_null()
 
 confs = 'settings/conf'
 

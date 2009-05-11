@@ -125,10 +125,12 @@ def inowner(type, jid, nick, text):
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
-		for i in banbase[:-1]:
+		cnt = 1
+		for i in banbase:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+'\n'
 				fnd = 0
+				cnt += 1
 		mmsg = mmsg[:-1]
 		if fnd:
 			mmsg = u', совпадений нет!'
@@ -151,11 +153,12 @@ def inadmin(type, jid, nick, text):
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
-		for i in banbase[:-1]:
+		cnt = 1
+		for i in banbase:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+'\n'
 				fnd = 0
-		mmsg = mmsg[:-1]
+				cnt += 1
 		if fnd:
 			mmsg = u', совпадений нет!'
 		msg += mmsg
@@ -177,10 +180,12 @@ def inmember(type, jid, nick, text):
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
-		for i in banbase[:-1]:
+		cnt = 1
+		for i in banbase:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+'\n'
 				fnd = 0
+				cnt += 1
 		mmsg = mmsg[:-1]
 		if fnd:
 			mmsg = u', совпадений нет!'
@@ -575,9 +580,11 @@ def true_age(type, jid, nick, text):
 		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
 			if aa[5]:
 				r_age = aa[4]
+				r_was = str(int(time.time())-aa[3])
 			else:
 				r_age = int(time.time())-aa[3]+aa[4]
-			ms.append((aa[1],r_age))
+				r_was = u''
+			ms.append((aa[1],r_age,r_was))
 			is_found = 1
 	if is_found:
 		lms = len(ms)
@@ -593,20 +600,35 @@ def true_age(type, jid, nick, text):
 			msg = u'Время твоего нахождения в конфе: '+str(ms[0][1])
 		else:
 			msg = u'Время нахождения в конфе:'
+			cnt = 1
 			for i in range(0,lms):
-				msg += '\n'+ms[i][0]+'\t'+str(ms[i][1])
+				msg += '\n'+str(cnt)+'. '+ms[i][0]+'\t'+str(ms[i][1])
+				if len(ms[i][2]):
+					msg += ' ('+ms[i][2]+u' сек. назад)'
+				cnt += 1
 	else:
 		msg = u'Не найдено!'
 
 #agebase.append((room, nick,getRoom(jid),tt,ab[4],0))
         send_msg(type, jid, nick, msg)
 
+def close_age_null():
+	global agest, agebase
+	taa = []
+	for ab in agebase:
+		taa.append((ab[0],ab[1],ab[2],ab[3],ab[4],1))
+	agebase = taa
+	writefile(agest,unicode(agebase))
+
 def close_age():
 	global agest, agebase
 	taa = []
 	tt = int(time.time())
 	for ab in agebase:
-		taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
+		if ab[5]:
+			taa.append(ab)
+		else:
+			taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
 	agebase = taa
 	writefile(agest,unicode(agebase))
 
@@ -615,7 +637,7 @@ def close_age_room(room):
 	taa = []
 	tt = int(time.time())
 	for ab in agebase:
-		if getRoom(ab[0]) == getRoom(room):
+		if getRoom(ab[0]) == getRoom(room) and not ab[5]:
 			taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
 		else:
 			taa.append(ab)
@@ -835,10 +857,12 @@ def inban(type, jid, nick, text):
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
+		cnt = 1
 		for i in banbase:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += i[0]+' - '+i[1]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
 				fnd = 0
+				cnt += 1
 		mmsg = mmsg[:-1]
 		if fnd:
 			mmsg = u', совпадений нет!'
@@ -1482,8 +1506,10 @@ def info_where(type, jid, nick):
 				jj = wbase[i]
 				wbase[i] = wbase[j]
 				wbase[j] = jj
+	nmb = 1
 	for i in wbase:
-		msg += i[0]+' ['+str(i[1])+']\n'
+		msg += str(nmb)+'. '+i[0]+' ['+str(i[1])+']\n'
+		nmb += 1
 
         msg = msg[:-1]
         send_msg(type, jid, nick, msg)
