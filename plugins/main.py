@@ -668,7 +668,7 @@ def true_age(type, jid, nick, text):
 		if lms > llim:
 			lms = llim
 		if lms == 1 and nick == text:
-			msg = u'Время твоего нахождения в конфе: '+str(ms[0][1])
+			msg = u'Время твоего нахождения в конфе: '+un_unix(ms[0][1])
 		else:
 			msg = u'Время нахождения в конфе:'
 			cnt = 1
