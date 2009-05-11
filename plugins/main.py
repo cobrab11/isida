@@ -2242,5 +2242,5 @@ comms = [(1, u'stats', stats, 1),
          (0, u'def', defcode, 2),
          (2, u'error', show_error, 2),
          (0, u'whoami', info_access, 1),
-	 (2, u'prefix', set_prefix, 2),
+	 (1, u'prefix', set_prefix, 2),
          (1, u'clear', hidden_clear, 1)]
