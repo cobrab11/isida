@@ -1,5 +1,23 @@
 # -*- coding: utf-8 -*-
 
+def netwww(type, jid, nick, text):
+	text = text.encode('utf-8')
+	text = text.replace('\\x','%')
+	text = text.replace(' ','%20')
+	if text[:7] !='http://':
+                text = 'http://'+text
+	f = urllib.urlopen(text)
+	page = f.read()
+	f.close()
+	page = html_encode(page)
+	page = rss_replace(page)
+	page = rss_del_html(page)
+	page = rss_replace(page)
+	page = rss_del_nn(page)
+	page = 'pre-aplha version:\n'+page[:100]
+
+        send_msg(type, jid, nick, page)
+
 def seen(type, jid, nick, text):
         while text[-1:] == ' ':
                 text = text[:-1]
@@ -246,7 +264,8 @@ def weather_gis(type, jid, nick, text):
 		if pos < 0:
 			msg = u'Город не найден!'
 		else:
-			link = msg[pos:pos+32]			f = urllib.urlopen(link)
+			link = msg[pos:pos+32]
+			f = urllib.urlopen(link)
 			msg = f.read()
 			f.close()
 			msg = html_encode(msg)
@@ -785,7 +804,8 @@ def weather(type, jid, nick, text):
 
 		msg = wzr[0][:wzr[0].find(')')+1]
 		msg += '\n'+ wzr[1]
-		wzz1 = wzr[2].find(':')+1 # Temperature
+
+		wzz1 = wzr[2].find(':')+1 # Temperature
 		wzz2 = wzr[2].find('(',wzz1)
 		wzz3 = wzr[2].find(')',wzz2)
 		msg += '\n'+ wzr[2][:wzz1] + ' ' + wzr[2][wzz2+1:wzz3]
@@ -857,7 +877,7 @@ def set_prefix(type, jid, nick, text):
 			pref = [(getRoom(jid),lprefix)]
 			writefile(preffile,str(pref))
 	else:
-		get_local_prefix(jid)
+		lprefix = get_local_prefix(jid)
 	msg += get_prefix(lprefix)
 
 	send_msg(type, jid, nick, msg)
@@ -1195,6 +1215,7 @@ def bot_update(type, jid, nick, text):
 def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
+	text = to_censore(text)
 	send_msg(type, jid, nick, text)	
 
 def gsay(type, jid, nick, text):
@@ -2223,6 +2244,7 @@ comms = [(1, u'stats', stats, 1),
          (2, u'gdfn', gdfn, 2),
          (1, u'alias', alias, 2),
          (0, u'youtube', youtube, 2),
+         (1, u'www', netwww, 2),
          (0, u'wzcity', weather_city, 2),
          (0, u'wzz', weather_raw, 2),
          (0, u'wz', weather, 2),

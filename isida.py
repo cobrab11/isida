@@ -28,7 +28,8 @@ wbase = set_folder+u'wtfbase'		# база wtf
 answ = set_folder+u'answers'		# база автоответчика
 tmpf = set_folder+u'tmp'		# флаг завершения бота
 feeds = set_folder+u'feed'		# список rss каналов
-lafeeds = set_folder+u'lastfeeds'	# посделние новости по каждому каналу
+lafeeds = set_folder+u'lastfeeds'	# последние новости по каждому каналу
+cens = set_folder+u'censor.txt'     	# список "запрещенных" слов для болтуна
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
@@ -473,20 +474,20 @@ def messageCB(sess,mess):
         if (text != 'None') and (len(text)>=1) and access_mode >= 0:
 		no_comm = 1
 		is_par = 0
+		is_par_alias = 1
 		if text[:len(nowname)] == nowname:
 			text = text[len(nowname)+2:]
 			is_par = 1
 		if text[:len(lprefix)] == lprefix:
 			text = text[len(lprefix):]
 			is_par = 1
+			is_par_alias = 0
 		if type == 'chat':
 			is_par = 1
 		if is_par:
 			no_comm = com_parser(access_mode, nowname, type, room, nick, text, jid)
 
-
-
-		if no_comm and is_par:
+		if no_comm and is_par_alias:
 			for parse in aliases:
 				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
@@ -506,11 +507,11 @@ def messageCB(sess,mess):
 				is_flood = 1
 				break
 
-	if no_comm and can_answer and access_mode >= 0 and ft[:len(nowname)] == nowname and is_flood:
+	if no_comm and access_mode >= 0 and (ft[:len(nowname)] == nowname or type == 'chat') and is_flood:
 		if len(text)>100:
 			text = u'Слишком многа букаф!'
 		else:
-			text = getAnswer(text)
+			text = getAnswer(text,type)
 		send_msg(type, room, nick, text)
 
 # исправить этот костыль!!!
@@ -523,13 +524,9 @@ def thread_log(proc, *params):
         except:
                 logging.exception(' ['+timeadd(localtime())+'] ')
 
-def getAnswer(tx):
+def getAnswer(tx,type):
 	maxcom = 0
 	poscom = 0
-
-#	for aa in answers:
-#		if tx == aa[0]:
-#			answers.remove(aa)
 
 	for i in range(0,len(answers)):
 		ii = answers[i]
@@ -544,8 +541,9 @@ def getAnswer(tx):
 			anscom = answers[randint(0,len(answers)-1)][0]
 		else:
 			anscom = u':-\"'
-
-	answers.append((tx,poscom))
+        if type == 'groupchat':
+                tx = to_censore(tx)
+        	answers.append((tx,poscom))
 	writefile(answ,str(answers))
 
 	if len(anscom)<=1:
@@ -555,7 +553,14 @@ def getAnswer(tx):
 			anscom = u':-\"'
 	#print '***',anscom,'***'
 
+        anscom = to_censore(anscom)
 	return anscom
+
+def to_censore(text):
+        for c in censor:
+                if text.count(c):
+                        text = text.replace(c,'[censored]')
+        return text
 
 def compare(aa,bb):
 	kpd = 0
@@ -864,10 +869,19 @@ else:
 	writefile(wbase,str(wtfbase))
 
 if os.path.isfile(answ):
-	can_answer = 1
 	answers = eval(readfile(answ))
 else:
-	can_answer = 0
+	answers = []
+	writefile(answ,str(answers))
+
+if os.path.isfile(cens):
+	censor = readfile(cens).decode('UTF')
+	censor = censor.split('\n')
+	for c in censor:
+                if c.count('#') or not len(c):
+                        censor.remove(c)
+else:
+	censor = []
 
 pprint(u'****************************')
 pprint(u'*** Bot Name: '+botName)
