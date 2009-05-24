@@ -345,7 +345,7 @@ def execute(type, jid, nick, text):
 
 
 def calc(type, jid, nick, text):
-        legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>']
+        legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>','.']
         ppc = 1
         for tt in text:
                 all_ok = 0
@@ -853,7 +853,7 @@ def get_prefix(prefix):
 
 def set_prefix(type, jid, nick, text):
         global preffile, prefix
-	msg = u'Префикс комманд: '
+	msg = u'Префикс команд: '
 
         if text != '':
                 lprefix = text
@@ -1216,6 +1216,7 @@ def say(type, jid, nick, text):
 	nick = ''
 	type = 'groupchat'
 	text = to_censore(text)
+#	text = rss_replace(text) #!!!!!
 	send_msg(type, jid, nick, text)	
 
 def gsay(type, jid, nick, text):
@@ -1589,8 +1590,7 @@ def get_uptime_str():
 def info(type, jid, nick):
         global confbase        
         msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
-        msg += u'Сервер: '+lastserver+'\n'
-        msg += u'Ник: '+lastnick+'\n'
+        msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
 	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
 	msg += u'Время запуска: '+timeadd(starttime)+'\n'
 	nowtime = localtime()
@@ -1598,6 +1598,27 @@ def info(type, jid, nick):
 
 	msg += u'Время работы: '
 	msg += get_uptime_str()
+	msg += u'\nSmiles is '
+
+	ssta = 0
+	if os.path.isfile(sml):
+		smiles = eval(readfile(sml))
+		is_found = 1
+		for sm in smiles:
+			if sm[0] == getRoom(jid):
+				tsm = (sm[0],int(not sm[1]))
+				ssta = tsm[1]
+				break
+	msg += onoff(ssta) + u' | Flood is '
+	ssta = 0
+	if os.path.isfile(fld):
+		floods = eval(readfile(fld))
+		for sm in floods:
+			if sm[0] == getRoom(jid):
+				tsm = (sm[0],int(not sm[1]))
+				ssta = tsm[1]
+	msg += onoff(ssta)
+	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
 
         send_msg(type, jid, nick, msg)
 	
@@ -1785,12 +1806,25 @@ def real_search(type, jid, nick, text):
                 if fl:
                         msg = '\''+text+u'\' not found!'
         send_msg(type, jid, nick, msg)
-	
+
+def isNumber(text):
+	print text
+	try:
+		it = int(text,16)
+		if it >= 32 and it <= 127:
+			return chr(int(text,16))
+		else:
+#			zz =  '\u'+text
+#			zz = zz.decode('utf-16')
+			return '?'
+	except:
+		return 'None'
 
 def rss_replace(ms):
 	ms = ms.replace('<br>','\n')
 	ms = ms.replace('<br />','\n')
 	ms = ms.replace('<br/>','\n')
+	ms = ms.replace('\n\r','\n')
 	ms = ms.replace('<![CDATA[','')
 	ms = ms.replace(']]>','')
 	ms = ms.replace('&lt;','<')
@@ -1798,7 +1832,29 @@ def rss_replace(ms):
 	ms = ms.replace('&quot;','\"')
 	ms = ms.replace('&apos;','\'')
 	ms = ms.replace('&amp;','&')
-	return ms
+	mm = ''
+	m = 0
+	while m<len(ms):
+		try:
+			if ms[m:m+2] == u'&#':
+				if ms[2].lower() == 'x':
+					tnum = ms[m+3:ms.find(';',m+3)]
+				else:
+					tnum = ms[m+2:ms.find(';',m+2)]
+				num = isNumber(tnum[:5])
+				print '!', num, '-', tnum[:5]
+				if num != 'None':
+					mm += unicode(num)
+					m += 3 + len(tnum)
+				else:
+					mm += ms[m]
+			else:
+				mm += ms[m]
+		except:
+			mm += ms[m]
+		m += 1
+# &#x2212;
+	return mm
 
 def rss_del_html(ms):
 	i=0

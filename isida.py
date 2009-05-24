@@ -474,22 +474,21 @@ def messageCB(sess,mess):
         if (text != 'None') and (len(text)>=1) and access_mode >= 0:
 		no_comm = 1
 		is_par = 0
-		is_par_alias = 1
 		if text[:len(nowname)] == nowname:
 			text = text[len(nowname)+2:]
 			is_par = 1
+		btext = text
 		if text[:len(lprefix)] == lprefix:
 			text = text[len(lprefix):]
 			is_par = 1
-			is_par_alias = 0
 		if type == 'chat':
 			is_par = 1
 		if is_par:
 			no_comm = com_parser(access_mode, nowname, type, room, nick, text, jid)
 
-		if no_comm and is_par_alias:
+		if no_comm:
 			for parse in aliases:
-				if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+				if btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ':
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 					ppr = parse[2].replace('%*',text[len(parse[1])+1:])
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
