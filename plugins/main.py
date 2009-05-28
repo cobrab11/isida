@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
 
-#<iq type="get" to="japyt@conference.jabber.ru/Isida" id="ab62a" >
-#<query xmlns="jabber:iq:version"/>
-#</iq>
-
-
 def iq_time(type, jid, nick, text):
 	global iq_answer
-	iq_answer = []
 	if text == '':
 		who = getRoom(jid)+'/'+nick
 	else:
 		who = getRoom(jid)+'/'+text
 
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
+	iqid = randint(1,100000)
+	iq_answer = [str(iqid)]
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
 	cl.send(i)
 	to = timeout
-	while iq_answer == [] and to >= 0:
+
+	while iq_answer == [str(iqid)] and to >= 0:
 		sleep(0.5)
 		to -= 0.5
 
 	iiqq = []
-	for iiq in iq_answer:
+	for iiq in iq_answer[1:]:
 		if iiq != None:
 			iiqq.append(iiq)
 		else:
@@ -41,21 +38,23 @@ def iq_time(type, jid, nick, text):
 
 def iq_version(type, jid, nick, text):
 	global iq_answer
-	iq_answer = []
 	if text == '':
 		who = getRoom(jid)+'/'+nick
 	else:
 		who = getRoom(jid)+'/'+text
 
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
+	iqid = randint(1,100000)
+	iq_answer = [str(iqid)]
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 	cl.send(i)
 	to = timeout
-	while iq_answer == [] and to >= 0:
+
+	while iq_answer == [str(iqid)] and to >= 0:
 		sleep(0.5)
 		to -= 0.5
 
 	iiqq = []
-	for iiq in iq_answer:
+	for iiq in iq_answer[1:]:
 		if iiq != None:
 			iiqq.append(iiq)
 		else:
@@ -497,7 +496,7 @@ def wtfrand(type, jid, nick):
 
         send_msg(type, jid, nick, msg)
 
-def wtfnames(type, jid, nick):
+def wtfnames(type, jid, nick, text):
 	msg = u'Всё, что я знаю это: '
 	if os.path.isfile(wbase):
 		wtfbase = eval(readfile(wbase))
@@ -505,9 +504,22 @@ def wtfnames(type, jid, nick):
 		wtfbase = []
 		writefile(wbase,str(wtfbase))
 
-	for ww in wtfbase:
-		if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
-			msg += ww[3]+', '
+	if text == 'all':
+		for ww in wtfbase:
+			if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
+				msg += ww[3]+', '
+	elif text == 'global':
+		for ww in wtfbase:
+			if ww[0] == 'global':
+				msg += ww[3]+', '
+	elif text == 'import':
+		for ww in wtfbase:
+			if ww[0] == 'import':
+				msg += ww[3]+', '
+	else:
+		for ww in wtfbase:
+			if jid == ww[0]:
+				msg += ww[3]+', '
 
 	msg=msg[:-2]
 
@@ -2367,7 +2379,7 @@ comms = [(1, u'stats', stats, 1),
          (2, u'gtempo', gtmp_search, 2),
          (1, u'rss', rss, 2),
          (0, u'wtfrand', wtfrand, 1),
-         (0, u'wtfnames', wtfnames, 1),
+         (0, u'wtfnames', wtfnames, 2),
          (0, u'wtfcount', wtfcount, 1),
          (0, u'wtfsearch', wtfsearch, 2),
          (2, u'wwtf', wwtf, 2),

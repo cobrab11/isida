@@ -110,7 +110,7 @@ botName = 'Isida-Bot'
 botVersion = 'v1.6'
 capsVersion = botVersion[1:]
 banbase = []
-iq_answer = []
+iq_answer = ['0']
 timeout = 300
 
 gt=gmtime()
@@ -357,9 +357,8 @@ def iqCB(sess,iq):
         nick = unicode(iq.getFrom())
         id = iq.getID()
         query = iq.getTag('query')
-        id = iq.getID()
 
-	if iq.getType()=='error':
+	if iq.getType()=='error' and id == iq_answer[0]:
 		iq_answer.append(iq.getTag('error').getTagData(tag='text'))
 
 	if iq.getType()=='result':
@@ -379,12 +378,12 @@ def iqCB(sess,iq):
 				banbase.append((cjid, creason))
 			banbase.append((u'TheEnd', u'None'))
 
-		if nspace == NS_VERSION:
+		if nspace == NS_VERSION and id == iq_answer[0]:
 				iq_answer.append(iq.getTag('query').getTagData(tag='name'))
 				iq_answer.append(iq.getTag('query').getTagData(tag='version'))
 				iq_answer.append(iq.getTag('query').getTagData(tag='os'))
 
-		if nspace == NS_TIME:
+		if nspace == NS_TIME and id == iq_answer[0]:
 				iq_answer.append(iq.getTag('query').getTagData(tag='display'))
 				iq_answer.append(iq.getTag('query').getTagData(tag='utc'))
 				iq_answer.append(iq.getTag('query').getTagData(tag='tz'))
