@@ -110,6 +110,8 @@ botName = 'Isida-Bot'
 botVersion = 'v1.6'
 capsVersion = botVersion[1:]
 banbase = []
+iq_answer = []
+timeout = 300
 
 gt=gmtime()
 lt=localtime()
@@ -351,16 +353,19 @@ def timeZero(val):
     return rval
 
 def iqCB(sess,iq):
-	global timeofset, banbase
+	global timeofset, banbase, iq_answer
         nick = unicode(iq.getFrom())
         id = iq.getID()
         query = iq.getTag('query')
         id = iq.getID()
 
+	if iq.getType()=='error':
+		iq_answer.append(iq.getTag('error').getTagData(tag='text'))
+
 	if iq.getType()=='result':
+		cparse = unicode(iq)
 		nspace = query.getNamespace()
                 if nspace == NS_MUC_ADMIN:
-                        cparse = unicode(iq)
 #                        ccount = cparse.count('<item affiliation=\"outcast\"')
                         cparse = cparse.split('<item')
 			banbase = []
@@ -373,7 +378,17 @@ def iqCB(sess,iq):
 					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 				banbase.append((cjid, creason))
 			banbase.append((u'TheEnd', u'None'))
- 
+
+		if nspace == NS_VERSION:
+				iq_answer.append(iq.getTag('query').getTagData(tag='name'))
+				iq_answer.append(iq.getTag('query').getTagData(tag='version'))
+				iq_answer.append(iq.getTag('query').getTagData(tag='os'))
+
+		if nspace == NS_TIME:
+				iq_answer.append(iq.getTag('query').getTagData(tag='display'))
+				iq_answer.append(iq.getTag('query').getTagData(tag='utc'))
+				iq_answer.append(iq.getTag('query').getTagData(tag='tz'))
+
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
 			pprint(u'*** iq:version from '+unicode(nick))
@@ -522,6 +537,9 @@ def thread_log(proc, *params):
                         proc(params[0], params[1], params[2], params[3])
         except:
                 logging.exception(' ['+timeadd(localtime())+'] ')
+
+def get_tag(body,tag):
+	return body[:body.find('<'+tag+'>')]+body[body.find('</'+tag+'>',body.find('<'+tag+'>'))+len(tag)+2:]
 
 def getAnswer(tx,type):
 	maxcom = 0

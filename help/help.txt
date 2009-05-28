@@ -167,6 +167,10 @@ gdfn word= - удаляет определение word
 alias add aa=bb - выполнить команду bb при написании команды aa
 alias del aa - удалить сокращение aa
 alias show [text] - показать все сокращения или похожие на text.
+{ver}
+Версия клиента
+{time}
+Локальное время клиента
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.

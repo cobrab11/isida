@@ -1,5 +1,78 @@
 # -*- coding: utf-8 -*-
 
+#<iq type="get" to="japyt@conference.jabber.ru/Isida" id="ab62a" >
+#<query xmlns="jabber:iq:version"/>
+#</iq>
+
+
+def iq_time(type, jid, nick, text):
+	global iq_answer
+	iq_answer = []
+	if text == '':
+		who = getRoom(jid)+'/'+nick
+	else:
+		who = getRoom(jid)+'/'+text
+
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
+	cl.send(i)
+	to = timeout
+	while iq_answer == [] and to >= 0:
+		sleep(0.5)
+		to -= 0.5
+
+	iiqq = []
+	for iiq in iq_answer:
+		if iiq != None:
+			iiqq.append(iiq)
+		else:
+			iiqq.append('None')
+	iq_answer = iiqq
+
+	if to >= 0:
+		if len(iq_answer) == 3:
+			msg = iq_answer[0]+' ('+iq_answer[1]+'|'+iq_answer[2]+')'
+		else:
+			msg = ''
+			for iiq in iq_answer:
+				msg = iiq+' '
+	else:
+		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+        send_msg(type, jid, nick, msg)
+
+def iq_version(type, jid, nick, text):
+	global iq_answer
+	iq_answer = []
+	if text == '':
+		who = getRoom(jid)+'/'+nick
+	else:
+		who = getRoom(jid)+'/'+text
+
+	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
+	cl.send(i)
+	to = timeout
+	while iq_answer == [] and to >= 0:
+		sleep(0.5)
+		to -= 0.5
+
+	iiqq = []
+	for iiq in iq_answer:
+		if iiq != None:
+			iiqq.append(iiq)
+		else:
+			iiqq.append('None')
+	iq_answer = iiqq
+
+	if to >= 0:
+		if len(iq_answer) == 3:
+			msg = iq_answer[0]+' '+iq_answer[1]+' // '+iq_answer[2]
+		else:
+			msg = ''
+			for iiq in iq_answer:
+				msg = iiq+' '
+	else:
+		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+        send_msg(type, jid, nick, msg)
+
 def netwww(type, jid, nick, text):
 	text = text.encode('utf-8')
 	text = text.replace('\\x','%')
@@ -1242,31 +1315,35 @@ def helpme(type, jid, nick, text):
 				hhh = hh.split('}')
 				helps.append((hhh[0],hhh[1][:-1]))
 
-	mesg = u'Префикс команд: '+get_local_prefix(jid)+u'\nДоступна справка по командам:\n'
+	if text != '':
+		mesg = u'Префикс команд: '+get_local_prefix(jid)+u'\nДоступна справка по командам:\n'
 
-        cnt = 0
-        for i in range(0,3):
-                mesg += '['+str(i)+'] '
-        	for hlp in helps:
-                        for cmdd in comms:
-				tc = cmdd[1]
-                                if tc == hlp[0] and cmdd[0] == i:
-                                        mesg += hlp[0] + ', '
-                                        cnt += 1
-                mesg = mesg[:-2]
-                mesg += '\n'
-        if cnt != len(helps):
-                mesg += '[?] '
-                for hlp in helps:
-                        fl = 1
-                        for cmdd in comms:
-				tc = cmdd[1]
-                                if tc == hlp[0]:
-                                        fl = 0
-                        if fl:
-                                mesg += hlp[0] + ', '
-                mesg = mesg[:-1]
-	mesg = mesg[:-1]
+	        cnt = 0
+       		for i in range(0,3):
+        	        mesg += '['+str(i)+'] '
+        		for hlp in helps:
+        	                for cmdd in comms:
+					tc = cmdd[1]
+        	                        if tc == hlp[0] and cmdd[0] == i:
+        	                                mesg += hlp[0] + ', '
+        	                                cnt += 1
+        	        mesg = mesg[:-2]
+        	        mesg += '\n'
+        	if cnt != len(helps):
+        	        mesg += '[?] '
+        	        for hlp in helps:
+        	                fl = 1
+        	                for cmdd in comms:
+					tc = cmdd[1]
+        	                        if tc == hlp[0]:
+        	                                fl = 0
+        	                if fl:
+        	                        mesg += hlp[0] + ', '
+        	        mesg = mesg[:-1]
+		mesg = mesg[:-1]
+
+	else:
+		mesg = u'Isida Jabber Bot\nИнформационно-справочный бот\nhttp://isida.googlecode.com\n© 2oo9 Disabler Production Lab.\nСправка по командам: help команда'
 
 	for hlp in helps:
 		if text.lower() == hlp[0]:
@@ -2314,6 +2391,8 @@ comms = [(1, u'stats', stats, 1),
          (1, u'inmember', inmember, 2),
          (1, u'inadmin', inadmin, 2),
          (1, u'inowner', inowner, 2),
+         (0, u'ver', iq_version, 2),
+         (0, u'time', iq_time, 2),
 #        (2, u'log', get_log, 2),
          (2, u'limit', conf_limit, 2),
          (2, u'plugin', bot_plugin, 2),
