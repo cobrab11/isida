@@ -3,7 +3,7 @@
 ul = 'update.log'
 def svn_info(type, jid, nick):
 	if os.path.isfile(ul):
-		msg = u'Последнее обновление:\n'+readfile(ul)
+		msg = u'Последнее обновление:\n'+unicode(readfile(ul))
 	else:
 		msg = u'Файл '+ul+u' не доступен!'
         send_msg(type, jid, nick, msg)
