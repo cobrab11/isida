@@ -1,36 +1,52 @@
 # -*- coding: utf-8 -*-
 
+ul = 'update.log'
+def svn_info(type, jid, nick):
+	if os.path.isfile(ul):
+		msg = u'Последнее обновление:\n'+readfile(ul)
+	else:
+		msg = u'Файл '+ul+u' не доступен!'
+        send_msg(type, jid, nick, msg)
+
 def iq_time(type, jid, nick, text):
 	global iq_answer
 	if text == '':
 		who = getRoom(jid)+'/'+nick
 	else:
-		who = getRoom(jid)+'/'+text
+		who = text
+		for mega1 in megabase:
+			if mega1[0] == jid and mega1[1] == text:
+				who = getRoom(jid)+'/'+text
+				break
 
-	iqid = randint(1,100000)
-	iq_answer = [str(iqid)]
+	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
 	cl.send(i)
 	to = timeout
 
-	while iq_answer == [str(iqid)] and to >= 0:
+	no_answ = 1
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
 		sleep(0.5)
 		to -= 0.5
 
 	iiqq = []
-	for iiq in iq_answer[1:]:
+	for iiq in is_answ:
 		if iiq != None:
 			iiqq.append(iiq)
 		else:
 			iiqq.append('None')
-	iq_answer = iiqq
-
 	if to >= 0:
-		if len(iq_answer) == 3:
-			msg = iq_answer[0]+' ('+iq_answer[1]+'|'+iq_answer[2]+')'
+		if len(iiqq) == 3:
+			msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
 		else:
 			msg = ''
-			for iiq in iq_answer:
+			for iiq in iiqq:
 				msg = iiq+' '
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
@@ -41,32 +57,40 @@ def iq_version(type, jid, nick, text):
 	if text == '':
 		who = getRoom(jid)+'/'+nick
 	else:
-		who = getRoom(jid)+'/'+text
+		who = text
+		for mega1 in megabase:
+			if mega1[0] == jid and mega1[1] == text:
+				who = getRoom(jid)+'/'+text
+				break
 
-	iqid = randint(1,100000)
-	iq_answer = [str(iqid)]
+	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 	cl.send(i)
 	to = timeout
 
-	while iq_answer == [str(iqid)] and to >= 0:
+	no_answ = 1
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
 		sleep(0.5)
 		to -= 0.5
 
 	iiqq = []
-	for iiq in iq_answer[1:]:
+	for iiq in is_answ:
 		if iiq != None:
 			iiqq.append(iiq)
 		else:
 			iiqq.append('None')
-	iq_answer = iiqq
-
 	if to >= 0:
-		if len(iq_answer) == 3:
-			msg = iq_answer[0]+' '+iq_answer[1]+' // '+iq_answer[2]
+		if len(iiqq) == 3:
+			msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
 		else:
 			msg = ''
-			for iiq in iq_answer:
+			for iiq in iiqq:
 				msg = iiq+' '
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
@@ -112,7 +136,10 @@ def seen(type, jid, nick, text):
 		text = nick
 	is_found = 0
 	ms = []
-	for aa in agebase:
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
+	for aa in cu:
 		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
 			if aa[5]:
 				r_age = aa[4]
@@ -120,7 +147,7 @@ def seen(type, jid, nick, text):
 			else:
 				r_age = int(time.time())-aa[3]
 				r_was = 0
-			ms.append((aa[1],r_age,r_was))
+			ms.append((aa[1],r_age,r_was,aa[6],aa[7]))
 			is_found = 1
 	if is_found:
 		lms = len(ms)
@@ -140,7 +167,12 @@ def seen(type, jid, nick, text):
 			for i in range(0,lms):
 				msg += '\n'+str(cnt)+'. '+ms[i][0]
 				if ms[i][2]:
-					msg += u'\tвышел '+un_unix(ms[i][2])+u' назад'
+					if ms[i][3] != '':
+						msg += u'\t'+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
+					else:
+						msg += u'\tВышел '+un_unix(ms[i][2])+u' назад'
+					if ms[i][4] != '':
+						msg += ' ('+ms[i][4]+')'
 				else:
 					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
 				cnt += 1
@@ -225,7 +257,6 @@ def inowner(type, jid, nick, text):
 
 	banbase = banbase[:-1]
 	msg = u'Всего владельцев: '+str(len(banbase))
-	print banbase
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
@@ -441,19 +472,15 @@ def calc(type, jid, nick, text):
 def wtfsearch(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
-		if os.path.isfile(wbase):
-			wtfbase = eval(readfile(wbase))
-		else:
-			wtfbase = []
-			writefile(wbase,str(wtfbase))
-
+		msg = u'Всё, что я знаю это: '
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		
+		ww = cu.execute('select * from wtf where (room=? or room=? or room=?) and (room like ? or jid like ? or nick like ? or wtfword like ? or wtftext like ? or time like ?)',(jid,'global','import',text,text,text,text,text,text)).fetchall()
 		msg = ''
-		for ww in wtfbase:
-			if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
-				for www in ww[1:]:
-					if www.lower().count(text.lower()):
-						msg += ww[3]+', '
-						break
+		for www in ww:
+			msg += www[4]+', '
+
 		if len(msg):
 			msg = u'Нечто похожее я видела в: '+msg[:-2]
 		else:
@@ -461,90 +488,48 @@ def wtfsearch(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
-def wwtf(type, jid, nick, text):
-	msg = u'Чего искать то будем?'
-	if len(text):
-		if os.path.isfile(wbase):
-			wtfbase = eval(readfile(wbase))
-		else:
-			wtfbase = []
-			writefile(wbase,str(wtfbase))
-
-		msg = ''
-		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and text == ww[3]:
-
-				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
-		if not len(msg):
-			msg = u'Хм. Мне про это никто не рассказывал...'
-
-        send_msg(type, jid, nick, msg)
-
 def wtfrand(type, jid, nick):
-	if os.path.isfile(wbase):
-		wtfbase = eval(readfile(wbase))
-	else:
-		wtfbase = []
-		writefile(wbase,str(wtfbase))
+	msg = u'Всё, что я знаю это: '
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
 
-	msg = []
-	for ww in wtfbase:
-		if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
-			msg.append(ww)
-	msg = msg[randint(0,len(msg)-1)]
-	msg = u'Я знаю, что '+msg[3]+u' - '+msg[4]
+	ww = cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import')).fetchall()
+	tlen = len(ww)
+
+	ww = ww[randint(0,tlen-1)]
+
+	msg = u'Я знаю, что '+ww[4]+u' - '+ww[5]
 
         send_msg(type, jid, nick, msg)
 
 def wtfnames(type, jid, nick, text):
 	msg = u'Всё, что я знаю это: '
-	if os.path.isfile(wbase):
-		wtfbase = eval(readfile(wbase))
-	else:
-		wtfbase = []
-		writefile(wbase,str(wtfbase))
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
 
 	if text == 'all':
-		for ww in wtfbase:
-			if jid == ww[0] or ww[0] == 'global' or ww[0] == 'import':
-				msg += ww[3]+', '
+		cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import'))
 	elif text == 'global':
-		for ww in wtfbase:
-			if ww[0] == 'global':
-				msg += ww[3]+', '
+		cu.execute('select * from wtf where room=?',('global',))
 	elif text == 'import':
-		for ww in wtfbase:
-			if ww[0] == 'import':
-				msg += ww[3]+', '
+		cu.execute('select * from wtf where room=?',('import',))
 	else:
-		for ww in wtfbase:
-			if jid == ww[0]:
-				msg += ww[3]+', '
+		cu.execute('select * from wtf where room=?',(jid,))
 
+	for ww in cu:
+		msg += ww[4]+', '
 	msg=msg[:-2]
-
         send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
 	msg = u'В этой конфе определений: '
-	if os.path.isfile(wbase):
-		wtfbase = eval(readfile(wbase))
-	else:
-		wtfbase = []
-		writefile(wbase,str(wtfbase))
-
-	cnt = 0
-	glb = 0
-	imp = 0
-	for ww in wtfbase:
-		if jid == ww[0]:
-			cnt += 1
-		elif ww[0] == 'global':
-			glb += 1
-		elif ww[0] == 'import':
-			imp += 1
-
-	msg += str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(len(wtfbase))
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
+	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
+	glb = len(cu.execute('select * from wtf where room=?',('global',)).fetchall())
+	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())
+	msg += str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(len(wtfbase))
 
         send_msg(type, jid, nick, msg)
 
@@ -556,24 +541,28 @@ def wtff(type, jid, nick, text):
 	ff = 1
 	wtf_get(ff,type, jid, nick, text)
 
+
+def wwtf(type, jid, nick, text):
+	ff = 2
+	wtf_get(ff,type, jid, nick, text)
+
 def wtf_get(ff,type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
-		if os.path.isfile(wbase):
-			wtfbase = eval(readfile(wbase))
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text)).fetchall())
+		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text))
+
+		if tlen:
+			for aa in cu:
+				ww=aa[1:]			msg = u'Я знаю, что '+text+u' - '+ww[4]
+			if ff == 1:
+				msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
+			elif ff == 2:
+				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
 		else:
-			wtfbase = []
-			writefile(wbase,str(wtfbase))
-
-		msg = ''
-		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and text == ww[3]:
-				msg = u'Я знаю, что '+text+u' - '+ww[4]
-				if ff:
-					msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
-		if not len(msg):
 			msg = u'Хм. Мне про это никто не рассказывал...'
-
         send_msg(type, jid, nick, msg)
 
 def del_space_begin(text):
@@ -601,33 +590,30 @@ def dfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		if os.path.isfile(wbase):
-			wtfbase = eval(readfile(wbase))
-		else:
-			wtfbase = []
-			writefile(wbase,str(wtfbase))
-
-		was_found = 0
-		for ww in wtfbase:
-			if (jid == ww[0] or ww[0] == 'global' or ww[0] == 'import') and what == ww[3]:
-				was_found = 1
-				if ww[0] == 'global':
-					msg = u'Это глобальное определение и его нельзя изменить!'
-					text = ''
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
+		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
+		
+		if tlen:
+			for aa in cu:
+				ww=aa			if ww[1] == 'global':
+				msg = u'Это глобальное определение и его нельзя изменить!'
+				text = ''
+			else:
+				if text == '':
+					msg = u'Жаль, что такую полезную хренотень надо забыть...'
 				else:
-					if text == '':
-						msg = u'Жаль, что такую полезную хренотень надо забыть...'
-					else:
-						msg = u'Боян, но я запомню!'
-					wtfbase.remove(ww)
-					writefile(wbase,str(wtfbase))
-
-		if not was_found:
+					msg = u'Боян, но я запомню!'
+				cu.execute('delete from wtf where wtfword=?',(what,))
+			idx = ww[0]
+		else:
 			msg = u'Ммм.. что то новенькое, ща запомню!'
-		if text != '':
-			wtfbase.append((jid, realjid, nick, what, text, timeadd(localtime())))
-			writefile(wbase,str(wtfbase))
+			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
+		if text != '':
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(localtime())))
+		mdb.commit()
         send_msg(type, jid, nick, msg)
 
 def gdfn(type, jid, nick, text):
@@ -643,31 +629,28 @@ def gdfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		if os.path.isfile(wbase):
-			wtfbase = eval(readfile(wbase))
-		else:
-			wtfbase = []
-			writefile(wbase,str(wtfbase))
-
-		was_found = 0
-		for ww in wtfbase:
-			if (ww[0] == 'global' or ww[0] == jid or ww[0] == 'import') and what == ww[3]:
-				if text == '':
-					msg = u'Жаль, что такую полезную хренотень надо забыть...'
-				else:
-					msg = u'Боян, но я запомню!'
-				wtfbase.remove(ww)
-				writefile(wbase,str(wtfbase))
-				was_found = 1
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
+		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
 		
-		if not was_found:
+		if tlen:
+			for aa in cu:
+				ww=aa
+			if text == '':
+				msg = u'Жаль, что такую полезную хренотень надо забыть...'
+			else:
+				msg = u'Боян, но я запомню!'
+			cu.execute('delete from wtf where wtfword=?',(what,))
+			idx = ww[0]
+		else:
 			msg = u'Ммм.. что то новенькое, ща запомню!'
+			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
+
 		if text != '':
-			wtfbase.append(('global', realjid, nick, what, text, timeadd(localtime())))
-			writefile(wbase,str(wtfbase))
-
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(localtime())))
+		mdb.commit()
         send_msg(type, jid, nick, msg)
-
 
 #--------
 
@@ -705,7 +688,10 @@ def true_age(type, jid, nick, text):
 		text = nick
 	is_found = 0
 	ms = []
-	for aa in agebase:
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
+	for aa in cu:
 		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
 			if aa[5]:
 				r_age = aa[4]
@@ -713,7 +699,7 @@ def true_age(type, jid, nick, text):
 			else:
 				r_age = int(time.time())-aa[3]+aa[4]
 				r_was = 0
-			ms.append((aa[1],r_age,r_was))
+			ms.append((aa[1],r_age,r_was,aa[6],aa[7]))
 			is_found = 1
 	if is_found:
 		lms = len(ms)
@@ -733,7 +719,13 @@ def true_age(type, jid, nick, text):
 			for i in range(0,lms):
 				msg += '\n'+str(cnt)+'. '+ms[i][0]+'\t'+un_unix(ms[i][1])
 				if ms[i][2]:
-					msg += u' ('+un_unix(ms[i][2])+u' назад)'
+					if ms[i][3] != '':
+						msg += u', '+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
+					else:
+						msg += u', Вышел '+un_unix(ms[i][2])+u' назад'
+					if ms[i][4] != '':
+						msg += ' ('+ms[i][4]+')'
+
 				cnt += 1
 	else:
 		msg = u'Не найдено!'
@@ -742,36 +734,35 @@ def true_age(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def close_age_null():
-	global agest, agebase
-	taa = []
-	for ab in agebase:
-		taa.append((ab[0],ab[1],ab[2],ab[3],ab[4],1))
-	agebase = taa
-	writefile(agest,unicode(agebase))
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
+	for ab in cu:
+		cu.execute('delete from age where room=? and jid=?', (ab[0],ab[2]))
+		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
+	mdb.commit()
 
 def close_age():
-	global agest, agebase
-	taa = []
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
 	tt = int(time.time())
-	for ab in agebase:
-		if ab[5]:
-			taa.append(ab)
-		else:
-			taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
-	agebase = taa
-	writefile(agest,unicode(agebase))
+	for ab in cu:
+		if not ab[5]:
+			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb.commit()
 
 def close_age_room(room):
-	global agest, agebase
-	taa = []
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
 	tt = int(time.time())
-	for ab in agebase:
+	for ab in cu:
 		if getRoom(ab[0]) == getRoom(room) and not ab[5]:
-			taa.append((ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1))
-		else:
-			taa.append(ab)
-	agebase = taa
-	writefile(agest,unicode(agebase))
+			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb.commit()
 
 def weather_city(type, jid, nick, text):
 	text = text.upper()
@@ -1192,8 +1183,6 @@ def get_log(type, jid, nick, text):
 				lllim = llog
 			arg1 = str(len(log)-lllim)+'-'+str(len(log))
 
-#		print arg1
-
 		arg1 = arg1.split('-')
 		log_from = int(arg1[0])
 		log_to = int(arg1[1])
@@ -1255,18 +1244,14 @@ def info_comm(type, jid, nick):
         ta = get_access(jid,nick)
         access_mode = ta[0]
         accs = [u'всем', u'админам/овнерам', u'владельцу бота']
-	print '*'
         for i in range(0,3):
                 msg += '['+str(i)+'] '+accs[i]+': '
         	for ccomms in comms:
         		if ccomms[0] == i:
         			msg += ccomms[1] +', '
                 msg = msg[:-2] + '\n'
-	print '*'			
 	msg = u'Команды парсера: '+str(len(comms))+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_local_prefix(jid)+'\n'+msg
-	print '*'
 	msg = msg[:-1]
-	print '*'
 	send_msg(type, jid, nick, msg)
 
 def bot_exit(type, jid, nick, text):
@@ -1401,7 +1386,9 @@ def bot_rejoin(type, jid, nick, text):
 		pprint(u'rejoin '+text+' by '+nick)
 		sm = u'Перезахожу по команде от '+nick
 		leaveconf(text, domain, sm)
-		joinconf(text, domain)
+		zz = joinconf(text, domain)
+		if zz != None:
+			send_msg(type, jid, nick, u'Ошибка! '+zz)
 	else:
 		send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+getRoom(lroom))
 		pprint(u'never be in '+text)
@@ -1425,21 +1412,31 @@ def bot_join(type, jid, nick, text):
                 lroom = text[:lroom]
 
 		if arr_semi_find(confbase, lroom) == -1:                                
-                        confbase.append(text)
-                        joinconf(text, domain)
-                        writefile(confs,str(confbase))
-                        send_msg(type, jid, nick, u'зашла в '+text)
-                        pprint(u'join to '+text)
+			zz = joinconf(text, domain)
+			if zz != None:
+				send_msg(type, jid, nick, u'Ошибка! '+zz)
+	                        pprint(u'*** Error join to '+text+' '+zz)
+			else:
+	                        confbase.append(text)
+	                        writefile(confs,str(confbase))
+        	                send_msg(type, jid, nick, u'зашла в '+text)
+	                        pprint(u'join to '+text)
+
                 elif confbase.count(text):
                         send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom+u' с ником '+lastnick)
                         pprint(u'already in '+text)
 		else:
-			confbase = arr_del_semi_find(confbase, lroom)
-                        confbase.append(text)
-			send_msg(type, jid, nick, u'смена ника в '+lroom+u' на '+lastnick)
-                        joinconf(text, domain)
-                        writefile(confs,str(confbase))
-                        pprint(u'change nick '+text)
+                        zz = joinconf(text, domain)
+			print '***********',zz
+			if zz != None:
+				send_msg(type, jid, nick, u'Ошибка! '+zz)
+	                        pprint(u'*** Error join to '+text+' '+zz)
+			else:
+				confbase = arr_del_semi_find(confbase, lroom)
+	                        confbase.append(text)
+				send_msg(type, jid, nick, u'смена ника в '+lroom+u' на '+lastnick)
+	                        writefile(confs,str(confbase))
+	                        pprint(u'change nick '+text)
 	
 
 def bot_leave(type, jid, nick, text):
@@ -1448,7 +1445,7 @@ def bot_leave(type, jid, nick, text):
                 send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
         else:
 		if text == '':
-			text = getName(jid)
+			text = jid
                 if toSymbolPosition(text,'@')<0:
                         text+='@'+lastserver
                 if toSymbolPosition(text,'/')<0:
@@ -1554,6 +1551,11 @@ def bot_plugin(type, jid, nick, text):
 	writefile(plname,str(plugins))
         send_msg(type, jid, nick, msg)
 	
+#                        elif text[:5] == u'/auth':
+#                                j = Presence(BaseJid, 'subscribed')
+#				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+#                                clc[selcon].send(j)
+#                                nosend=0
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -1563,9 +1565,16 @@ def owner(type, jid, nick, text):
 	if do == 'add':
                 if not ownerbase.count(nnick):
                         ownerbase.append(nnick)
+		        j = Presence(nnick, 'subscribe')
+			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+		        cl.send(j)
+
 	elif do == 'del':
                 if ownerbase.count(nnick) and nnick != god:
                         ownerbase.remove(nnick)
+		        j = Presence(nnick, 'unsubscribed')
+			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+		        cl.send(j)
 #        elif do == 'clr':
 #                ownerbase = [god]
 
@@ -1695,8 +1704,7 @@ def info(type, jid, nick):
 		is_found = 1
 		for sm in smiles:
 			if sm[0] == getRoom(jid):
-				tsm = (sm[0],int(not sm[1]))
-				ssta = tsm[1]
+				ssta = sm[1]
 				break
 	msg += onoff(ssta) + u' | Flood is '
 	ssta = 0
@@ -1704,8 +1712,7 @@ def info(type, jid, nick):
 		floods = eval(readfile(fld))
 		for sm in floods:
 			if sm[0] == getRoom(jid):
-				tsm = (sm[0],int(not sm[1]))
-				ssta = tsm[1]
+				ssta = sm[1]
 	msg += onoff(ssta)
 	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
 
@@ -1713,6 +1720,9 @@ def info(type, jid, nick):
 	
 
 def info_res(type, jid, nick, text):
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	jidbase = cu.execute('select * from jid').fetchall()
 	jidb = []
 	jidc = []
 	for jjid in jidbase:
@@ -1810,16 +1820,21 @@ def info_base(type, jid, nick):
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
 	if text != '':
-        	msg = u'Найдено:'
-                fl = 1
-                for jjid in jidbase:
-                        if jjid.lower().count(text.lower()):
-                        	msg += '\n'+jjid
-                        	fl = 0
-                if fl:
-                        msg = '\''+text+u'\' not found!'
-        send_msg(type, jid, nick, msg)
-	
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		ttext = '%'+text+'%'
+		tma = cu.execute('select * from jid where jid like ? order by jid',(ttext,)).fetchmany(10)
+
+		if len(tma):
+		        msg = u'Найдено:'
+			cnd = 1
+			for tt in tma:
+        		        msg += u'\n'+str(cnd)+'. '+tt[0]
+				cnd += 1
+		else:
+			msg = text +u' не найдено!'
+	send_msg(type, jid, nick, msg)
+
 
 def gtmp_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
@@ -1897,7 +1912,6 @@ def real_search(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def isNumber(text):
-	print text
 	try:
 		it = int(text,16)
 		if it >= 32 and it <= 127:
@@ -1931,7 +1945,6 @@ def rss_replace(ms):
 				else:
 					tnum = ms[m+2:ms.find(';',m+2)]
 				num = isNumber(tnum[:5])
-				print '!', num, '-', tnum[:5]
 				if num != 'None':
 					mm += unicode(num)
 					m += 3 + len(tnum)
@@ -2397,6 +2410,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'commands', info_comm, 1),
          (0, u'uptime', uptime, 1),
          (1, u'info', info, 1),
+         (0, u'svn', svn_info, 1),
          (1, u'smile', smile, 1),
          (1, u'flood', autoflood, 1),
          (1, u'inban', inban, 2),
@@ -2405,7 +2419,7 @@ comms = [(1, u'stats', stats, 1),
          (1, u'inowner', inowner, 2),
          (0, u'ver', iq_version, 2),
          (0, u'time', iq_time, 2),
-#        (2, u'log', get_log, 2),
+         (2, u'log', get_log, 2),
          (2, u'limit', conf_limit, 2),
          (2, u'plugin', bot_plugin, 2),
          (0, u'def', defcode, 2),

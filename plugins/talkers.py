@@ -1,110 +1,54 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-tab_size = 12
-
 # Поиск по глобальной базе "болтунов"
 def gtalkers(type, jid, nick, text):
-	tbasefile = 'settings/talkers'
-        if os.path.isfile(tbasefile):
-        	tbase = eval(readfile(tbasefile))
-        else:
-        	tbase = []
-        	writefile(tbasefile,str(tbase))
-        jidc = []
-        
-        if text == '':
-                for tt in tbase:
-                        jidc.append(tt)
-        else:
-                for tt in tbase:
-                        if tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
-                                jidc.append(tt)                                
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	if len(text):
+		ttext = '%'+text+'%'
+		tma = cu.execute('select * from talkers where room=? and (jid like ? or nick like ?) order by -words',(jid,ttext,ttext)).fetchmany(10)
+	else:
+		tma = cu.execute('select * from talkers order by -words').fetchmany(10)
 
-	for i in range(0,len(jidc)):
-		for j in range(i,len(jidc)):
-			if jidc[i][3] < jidc[j][3]:
-				jj = jidc[i]
-				jidc[i] = jidc[j]
-				jidc[j] = jj
+        wtext = text.split(' ')
+        wtext = len(wtext)
+        beadd = 1
 
-        if len(jidc)> 10:
-                jidc = jidc[:10]
-	maxlen = 0
-	for tt in jidc:
-		if len(tt[2])>maxlen:
-			maxlen=len(tt[2])
-	tabz = ''
-	while maxlen >=0:
-		tabz+='\t'
-		maxlen -= tab_size
-
-        msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.\tКонфа'
-
-	cnd = 1
-        for tt in jidc:
-		ml = len(tt[2])
-		ttz = tabz
-		while ml >= tab_size:
-			ttz = ttz[:-1]
-			ml -= tab_size
-                msg += u'\n'+str(cnd)+'. '+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
-		cnd += 1
+	if len(tma):
+	        msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.\tКонфа'
+		cnd = 1
+		for tt in tma:
+        	        msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+			cnd += 1
+	else:
+		msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
 	
 
 # Поиск по базе "блтунов" в пределах одной конференции
 def talkers(type, jid, nick, text):
-	tbasefile = 'settings/talkers'
-        if os.path.isfile(tbasefile):
-        	tbase = eval(readfile(tbasefile))
-        else:
-        	tbase = []
-        	writefile(tbasefile,str(tbase))
-        jidc = []
-        msg = u'Болтуны:\nНик\tСлов\tФраз\tКоэф.'
-        
-        if text == '':
-                for tt in tbase:
-                        if jid == tt[0]:
-                                jidc.append(tt)
-        else:
-                for tt in tbase:
-                        if jid == tt[0] and tt[2].lower().count(text.lower())+tt[1].lower().count(text.lower()):
-                                jidc.append(tt)                                
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	if len(text):
+		ttext = '%'+text+'%'
+		tma = cu.execute('select * from talkers where room=? and (jid like ? or nick like ?) order by -words',(jid,ttext,ttext)).fetchmany(10)
+	else:
+		tma = cu.execute('select * from talkers where room=? order by -words',(jid,)).fetchmany(10)
 
-	for i in range(0,len(jidc)):
-		for j in range(i,len(jidc)):
-			if jidc[i][3] < jidc[j][3]:
-				jj = jidc[i]
-				jidc[i] = jidc[j]
-				jidc[j] = jj
+        wtext = text.split(' ')
+        wtext = len(wtext)
+        beadd = 1
 
-        if len(jidc)> 10:
-                jidc = jidc[:10]
-
-	maxlen = 0
-	for tt in jidc:
-		if len(tt[2])>maxlen:
-			maxlen=len(tt[2])
-	tabz = ''
-	while maxlen >=0:
-		tabz+='\t'
-		maxlen -= tab_size
-
-        msg = u'Болтуны:\nНик'+tabz+u'Слов\tФраз\tКоэф.'
-
-	cnd = 1
-        for tt in jidc:
-		ml = len(tt[2])
-		ttz = tabz
-		while ml >= tab_size:
-			ttz = ttz[:-1]
-			ml -= tab_size
-                msg += u'\n'+str(cnd)+'. '+tt[2] +ttz+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
-		cnd += 1
+	if len(tma):
+	        msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.'
+		cnd = 1
+		for tt in tma:
+        	        msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+			cnd += 1
+	else:
+		msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
-	
 
 #------------------------------------------------
 
