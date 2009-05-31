@@ -8,7 +8,7 @@ svn co http://isida.googlecode.com/svn/trunk isida
 - launch -
 
 1. rename defaul_config.py to config.py and fill look inside
-2. for linux type in console: sh launch.sh
+2. type in console: sh launch.sh
 
 - update -
 

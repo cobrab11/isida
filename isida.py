@@ -6,7 +6,7 @@ from random import *
 from sys import maxint
 from time import *
 from pdb import *
-import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator
+import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator, sqlite3
 
 LOG_FILENAME = u'log/error.txt'		# логи
 
@@ -18,18 +18,15 @@ configname = set_folder+u'config.py'	# конфиг бота
 alfile = set_folder+u'aliases'		# сокращения
 fld = set_folder+u'flood'		# автоответчик
 sml = set_folder+u'smile'		# смайлы на роли
-tbasefile = set_folder+u'talkers'	# база болтунов
-jidbasefile = set_folder+u'jidbase'	# база jid'ов
 owners = set_folder+u'owner'		# база владельцев
 ignores = set_folder+u'ignore'		# черный список
-agest = set_folder+u'agestat'		# база возрастов
 confs = set_folder+u'conf'		# список активных конф
-wbase = set_folder+u'wtfbase'		# база wtf
-answ = set_folder+u'answers'		# база автоответчика
 tmpf = set_folder+u'tmp'		# флаг завершения бота
 feeds = set_folder+u'feed'		# список rss каналов
 lafeeds = set_folder+u'lastfeeds'	# последние новости по каждому каналу
 cens = set_folder+u'censor.txt'     	# список "запрещенных" слов для болтуна
+
+mainbase = set_folder+u'main.db'	# основная база данных
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
@@ -83,7 +80,8 @@ def timeadd(lt):
 
 def pprint(text):
         text = text
-#	print parser('['+timeadd(localtime())+'] '+text)
+	zz = parser('['+timeadd(localtime())+'] '+text)
+#	print zz
 
 def send_presence_all(sm):
 	for tocon in confbase:
@@ -107,10 +105,10 @@ dm = 1
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
-botVersion = 'v1.6'
+botVersion = 'v1.7'
 capsVersion = botVersion[1:]
 banbase = []
-iq_answer = ['0']
+iq_answer = []
 timeout = 300
 
 gt=gmtime()
@@ -296,8 +294,10 @@ def joinconf(conference, server):
 	else:
 		cl = Client(jid.getDomain())
         conf = unicode(JID(conference))
-        join(conf)
-        sleep(1)
+	zz = join(conf)
+	if zz != None:
+		pprint(' *** Error *** '+zz)
+	return zz
 
 #leave [conference/nick]
 def leaveconf(conference, server, sm):
@@ -331,11 +331,24 @@ def get_space(text):
         return spc
         
 def join(conference):
-    j = Presence(conference, show=CommStatus, status=StatusMessage, priority=Priority)
-    j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-    j.getTag('x').setTagData('password', psw)
-    j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-    cl.send(j)
+	global iq_answer
+	j = Presence(conference, show=CommStatus, status=StatusMessage, priority=Priority)
+	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
+	j.getTag('x').setTagData('password', psw)
+	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+
+	cl.send(j)
+	id=j.getID()
+	Error = None
+	for aa in range(0,5):
+		for bb in iq_answer:
+			if bb[0]==id:
+				Error = bb[1]
+				break
+		if Error != None:
+			break
+		sleep(0.1)
+	return Error
 
 def leave(conference, sm):
     j = Presence(conference, 'unavailable', status=sm)
@@ -358,8 +371,8 @@ def iqCB(sess,iq):
         id = iq.getID()
         query = iq.getTag('query')
 
-	if iq.getType()=='error' and id == iq_answer[0]:
-		iq_answer.append(iq.getTag('error').getTagData(tag='text'))
+	if iq.getType()=='error':
+		iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
 
 	if iq.getType()=='result':
 		cparse = unicode(iq)
@@ -378,15 +391,11 @@ def iqCB(sess,iq):
 				banbase.append((cjid, creason))
 			banbase.append((u'TheEnd', u'None'))
 
-		if nspace == NS_VERSION and id == iq_answer[0]:
-				iq_answer.append(iq.getTag('query').getTagData(tag='name'))
-				iq_answer.append(iq.getTag('query').getTagData(tag='version'))
-				iq_answer.append(iq.getTag('query').getTagData(tag='os'))
+		if nspace == NS_VERSION:
+				iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
 
-		if nspace == NS_TIME and id == iq_answer[0]:
-				iq_answer.append(iq.getTag('query').getTagData(tag='display'))
-				iq_answer.append(iq.getTag('query').getTagData(tag='utc'))
-				iq_answer.append(iq.getTag('query').getTagData(tag='tz'))
+		if nspace == NS_TIME:
+				iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
 
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -445,7 +454,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	return no_comm
 
 def messageCB(sess,mess):
-        global otakeRes, mainRes, psw, lfrom, lto, jidbase, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
+        global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
         global ignorebase, ignores
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
@@ -541,33 +550,19 @@ def get_tag(body,tag):
 	return body[:body.find('<'+tag+'>')]+body[body.find('</'+tag+'>',body.find('<'+tag+'>'))+len(tag)+2:]
 
 def getAnswer(tx,type):
-	maxcom = 0
-	poscom = 0
+	mdb = sqlite3.connect(mainbase)
+	answers = mdb.cursor()
+	la = len(answers.execute('select * from answer').fetchall())
+	mrand = str(randint(1,la))
+	answers.execute('select * from answer where ind=?', (mrand,))
 
-	for i in range(0,len(answers)):
-		ii = answers[i]
-		cmpr = compare(tx,ii[0])
-		if cmpr >= maxcom:
-			maxcom = cmpr
-			poscom = answers[i][1]
-			anscom = answers[poscom][0]
+	for aa in answers:
+		anscom = aa[1]
 
-	if poscom == 0:
-		if len(answers):
-			anscom = answers[randint(0,len(answers)-1)][0]
-		else:
-			anscom = u':-\"'
         if type == 'groupchat':
-                tx = to_censore(tx)
-        	answers.append((tx,poscom))
-	writefile(answ,str(answers))
-
-	if len(anscom)<=1:
-		if len(answers):
-			anscom = answers[randint(0,len(answers)-1)][0]
-		else:
-			anscom = u':-\"'
-	#print '***',anscom,'***'
+		tx = to_censore(tx)
+		answers.execute('insert into answer values (?,?)', (la+1,tx))
+	mdb.commit()
 
         anscom = to_censore(anscom)
 	return anscom
@@ -594,7 +589,7 @@ def compare(aa,bb):
 	return kpd
 
 def presenceCB(sess,mess):
-	global jidbase, megabase, megabase2, ownerbase, agebase
+	global megabase, megabase2, ownerbase, iq_answer, confs, confbase
         room=unicode(mess.getFrom().getStripped())
         nick=unicode(mess.getFrom().getResource())
         text=unicode(mess.getStatus())
@@ -607,6 +602,15 @@ def presenceCB(sess,mess):
         type=unicode(mess.getType())
         status=unicode(mess.getStatusCode())
         actor=unicode(mess.getActor())
+	id = mess.getID()
+        to=unicode(mess.getTo())
+
+	if type=='error':
+		iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
+
+	if jid == 'None':		
+	        ta = get_access(room,nick)
+	        jid =ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1:
@@ -643,7 +647,7 @@ def presenceCB(sess,mess):
 
 
 #	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
-
+	
 	if ownerbase.count(getRoom(room)) and type != 'unavailable':
 		j = Presence(room, show=CommStatus, status=StatusMessage, priority=Priority)
 		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
@@ -653,6 +657,9 @@ def presenceCB(sess,mess):
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)
+		if to == selfjid and (status=='307' or status=='301'):
+			confbase = arr_del_semi_find(confbase,getRoom(room))
+                        writefile(confs,str(confbase))
 	else:
 		not_found = 1
 		for mmb in megabase:
@@ -666,27 +673,43 @@ def presenceCB(sess,mess):
 	if not megabase2.count([room, nick, role, affiliation, jid]):
 		megabase2.append([room, nick, role, affiliation, jid])
 
-	if not jidbase.count(jid) and jid != 'None':
-		jidbase.append(jid)
-		writefile(jidbasefile,str(jidbase))
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	if not cu.execute('select * from jid where jid=?',(jid,)).fetchall() and jid != 'None':
+		cu.execute('insert into jid values (?)', (jid,))
+		mdb.commit()
 
 	if jid != 'None':
+		jid = getRoom(jid.lower())
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
 		tt = int(time.time())
-		was_found = 0
-		for ab in agebase:
-			if ab[2]==getRoom(jid.lower()) and ab[0]==room:
-				agebase.remove(ab)
-				if type=='unavailable':
-					agebase.append((room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1))
+		cu.execute('delete from age where room=? and jid=?',(room, jid))
+		for ab in abc:
+			if type=='unavailable':
+				exit_type = ''
+				exit_message = ''
+				if status=='307': #Kick
+					exit_type = 'Выгнали'
+					exit_message = reason
+				elif status=='301': #Ban
+					exit_type = 'Забанили'
+					exit_message = reason
+				else: #Leave
+					exit_type = 'Вышел'
+					exit_message = show
+				if exit_message == 'None':
+					exit_message = ''
+				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			else:
+				if ab[5]:
+					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ab[7]))
 				else:
-					if ab[5]:
-						agebase.append((room, nick,getRoom(jid.lower()),tt,ab[4],0))
-					else:
-						agebase.append((room, nick,getRoom(jid.lower()),ab[3],ab[4],0))
-				was_found = 1
-		if not was_found:		
-			agebase.append((room, nick,getRoom(jid.lower()),tt,0,0))
-		writefile(agest,unicode(agebase))
+					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ab[7]))
+		if not len(abc):
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',''))
+		mdb.commit()
 
 def onoff(msg):
         if msg:
@@ -819,38 +842,44 @@ def talk_count(room,jid,nick,text):
 
         jid = getRoom(jid)
 
-        if os.path.isfile(tbasefile):
-        	tbase = eval(readfile(tbasefile))
-        else:
-        	tbase = []
-        	writefile(tbasefile,str(tbase))
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	tlen = len(cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchall())
+	cu.execute('select * from talkers where room=? and jid=?',(room,jid))
+
         wtext = text.split(' ')
         wtext = len(wtext)
         beadd = 1
-        if len(tbase):
-                for st in tbase:
-                        if st[0]==room and st[1]==jid:
-                                tind = tbase.index(st)
-                                rec = [st[0],st[1],nick,st[3]+wtext,st[4]+1]
-                                tbase.remove(st)
-                                tbase.append(rec)
-                                beadd = 0
 
-        if beadd:
-                tbase.append([room, jid, nick, wtext, 1])
-        writefile(tbasefile,str(tbase))        	
-
-
+	if tlen:
+		for aa in cu:
+			ab=aa
+		cu.execute('delete from talkers where room=? and jid=?',(room,jid))
+		cu.execute('insert into talkers values (?,?,?,?,?)', (ab[0],ab[1],nick,ab[3]+wtext,ab[4]+1))
+	else:
+		cu.execute('insert into talkers values (?,?,?,?,?)', (room, jid, nick, wtext, 1))
+	mdb.commit()
 
 # ---------- HERE WE GO!!! -----------
 
-starttime = localtime()
-
-if os.path.isfile(jidbasefile):
-	jidbase = eval(readfile(jidbasefile))
+if os.path.isfile('settings/starttime'):
+	starttime = eval(readfile('settings/starttime'))
 else:
-	jidbase = []
-	writefile(jidbasefile,str(jidbase))
+	starttime = localtime()
+
+mtb = os.path.isfile(mainbase)
+
+mdb = sqlite3.connect(mainbase)
+cu = mdb.cursor()
+if not mtb:
+	cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
+	cu.execute('''create table answer (ind integer, body text)''')
+	cu.execute('''create table jid (jid text)''')
+	cu.execute('''create table talkers (room text, jid text, nick text, words integer, frases integer)''')
+	cu.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text)''')
+	cu.execute('insert into answer values (?,?)', (1,u';-)'))
+	cu.execute('insert into answer values (?,?)', (2,u'Привет'))
+	mdb.commit()
 
 if os.path.isfile(owners):
 	ownerbase = eval(readfile(owners))
@@ -864,12 +893,6 @@ else:
 	ignorebase = []
 	writefile(ignores,str(ignorebase))
 
-if os.path.isfile(agest):
-	agebase = eval(readfile(agest))
-else:
-	agebase = []
-	writefile(agest,str(agebase))
-
 close_age_null()
 
 if os.path.isfile(confs):
@@ -877,18 +900,6 @@ if os.path.isfile(confs):
 else:
 	confbase = [defaultConf+u'/'+nickname]
 	writefile(confs,str(confbase))
-
-if os.path.isfile(wbase):
-	wtfbase = eval(readfile(wbase))
-else:
-	wtfbase = []
-	writefile(wbase,str(wtfbase))
-
-if os.path.isfile(answ):
-	answers = eval(readfile(answ))
-else:
-	answers = []
-	writefile(answ,str(answers))
 
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF')
@@ -942,7 +953,9 @@ for tocon in confbase:
 		baseArg += u'/'+unicode(nickname)
 	conf = JID(baseArg)
 	pprint(tocon)
-	join(conf)
+	zz = join(conf)
+	if zz != None:
+		pprint(' *** Error *** '+zz)
 
 lastserver = getServer(confbase[0])
 

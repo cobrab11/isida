@@ -1,10 +1,9 @@
 #!/bin/sh
 
-# updater for 0.5 to 0.6
+# updater for 0.6 to 0.7
 
 svn up
 
-rm -r settings/prefix
-rm -r settings/aliases
+python update6to7.py
 
 
