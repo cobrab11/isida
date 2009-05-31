@@ -43,8 +43,22 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
+def untime(var):
+	try:
+		for vv in var:
+			int(vv)
+	except:
+		var = var[var.index('(')+1:var.index(')')]
+		var = var.split(',')
+		stt = []
+		for st in var:
+			sttt = st.split('=')
+			stt.append(int(sttt[1]))
+		var = stt
+	return var
+
 def parser(text):
-	logt=localtime()
+	logt=untime(localtime())
 	logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
 
 	if os.path.isfile(logfile):
@@ -80,7 +94,7 @@ def timeadd(lt):
 
 def pprint(text):
         text = text
-	zz = parser('['+timeadd(localtime())+'] '+text)
+	zz = parser('['+timeadd(untime(localtime()))+'] '+text)
 #	print zz
 
 def send_presence_all(sm):
@@ -112,7 +126,7 @@ iq_answer = []
 timeout = 300
 
 gt=gmtime()
-lt=localtime()
+lt=untime(localtime())
 
 if lt[0:3] == gt[0:3]:
         timeofset = int(lt[3])-int(gt[3])
@@ -414,7 +428,7 @@ def iqCB(sess,iq):
                         gt=timeZero(gmtime())
                         t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
                         
-                        lt=localtime()
+                        lt=untime(localtime())
                         ltt=timeZero(lt)
                         wday = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
                         wlight = ['Winter','Summer']
@@ -544,7 +558,7 @@ def thread_log(proc, *params):
                 else:
                         proc(params[0], params[1], params[2], params[3])
         except:
-                logging.exception(' ['+timeadd(localtime())+'] ')
+                logging.exception(' ['+timeadd(untime(localtime()))+'] ')
 
 def get_tag(body,tag):
 	return body[:body.find('<'+tag+'>')]+body[body.find('</'+tag+'>',body.find('<'+tag+'>'))+len(tag)+2:]
@@ -767,7 +781,7 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
-	lt=localtime()
+	lt=untime(localtime())
 	l_hi = (lt[0]*400+lt[1]*40+lt[2]) * 86400
 	l_lo = lt[3]*3600+lt[4]*60+lt[5]
 
@@ -827,7 +841,7 @@ def schedule():
 	
 				text = 'add '+fd[0]+' '+fd[1]+' '+fd[2]
 	
-				lt=localtime()
+				lt=untime(localtime())
 				text = text.split(' ')
 				link = text[1]
 				if link[:7] != 'http://':
@@ -863,9 +877,13 @@ def talk_count(room,jid,nick,text):
 # ---------- HERE WE GO!!! -----------
 
 if os.path.isfile('settings/starttime'):
-	starttime = eval(readfile('settings/starttime'))
+	try:
+		starttime = eval(readfile('settings/starttime'))
+	except:
+		starttime = readfile('settings/starttime')
+		starttime = untime(starttime)
 else:
-	starttime = localtime()
+	starttime = untime(localtime())
 
 mtb = os.path.isfile(mainbase)
 
@@ -981,9 +999,9 @@ while 1:
 		sys.exit(0)
 
 	except Exception, SM:
-		close_age()
+#		close_age()
 		pprint('*** Error *** '+str(SM)+' ***')
-                logging.exception(' ['+timeadd(localtime())+'] ')
+                logging.exception(' ['+timeadd(untime(localtime()))+'] ')
                 if debugmode:
                         writefile(tmpf,str('exit'))
         		raise

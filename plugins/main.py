@@ -612,7 +612,7 @@ def dfn(type, jid, nick, text):
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(localtime())))
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(untime(localtime()))))
 		mdb.commit()
         send_msg(type, jid, nick, msg)
 
@@ -648,7 +648,7 @@ def gdfn(type, jid, nick, text):
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(localtime())))
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(untime(localtime()))))
 		mdb.commit()
         send_msg(type, jid, nick, msg)
 
@@ -1145,7 +1145,7 @@ def get_log(type, jid, nick, text):
 		arg = text[1]
 	else:
 		arg = ''
-	logt=localtime()
+	logt=untime(localtime())
 
 	if cmd == 'len':
 		if arg == '':
@@ -1639,7 +1639,7 @@ def info_where(type, jid, nick):
 	
 
 def get_uptime_raw():
-	nowtime = localtime()
+	nowtime = untime(localtime())
 
 	difftime = [0,0,0,0,0,0]
 
@@ -1691,7 +1691,7 @@ def info(type, jid, nick):
         msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
 	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
 	msg += u'Время запуска: '+timeadd(starttime)+'\n'
-	nowtime = localtime()
+	nowtime = untime(localtime())
 	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
 
 	msg += u'Время работы: '
@@ -2072,7 +2072,7 @@ def rss(type, jid, nick, text):
 
 	elif mode == 'add':
                         
-		lt=localtime()
+		lt=untime(localtime())
 		link = text[1]
 		if link[:7] != 'http://':
         	        link = 'http://'+link
