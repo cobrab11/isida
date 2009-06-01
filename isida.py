@@ -8,6 +8,8 @@ from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator, sqlite3
 
+#test commit!
+
 LOG_FILENAME = u'log/error.txt'		# логи
 
 set_folder = u'settings/'		# папка настроек
