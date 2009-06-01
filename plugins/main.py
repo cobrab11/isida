@@ -522,16 +522,14 @@ def wtfnames(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
-	msg = u'В этой конфе определений: '
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
 	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
 	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
 	glb = len(cu.execute('select * from wtf where room=?',('global',)).fetchall())
-	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())
-	msg += str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(len(wtfbase))
-
+	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())	msg = u'В этой конфе определений: '+str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(tlen)
         send_msg(type, jid, nick, msg)
+	mdb.close()
 
 def wtf(type, jid, nick, text):
 	ff = 0
@@ -1722,77 +1720,54 @@ def info(type, jid, nick):
 def info_res(type, jid, nick, text):
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
-	jidbase = cu.execute('select * from jid').fetchall()
-	jidb = []
-	jidc = []
-	for jjid in jidbase:
-		jserv = getResourse(jjid)
-		if not jidb.count(jserv):
-			jidb.append(jserv)
-			jidc.append(1)
-		else:
-			jidc[jidb.index(jserv)] += 1
-	msg = u'Уникальных рессурсов: '+str(len(jidb))+u' (Всего: '+str(len(jidbase))+')'
-	if text == '':
-		for i in range(0,len(jidc)-1):
-			for j in range(i,len(jidc)):
-				if jidc[i] < jidc[j]:
-					jj = jidc[i]
-					jidc[i] = jidc[j]
-					jidc[j] = jj
-					jj = jidb[i]
-					jidb[i] = jidb[j]
-					jidb[j] = jj
-		if len(jidb)>9:
-			jidbmax = 10
-		else:
-			jidbmax = len(jidb)
-		for jji in range(0,jidbmax):# jidb:
-                        jjid = jidb[jji]
-			msg += '\n'+jjid+' '+str(jidc[jidb.index(jjid)])
+	if text == 'count':
+		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
+		jidbase = []
+	elif text == '':
+		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
+		jidbase = cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchmany(10)
 	else:
-                fl = 1
-                for jjid in jidb:
-                        if jjid.lower().count(text.lower()):
-                        	msg += '\n'+jjid+' '+str(jidc[jidb.index(jjid)])
-                        	fl = 0
-                if fl:
-                        msg += '\n'+text+u' Not found!'
+		text1 = '%'+text+'%'
+		tlen = len(cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchall())
+		jidbase = cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchmany(10)
+	if not tlen:
+		msg = u'Не найдено: '+text
+	else:
+		if text == '':
+			msg = u'Всего ресурсов: '+str(tlen)+' \n'
+		else:
+			msg = u'Найдено ресурсов: '+str(tlen)+' \n'
+		cnt = 1
+		for jj in jidbase:
+			msg += str(cnt)+'. '+jj[0]+'\t'+str(jj[1])+' \n'
+			cnt += 1
+		msg = msg[:-2]
         send_msg(type, jid, nick, msg)
 	
 
 def info_serv(type, jid, nick, text):
-	jidb = []
-	jidc = []
-	for jjid in jidbase:
-		jserv = getServer(jjid)
-		if not jidb.count(jserv):
-			jidb.append(jserv)
-			jidc.append(1)
-		else:
-			jidc[jidb.index(jserv)] += 1
-	msg = u'Уникальных серверов: '+str(len(jidb))+u' (Всего: '+str(len(jidbase))+')'
-	if text == '':
-		for i in range(0,len(jidc)-1):
-			for j in range(i,len(jidc)):
-				if jidc[i] < jidc[j]:
-					jj = jidc[i]
-					jidc[i] = jidc[j]
-					jidc[j] = jj
-					jj = jidb[i]
-					jidb[i] = jidb[j]
-					jidb[j] = jj
-
-		for jjid in jidb:
-			msg += ' | '+jjid+':'+str(jidc[jidb.index(jjid)])
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	if text == 'count':
+		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
+		jidbase = []
+	elif text == '':
+		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
+		jidbase = cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall()
 	else:
-                fl = 1
-                for jjid in jidb:
-                        if jjid.lower().count(text.lower()):
-                        	msg += '\n'+jjid+' '+str(jidc[jidb.index(jjid)])
-                        	fl = 0
-                if fl:
-                        msg += '\n'+text+u' Not found!'
+		text1 = '%'+text+'%'
+		tlen = len(cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall())
+		jidbase = cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall()
+	if not tlen:
+		msg = u'Не найдено: '+text
+	else:
+		if text == '':
+			msg = u'Всего серверов: '+str(tlen)+' \n'
+		else:
+			msg = u'Найдено серверов: '+str(tlen)+' \n'
+		for jj in jidbase:
+			msg += jj[0]+':'+str(jj[1])+' | '
+		msg = msg[:-2]
         send_msg(type, jid, nick, msg)
 	
 
@@ -1819,17 +1794,15 @@ def info_base(type, jid, nick):
 
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
-	if text != '':
-		mdb = sqlite3.connect(mainbase)
+	if text != '':		mdb = sqlite3.connect(mainbase)
 		cu = mdb.cursor()
 		ttext = '%'+text+'%'
-		tma = cu.execute('select * from jid where jid like ? order by jid',(ttext,)).fetchmany(10)
-
+		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
 		if len(tma):
 		        msg = u'Найдено:'
 			cnd = 1
 			for tt in tma:
-        		        msg += u'\n'+str(cnd)+'. '+tt[0]
+        		        msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
 				cnd += 1
 		else:
 			msg = text +u' не найдено!'

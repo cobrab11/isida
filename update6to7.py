@@ -32,7 +32,7 @@ cu = mdb.cursor()
 
 cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
 cu.execute('''create table answer (ind integer, body text)''')
-cu.execute('''create table jid (jid text)''')
+cu.execute('''create table jid (login text, server text, resourse text)''')
 cu.execute('''create table talkers (room text, jid text, nick text, words integer, frases integer)''')
 cu.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text)''')
 
@@ -59,8 +59,11 @@ else:
 if os.path.isfile(jidbasefile):
 	jidbase = eval(readfile(jidbasefile))
 	print 'Import jid base ...', len(jidbase)
-	for aa in jidbasefile:
-		cu.execute('insert into jid values (?)', (aa[0],))
+	for aa in jidbase:
+		aa1 = aa[:aa.index('@')]
+		aa2 = aa[aa.index('@')+1:aa.index('/')]
+		aa3 = aa[aa.index('/')+1:]
+		cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
 
 if os.path.isfile(talkersfile):
 	talkers = eval(readfile(talkersfile))

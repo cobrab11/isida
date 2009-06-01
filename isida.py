@@ -687,11 +687,15 @@ def presenceCB(sess,mess):
 	if not megabase2.count([room, nick, role, affiliation, jid]):
 		megabase2.append([room, nick, role, affiliation, jid])
 
-	mdb = sqlite3.connect(mainbase)
-	cu = mdb.cursor()
-	if not cu.execute('select * from jid where jid=?',(jid,)).fetchall() and jid != 'None':
-		cu.execute('insert into jid values (?)', (jid,))
-		mdb.commit()
+	if jid != 'None':
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		aa1 = jid[:jid.index('@')]
+		aa2 = jid[jid.index('@')+1:jid.index('/')]
+		aa3 = jid[jid.index('/')+1:]
+		if not cu.execute('select * from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchall():
+			cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
+			mdb.commit()
 
 	if jid != 'None':
 		jid = getRoom(jid.lower())
@@ -892,7 +896,7 @@ cu = mdb.cursor()
 if not mtb:
 	cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
 	cu.execute('''create table answer (ind integer, body text)''')
-	cu.execute('''create table jid (jid text)''')
+	cu.execute('''create table jid (login text, server text, resourse text)''')
 	cu.execute('''create table talkers (room text, jid text, nick text, words integer, frases integer)''')
 	cu.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text)''')
 	cu.execute('insert into answer values (?,?)', (1,u';-)'))
