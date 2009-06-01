@@ -672,8 +672,10 @@ def presenceCB(sess,mess):
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)
 		if to == selfjid and (status=='307' or status=='301'):
-			confbase = arr_del_semi_find(confbase,getRoom(room))
-                        writefile(confs,str(confbase))
+			if os.path.isfile(confs):
+				confbase = eval(readfile(confs))
+				confbase = arr_del_semi_find(confbase,getRoom(room))
+        	                writefile(confs,str(confbase))
 	else:
 		not_found = 1
 		for mmb in megabase:
