@@ -179,6 +179,26 @@ alias show [text] - показать все сокращения или похо
 Показ лога работы бота:
 log len [data] - размер лога за дату или текущий день
 log show data from-to - показ записей лога с "from" по "to" за дату "date"
+{lasttracks}
+Плагин lastfm. Последние скробленные треки
+{lastfriends}
+Плагин lastfm. Последние друзья
+{lastloved}
+Плагин lastfm. Последние любимые треки
+{lastneighbours}
+Плагин lastfm. Соседи по вкусам
+{lastplaylist}
+Плагин lastfm. Топ треков
+{topalbums}
+Плагин lastfm. Топ альбомов
+{topartists}
+Плагин lastfm. Топ исполнителей
+{toptags}
+Плагин lastfm. Топ тегов
+{toptracks}
+Плагин lastfm. Топ треков
+{tasteometer}
+Плагин lastfm. Музакальная совместимость
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.

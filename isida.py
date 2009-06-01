@@ -560,9 +560,6 @@ def thread_log(proc, *params):
         except:
                 logging.exception(' ['+timeadd(untime(localtime()))+'] ')
 
-def get_tag(body,tag):
-	return body[:body.find('<'+tag+'>')]+body[body.find('</'+tag+'>',body.find('<'+tag+'>'))+len(tag)+2:]
-
 def getAnswer(tx,type):
 	mdb = sqlite3.connect(mainbase)
 	answers = mdb.cursor()
