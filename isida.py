@@ -104,8 +104,9 @@ def send_presence_all(sm):
 		        baseArg += u'/'+unicode(nickname)
 	        conf = JID(baseArg)
 	        leave(conf,sm)
+		sleep(0.2)
 	        pprint('leave: '+tocon)
-	sleep(len(confbase)/2)
+#	sleep(len(confbase)/2)
 
 #error handler
 debugmode = 0
@@ -962,10 +963,6 @@ if newBotJid:
 
 cl.auth(jid.getNode(), password, jid.getResource())
 pprint(u'Autheticated')
-cl.RegisterHandler('message',messageCB)
-cl.RegisterHandler('iq',iqCB)
-cl.RegisterHandler('presence',presenceCB)
-cl.sendInitPresence()
 
 pprint(u'Wait conference')
 for tocon in confbase:
@@ -974,9 +971,15 @@ for tocon in confbase:
 		baseArg += u'/'+unicode(nickname)
 	conf = JID(baseArg)
 	pprint(tocon)
+	sleep(0.2)
 	zz = join(conf)
 	if zz != None:
 		pprint(' *** Error *** '+zz)
+
+cl.RegisterHandler('message',messageCB)
+cl.RegisterHandler('iq',iqCB)
+cl.RegisterHandler('presence',presenceCB)
+cl.sendInitPresence()
 
 lastserver = getServer(confbase[0])
 
