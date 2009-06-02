@@ -658,7 +658,7 @@ def presenceCB(sess,mess):
 				break
 
 
-	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
+#	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 	
 	if ownerbase.count(getRoom(room)) and type != 'unavailable':
 		j = Presence(room, show=CommStatus, status=StatusMessage, priority=Priority)
@@ -827,7 +827,8 @@ def schedule():
 				jid = fd[4]
 				nick = 'RSS'
 				text = 'new '+fd[0]+' 10 '+fd[2]+' silent'
-				rss(type, jid, nick, text)
+				thread.start_new_thread(thread_log,(rss, type, room, nick, text))
+#				rss(type, jid, nick, text)
 				text = 'del '+fd[0]
 	
 				text = text.split(' ')
@@ -852,9 +853,9 @@ def schedule():
         			        link = 'http://'+link
 				feedbase.append([link, text[2], text[3], lt[:6], jid])
 				writefile(feeds,str(feedbase))
-				sleep(1)
+				sleep(0.1)
 	except:
-		sleep(2)
+		sleep(0.1)
 
 def talk_count(room,jid,nick,text):
 
