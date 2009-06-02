@@ -1310,17 +1310,19 @@ def info_comm(type, jid, nick):
 	access_mode = ta[0]
 	tmp = sqlite3.connect(':memory:')
 	cu = tmp.cursor()
-	cu.execute('''create table tempo (comm text)''')
+	cu.execute('''create table tempo (comm text, am integer)''')
 
 	for i in comms:
 		if access_mode >= i[0]:
-			cu.execute('insert into tempo values (?)', (unicode(i[1]),))
+			cu.execute('insert into tempo values (?,?)', (unicode(i[1]),i[0]))
 
-	cm = cu.execute('select * from tempo order by comm').fetchall()
-
-	for i in cm:
-		msg += i[0] +', '
-	msg = u'Всего команд: '+str(len(comms))+u', Префикс: '+get_local_prefix(jid)+u'\nВаш доступ - '+str(access_mode)+u', при нём доступно команд: '+str(len(cm))+'\n'+msg[:-2]
+	for j in range(0,access_mode+1):
+		cm = cu.execute('select * from tempo where am=? order by comm',(j,)).fetchall()
+		msg += u'\n• '+str(j)+' ... '
+		for i in cm:
+			msg += i[0] +', '
+		msg = msg[:-2]
+	msg = u'Всего команд: '+str(len(comms))+u', Префикс: '+get_local_prefix(jid)+u'\nВаш доступ - '+str(access_mode)+u', при нём доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
 	tmp.close()
 	send_msg(type, jid, nick, msg)
 

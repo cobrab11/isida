@@ -829,7 +829,7 @@ def schedule():
 				jid = fd[4]
 				nick = 'RSS'
 				text = 'new '+fd[0]+' 10 '+fd[2]+' silent'
-				thread.start_new_thread(thread_log,(rss, type, room, nick, text))
+				thread.start_new_thread(thread_log,(rss, type, jid, nick, text))
 #				rss(type, jid, nick, text)
 				text = 'del '+fd[0]
 	
