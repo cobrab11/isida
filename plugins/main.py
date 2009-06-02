@@ -181,6 +181,73 @@ def seen(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
+def seenjid(type, jid, nick, text):
+        while text[-1:] == ' ':
+                text = text[:-1]
+        
+	text = text.split(' ')
+	llim = 10
+	if len(text)>=2:
+		try:
+			llim = int(text[0])
+		except:
+			llim = 10
+
+		text = text[1]
+	else:
+		text = text[0]
+
+	if llim > 100:
+		llim = 100
+	if text == '':
+		text = nick
+	is_found = 0
+	ms = []
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	cu.execute('select * from age order by room')
+	for aa in cu:
+		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
+			if aa[5]:
+				r_age = aa[4]
+				r_was = int(time.time())-aa[3]
+			else:
+				r_age = int(time.time())-aa[3]
+				r_was = 0
+			ms.append((aa[1],r_age,r_was,aa[6],aa[7],aa[2]))
+			is_found = 1
+	if is_found:
+		lms = len(ms)
+		for i in range(0,lms-1):
+			for j in range(i,lms):
+				if ms[i][1] < ms[j][1]:
+					jj = ms[i]
+					ms[i] = ms[j]
+					ms[j] = jj
+		if lms > llim:
+			lms = llim
+		if lms == 1 and nick == text:
+			msg = u'Я тебя вижу!!!'
+		else:
+			msg = u'Я видела:'
+			cnt = 1
+			for i in range(0,lms):
+				msg += '\n'+str(cnt)+'. '+ms[i][0]+' ('+ms[i][5]+')'
+				if ms[i][2]:
+					if ms[i][3] != '':
+						msg += u'\t'+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
+					else:
+						msg += u'\tВышел '+un_unix(ms[i][2])+u' назад'
+					if ms[i][4] != '':
+						msg += ' ('+ms[i][4]+')'
+				else:
+					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
+				cnt += 1
+	else:
+		msg = u'Не найдено!'
+
+        send_msg(type, jid, nick, msg)
+
 def alias(type, jid, nick, text):
 	global aliases
 	if os.path.isfile(alfile):
@@ -1239,17 +1306,22 @@ def info_access(type, jid, nick):
 def info_comm(type, jid, nick):
 	global comms
 	msg = ''
-        ta = get_access(jid,nick)
-        access_mode = ta[0]
-        accs = [u'всем', u'админам/овнерам', u'владельцу бота']
-        for i in range(0,3):
-                msg += '['+str(i)+'] '+accs[i]+': '
-        	for ccomms in comms:
-        		if ccomms[0] == i:
-        			msg += ccomms[1] +', '
-                msg = msg[:-2] + '\n'
-	msg = u'Команды парсера: '+str(len(comms))+u', Ваш доступ: '+str(access_mode)+u', Префикс: '+get_local_prefix(jid)+'\n'+msg
-	msg = msg[:-1]
+	ta = get_access(jid,nick)
+	access_mode = ta[0]
+	tmp = sqlite3.connect(':memory:')
+	cu = tmp.cursor()
+	cu.execute('''create table tempo (comm text)''')
+
+	for i in comms:
+		if access_mode >= i[0]:
+			cu.execute('insert into tempo values (?)', (unicode(i[1]),))
+
+	cm = cu.execute('select * from tempo order by comm').fetchall()
+
+	for i in cm:
+		msg += i[0] +', '
+	msg = u'Всего команд: '+str(len(comms))+u', Префикс: '+get_local_prefix(jid)+u'\nВаш доступ - '+str(access_mode)+u', при нём доступно команд: '+str(len(cm))+'\n'+msg[:-2]
+	tmp.close()
 	send_msg(type, jid, nick, msg)
 
 def bot_exit(type, jid, nick, text):
@@ -2345,6 +2417,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'calc', calc, 2),
          (0, u'age', true_age, 2),
          (0, u'seen', seen, 2),
+         (1, u'seenjid', seenjid, 2),
          (2, u'exec', execute, 2),
          (2, u'gsay', gsay, 2),
          (0, u'help', helpme, 2),

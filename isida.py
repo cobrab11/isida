@@ -620,9 +620,9 @@ def presenceCB(sess,mess):
 	if type=='error':
 		iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
 
-#	if jid == 'None':		
-#	        ta = get_access(room,nick)
-#	        jid =ta[1]
+	if jid == 'None':		
+	        ta = get_access(room,nick)
+	        jid =ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1:
@@ -706,19 +706,21 @@ def presenceCB(sess,mess):
 		cu.execute('delete from age where room=? and jid=?',(room, jid))
 		for ab in abc:
 			if type=='unavailable':
+#				print status
 				exit_type = ''
 				exit_message = ''
 				if status=='307': #Kick
-					exit_type = 'Выгнали'
+					exit_type = u'Выгнали'
 					exit_message = reason
 				elif status=='301': #Ban
-					exit_type = 'Забанили'
+					exit_type = u'Забанили'
 					exit_message = reason
 				else: #Leave
-					exit_type = 'Вышел'
+					exit_type = u'Вышел'
 					exit_message = show
 				if exit_message == 'None':
 					exit_message = ''
+#				print exit_type, exit_message
 				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 			else:
 				if ab[5]:
