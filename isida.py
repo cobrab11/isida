@@ -620,9 +620,9 @@ def presenceCB(sess,mess):
 	if type=='error':
 		iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
 
-	if jid == 'None':		
-	        ta = get_access(room,nick)
-	        jid =ta[1]
+#	if jid == 'None':		
+#	        ta = get_access(room,nick)
+#	        jid =ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1:
@@ -658,7 +658,7 @@ def presenceCB(sess,mess):
 				break
 
 
-#	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
+	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 	
 	if ownerbase.count(getRoom(room)) and type != 'unavailable':
 		j = Presence(room, show=CommStatus, status=StatusMessage, priority=Priority)
@@ -669,7 +669,7 @@ def presenceCB(sess,mess):
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)
-		if to == selfjid and (status=='307' or status=='301'):
+		if to == selfjid and (status=='307' or status=='301') and confbase.count(room+'/'+nick):
 			if os.path.isfile(confs):
 				confbase = eval(readfile(confs))
 				confbase = arr_del_semi_find(confbase,getRoom(room))
