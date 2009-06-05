@@ -1260,16 +1260,15 @@ def get_log(type, jid, nick, text):
 def get_access(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
-	if cnick != nickname:
-		for base in megabase:
-			if base[1].count(cnick) and base[0].lower()==cjid:
-				jid = base[4]
-				if base[3]==u'admin' or base[3]==u'owner':
-        				access_mode = 1
-					break
-				if base[3]==u'member' or base[3]==u'unaffiliated':
-        				access_mode = 0
-					break
+	for base in megabase:
+		if base[1].count(cnick) and base[0].lower()==cjid:
+			jid = base[4]
+			if base[3]==u'admin' or base[3]==u'owner':
+       				access_mode = 1
+				break
+			if base[3]==u'member' or base[3]==u'none':
+       				access_mode = 0
+				break
 
 	for iib in ignorebase:
 		grj = getRoom(jid.lower())
