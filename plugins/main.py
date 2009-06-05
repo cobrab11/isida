@@ -1258,7 +1258,7 @@ def get_log(type, jid, nick, text):
 	
 
 def get_access(cjid, cnick):
-	access_mode = 0
+	access_mode = -2
 	jid = 'None'
 	if cnick != nickname:
 		for base in megabase:
@@ -1266,6 +1266,10 @@ def get_access(cjid, cnick):
 				jid = base[4]
 				if base[3]==u'admin' or base[3]==u'owner':
         				access_mode = 1
+					break
+				if base[3]==u'member' or base[3]==u'unaffiliated':
+        				access_mode = 0
+					break
 
 	for iib in ignorebase:
 		grj = getRoom(jid.lower())
@@ -1284,24 +1288,30 @@ def get_access(cjid, cnick):
 
         return (access_mode, jid)
 
-def info_access(type, jid, nick):
-	global comms
-
-        ta = get_access(jid,nick)
-
-        access_mode = ta[0]
-        realjid =ta[1]
-
-	msg = u'Доступ: '+str(access_mode)
-        tb = [u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
-        msg += ', ' + tb[access_mode]
-	
-        if realjid != 'None':
-                msg += u', jid опознан'
-
-	msg += u', Префикс: ' + get_local_prefix(jid)
+def info_whois(type, jid, nick, text):
+	if text == '':
+		text == nick
+	msg = raw_who(jid, text)
 	send_msg(type, jid, nick, msg)
 		
+def info_access(type, jid, nick):
+	msg = raw_who(jid, nick)
+	send_msg(type, jid, nick, msg)
+
+def raw_who(room,nick):
+        ta = get_access(room,nick)
+        access_mode = ta[0]
+	if access_mode == -2:
+		msg = u'А был ли мальчег?'
+	else:
+		realjid = ta[1]
+		msg = u'Доступ: '+str(access_mode)
+        	tb = [u'Игнорируемый',u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
+        	msg += ', ' + tb[access_mode+1]
+        	if realjid != 'None':
+        	        msg += u', jid опознан'
+		msg += u', Префикс: ' + get_local_prefix(room)
+	return msg
 
 def info_comm(type, jid, nick):
 	global comms
@@ -2473,5 +2483,6 @@ comms = [(1, u'stats', stats, 1),
          (0, u'def', defcode, 2),
          (2, u'error', show_error, 2),
          (0, u'whoami', info_access, 1),
+         (0, u'whois', info_whois, 2),
 	 (1, u'prefix', set_prefix, 2),
          (1, u'clear', hidden_clear, 1)]
