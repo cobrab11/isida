@@ -544,7 +544,7 @@ def messageCB(sess,mess):
 				is_flood = 1
 				break
 
-	if no_comm and access_mode >= 0 and (ft[:len(nowname)] == nowname or type == 'chat') and is_flood:
+	if no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 		if len(text)>100:
 			text = u'Слишком многа букаф!'
 		else:

@@ -1289,9 +1289,10 @@ def get_access(cjid, cnick):
         return (access_mode, jid)
 
 def info_whois(type, jid, nick, text):
-	if text == '':
-		text == nick
-	msg = raw_who(jid, text)
+	if text != '':
+		msg = raw_who(jid, text)
+	else:
+		msg = u'Кто нужен?'
 	send_msg(type, jid, nick, msg)
 		
 def info_access(type, jid, nick):
