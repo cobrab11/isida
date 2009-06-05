@@ -892,6 +892,8 @@ if os.path.isfile('settings/starttime'):
 else:
 	starttime = untime(localtime())
 
+sesstime = int(time.time())
+
 mtb = os.path.isfile(mainbase)
 
 mdb = sqlite3.connect(mainbase)

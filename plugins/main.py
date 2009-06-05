@@ -1122,8 +1122,7 @@ def smile(type, jid, nick):
 	
 
 def uptime(type, jid, nick):
-	msg = u'Время работы: '
-	msg += get_uptime_str()
+	msg = u'Время работы: ' + get_uptime_str()+ u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
 
         send_msg(type, jid, nick, msg)
 	
@@ -1140,7 +1139,7 @@ def null_vars():
 	return vars
 
 def gstats(type, jid, nick):
-        msg = u'За время работы ('+get_uptime_str()+u') я видела всего:'
+        msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела всего:'
 	vars = null_vars()
 
         for mega in megabase2:
@@ -1156,7 +1155,7 @@ def gstats(type, jid, nick):
 	
 
 def stats(type, jid, nick):
-        msg = u'За время работы ('+get_uptime_str()+u') я видела здесь:'
+        msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела здесь:'
 	vars = null_vars()
 
         for mega in megabase2:
@@ -1776,8 +1775,7 @@ def info(type, jid, nick):
 	nowtime = untime(localtime())
 	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
 
-	msg += u'Время работы: '
-	msg += get_uptime_str()
+	msg += u'Время работы: ' + get_uptime_str()+u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
 	msg += u'\nSmiles is '
 
 	ssta = 0
