@@ -31,8 +31,6 @@ def whereis(type, jid, nick, text):
 		to -= 0.5
 
         if not no_answ:
-	        send_msg(type, jid, nick, u'Ожидайте, результат прийдет в приват.')
-
 		tmp = sqlite3.connect(':memory:')
 		cu = tmp.cursor()
 		cu.execute('''create table tempo (nick text, room text)''')
@@ -43,6 +41,9 @@ def whereis(type, jid, nick, text):
 			dname = get_subtag(ii,'name')
 			if dname[-5:] != '(n/a)' and dname[-3:] != '(0)':
 				djids.append(get_subtag(ii,'jid'))
+
+	        send_msg(type, jid, nick, u'Ожидайте, результат Вы получите в приват примерно через '+str(int(len(djids)/6))+u' сек.')
+
 		for ii in djids:
 			iqid = str(randint(1,100000))
 			i = Node('iq', {'id': iqid, 'type': 'get', 'to':ii}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
