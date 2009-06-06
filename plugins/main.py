@@ -56,9 +56,10 @@ def disco(type, jid, nick, text):
 				cm = cu.execute('select * from tempo order by -size').fetchmany(hm)
 			if len(cm):
 				cnt = 1
-				msg = u'Всего: ',str(len(cm))
+				msg = u'Всего: '+str(len(cm))
 				for i in cm:
-					msg += '\n'+str(cnt)+'. '+i[0]+' ['+i[1]+'] . '+i[2]
+					print i
+					msg += u'\n'+str(cnt)+u'. '+i[0]+u' ['+i[1]+u'] . '+i[2]
 					cnt += 1
 			else:
 				msg = u'\"'+what+u'\" не найдено!'
