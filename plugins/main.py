@@ -7,6 +7,85 @@ def get_subtag(body,tag):
 def get_tag(body,tag):
 	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
 
+def disco(type, jid, nick, text):
+        text = text.lower().split(' ')
+        where = text[0]
+	try:
+		what = text[1]
+	except:
+		what = ''
+	try:
+		hm = int(text[2])
+	except:
+		hm = 10
+
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
+	cl.send(i)
+	to = timeout
+
+	no_answ = 1
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.5)
+		to -= 0.5
+
+        if not no_answ:
+		if where.count('conference'):
+			tmp = sqlite3.connect(':memory:')
+			cu = tmp.cursor()
+			cu.execute('''create table tempo (nick text, room text, size text)''')
+			isa = is_answ[0].split('<item ')
+			for ii in isa[1:]:
+				dname = get_subtag(ii,'name')
+				djid = get_subtag(ii,'jid')
+				dpos = 1
+				for zzz in range(0,dname.count('(')):
+					dpos = dname.find('(',dpos+1)
+				dsize = dname[dpos+1:dname.find(')',dpos+1)]
+				dname = dname[:-(len(dsize)+3)]
+				cu.execute('insert into tempo values (?,?,?)', (dname, djid, dsize))
+			if len(what):
+				cm = cu.execute('select * from tempo where (nick like ? or room like ?) order by -size',('%'+what+'%','%'+what+'%')).fetchmany(hm)
+			else:
+				cm = cu.execute('select * from tempo order by -size').fetchmany(hm)
+			if len(cm):
+				cnt = 1
+				msg = u'Всего: ',str(len(cm))
+				for i in cm:
+					msg += '\n'+str(cnt)+'. '+i[0]+' ['+i[1]+'] . '+i[2]
+					cnt += 1
+			else:
+				msg = u'\"'+what+u'\" не найдено!'
+			tmp.close()
+		else:
+			tmp = sqlite3.connect(':memory:')
+			cu = tmp.cursor()
+			cu.execute('''create table tempo (jid text)''')
+			isa = is_answ[0].split('<item ')
+			for ii in isa[1:]:
+				djid = get_subtag(ii,'jid')
+				print djid
+				cu.execute('insert into tempo values (?)', (djid,))
+			cm = cu.execute('select * from tempo order by jid').fetchall()
+			if len(cm):
+				cnt = 1
+				msg = u'Всего: '+str(len(cm))
+				for i in cm:
+					msg += '\n'+str(cnt)+'. '+i[0]
+					cnt += 1
+			else:
+				msg = 'не найдено!'
+			tmp.close()
+	else:
+		msg = u'Не получается...'
+        send_msg(type, jid, nick, msg)
+
 def whereis(type, jid, nick, text):
         text = text.split(' ')
         who = text[0]
@@ -2570,6 +2649,7 @@ comms = [(1, u'stats', stats, 1),
          (2, u'error', show_error, 2),
          (0, u'whoami', info_access, 1),
          (0, u'whois', info_whois, 2),
+         (0, u'disco', disco, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
          (1, u'clear', hidden_clear, 1)]
