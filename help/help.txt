@@ -183,6 +183,9 @@ alias show [text] - показать все сокращения или похо
 Показ лога работы бота:
 log len [data] - размер лога за дату или текущий день
 log show data from-to - показ записей лога с "from" по "to" за дату "date"
+{whereis}
+Поиск ника по серверу конференций
+whereis nick [conference.]server.tld
 {lasttracks}
 Плагин lastfm. Последние скробленные треки
 {lastfriends}

@@ -1,5 +1,86 @@
 # -*- coding: utf-8 -*-
 
+def get_subtag(body,tag):
+	beg = body.find('\"',body.find(tag))+1
+	return body[beg:body.find('\"',beg)]
+
+def get_tag(body,tag):
+	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
+
+def whereis(type, jid, nick, text):
+        text = text.split(' ')
+        who = text[0]
+	if text[1].count('conference'):
+	        where = text[1]
+	else:
+	        where = 'conference.'+text[1]
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
+	cl.send(i)
+	to = timeout
+
+	no_answ = 1
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.5)
+		to -= 0.5
+
+        if not no_answ:
+	        send_msg(type, jid, nick, u'Ожидайте, результат прийдет в приват.')
+
+		tmp = sqlite3.connect(':memory:')
+		cu = tmp.cursor()
+		cu.execute('''create table tempo (nick text, room text)''')
+
+		isa = is_answ[0].split('<item ')
+		djids = []
+		for ii in isa[1:]:
+			dname = get_subtag(ii,'name')
+			if dname[-5:] != '(n/a)' and dname[-3:] != '(0)':
+				djids.append(get_subtag(ii,'jid'))
+		for ii in djids:
+			iqid = str(randint(1,100000))
+			i = Node('iq', {'id': iqid, 'type': 'get', 'to':ii}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
+			cl.send(i)
+			to = 500
+
+			no_answ = 1
+			while to >= 0 and no_answ:
+				for aa in iq_answer:
+					if aa[0]==iqid:
+						is_answ = aa[1:]
+						iq_answer.remove(aa)
+						no_answ = 0
+						break
+				sleep(0.01)
+				to -= 0.01
+
+		        if not no_answ:
+				isd = is_answ[0].split('<item ')
+				for iii in isd[1:]:
+					dname = get_subtag(iii,'name')
+					if dname.lower().count(who.lower()):
+						cu.execute('insert into tempo values (?,?)', (dname, getRoom(get_subtag(iii,'jid'))))
+
+		cm = cu.execute('select * from tempo order by nick,room').fetchall()
+		if len(cm):
+			msgg = u', Совпадений с ником \"'+who+u'\": '+str(len(cm))
+			for i in cm:
+				msgg += '\n'+i[0]+'\t'+i[1]
+		else:
+			msgg = u', ник \"'+who+u'\" не найден!'
+
+		msg = u'Всего конференций: '+str(len(isa)-1)+u', доступно: '+str(len(djids))+msgg
+		tmp.close()		
+	else:
+		msg = u'Не получается...'
+        send_msg('chat', jid, nick, msg)
+
 ul = 'update.log'
 def svn_info(type, jid, nick):
 	if os.path.isfile(ul):
@@ -594,7 +675,8 @@ def wtfcount(type, jid, nick):
 	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
 	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
 	glb = len(cu.execute('select * from wtf where room=?',('global',)).fetchall())
-	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())	msg = u'В этой конфе определений: '+str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(tlen)
+	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())
+	msg = u'В этой конфе определений: '+str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(tlen)
         send_msg(type, jid, nick, msg)
 	mdb.close()
 
@@ -621,7 +703,8 @@ def wtf_get(ff,type, jid, nick, text):
 
 		if tlen:
 			for aa in cu:
-				ww=aa[1:]			msg = u'Я знаю, что '+text+u' - '+ww[4]
+				ww=aa[1:]
+			msg = u'Я знаю, что '+text+u' - '+ww[4]
 			if ff == 1:
 				msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
 			elif ff == 2:
@@ -662,7 +745,8 @@ def dfn(type, jid, nick, text):
 		
 		if tlen:
 			for aa in cu:
-				ww=aa			if ww[1] == 'global':
+				ww=aa
+			if ww[1] == 'global':
 				msg = u'Это глобальное определение и его нельзя изменить!'
 				text = ''
 			else:
@@ -1823,7 +1907,8 @@ def info_res(type, jid, nick, text):
 		for jj in jidbase:
 			msg += str(cnt)+'. '+jj[0]+'\t'+str(jj[1])+' \n'
 			cnt += 1
-		msg = msg[:-2]
+		msg = msg[:-2]
+
         send_msg(type, jid, nick, msg)
 	
 
@@ -1849,7 +1934,8 @@ def info_serv(type, jid, nick, text):
 			msg = u'Найдено серверов: '+str(tlen)+' \n'
 		for jj in jidbase:
 			msg += jj[0]+':'+str(jj[1])+' | '
-		msg = msg[:-2]
+		msg = msg[:-2]
+
         send_msg(type, jid, nick, msg)
 	
 
@@ -1876,7 +1962,8 @@ def info_base(type, jid, nick):
 
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
-	if text != '':		mdb = sqlite3.connect(mainbase)
+	if text != '':
+		mdb = sqlite3.connect(mainbase)
 		cu = mdb.cursor()
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
@@ -2482,5 +2569,6 @@ comms = [(1, u'stats', stats, 1),
          (2, u'error', show_error, 2),
          (0, u'whoami', info_access, 1),
          (0, u'whois', info_whois, 2),
+         (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
          (1, u'clear', hidden_clear, 1)]

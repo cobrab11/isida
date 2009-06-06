@@ -4,9 +4,6 @@ global execute, lf_api, lfm_url, lfm_api
 
 lfm_url = u'http://ws.audioscrobbler.com/2.0/'
 
-def get_tag(body,tag):
-	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
-
 def lf_api(method, user, splitter):
 	user = user.lower()
 	user = user.encode('utf-8')
