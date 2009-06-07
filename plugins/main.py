@@ -461,8 +461,17 @@ def alias(type, jid, nick, text):
 	msg = u'Режим '+mode+u' не опознан!'
 
 	if mode=='add':
+		fl = 0
+		for i in aliases:
+			if i[1] == cmd:
+				aliases.remove(i)
+				fl = 1	
 		aliases.append([jid, cmd, cbody])
-		msg = u'Добавлено: '+cmd+u' == '+cbody
+		if fl:
+			msg = u'Обновлено:'
+		else:
+			msg = u'Добавлено:'
+		msg += u' '+cmd+u' == '+cbody
 
 	if mode=='del':
 		msg = u'Не возможно удалить '+cmd
