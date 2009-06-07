@@ -106,12 +106,18 @@ def disco(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def whereis(type, jid, nick, text):
-        text = text.split(' ')
-        who = text[0]
-	if text[1].count('conference'):
-	        where = text[1]
+	if len(text):
+	        text = text.split(' ')
+        	who = text[0]
 	else:
-	        where = 'conference.'+text[1]
+		who = nick
+	if len(text)<2:
+		where = getServer(jid)
+	else:
+		if text[1].count('conference'):
+		        where = text[1]
+		else:
+		        where = 'conference.'+text[1]
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
 	cl.send(i)
