@@ -36,7 +36,7 @@ def disco(type, jid, nick, text):
 		to -= 0.5
 
         if not no_answ:
-		if where.count('conference'):
+		if where.count('conference') and not where.count('@'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (nick text, room text, size text)''')
@@ -58,9 +58,28 @@ def disco(type, jid, nick, text):
 				cnt = 1
 				msg = u'Всего: '+str(len(cm))
 				for i in cm:
-					print i
 					msg += u'\n'+str(cnt)+u'. '+i[0]+u' ['+i[1]+u'] . '+i[2]
 					cnt += 1
+			else:
+				msg = u'\"'+what+u'\" не найдено!'
+			tmp.close()
+		elif where.count('conference') and where.count('@'):
+			tmp = sqlite3.connect(':memory:')
+			cu = tmp.cursor()
+			cu.execute('''create table tempo (nick text)''')
+			isa = is_answ[0].split('<item ')
+			for ii in isa[1:]:
+				dname = get_subtag(ii,'name')
+				cu.execute('insert into tempo values (?)', (dname,))
+			if len(what):
+				cm = cu.execute('select * from tempo where (nick like ?) order by nick',('%'+what+'%',)).fetchmany(hm)
+			else:
+				cm = cu.execute('select * from tempo order by nick').fetchmany(hm)
+			if len(cm):
+				msg = u'Всего: '+str(len(cm))+' - '
+				for i in cm:
+					msg += i[0]+u', '
+				msg = msg[:-2]
 			else:
 				msg = u'\"'+what+u'\" не найдено!'
 			tmp.close()
@@ -71,7 +90,6 @@ def disco(type, jid, nick, text):
 			isa = is_answ[0].split('<item ')
 			for ii in isa[1:]:
 				djid = get_subtag(ii,'jid')
-				print djid
 				cu.execute('insert into tempo values (?)', (djid,))
 			cm = cu.execute('select * from tempo order by jid').fetchall()
 			if len(cm):
@@ -1599,9 +1617,16 @@ def helpme(type, jid, nick, text):
 	send_msg(type, jid, nick, mesg)
 	
 
-def hidden_clear(type, jid, nick):
+def hidden_clear(type, jid, nick, text):
+	try:
+		cntr = int(text)-1
+	except:
+		cntr = 19
+
+	if cntr < 1 or cntr > 100:
+		cntr = 19
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-        cntr = 19                
+        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.05))+u' сек.')
         while (cntr>0):
                 cl.send(xmpp.Message(jid, '', "groupchat"))
                 time.sleep(1.05)
@@ -1673,7 +1698,6 @@ def bot_join(type, jid, nick, text):
                         pprint(u'already in '+text)
 		else:
                         zz = joinconf(text, domain)
-			print '***********',zz
 			if zz != None:
 				send_msg(type, jid, nick, u'Ошибка! '+zz)
 	                        pprint(u'*** Error join to '+text+' '+zz)
@@ -2653,4 +2677,4 @@ comms = [(1, u'stats', stats, 1),
          (0, u'disco', disco, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
-         (1, u'clear', hidden_clear, 1)]
+         (1, u'clear', hidden_clear, 2)]
