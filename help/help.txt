@@ -192,6 +192,7 @@ whereis nick [conference.]server.tld - поиск ника по серверу s
 Обзор сервисов.
 disco server.tld - запрос информации о сервере
 disco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов
+disco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов
 {lasttracks}
 Плагин lastfm. Последние скробленные треки
 {lastfriends}
