@@ -1,11 +1,159 @@
 # -*- coding: utf-8 -*-
 
-def get_subtag(body,tag):
-	beg = body.find('\"',body.find(tag))+1
-	return body[beg:body.find('\"',beg)]
+def sayto(type, jid, nick, text):
+	if text.count(' '):
+		to = text[:text.find(' ')]
+		what = text[text.find(' ')+1:]
 
-def get_tag(body,tag):
-	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
+		mdb = sqlite3.connect(mainbase)
+		cu = mdb.cursor()
+		fnd = cu.execute('select * from age where room=? and (nick=? or jid=?)',(jid,to,to)).fetchall()
+		if len(fnd) == 1:
+			fnd = fnd[0]
+			if fnd[5]:
+				msg = u'Передам'
+				sdb = sqlite3.connect(saytobase)
+				cu = sdb.cursor()
+				cu.execute('insert into st values (?,?,?,?)', (nick, jid, fnd[2], what))
+				sdb.commit()
+			else:
+				msg = u'Или я дура, или '+to+u' находится тут...'
+		elif len(fnd) > 1:
+			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+		else:
+			msg = u'Я не в курсе кто такой '+to+u'. Могу не правильно передать.'
+	else:
+		msg = u'Кому что передать?'
+        send_msg(type, jid, nick, msg)
+
+def getMucItems(jid,affil,ns):
+	global banbase,raw_iq
+	iqid = str(randint(1,100000))
+	banbase = []
+	raw_iq = []
+	if ns == NS_MUC_ADMIN:
+		i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
+	else:
+		i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
+	cl.send(i)
+	while banbase == []:
+	 	sleep(0.5)
+	while banbase[-1] != (u'TheEnd', u'None'):
+		sleep(0.1)
+	banbase = banbase[:-1]
+	return (banbase,raw_iq)
+
+def conf_backup(type, jid, nick, text):
+	global banbase
+	if len(text):
+		text = text.split(' ')
+		mode = text[0]
+
+		if mode == u'show':
+			a = os.listdir(back_folder)
+			b = []
+			for c in a:
+				if c.count('conference'):
+					b.append((c,os.path.getmtime(back_folder+c)))
+			if len(b):
+				msg = u'Резервные копии: '
+				for c in b:
+					msg += c[0]+' ('+un_unix(time.time()-c[1])+')'+', '
+				msg = msg[:-2]
+			else:
+				msg = u'Резервных копий не найдено!'
+		if mode == u'now':
+			tmppos = arr_semi_find(confbase, jid)
+			if tmppos == -1:
+				nowname = nickname
+			else:
+				nowname = getResourse(confbase[tmppos])
+				if nowname == '':
+					nowname = nickname
+			xtype = ''
+        	        for base in megabase:
+        	                if base[0].lower() == jid and base[1] == nowname:
+					xtype = base[3]
+					break
+			if xtype != 'owner':
+				msg = u'Для резервного копирования мне нужны права владельца конференции!'
+
+			else:
+				ns = NS_MUC_ADMIN
+				banlist = getMucItems(jid,'outcast',ns)
+				memberlist = getMucItems(jid,'member',ns)
+				adminlist = getMucItems(jid,'admin',ns)
+				ownerlist = getMucItems(jid,'owner',ns)
+				configlist = getMucItems(jid,'',NS_MUC_OWNER)
+				iqid = str(randint(1,100000))
+				i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
+				cl.send(i)
+
+				msg = u'Копирование завершено!'
+				msg += u'\nВладельцев:\t'+str(len(ownerlist[0]))
+				msg += u'\nАдминов:\t'+str(len(adminlist[0]))
+				msg += u'\nУчастников:\t'+str(len(memberlist[0]))
+				msg += u'\nЗабаненных:\t'+str(len(banlist[0]))
+
+				raw_back = []
+				raw_back.append(ownerlist[1][1])
+				raw_back.append(adminlist[1][1])
+				raw_back.append(memberlist[1][1])
+				raw_back.append(banlist[1][1])
+				raw_back.append(configlist[1][1])
+				writefile(back_folder+unicode(jid),str(raw_back))
+
+		if mode == u'restore':
+			if len(text)>1:
+				a = os.listdir(back_folder)
+				a = a.count(text[1])
+
+				if a:
+					tmppos = arr_semi_find(confbase, jid)
+					if tmppos == -1:
+						nowname = nickname
+					else:
+						nowname = getResourse(confbase[tmppos])
+						if nowname == '':
+							nowname = nickname
+					xtype = ''
+        			        for base in megabase:
+        			                if base[0].lower() == jid and base[1] == nowname:
+							xtype = base[3]
+							break
+					if xtype != 'owner':
+						msg = u'Для восстановления резервной копии мне нужны права владельца конференции!'
+	
+					else:
+						raw_back=eval(readfile(back_folder+unicode(text[1])))
+
+						for zz in range(0,4):
+							iqid = str(randint(1,100000))
+							end = raw_back[zz][raw_back[zz].find('<query'):]
+							beg = '<iq xmlns="jabber:client" to="'+str(jid)+'" from="'+str(selfjid)+'" id="'+str(iqid)+'" type="set">'
+							cl.send(beg+end)
+						iqid = str(randint(1,100000))
+						end = raw_back[4][raw_back[4].find('<query'):]
+						beg = '<iq to="'+str(jid)+'" id="'+str(iqid)+'" type="set">'
+						i = beg+end
+						ci = i.count('label="')
+						for ii in range(0,ci):
+							i = i[:i.find('label="')-1]+i[i.find('"',i.find('label="')+8)+1:]
+						i = i[:i.find('<instructions>')]+i[i.find('</instructions>',i.find('<instructions>')+14)+15:]
+						i = i[:i.find('<title>')]+i[i.find('</title>',i.find('<title>')+7)+8:]
+						i = i.replace('form','submit')
+						cl.send(i)
+						iqid = str(randint(1,100000))
+						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
+					cl.send(i)
+					msg = u'Восстановление завершено!'
+				else:
+					msg = u'Резервная копия не найдена. Просмотрите список используя ключ show'
+			else:
+				msg = u'Что будем восстанавливать?'
+	else:
+		msg = u'backup now|show|restore'
+        send_msg(type, jid, nick, msg)
 
 def disco(type, jid, nick, text):
         text = text.lower().split(' ')
@@ -721,6 +869,8 @@ def calc(type, jid, nick, text):
                 if not all_ok:
                         ppc = 0
                         break
+	if text.count('**'):
+		ppc = 0
 
         if ppc:        
                 try:
@@ -734,10 +884,9 @@ def calc(type, jid, nick, text):
 def wtfsearch(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
-		msg = u'Всё, что я знаю это: '
 		mdb = sqlite3.connect(mainbase)
 		cu = mdb.cursor()
-		
+		text = '%'+text+'%'
 		ww = cu.execute('select * from wtf where (room=? or room=? or room=?) and (room like ? or jid like ? or nick like ? or wtfword like ? or wtftext like ? or time like ?)',(jid,'global','import',text,text,text,text,text,text)).fetchall()
 		msg = ''
 		for www in ww:
@@ -996,21 +1145,22 @@ def true_age(type, jid, nick, text):
 #agebase.append((room, nick,getRoom(jid),tt,ab[4],0))
         send_msg(type, jid, nick, msg)
 
+#cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
 def close_age_null():
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
-	for ab in cu:
-		cu.execute('delete from age where room=? and jid=?', (ab[0],ab[2]))
+	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
+	for ab in ccu:
+		cu.execute('delete from age where room=? and jid=? and status=?', (ab[0],ab[2],0))
 		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
 	mdb.commit()
 
 def close_age():
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
+	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
 	tt = int(time.time())
-	for ab in cu:
+	for ab in ccu:
 		if not ab[5]:
 			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
 			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
@@ -1019,9 +1169,9 @@ def close_age():
 def close_age_room(room):
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
+	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
 	tt = int(time.time())
-	for ab in cu:
+	for ab in ccu:
 		if getRoom(ab[0]) == getRoom(room) and not ab[5]:
 			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
 			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
@@ -2690,6 +2840,8 @@ comms = [(1, u'stats', stats, 1),
          (0, u'whoami', info_access, 1),
          (0, u'whois', info_whois, 2),
          (0, u'disco', disco, 2),
+         (0, u'sayto', sayto, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
+	 (1, u'backup', conf_backup, 2),
          (1, u'clear', hidden_clear, 2)]

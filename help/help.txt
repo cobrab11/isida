@@ -193,6 +193,15 @@ whereis nick [conference.]server.tld - поиск ника по серверу s
 disco server.tld - запрос информации о сервере
 disco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов
 disco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов
+{backup}
+Резервное копирование/восстановление конференций.
+backup show|now|restore
+show - показать доступные копии
+now - сохронить текущую конференцию
+restore название_конференции - восстановить конференцию в текущей
+{sayto}
+Команда "передать".
+sayto jid|nick message - при входе в конференцию jid'a или ника отправит сообщение "message"
 {lasttracks}
 Плагин lastfm. Последние скробленные треки
 {lastfriends}

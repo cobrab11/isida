@@ -11,6 +11,7 @@ import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator, sq
 LOG_FILENAME = u'log/error.txt'		# логи
 
 set_folder = u'settings/'		# папка настроек
+back_folder = u'backup/'	     	# папка хронения резервных копий
 
 preffile = set_folder+u'prefix'		# префиксы
 ver_file = set_folder+u'version'	# версия бота
@@ -27,6 +28,7 @@ lafeeds = set_folder+u'lastfeeds'	# последние новости по ка�
 cens = set_folder+u'censor.txt'     	# список "запрещенных" слов для болтуна
 
 mainbase = set_folder+u'main.db'	# основная база данных
+saytobase = set_folder+u'sayto.db'	# база команды "передать"
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
@@ -42,6 +44,13 @@ def writefile(filename, data):
 	fp = file(filename, 'w')
 	fp.write(data)
 	fp.close()
+
+def get_subtag(body,tag):
+	beg = body.find('\"',body.find(tag))+1
+	return body[beg:body.find('\"',beg)]
+
+def get_tag(body,tag):
+	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
 
 def untime(var):
 	try:
@@ -381,7 +390,7 @@ def timeZero(val):
     return rval
 
 def iqCB(sess,iq):
-	global timeofset, banbase, iq_answer
+	global timeofset, banbase, iq_answer, raw_iq
         nick = unicode(iq.getFrom())
         id = iq.getID()
         query = iq.getTag('query')
@@ -391,6 +400,7 @@ def iqCB(sess,iq):
 
 	if iq.getType()=='result':
 		cparse = unicode(iq)
+		raw_iq = [id,cparse]
 		nspace = query.getNamespace()
                 if nspace == NS_MUC_ADMIN:
 #                        ccount = cparse.count('<item affiliation=\"outcast\"')
@@ -405,7 +415,8 @@ def iqCB(sess,iq):
 					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 				banbase.append((cjid, creason))
 			banbase.append((u'TheEnd', u'None'))
-
+		if nspace == NS_MUC_OWNER:
+			banbase.append((u'TheEnd', u'None'))
 		if nspace == NS_VERSION:
 				iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
 
@@ -677,6 +688,15 @@ def presenceCB(sess,mess):
 				confbase = arr_del_semi_find(confbase,getRoom(room))
         	                writefile(confs,str(confbase))
 	else:
+
+		sdb = sqlite3.connect(saytobase)
+		cu = sdb.cursor()
+		cm = cu.execute('select * from st where room=? and jid=?',(room, getRoom(jid))).fetchall()
+		if len(cm):
+			cu.execute('delete from st where room=? and jid=?',(room, getRoom(jid)))
+			for cc in cm:
+			        send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])			
+			sdb.commit()
 		not_found = 1
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
@@ -910,6 +930,14 @@ if not mtb:
 	cu.execute('insert into answer values (?,?)', (2,u'Привет'))
 	mdb.commit()
 
+stb = os.path.isfile(saytobase)
+
+sdb = sqlite3.connect(saytobase)
+cu = sdb.cursor()
+if not stb:
+	cu.execute('''create table st (who text, room text, jid text, message text)''')
+	sdb.commit()
+
 if os.path.isfile(owners):
 	ownerbase = eval(readfile(owners))
 else:
@@ -955,6 +983,7 @@ selfjid = jid
 pprint(u'bot jid: '+unicode(jid))
 
 psw = u''
+raw_iq = []
 
 if dm:
 	cl = Client(jid.getDomain(), debug=[])
