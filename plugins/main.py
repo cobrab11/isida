@@ -22,6 +22,10 @@ def sayto(type, jid, nick, text):
 			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 		else:
 			msg = u'Я не в курсе кто такой '+to+u'. Могу не правильно передать.'
+			sdb = sqlite3.connect(saytobase)
+			cu = sdb.cursor()
+			cu.execute('insert into st values (?,?,?,?)', (nick, jid, to, what))
+			sdb.commit()
 	else:
 		msg = u'Кому что передать?'
         send_msg(type, jid, nick, msg)

@@ -691,9 +691,9 @@ def presenceCB(sess,mess):
 
 		sdb = sqlite3.connect(saytobase)
 		cu = sdb.cursor()
-		cm = cu.execute('select * from st where room=? and jid=?',(room, getRoom(jid))).fetchall()
+		cm = cu.execute('select * from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick)).fetchall()
 		if len(cm):
-			cu.execute('delete from st where room=? and jid=?',(room, getRoom(jid)))
+			cu.execute('delete from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick))
 			for cc in cm:
 			        send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])			
 			sdb.commit()
