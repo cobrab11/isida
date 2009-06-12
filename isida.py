@@ -493,7 +493,7 @@ def messageCB(sess,mess):
 
 	lprefix = get_local_prefix(room)
 
-#        print '---\n',parser(room), parser(nick), parser(text), parser(type), parser(towh), parser(stamp)
+#        print '---\n', 'room:',parser(room),'\nnick:',parser(nick),'\ntext:',parser(text),'\ntype:', parser(type),'\ntowh:',parser(towh),'\nstamp:', parser(stamp)
 
         rn = room+"/"+nick
 
@@ -521,6 +521,11 @@ def messageCB(sess,mess):
 
         if type == 'groupchat' and nick != '' and jid != 'None':
                 talk_count(room,jid,nick,text)
+
+	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0:
+		send_msg(type,room,nick,u'Фильтруем базар!')
+
+
 	no_comm = 1
         if (text != 'None') and (len(text)>=1) and access_mode >= 0:
 		no_comm = 1
@@ -594,8 +599,11 @@ def getAnswer(tx,type):
 
 def to_censore(text):
         for c in censor:
-                if text.count(c):
-                        text = text.replace(c,'[censored]')
+#		print c
+		matcher = re.compile(c)
+		if matcher.match(text):
+			text = '*censored*'
+			break
         return text
 
 def compare(aa,bb):
@@ -695,7 +703,11 @@ def presenceCB(sess,mess):
 		if len(cm):
 			cu.execute('delete from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick))
 			for cc in cm:
-			        send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])			
+				if cc[0].count('\n'):
+					zz = cc[0].split('\n')
+				        send_msg('chat', room, nick, zz[0]+' ('+un_unix(time.time()-int(zz[1]))+u' назад) просил передать: '+cc[3])
+				else:
+				        send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])
 			sdb.commit()
 		not_found = 1
 		for mmb in megabase:
@@ -961,9 +973,11 @@ else:
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF')
 	censor = censor.split('\n')
+	cn = []
 	for c in censor:
-                if c.count('#') or not len(c):
-                        censor.remove(c)
+                if (not c.count('#')) and len(c):
+			cn.append(c)
+	censor = cn
 else:
 	censor = []
 

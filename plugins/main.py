@@ -4,7 +4,7 @@ def sayto(type, jid, nick, text):
 	if text.count(' '):
 		to = text[:text.find(' ')]
 		what = text[text.find(' ')+1:]
-
+		frm = nick + '\n' + str(int(time.time()))
 		mdb = sqlite3.connect(mainbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select * from age where room=? and (nick=? or jid=?)',(jid,to,to)).fetchall()
@@ -14,7 +14,7 @@ def sayto(type, jid, nick, text):
 				msg = u'Передам'
 				sdb = sqlite3.connect(saytobase)
 				cu = sdb.cursor()
-				cu.execute('insert into st values (?,?,?,?)', (nick, jid, fnd[2], what))
+				cu.execute('insert into st values (?,?,?,?)', (frm, jid, fnd[2], what))
 				sdb.commit()
 			else:
 				msg = u'Или я дура, или '+to+u' находится тут...'
@@ -24,7 +24,7 @@ def sayto(type, jid, nick, text):
 			msg = u'Я не в курсе кто такой '+to+u'. Могу не правильно передать.'
 			sdb = sqlite3.connect(saytobase)
 			cu = sdb.cursor()
-			cu.execute('insert into st values (?,?,?,?)', (nick, jid, to, what))
+			cu.execute('insert into st values (?,?,?,?)', (frm, jid, to, what))
 			sdb.commit()
 	else:
 		msg = u'Кому что передать?'
@@ -255,6 +255,7 @@ def disco(type, jid, nick, text):
 			tmp.close()
 	else:
 		msg = u'Не получается...'
+	msg = rss_replace(msg)
         send_msg(type, jid, nick, msg)
 
 def whereis(type, jid, nick, text):
