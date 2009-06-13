@@ -189,7 +189,7 @@ def tasteometer(type, jid, nick, text):
 	lfxml = html_encode(lfxml)
 
 	msg = u'Совместимость '+user1+u' и '+user2
-	if get_tag(lfxml,'score') == '0':
+	if get_tag(lfxml,'score') <= '0':
 		msg += u' - нулевая!'
 	else:
 		msg += u' – '+get_tag(lfxml,'score') +u'\nСовпадение вкусов: '
