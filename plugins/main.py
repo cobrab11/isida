@@ -589,12 +589,7 @@ def seenjid(type, jid, nick, text):
 
 def alias(type, jid, nick, text):
 	global aliases
-	if os.path.isfile(alfile):
-		aliases = eval(readfile(alfile))
-	else:
-		aliases = []
-		writefile(alfile,str(aliases))
-
+	aliases = getFile(alfile,[])
 	gs = text.find(' ')
 	if gs >= 0:
 		mode = text[:gs]
@@ -831,11 +826,7 @@ def weather_gis(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def autoflood(type, jid, nick):
-	if os.path.isfile(fld):
-		floods = eval(readfile(fld))
-	else:
-		floods = [(getRoom(jid),0)]
-		writefile(fld,str(floods))
+	floods = getFile(fld,[(getRoom(jid),0)])
 	msg = u'Flood is '
 	is_found = 1
 	for sm in floods:
@@ -849,10 +840,8 @@ def autoflood(type, jid, nick):
 		floods.append((getRoom(jid),1))
 		ssta = 1
 	msg += onoff(ssta)
-
 	writefile(fld,str(floods))
         send_msg(type, jid, nick, msg)
-	
 
 def execute(type, jid, nick, text):
         try:
@@ -949,17 +938,16 @@ def wtfcount(type, jid, nick):
 	mdb.close()
 
 def wtf(type, jid, nick, text):
-	ff = 0
-	wtf_get(ff,type, jid, nick, text)
+	wtf_get(0,type, jid, nick, text)
 
 def wtff(type, jid, nick, text):
-	ff = 1
-	wtf_get(ff,type, jid, nick, text)
-
+	wtf_get(1,type, jid, nick, text)
 
 def wwtf(type, jid, nick, text):
-	ff = 2
-	wtf_get(ff,type, jid, nick, text)
+	wtf_get(2,type, jid, nick, text)
+
+def wtfp(type, jid, nick, text):
+	wtf_get(0,'chat', jid, nick, text)
 
 def wtf_get(ff,type, jid, nick, text):
 	msg = u'Чего искать то будем?'
@@ -1451,11 +1439,7 @@ def youtube(type, jid, nick, text):
 	
 
 def smile(type, jid, nick):
-	if os.path.isfile(sml):
-		smiles = eval(readfile(sml))
-	else:
-		smiles = [(getRoom(jid),0)]
-		writefile(sml,str(smiles))
+	smiles = getFile(sml,[(getRoom(jid),0)])
 	msg = u'Smiles is '
 	is_found = 1
 	for sm in smiles:
@@ -1469,10 +1453,8 @@ def smile(type, jid, nick):
 		smiles.append((getRoom(jid),1))
 		ssta = 1
 	msg += onoff(ssta)
-
 	writefile(sml,str(smiles))
         send_msg(type, jid, nick, msg)
-	
 
 def uptime(type, jid, nick):
 	msg = u'Время работы: ' + get_uptime_str()+ u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
@@ -1569,11 +1551,7 @@ def get_log(type, jid, nick, text):
 			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
 		else:
 			logfile = 'log/'+arg
-		if os.path.isfile(logfile):
-			log = eval(readfile(logfile))
-		else:
-			log = []
-			writefile(logfile,str(log))
+		log = getFile(logfile,[])
 		log_lm = len(str(log))/msg_limit
 		msg = u'Log length for '+logfile+' is '+str(len(log))+' record(s) / '+str(log_lm)+' Messages with limit: '+str(msg_limit)
 		send_msg(type, jid, nick, msg)
@@ -1583,11 +1561,7 @@ def get_log(type, jid, nick, text):
 			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
 		else:
 			logfile = 'log/'+arg
-		if os.path.isfile(logfile):
-			log = eval(readfile(logfile))
-		else:
-			log = []
-			writefile(logfile,str(log))
+		log = getFile(logfile,[])
 		if len(text)>2:
 			arg1 = text[2]
 		else:
@@ -2401,6 +2375,24 @@ def rss_del_nn(ms):
 
 	return ms
 
+def html_encode(body):
+	encidx = body.find('encoding=')
+	if encidx >= 0:
+		enc = body[encidx+10:encidx+30]
+		enc = enc[:enc.find('?>')-1]
+		enc = enc.upper()
+	else:
+		encidx = body.find('charset=')
+		if encidx >= 0:
+			enc = body[encidx+8:encidx+30]
+			enc = enc[:enc.find('">')]
+			enc = enc.upper()
+		else:
+			enc = 'UTF-8'
+
+	return unicode(body, enc)
+
+
 #[room, nick, role, affiliation, jid]
 
 def rss(type, jid, nick, text):
@@ -2431,17 +2423,8 @@ def rss(type, jid, nick, text):
                         msg = 'rss get [http://]url max_feed_humber [full|body|head]'
                         mode = ''
 
-	if os.path.isfile(feeds):
-		feedbase = eval(readfile(feeds))
-	else:
-		feedbase = []
-		writefile(feeds,str(feedbase))
-
-	if os.path.isfile(lafeeds):
-		lastfeeds = eval(readfile(lafeeds))
-	else:
-		lastfeeds = []
-		writefile(lafeeds,str(lastfeeds))
+	feedbase = getFile(feeds,[])
+	lastfeeds = getFile(lafeeds,[])
 
 	if mode == 'clear':
 		msg = u'All RSS was cleared!'
@@ -2519,15 +2502,8 @@ def rss(type, jid, nick, text):
 			is_rss = 0
 
 		if is_atom or is_rss:
-			encidx = feed.find('encoding=')
-			if encidx >= 0:
-				enc = feed[encidx+10:encidx+30]
-				enc = enc[:enc.index('?>')-1]
-				enc = enc.upper()
-			else:
-				enc = 'UTF-8'
+			feed = html_encode(feed)
 
-			feed = unicode(feed, enc)
 			if feed.count('<items>'):
 				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
 
@@ -2605,7 +2581,9 @@ def rss(type, jid, nick, text):
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
 		else:
-			msg = u'bad url or rss not found!'
+			feed = html_encode(feed)
+			title = get_tag(feed,'title')
+			msg = u'bad url or rss/atom not found at '+link+' - '+title
 
 #---------
 
@@ -2654,15 +2632,7 @@ def rss(type, jid, nick, text):
 			is_rss = 0
 
 		if is_atom or is_rss:
-			encidx = feed.find('encoding=')
-			if encidx >= 0:
-				enc = feed[encidx+10:encidx+30]
-				enc = enc[:enc.index('?>')-1]
-				enc = enc.upper()
-			else:
-				enc = 'UTF-8'
-		
-	        	feed = unicode(feed, enc)
+			feed = html_encode(feed)
 			if feed.count('<items>'):
 				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
 
@@ -2763,7 +2733,9 @@ def rss(type, jid, nick, text):
 
 
 		else:
-			msg = u'bad url or rss not found!'
+			feed = html_encode(feed)
+			title = get_tag(feed,'title')
+			msg = u'bad url or rss/atom not found at '+link+' - '+title
         if not nosend:
 		send_msg(type, jid, nick, msg)
 	
@@ -2815,6 +2787,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'wtfsearch', wtfsearch, 2),
          (2, u'wwtf', wwtf, 2),
          (0, u'wtff', wtff, 2),
+         (0, u'wtfp', wtfp, 2),
          (0, u'wtf', wtf, 2),
          (1, u'dfn', dfn, 2),
          (2, u'gdfn', gdfn, 2),

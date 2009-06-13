@@ -45,6 +45,15 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
+
+def getFile(filename,default):
+	if os.path.isfile(filename):
+		filebody = eval(readfile(filename))
+	else:
+		filebody = default
+		writefile(filename,str(filebody))
+	return filebody
+
 def get_subtag(body,tag):
 	beg = body.find('\"',body.find(tag))+1
 	return body[beg:body.find('\"',beg)]
@@ -70,12 +79,7 @@ def parser(text):
 	logt=untime(localtime())
 	logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
 
-	if os.path.isfile(logfile):
-		log = eval(readfile(logfile))
-	else:
-		log = []
-		writefile(logfile,str(log))
-
+	log = getFile(logfile,[])
 	log.append(text)
 	writefile(logfile,str(log))
 
@@ -210,10 +214,8 @@ else:
 	plugins = []
 	writefile(plname,str(plugins))
 
-if os.path.isfile(alfile):
-	aliases = eval(readfile(alfile))
-else:
-	aliases = []
+
+aliases = getFile(alfile,[])
 
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
@@ -552,11 +554,8 @@ def messageCB(sess,mess):
 
 	is_flood = 0
 	if room != selfjid:
-		if os.path.isfile(fld):
-			floods = eval(readfile(fld))
-		else:
-			floods = [(getRoom(room),0)]
-			writefile(fld,str(floods))
+
+		floods = getFile(fld,[(getRoom(room),0)])
 		for sm in floods:
 			if sm[0] == getRoom(room) and sm[1]:
 				is_flood = 1
@@ -654,11 +653,8 @@ def presenceCB(sess,mess):
 			nowname = nickname
 
 	if room != selfjid and nick == nowname:
-		if os.path.isfile(sml):
-			smiles = eval(readfile(sml))
-		else:
-			smiles = [(getRoom(room),0)]
-			writefile(sml,str(smiles))
+
+		smiles = getFile(sml,[(getRoom(room),0)])
 		for sm in smiles:
 			if sm[0] == getRoom(room) and sm[1]:
 				msg = u''
@@ -822,22 +818,11 @@ def getRoom(jid):
 
 def schedule():
 	lt=untime(localtime())
-	l_hi = (lt[0]*400+lt[1]*40+lt[2]) * 86400
-	l_lo = lt[3]*3600+lt[4]*60+lt[5]
+	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
 
 	try:
-		if os.path.isfile(feeds):
-			feedbase = eval(readfile(feeds))
-		else:
-			feedbase = []
-			writefile(feeds,str(feedbase))
-
-		if os.path.isfile(lafeeds):
-			lastfeeds = eval(readfile(lafeeds))
-		else:
-			lastfeeds = []
-			writefile(lafeeds,str(lastfeeds))
-
+		fdb = []
+		feedbase = getFile(feeds,fdb)
 		for fd in feedbase:
 			ltime = fd[1]
 			timetype = ltime[-1:].lower()
@@ -854,44 +839,16 @@ def schedule():
 				ofset *= 60
 	
 			lttime = fd[3]
-			ll_hi = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400
-			ll_lo = lttime[3]*3600+lttime[4]*60+lttime[5]
+			ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 	
-			if ll_hi + ll_lo + ofset <= l_lo + l_hi:
+			if ll_hl + ofset <= l_hl:
 				pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-				type = 'groupchat'
-				jid = fd[4]
-				nick = 'RSS'
-				text = 'new '+fd[0]+' 10 '+fd[2]+' silent'
-				thread.start_new_thread(thread_log,(rss, type, jid, nick, text))
-#				rss(type, jid, nick, text)
-				text = 'del '+fd[0]
-	
-				text = text.split(' ')
-				link = text[1]
-				if link[:7] != 'http://':
-        			        link = 'http://'+link
-	
-				bedel = 0
-				for rs in feedbase:
-					if rs[0] == link and rs[4] == jid:
-						feedbase.remove(rs)
-						bedel = 1
-				if bedel:
-					writefile(feeds,str(feedbase))
-	
-				text = 'add '+fd[0]+' '+fd[1]+' '+fd[2]
-	
-				lt=untime(localtime())
-				text = text.split(' ')
-				link = text[1]
-				if link[:7] != 'http://':
-        			        link = 'http://'+link
-				feedbase.append([link, text[2], text[3], lt[:6], jid])
-				writefile(feeds,str(feedbase))
-				sleep(0.1)
+				thread.start_new_thread(thread_log,(rss, 'groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
+				fdb.append([fd[0], fd[1], fd[2], lt[:6], jid])
+		writefile(feeds,str(fdb))
+		sleep(0.05)
 	except:
-		sleep(0.1)
+		sleep(0.05)
 
 def talk_count(room,jid,nick,text):
 
@@ -943,32 +900,16 @@ if not mtb:
 	mdb.commit()
 
 stb = os.path.isfile(saytobase)
-
 sdb = sqlite3.connect(saytobase)
 cu = sdb.cursor()
 if not stb:
 	cu.execute('''create table st (who text, room text, jid text, message text)''')
 	sdb.commit()
 
-if os.path.isfile(owners):
-	ownerbase = eval(readfile(owners))
-else:
-	ownerbase = [god]
-	writefile(owners,str(ownerbase))
-
-if os.path.isfile(ignores):
-	ignorebase = eval(readfile(ignores))
-else:
-	ignorebase = []
-	writefile(ignores,str(ignorebase))
-
+ownerbase = getFile(owners,[god])
+ignorebase = getFile(ignores,[])
 close_age_null()
-
-if os.path.isfile(confs):
-	confbase = eval(readfile(confs))
-else:
-	confbase = [defaultConf+u'/'+nickname]
-	writefile(confs,str(confbase))
+confbase = getFile(confs,[defaultConf+u'/'+nickname])
 
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF')
