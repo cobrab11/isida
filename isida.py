@@ -682,7 +682,7 @@ def presenceCB(sess,mess):
 		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 		cl.send(j)
 
-	if type=='unavailable':
+	if type=='unavailable' and nick != '':
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)
@@ -691,7 +691,7 @@ def presenceCB(sess,mess):
 				confbase = eval(readfile(confs))
 				confbase = arr_del_semi_find(confbase,getRoom(room))
         	                writefile(confs,str(confbase))
-	else:
+	elif nick != '':
 
 		sdb = sqlite3.connect(saytobase)
 		cu = sdb.cursor()
