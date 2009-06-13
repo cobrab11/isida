@@ -947,7 +947,21 @@ def wwtf(type, jid, nick, text):
 	wtf_get(2,type, jid, nick, text)
 
 def wtfp(type, jid, nick, text):
-	wtf_get(0,'chat', jid, nick, text)
+	if text.count('\n'):
+		text = text.split('\n')
+		tnick = text[1]
+		ttext = text[0]
+		is_found = 0
+		for mmb in megabase:
+			if mmb[0]==jid and mmb[1]==tnick:
+				is_found = 1
+				break
+		if is_found:
+			wtf_get(0,'chat', jid, tnick, ttext)
+		else:
+			send_msg(type, jid, nick, u'Ник '+tnick+u' не найден!')
+	else:
+		wtf_get(0,'chat', jid, nick, text)
 
 def wtf_get(ff,type, jid, nick, text):
 	msg = u'Чего искать то будем?'
