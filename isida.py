@@ -383,7 +383,10 @@ def iqCB(sess,iq):
         query = iq.getTag('query')
 
 	if iq.getType()=='error':
-		iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
+		try:
+			iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
+		except:
+			iq_answer.append((u'Неизвесная ошибка!'))
 
 	if iq.getType()=='result':
 		cparse = unicode(iq)
@@ -837,6 +840,8 @@ def schedule():
 			sleep(0.05)
 		except:
 			sleep(0.05)
+	else:
+		sleep(0.05)
 
 def talk_count(room,jid,nick,text):
 
