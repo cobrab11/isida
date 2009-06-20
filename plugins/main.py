@@ -2557,10 +2557,8 @@ def html_encode(body):
 			else:
 				enc = enc[:enc.find('" >')]
 			enc = enc.upper()
-
-
 		else:
-			enc = chardet.detect(text)
+			enc = chardet.detect(body)
 			enc = enc['encoding']
 	return unicode(body, enc)
 
