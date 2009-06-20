@@ -16,6 +16,7 @@ def get_tld(type, jid, nick, text):
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
 
 def get_dns(type, jid, nick, text):
+	is_ip = 0
 	if text.count('.') == 3:
 		is_ip = 1
 		for ii in text:
@@ -1963,10 +1964,10 @@ def hidden_clear(type, jid, nick, text):
 	if cntr < 1 or cntr > 100:
 		cntr = 19
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.05))+u' сек.')
+        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.25))+u' сек.')
         while (cntr>0):
                 cl.send(xmpp.Message(jid, '', "groupchat"))
-                time.sleep(1.05)
+                time.sleep(1.25)
                 cntr=cntr-1
         send_msg(type, jid, nick, u'стерильно!!!')
 	
