@@ -1,5 +1,26 @@
 # -*- coding: utf-8 -*-
 
+def replacer(msg):
+	msg = rss_replace(msg)
+	msg = rss_del_html(msg)
+	msg = rss_replace(msg)
+	msg = rss_del_nn(msg)
+	return msg
+
+def google(type, jid, nick,text):
+	query = urllib.urlencode({'q' : text.encode("utf-8")})
+	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
+	search_results = urllib.urlopen(url)
+	json = simplejson.loads(search_results.read())
+	results = json['responseData']['results']
+	title = results[0]['title']
+	content = results[0]['content']
+	noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
+	content = content.replace('<b>', u'«').replace('</b>', u'»')
+	url = results[0]['url']
+	msg = replacer(noh_title)+replacer(content)+url
+        send_msg(type, jid, nick, msg)
+
 def translate(type, jid, nick,text):
 	trlang = ['sq','ar','bg','ca','zhCN','zhTW','hr','cs','da',
 		  'nl','en','et','tl','fi','fr','gl','de','el','iw',
@@ -504,10 +525,7 @@ def netwww(type, jid, nick, text):
 	page = f.read()
 	f.close()
 	page = html_encode(page)
-	page = rss_replace(page)
-	page = rss_del_html(page)
-	page = rss_replace(page)
-	page = rss_del_nn(page)
+	page = replacer(page)
 	page = 'pre-aplha version:\n'+page[:100]
 
         send_msg(type, jid, nick, page)
@@ -808,16 +826,8 @@ def fspace(mass):
 	return bdd
 
 def html_encode(text):
-	encidx = text.find('charset=')
-	if encidx >= 0:
-		enc = text[encidx+8:encidx+30]
-		enc = enc[:enc.index('\">')]
-		enc = enc.upper()
-	else:
-		enc = 'UTF-8'
-
-	return unicode(text, enc)
-
+	enc = chardet.detect(text)
+	return unicode(text, enc['encoding'])
 
 def weather_gis(type, jid, nick, text):
 	ft = ord(text[0].upper())-1040+192
@@ -1304,10 +1314,7 @@ def defcode(type, jid, nick, text):
 			mmsg = u'Найдено:\n'
 			for mm in msg:
 				tmm = mm
-				tmm = rss_replace(tmm)
-				tmm = rss_del_html(tmm)
-				tmm = rss_replace(tmm)
-				tmm = rss_del_nn(tmm)
+				tmm = replacer(tmm)
 				tmm = tmm[tmm.find('>')+1:]
 				tmm = tmm.replace('\n','\t')
 				mmsg += tmm[1:-2] + '\n'
@@ -2398,6 +2405,7 @@ def rss_replace(ms):
 	ms = ms.replace('&quot;','\"')
 	ms = ms.replace('&apos;','\'')
 	ms = ms.replace('&amp;','&')
+	ms = ms.replace('&middot;',u'·')
 	mm = ''
 	m = 0
 	while m<len(ms):
@@ -2639,10 +2647,7 @@ def rss(type, jid, nick, text):
 					msg += ttitle + '\n'
 				if urlmode:
 					msg += turl+'\n'
-			msg = rss_replace(msg)
-			msg = rss_del_html(msg)
-			msg = rss_replace(msg)
-			msg = rss_del_nn(msg)
+			msg = replacer(msg)
 
 			if submode == 'body' or submode == 'head':
 				msg = msg[:-1]
@@ -2794,10 +2799,7 @@ def rss(type, jid, nick, text):
 			if submode == 'body' or submode == 'head':
 				msg = msg[:-1]
 
-			msg = rss_replace(msg)
-			msg = rss_del_html(msg)
-			msg = rss_replace(msg)
-			msg = rss_del_nn(msg)
+			msg = replacer(msg)
 
 			msg = msg[:-1]
 
@@ -2893,6 +2895,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'whois', info_whois, 2),
          (0, u'disco', disco, 2),
          (0, u'tr', translate, 2),
+         (0, u'google', google, 2),
          (0, u'sayto', sayto, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
