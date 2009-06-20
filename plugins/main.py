@@ -1,15 +1,45 @@
 # -*- coding: utf-8 -*-
 
-def get_dns(type, jid, nick, text):
-	resp = DNS.Request().req(text)
-	ans = resp.answers
-	msg = text+' - '
-	if len(ans):
-		for an in ans:
-			msg += an['data'] + ' | '
-		msg = msg[:-2]
+def get_tld(type, jid, nick, text):
+	if len(text) >= 2:
+		tld = readfile('tld/tld.list')
+		tld = tld.split('\n')
+		msg = u'Не найдено!'
+		for tl in tld:
+			if tl.split('\t')[0]==text:
+				msg = '.'+tl.replace('\t',' - ',1).replace('\t','\n')
+				break
 	else:
-		msg = u'Не резолвится'
+		msg = u'Что искать то будем?'
+        send_msg(type, jid, nick, msg)
+
+nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
+
+def get_dns(type, jid, nick, text):
+	if text.count('.') == 3:
+		is_ip = 1
+		for ii in text:
+			if not nmbrs.count(ii):
+				is_ip = 0
+				break
+	if is_ip:
+		try:
+			os.system('nslookup '+text+' > tempo.dns')
+			result = readfile('tempo.dns').decode('utf-8')
+			result = result.split('name = ')
+			msg = result[1].split('.\n')[0]
+		except:
+			msg = u'Не резолвится'
+	else:
+		resp = DNS.Request().req(text)
+		ans = resp.answers
+		msg = text+' - '
+		if len(ans):
+			for an in ans:
+				msg += an['data'] + ' | '
+			msg = msg[:-2]
+		else:
+			msg = u'Не резолвится'
         send_msg(type, jid, nick, msg)
 
 def ping(type, jid, nick, text):
@@ -2998,6 +3028,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'google', google, 2),
          (0, u'sayto', sayto, 2),
          (0, u'dns', get_dns, 2),
+         (0, u'tld', get_tld, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
 	 (1, u'backup', conf_backup, 2),
