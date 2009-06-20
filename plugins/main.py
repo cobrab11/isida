@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+def get_dns(type, jid, nick, text):
+	resp = DNS.Request().req(text)
+	ans = resp.answers
+	msg = text+' - '
+	if len(ans):
+		for an in ans:
+			msg += an['data'] + ' | '
+		msg = msg[:-2]
+	else:
+		msg = u'Не резолвится'
+        send_msg(type, jid, nick, msg)
+
 def ping(type, jid, nick, text):
 	global iq_answer
 	if text == '':
@@ -2985,6 +2997,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'tr', translate, 2),
          (0, u'google', google, 2),
          (0, u'sayto', sayto, 2),
+         (0, u'dns', get_dns, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
 	 (1, u'backup', conf_backup, 2),
