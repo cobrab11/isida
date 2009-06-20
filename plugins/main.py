@@ -1,5 +1,59 @@
 # -*- coding: utf-8 -*-
 
+def ping(type, jid, nick, text):
+	global iq_answer
+	if text == '':
+		sping = 1
+		who = getRoom(jid)+'/'+nick
+	else:
+		sping = 0
+		who = text
+		for mega1 in megabase:
+			if mega1[0] == jid and mega1[1] == text:
+				who = getRoom(jid)+'/'+text
+				break
+
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
+	cl.send(i)
+	to = timeout
+
+	lt = time.time()
+
+	no_answ = 1
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.001)
+		to -= 0.001
+
+	ct = time.time()
+
+	iiqq = []
+	for iiq in is_answ:
+		if iiq != None:
+			iiqq.append(iiq)
+		else:
+			iiqq.append('None')
+	if to > 0:
+		if iiqq == ['None']:
+			msg = u'Что то не получается...'
+		else:
+			tpi = ct-lt
+			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
+
+			if sping:
+				msg = u'Пинг от тебя '+tpi+u' сек.'
+			else:
+				msg = u'Пинг от '+text+' '+tpi+u' сек.'
+	else:
+		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+        send_msg(type, jid, nick, msg)
+
 def replacer(msg):
 	msg = rss_replace(msg)
 	msg = rss_del_html(msg)
@@ -460,7 +514,7 @@ def iq_time(type, jid, nick, text):
 			iiqq.append(iiq)
 		else:
 			iiqq.append('None')
-	if to >= 0:
+	if to > 0:
 		if len(iiqq) == 3:
 			msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
 		else:
@@ -504,7 +558,7 @@ def iq_version(type, jid, nick, text):
 			iiqq.append(iiq)
 		else:
 			iiqq.append('None')
-	if to >= 0:
+	if to > 0:
 		if len(iiqq) == 3:
 			msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
 		else:
@@ -2885,6 +2939,7 @@ comms = [(1, u'stats', stats, 1),
          (1, u'inadmin', inadmin, 2),
          (1, u'inowner', inowner, 2),
          (0, u'ver', iq_version, 2),
+         (0, u'ping', ping, 2),
          (0, u'time', iq_time, 2),
          (2, u'log', get_log, 2),
          (2, u'limit', conf_limit, 2),
