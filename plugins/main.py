@@ -71,7 +71,7 @@ def google(type, jid, nick,text):
 	content = results[0]['content']
 	noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
 	content = content.replace('<b>', u'«').replace('</b>', u'»')
-	url = results[0]['url']
+	url = results[0]['unescapedUrl']
 	msg = replacer(noh_title)+replacer(content)+url
         send_msg(type, jid, nick, msg)
 
@@ -125,6 +125,8 @@ def svn_get(type, jid, nick,text):
 	if revn:
 		os.system('svn log '+url+' -r'+str(revn)+' > '+tlog)
 	else:
+		if count > 10:
+			count = 10
 		os.system('svn log '+url+' --limit '+str(count)+' > '+tlog)
 	result = readfile(tlog).decode('utf-8')
 
@@ -578,11 +580,29 @@ def netwww(type, jid, nick, text):
 	f = urllib.urlopen(text)
 	page = f.read()
 	f.close()
-	page = html_encode(page)
-	page = replacer(page)
-	page = 'pre-aplha version:\n'+page[:100]
 
-        send_msg(type, jid, nick, page)
+	print page
+	page = html_encode(page)
+	msg = get_tag(page,'title')+'\n'
+
+	for a in range(0,page.count('<style')):
+		ttag = get_tag_full(page,'style')
+		page = page.replace(ttag,'')
+
+	for a in range(0,page.count('<script')):
+		ttag = get_tag_full(page,'script')
+		page = page.replace(ttag,'')
+
+	page = rss_replace(page)
+	page = rss_repl_html(page)
+	page = rss_replace(page)
+	page = rss_del_nn(page)
+	page = page.replace('\n ','')
+	page = page.replace('\n\n','\n')
+
+	msg += page
+
+	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
         while text[-1:] == ' ':
@@ -775,7 +795,7 @@ def alias(type, jid, nick, text):
 			msg = cmd
 			isf = 1
 			for i in aliases:
-				if i[1].lower().count(cmd.lower()):
+				if i[1].lower().count(cmd.lower()) and i[0] == jid:
 					msg += '\n'+i[1]+' = '+i[2]
 					isf = 0
 			if isf:
@@ -878,10 +898,6 @@ def fspace(mass):
 				b = b[1:]
 		bdd.append(b)
 	return bdd
-
-def html_encode(text):
-	enc = chardet.detect(text)
-	return unicode(text, enc['encoding'])
 
 def weather_gis(type, jid, nick, text):
 	ft = ord(text[0].upper())-1040+192
@@ -2460,6 +2476,9 @@ def rss_replace(ms):
 	ms = ms.replace('&apos;','\'')
 	ms = ms.replace('&amp;','&')
 	ms = ms.replace('&middot;',u'·')
+	ms = ms.replace('&nbsp;','')
+	ms = ms.replace('&raquo;',u'▼')
+	ms = ms.replace('&copy;',u'©')
 	mm = ''
 	m = 0
 	while m<len(ms):
@@ -2482,6 +2501,20 @@ def rss_replace(ms):
 		m += 1
 # &#x2212;
 	return mm
+
+def rss_repl_html(ms):
+	i=0
+	lms = len(ms)
+	while i < lms:
+		if ms[i] == '<':
+			for j in range(i, lms):
+				if ms[j] == '>':
+					break
+			ms = ms[:i] +' '+ ms[j+1:]
+			lms = len(ms)
+			i -= 1
+		i += 1
+	return ms
 
 def rss_del_html(ms):
 	i=0
@@ -2519,11 +2552,16 @@ def html_encode(body):
 		encidx = body.find('charset=')
 		if encidx >= 0:
 			enc = body[encidx+8:encidx+30]
-			enc = enc[:enc.find('">')]
+			if enc.count('">'):
+				enc = enc[:enc.find('">')]
+			else:
+				enc = enc[:enc.find('" >')]
 			enc = enc.upper()
-		else:
-			enc = 'UTF-8'
 
+
+		else:
+			enc = chardet.detect(text)
+			enc = enc['encoding']
 	return unicode(body, enc)
 
 

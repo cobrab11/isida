@@ -60,6 +60,9 @@ def get_subtag(body,tag):
 def get_tag(body,tag):
 	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
 
+def get_tag_full(body,tag):
+	return body[body.find('<'+tag):body.find(tag+'>',body.find('<'+tag)+2)+len(tag)+1]
+
 def parser(text):
 	logt=tuple(localtime())
 	logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
