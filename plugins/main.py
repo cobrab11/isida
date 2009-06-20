@@ -2552,10 +2552,7 @@ def html_encode(body):
 		encidx = body.find('charset=')
 		if encidx >= 0:
 			enc = body[encidx+8:encidx+30]
-			if enc.count('">'):
-				enc = enc[:enc.find('">')]
-			else:
-				enc = enc[:enc.find('" >')]
+			enc = enc[:enc.find('"')]
 			enc = enc.upper()
 		else:
 			enc = chardet.detect(body)
