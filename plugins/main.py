@@ -742,7 +742,7 @@ def alias(type, jid, nick, text):
 	if mode=='add':
 		fl = 0
 		for i in aliases:
-			if i[1] == cmd:
+			if i[1] == cmd and i[0] == jid:
 				aliases.remove(i)
 				fl = 1	
 		aliases.append([jid, cmd, cbody])
@@ -755,7 +755,7 @@ def alias(type, jid, nick, text):
 	if mode=='del':
 		msg = u'Не возможно удалить '+cmd
 		for i in aliases:
-			if i[1] == cmd:
+			if i[1] == cmd and i[0] == jid:
 				aliases.remove(i)
 				msg = u'Удалено: '+cmd
 
