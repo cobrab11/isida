@@ -531,9 +531,10 @@ def messageCB(sess,mess):
 
 		if no_comm:
 			for parse in aliases:
-				if btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+				if (btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ') and room == parse[0]:
+					
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-					ppr = parse[2].replace('%*',text[len(parse[1])+1:])
+					ppr = parse[2].replace('%*',btext[len(parse[1])+1:])
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
@@ -803,12 +804,11 @@ def getRoom(jid):
 
 def schedule():
 	lt=tuple(localtime())
-	if int(lt[5]/15) == lt[5]/15:
+	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
-
 		try:
 			fdb = []
-			feedbase = getFile(feeds,fdb)
+			feedbase = getFile(feeds,[])
 			for fd in feedbase:
 				ltime = fd[1]
 				timetype = ltime[-1:].lower()

@@ -13,7 +13,8 @@ def svn_get(type, jid, nick,text):
 			count = int(text[1])
 		except:
 			try:
-				revn = int(text[1][1:])
+				if text[1][0].lower()=='r':
+					revn = int(text[1][1:])
 			except:
 				revn = 0
 	else:
