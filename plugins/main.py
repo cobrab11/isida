@@ -1,5 +1,31 @@
 # -*- coding: utf-8 -*-
 
+def translate(type, jid, nick,text):
+	trlang = ['sq','ar','bg','ca','zhCN','zhTW','hr','cs','da',
+		  'nl','en','et','tl','fi','fr','gl','de','el','iw',
+		  'hi','hu','id','it','ja','ko','lv','lt','mt','no',
+		  'pl','pt','ro','ru','sr','sk','sl','es','sv','th','tr','uk','vi']
+	if text.lower() == 'list':
+		msg = u'Доступные языки для перевода: '
+		for tl in trlang:
+			msg += tl+', '
+		msg = msg[:-2]
+	else:
+		if text.count(' ') > 1:
+			text = text.split(' ',2)
+			if trlang.count(text[0]) and trlang.count(text[1]) and text[2] != '':
+				query = urllib.urlencode({'q' : text[2].encode("utf-8"),'langpair':text[0]+'|'+text[1]})
+				url = u'http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&%s'.encode("utf-8") % (query)
+				search_results = urllib.urlopen(url)
+				json = simplejson.loads(search_results.read())
+				msg = json['responseData']['translatedText']
+			else:
+				msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
+		else:
+			msg = u'Формат команды: tr с_какого на_какой текст'
+        send_msg(type, jid, nick, msg)
+
+
 def svn_get(type, jid, nick,text):
 	tlog = 'tempo.log'
 	if text[:7] !='http://':
@@ -2866,6 +2892,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'whoami', info_access, 1),
          (0, u'whois', info_whois, 2),
          (0, u'disco', disco, 2),
+         (0, u'tr', translate, 2),
          (0, u'sayto', sayto, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
