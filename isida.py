@@ -45,7 +45,6 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
-
 def getFile(filename,default):
 	if os.path.isfile(filename):
 		filebody = eval(readfile(filename))
@@ -61,22 +60,8 @@ def get_subtag(body,tag):
 def get_tag(body,tag):
 	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
 
-def untime(var):
-	try:
-		for vv in var:
-			int(vv)
-	except:
-		var = var[var.index('(')+1:var.index(')')]
-		var = var.split(',')
-		stt = []
-		for st in var:
-			sttt = st.split('=')
-			stt.append(int(sttt[1]))
-		var = stt
-	return var
-
 def parser(text):
-	logt=untime(localtime())
+	logt=tuple(localtime())
 	logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
 
 	log = getFile(logfile,[])
@@ -107,7 +92,7 @@ def timeadd(lt):
 
 def pprint(text):
         text = text
-	zz = parser('['+timeadd(untime(localtime()))+'] '+text)
+	zz = parser('['+timeadd(tuple(localtime()))+'] '+text)
 #	print zz
 
 def send_presence_all(sm):
@@ -140,7 +125,7 @@ iq_answer = []
 timeout = 300
 
 gt=gmtime()
-lt=untime(localtime())
+lt=tuple(localtime())
 
 if lt[0:3] == gt[0:3]:
         timeofset = int(lt[3])-int(gt[3])
@@ -444,7 +429,7 @@ def iqCB(sess,iq):
                         gt=timeZero(gmtime())
                         t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
                         
-                        lt=untime(localtime())
+                        lt=tuple(localtime())
                         ltt=timeZero(lt)
                         wday = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
                         wlight = ['Winter','Summer']
@@ -576,7 +561,7 @@ def thread_log(proc, *params):
                 else:
                         proc(params[0], params[1], params[2], params[3])
         except:
-                logging.exception(' ['+timeadd(untime(localtime()))+'] ')
+                logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 
 def getAnswer(tx,type):
 	mdb = sqlite3.connect(mainbase)
@@ -817,38 +802,41 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
-	lt=untime(localtime())
-	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
+	lt=tuple(localtime())
+	if int(lt[5]/15) == lt[5]/15:
+		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
 
-	try:
-		fdb = []
-		feedbase = getFile(feeds,fdb)
-		for fd in feedbase:
-			ltime = fd[1]
-			timetype = ltime[-1:].lower()
-			if not (timetype == 'h' or timetype == 'm'):
-				timetype = 'h'
-			try:
-				ofset = int(ltime[:-1])
-			except:
-				ofset = 4
-	
-			if timetype == 'h':
-				ofset *= 3600
-			elif timetype == 'm':
-				ofset *= 60
-	
-			lttime = fd[3]
-			ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
-	
-			if ll_hl + ofset <= l_hl:
-				pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-				thread.start_new_thread(thread_log,(rss, 'groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
-				fdb.append([fd[0], fd[1], fd[2], lt[:6], jid])
-		writefile(feeds,str(fdb))
-		sleep(0.05)
-	except:
-		sleep(0.05)
+		try:
+			fdb = []
+			feedbase = getFile(feeds,fdb)
+			for fd in feedbase:
+				ltime = fd[1]
+				timetype = ltime[-1:].lower()
+				if not (timetype == 'h' or timetype == 'm'):
+					timetype = 'h'
+				try:
+					ofset = int(ltime[:-1])
+				except:
+					ofset = 4
+		
+				if timetype == 'h':
+					ofset *= 3600
+				elif timetype == 'm':
+					ofset *= 60
+		
+				lttime = fd[3]
+				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
+		
+				if ll_hl + ofset <= l_hl:
+					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
+					thread.start_new_thread(thread_log,(rss, 'groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
+					fdb.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
+        	                else:
+        	                        fdb.append(fd)
+			writefile(feeds,str(fdb))
+			sleep(0.05)
+		except:
+			sleep(0.05)
 
 def talk_count(room,jid,nick,text):
 
@@ -879,9 +867,9 @@ if os.path.isfile('settings/starttime'):
 		starttime = eval(readfile('settings/starttime'))
 	except:
 		starttime = readfile('settings/starttime')
-		starttime = untime(starttime)
+		starttime = tuple(starttime)
 else:
-	starttime = untime(localtime())
+	starttime = tuple(localtime())
 
 sesstime = int(time.time())
 
@@ -998,7 +986,7 @@ while 1:
 	except Exception, SM:
 #		close_age()
 		pprint('*** Error *** '+str(SM)+' ***')
-                logging.exception(' ['+timeadd(untime(localtime()))+'] ')
+                logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
                 if debugmode:
                         writefile(tmpf,str('exit'))
         		raise

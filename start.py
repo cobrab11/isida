@@ -15,9 +15,7 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
-starttime = time.localtime()
-
-writefile('settings/starttime',str(starttime))
+writefile('settings/starttime',str(tuple(time.localtime())))
 
 while 1:
 	execfile('isida.py')
@@ -40,4 +38,3 @@ while 1:
 			os.system('echo No Updates! > update.log')
 	elif mode == 'exit':
 		break
-            

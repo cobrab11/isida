@@ -1,5 +1,37 @@
 # -*- coding: utf-8 -*-
 
+def svn_get(type, jid, nick,text):
+	tlog = 'tempo.log'
+	if text[:7] !='http://':
+                text = 'http://'+text
+	count = 1
+	revn = 0
+	if text.count(' '):
+		text = text.split(' ')
+		url = text[0]
+		try:
+			count = int(text[1])
+		except:
+			try:
+				revn = int(text[1][1:])
+			except:
+				revn = 0
+	else:
+		url=text
+	os.system('rm -r '+tlog)
+
+	if revn:
+		os.system('svn log '+url+' -r'+str(revn)+' > '+tlog)
+	else:
+		os.system('svn log '+url+' --limit '+str(count)+' > '+tlog)
+	result = readfile(tlog).decode('utf-8')
+
+	if len(result):
+		msg = u'last svn update: '+url+'\n'+result
+	else:
+		msg = url+u' - недоступно!'
+        send_msg(type, jid, nick, msg)
+
 def sayto(type, jid, nick, text):
 	if text.count(' '):
 		to = text[:text.find(' ')]
@@ -958,6 +990,7 @@ def wtfp(type, jid, nick, text):
 				break
 		if is_found:
 			wtf_get(0,'chat', jid, tnick, ttext)
+			send_msg(type, jid, nick, u'Отправлено в приват '+tnick)
 		else:
 			send_msg(type, jid, nick, u'Ник '+tnick+u' не найден!')
 	else:
@@ -1031,7 +1064,7 @@ def dfn(type, jid, nick, text):
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(untime(localtime()))))
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(tuple(localtime()))))
 		mdb.commit()
         send_msg(type, jid, nick, msg)
 
@@ -1067,7 +1100,7 @@ def gdfn(type, jid, nick, text):
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(untime(localtime()))))
+			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(tuple(localtime()))))
 		mdb.commit()
         send_msg(type, jid, nick, msg)
 
@@ -1558,7 +1591,7 @@ def get_log(type, jid, nick, text):
 		arg = text[1]
 	else:
 		arg = ''
-	logt=untime(localtime())
+	logt=tuple(localtime())
 
 	if cmd == 'len':
 		if arg == '':
@@ -2067,7 +2100,7 @@ def info_where(type, jid, nick):
 	
 
 def get_uptime_raw():
-	nowtime = untime(localtime())
+	nowtime = tuple(localtime())
 
 	difftime = [0,0,0,0,0,0]
 
@@ -2119,9 +2152,7 @@ def info(type, jid, nick):
         msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
 	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
 	msg += u'Время запуска: '+timeadd(starttime)+'\n'
-	nowtime = untime(localtime())
-	msg += u'Локальное время: '+timeadd(nowtime)+'\n'
-
+	msg += u'Локальное время: '+timeadd(tuple(localtime()))+'\n'
 	msg += u'Время работы: ' + get_uptime_str()+u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
 	msg += u'\nSmiles is '
 
@@ -2486,18 +2517,17 @@ def rss(type, jid, nick, text):
 
 	elif mode == 'add':
                         
-		lt=untime(localtime())
+		lt=tuple(localtime())
 		link = text[1]
 		if link[:7] != 'http://':
         	        link = 'http://'+link
         	for dd in feedbase:
                         if dd[0] == link and dd[4] == jid:
                                 feedbase.remove(dd)
-		feedbase.append([link, text[2], text[3], lt[:6], jid]) # url time mode
+		feedbase.append([link, text[2], text[3], lt[:6], getRoom(jid)]) # url time mode
+		writefile(feeds,str(feedbase))
 		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
-
-		writefile(feeds,str(feedbase))
 #---------
 		f = urllib.urlopen(link)
 		feed = f.read()
@@ -2572,13 +2602,14 @@ def rss(type, jid, nick, text):
 					tu3 = mmsg.find('\"',tu2)
 					turl = mmsg[tu2:tu3]
 
+                                msg += u' • '
 				if submode == 'full':
-					msg += u' • ' + ttitle+ '\n'
+					msg += ttitle+ '\n'
 					msg += tbody + '\n\n'
 				elif submode == 'body':
 					msg += tbody + '\n'
 				elif submode[:4] == 'head':
-					msg += u' • ' + ttitle + '\n'
+					msg += ttitle + '\n'
 				if urlmode:
 					msg += turl+'\n'
 			msg = rss_replace(msg)
@@ -2716,13 +2747,14 @@ def rss(type, jid, nick, text):
                                 if mode == 'new':
         				if ttitle == tstop:
         					break
+        			msg += u' • '
 				if submode == 'full':
-		        	        msg += u' • ' + ttitle + '\n'
+		        	        msg += ttitle + '\n'
 					msg += tbody + '\n\n'
 				elif submode == 'body':
 					msg += tbody + '\n'
 				elif submode[:4] == 'head':
-		        	        msg += u' • ' + ttitle+ '\n'
+		        	        msg += ttitle+ '\n'
 				if urlmode:
 					msg += turl+'\n'
 
@@ -2815,7 +2847,8 @@ comms = [(1, u'stats', stats, 1),
          (0, u'commands', info_comm, 1),
          (0, u'uptime', uptime, 1),
          (1, u'info', info, 1),
-         (0, u'svn', svn_info, 1),
+         (0, u'new', svn_info, 1),
+         (0, u'svn', svn_get, 2),
          (1, u'smile', smile, 1),
          (1, u'flood', autoflood, 1),
          (1, u'inban', inban, 2),
