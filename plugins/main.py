@@ -8,31 +8,30 @@ def status(type, jid, nick, text):
 	cu = mdb.cursor()
 	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
 
-#		ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
-	if stat[1]:
-		msg = text+u' покинул данную конференцию.'
+	if stat:
+		if stat[1]:
+			msg = u' покинул данную конференцию.'
+		else:
+			stat = stat[0].split('\n',4)
+	
+			if stat[3] != 'None':
+				msg = stat[3]
+			else:
+				msg = 'online'
+
+			if stat[4] != 'None':
+				msg += ' ('+stat[4]+')'
+			if stat[2] != 'None':
+				msg += ' ['+stat[2]+'] '
+			else:
+				msg += ' [0] '
+			if stat[0] != 'None' and stat[1] != 'None':
+				msg += stat[0]+'/'+stat[1]
+
+		if text != nick:
+			msg = text + ' - '+msg
 	else:
-		stat = stat[0].split('\n',4)
-
-		if stat[3] != 'None':
-			msg = stat[3]
-		else:
-			msg = 'online'
-
-		if stat[4] != 'None':
-			msg += ' ('+stat[4]+')'
-		if stat[2] != 'None':
-			msg += ' ['+stat[2]+'] '
-		else:
-			msg += ' [0] '
-		if stat[0] != 'None' and stat[1] != 'None':
-			msg += stat[0]+'/'+stat[1]
-
-		if len(stat):
-			if text != nick:
-				msg = text + ' - '+msg
-		else:
-			msg = u'Не найдено!'
+		msg = u'Не найдено!'
         send_msg(type, jid, nick, msg)
 
 def get_tld(type, jid, nick, text):
