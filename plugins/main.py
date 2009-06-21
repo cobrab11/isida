@@ -2772,11 +2772,8 @@ def rss(type, jid, nick, text):
 
 			msg = replacer(msg)
 
-			if submode == 'body' or submode == 'head':
-				msg = msg[:-1]
-
 			msg = msg[:-1]
-			if lng > 1 and submode == 'full':
+			if submode == 'full':
 				msg = msg[:-1]
 		else:
 			feed = html_encode(feed)
