@@ -2,7 +2,7 @@
 
 def get_tld(type, jid, nick, text):
 	if len(text) >= 2:
-		tld = readfile('tld/tld.list')
+		tld = readfile('tld/tld.list').decode('utf-8')
 		tld = tld.split('\n')
 		msg = u'Не найдено!'
 		for tl in tld:
@@ -2113,14 +2113,14 @@ def bot_plugin(type, jid, nick, text):
 	if len(text)>0:
 		do = text[0]
 	if len(text)>1:
-		nnick = text[1]
+		nnick = text[1]+'.py'
 	pprint('plugin '+do+' '+nnick)
 	msg = ''
 	if do == 'add':
                 if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
                         plugins.append(nnick)
                         execfile('plugins/'+nnick)
-                        msg = u'Загружен плагин: '+nnick+u'\nДоступны комманды: '
+                        msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
                         for commmm in execute:
                                 msg += commmm[1]+'['+str(commmm[0])+'], '
                                 comms.append(commmm)
@@ -2130,7 +2130,7 @@ def bot_plugin(type, jid, nick, text):
                 if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
                         plugins.remove(nnick)
                         execfile('plugins/'+nnick)
-                        msg = u'Удалён плагин: '+nnick+u'\nУдалены комманды: '
+                        msg = u'Удалён плагин: '+nnick[:-3]+u'\nУдалены комманды: '
                         for commmm in execute:
                                 msg += commmm[1]+'['+str(commmm[0])+'], '
                                 for i in comms:
@@ -2143,7 +2143,7 @@ def bot_plugin(type, jid, nick, text):
 		b = []
 		for c in a:
 			if c[-3:] == u'.py' and c != 'main.py':
-				b.append(c)
+				b.append(c[:-3].decode('utf-8'))
 		msg = u'Доступные плагины: '
 		for c in b:
 				msg += c+', '
@@ -2152,7 +2152,7 @@ def bot_plugin(type, jid, nick, text):
 	else:
 		msg = u'Активные плагины: '
 		for jjid in plugins:
-				msg += jjid+', '
+				msg += jjid[:-3]+', '
 		msg = msg[:-2]
 
 
