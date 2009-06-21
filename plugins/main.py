@@ -1,5 +1,40 @@
 # -*- coding: utf-8 -*-
 
+
+def status(type, jid, nick, text):
+	if text == '':
+		text = nick
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
+
+#		ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
+	if stat[1]:
+		msg = text+u' покинул данную конференцию.'
+	else:
+		stat = stat[0].split('\n',4)
+
+		if stat[3] != 'None':
+			msg = stat[3]
+		else:
+			msg = 'online'
+
+		if stat[4] != 'None':
+			msg += ' ('+stat[4]+')'
+		if stat[2] != 'None':
+			msg += ' ['+stat[2]+'] '
+		else:
+			msg += ' [0] '
+		if stat[0] != 'None' and stat[1] != 'None':
+			msg += stat[0]+'/'+stat[1]
+
+		if len(stat):
+			if text != nick:
+				msg = text + ' - '+msg
+		else:
+			msg = u'Не найдено!'
+        send_msg(type, jid, nick, msg)
+
 def get_tld(type, jid, nick, text):
 	if len(text) >= 2:
 		tld = readfile('tld/tld.list').decode('utf-8')
@@ -1855,7 +1890,7 @@ def info_comm(type, jid, nick):
 		for i in cm:
 			msg += i[0] +', '
 		msg = msg[:-2]
-	msg = u'Всего команд: '+str(len(comms))+u', Префикс: '+get_local_prefix(jid)+u'\nВаш доступ - '+str(access_mode)+u', при нём доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
+	msg = u'Всего команд: '+str(len(comms))+u' | Префикс: '+get_local_prefix(jid)+u' | Ваш доступ: '+str(access_mode)+u' | Доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
 	tmp.close()
 	send_msg(type, jid, nick, msg)
 
@@ -3012,6 +3047,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'sayto', sayto, 2),
          (0, u'dns', get_dns, 2),
          (0, u'tld', get_tld, 2),
+         (0, u'status', status, 2),
          (1, u'whereis', whereis, 2),
 	 (1, u'prefix', set_prefix, 2),
 	 (1, u'backup', conf_backup, 2),

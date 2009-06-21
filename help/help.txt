@@ -226,6 +226,8 @@ www [http://]url
 Поиск доменных зон TLD
 {dns}
 dns резолвер
+{status}
+Показ статуса.
 {lasttracks}
 Плагин lastfm. Последние скробленные треки
 {lastfriends}

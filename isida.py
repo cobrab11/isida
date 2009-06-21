@@ -726,9 +726,11 @@ def presenceCB(sess,mess):
 		abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
 		tt = int(time.time())
 		cu.execute('delete from age where room=? and jid=?',(room, jid))
+
+		ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
+
 		for ab in abc:
 			if type=='unavailable':
-#				print status
 				exit_type = ''
 				exit_message = ''
 				if status=='307': #Kick
@@ -739,18 +741,18 @@ def presenceCB(sess,mess):
 					exit_message = reason
 				else: #Leave
 					exit_type = u'Вышел'
-					exit_message = show
+					exit_message = text
 				if exit_message == 'None':
 					exit_message = ''
 #				print exit_type, exit_message
 				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 			else:
 				if ab[5]:
-					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ab[7]))
+					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 				else:
-					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ab[7]))
+					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 		if not len(abc):
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',''))
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 		mdb.commit()
 
 def onoff(msg):
