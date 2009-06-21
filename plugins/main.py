@@ -109,13 +109,16 @@ def google(type, jid, nick,text):
 	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
 	search_results = urllib.urlopen(url)
 	json = simplejson.loads(search_results.read())
-	results = json['responseData']['results']
-	title = results[0]['title']
-	content = results[0]['content']
-	noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
-	content = content.replace('<b>', u'«').replace('</b>', u'»')
-	url = results[0]['unescapedUrl']
-	msg = replacer(noh_title)+replacer(content)+url
+	try:
+		results = json['responseData']['results']
+		title = results[0]['title']
+		content = results[0]['content']
+		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
+		content = content.replace('<b>', u'«').replace('</b>', u'»')
+		url = results[0]['unescapedUrl']
+		msg = replacer(noh_title)+replacer(content)+url
+	except:
+		msg = u'Выражение "' + text + u'" - не найдено!'
         send_msg(type, jid, nick, msg)
 
 def translate(type, jid, nick,text):
