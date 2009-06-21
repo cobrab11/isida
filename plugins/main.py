@@ -2606,6 +2606,7 @@ def html_encode(body):
 #[room, nick, role, affiliation, jid]
 
 def rss(type, jid, nick, text):
+	global feedbase, feeds,	lastfeeds, lafeeds
         msg = u'rss show|add|del|clear|new|get'
 	nosend = 0
         text = text.split(' ')
@@ -2689,43 +2690,33 @@ def rss(type, jid, nick, text):
         	for dd in feedbase:
                         if dd[0] == link and dd[4] == jid:
                                 feedbase.remove(dd)
+				break
 		feedbase.append([link, text[2], text[3], lt[:6], getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
+
 		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
-#---------
+
 		f = urllib.urlopen(link)
 		feed = f.read()
 		f.close()
 
-#		writefile('settings/tempofeed',str(feed))
-
+		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'):
-			is_rss = 1
-			is_atom = 0
+			is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
-			is_atom = 1
-			is_rss = 0
-                else: 
-			is_atom = 0
-			is_rss = 0
+			is_rss_aton = 2
 
-		if is_atom or is_rss:
+		if is_rss_aton:
 			feed = html_encode(feed)
 
 			if feed.count('<items>'):
-				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
+				feed = get_tag(feed,'items')
 
-			if is_rss:
+			if is_rss_aton == 1:
 		        	feed = feed.split('<item')
-			if is_atom:
+			else:
 		        	feed = feed.split('<entry>')
-
-			lng = 2
-			if len(feed) <= lng:
-				lng = len(feed)
-			if lng>=11:
-				lng = 11
 
 			if len(text) > 3:
 				submode = text[3]
@@ -2741,48 +2732,48 @@ def rss(type, jid, nick, text):
 				urlmode = 0
 				msg += link+' '
 
-			mmsg = feed[0]
-			msg += mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
+	                msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
-			if is_rss:
-				mmsg = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
-			if is_atom:
-				mmsg = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]+ '\n'
+			if is_rss_aton==1:
+				mmsg = get_tag(mmsg,'title') + '\n'
+			else:
+				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
+					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
-			for idx in range(1,lng):
-				mmsg = feed[idx]
-				if is_rss:
-					ttitle = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
-					tbody = mmsg[mmsg.find('>',mmsg.index('<description'))+1:mmsg.index('</description>')]
-					turl = mmsg[mmsg.find('>',mmsg.index('<link'))+1:mmsg.index('</link>')]
-				if is_atom:
-					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
-					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
-					tu1 = mmsg.index('<link')
-					tu2 = mmsg.find('href=\"',tu1)+6
-					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3]
 
-                                msg += u' • '
-				if submode == 'full':
-					msg += ttitle+ '\n'
-					msg += tbody + '\n\n'
-				elif submode == 'body':
-					msg += tbody + '\n'
-				elif submode[:4] == 'head':
-					msg += ttitle + '\n'
-				if urlmode:
-					msg += turl+'\n'
+			mmsg = feed[1]
+			if is_rss_aton==1:
+				ttitle = get_tag(mmsg,'title')
+				tbody = get_tag(mmsg,'description')
+				turl = get_tag(mmsg,'link')
+			else:
+				ttitle = get_tag(mmsg,'content')
+				tbody = get_tag(mmsg,'title')
+				tu1 = mmsg.index('<link')
+				tu2 = mmsg.find('href=\"',tu1)+6
+				tu3 = mmsg.find('\"',tu2)
+				turl = mmsg[tu2:tu3]
+
+			msg += u' • '
+			if submode == 'full':
+				msg += ttitle+ '\n'
+				msg += tbody + '\n\n'
+			elif submode == 'body':
+				msg += tbody + '\n'
+			elif submode[:4] == 'head':
+				msg += ttitle + '\n'
+			if urlmode:
+				msg += turl+'\n'
+
 			msg = replacer(msg)
 
 			if submode == 'body' or submode == 'head':
 				msg = msg[:-1]
-
-#			writefile('settings/tmpfeed',str(msg))
 
 			msg = msg[:-1]
 			if lng > 1 and submode == 'full':
@@ -2828,24 +2819,20 @@ def rss(type, jid, nick, text):
         	feed = f.read()
 		f.close()
 
+		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'):
-			is_rss = 1
-			is_atom = 0
+			is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
-			is_atom = 1
-			is_rss = 0
-                else: 
-			is_atom = 0
-			is_rss = 0
+			is_rss_aton = 2
 
-		if is_atom or is_rss:
+		if is_rss_aton:
 			feed = html_encode(feed)
 			if feed.count('<items>'):
-				feed = feed[:feed.find('<items>')]+feed[feed.find('</items>',feed.find('<items>'))+7:]
+				feed = get_tag(feed,'<items>')
 
-			if is_rss:
+			if is_rss_aton == 1:
 		        	feed = feed.split('<item')
-			if is_atom:
+			else:
 		        	feed = feed.split('<entry>')
 	
 	        	if len(text) > 2:
@@ -2867,7 +2854,6 @@ def rss(type, jid, nick, text):
 			if submode[-4:] == '-url':
 				submode = submode[:-4]
 				urlmode = 1
-
 			else:
 				urlmode = 0
 				msg += link+' '
@@ -2878,29 +2864,28 @@ def rss(type, jid, nick, text):
 					 tstop = ii[1]
 					 tstop = tstop[:-1]
 
-			mmsg = feed[0]
-	                msg += mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
+	                msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
-			if is_rss:
-				mmsg = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]+ '\n'
-			if is_atom:
-				mmsg = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]+ '\n'
+			if is_rss_aton==1:
+				mmsg = get_tag(mmsg,'title') + '\n'
+			else:
+				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+
 			for dd in lastfeeds:
                                 if dd[0] == link and dd[2] == jid:
                                         lastfeeds.remove(dd)
+					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
 
-	        	for idx in range(1,lng):
-                                over = idx
-	        	        mmsg = feed[idx]
-				if is_rss:
-					ttitle = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
-					tbody = mmsg[mmsg.find('>',mmsg.index('<description'))+1:mmsg.index('</description>')]
-					turl = mmsg[mmsg.find('>',mmsg.index('<link'))+1:mmsg.index('</link>')]
-				if is_atom:
-					ttitle = mmsg[mmsg.find('>',mmsg.index('<content'))+1:mmsg.index('</content>')]
-					tbody = mmsg[mmsg.find('>',mmsg.index('<title'))+1:mmsg.index('</title>')]
+	        	for mmsg in feed[1:lng]:
+				if is_rss_aton == 1:
+					ttitle = get_tag(mmsg,'title')
+					tbody = get_tag(mmsg,'description')
+					turl = get_tag(mmsg,'link')
+				else:
+					ttitle = get_tag(mmsg,'content')
+					tbody = get_tag(mmsg,'title')
 					tu1 = mmsg.index('<link')
 					tu2 = mmsg.find('href=\"',tu1)+6
 					tu3 = mmsg.find('\"',tu2)
@@ -2921,22 +2906,19 @@ def rss(type, jid, nick, text):
 					msg += turl+'\n'
 
                         if mode == 'new':
-        		        if over == 1 and text[4] == 'silent':
+        		        if mmsg == feed[1] and text[4] == 'silent':
                                         nosend = 1
-                                elif over == 1 and text[4] != 'silent':
+                                elif mmsg == feed[1] and text[4] != 'silent':
                                         msg = 'New feeds not found! '
 
 			if submode == 'body' or submode == 'head':
 				msg = msg[:-1]
 
 			msg = replacer(msg)
-
 			msg = msg[:-1]
 
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
-
-
 		else:
 			feed = html_encode(feed)
 			title = get_tag(feed,'title')

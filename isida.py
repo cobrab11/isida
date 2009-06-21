@@ -813,7 +813,6 @@ def schedule():
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
 		try:
-			fdb = []
 			feedbase = getFile(feeds,[])
 			for fd in feedbase:
 				ltime = fd[1]
@@ -836,10 +835,9 @@ def schedule():
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 					thread.start_new_thread(thread_log,(rss, 'groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
-					fdb.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
-        	                else:
-        	                        fdb.append(fd)
-			writefile(feeds,str(fdb))
+					feedbase.remove(fd)
+					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
+			writefile(feeds,str(feedbase))
 			sleep(0.05)
 		except:
 			sleep(0.05)
