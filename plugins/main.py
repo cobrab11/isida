@@ -213,7 +213,7 @@ def translate(type, jid, nick,text):
 
 
 def svn_get(type, jid, nick,text):
-	tlog = 'tmp/tempo.log'
+	tlog = 'tempo.log'
 	if text[:7] !='http://':
                 text = 'http://'+text
 	count = 1
@@ -231,7 +231,8 @@ def svn_get(type, jid, nick,text):
 				revn = 0
 	else:
 		url=text
-	os.system('rm -r '+tlog)
+	if os.path.isfile(tlog):
+		os.system('rm -r '+tlog)
 
 	if revn:
 		os.system('svn log '+url+' -r'+str(revn)+' > '+tlog)
@@ -239,7 +240,10 @@ def svn_get(type, jid, nick,text):
 		if count > 10:
 			count = 10
 		os.system('svn log '+url+' --limit '+str(count)+' > '+tlog)
-	result = readfile(tlog).decode('utf-8')
+	try:
+		result = readfile(tlog).decode('utf-8')
+	except:
+		result = ''
 
 	if len(result):
 		msg = u'last svn update: '+url+'\n'+result
