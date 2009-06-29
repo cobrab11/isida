@@ -1,5 +1,32 @@
 # -*- coding: utf-8 -*-
 
+def censor_status(type, jid, nick, text):
+	tmode = 0
+	if text:
+		if text.lower() == 'on':
+			tmode = 2
+		elif text.lower() == 'off':
+			tmode = 1
+
+	gl_censor = getFile(cns,[(getRoom(jid),0)])
+	msg = u'Censor is '
+	is_found = 1
+	for sm in gl_censor:
+		if sm[0] == getRoom(jid):
+			if tmode:
+				tsm = (sm[0],tmode-1)
+			else:
+				tsm = (sm[0],int(not sm[1]))
+			gl_censor.remove(sm)
+			gl_censor.append(tsm)
+			is_found = 0
+			ssta = tsm[1]
+	if is_found:
+		gl_censor.append((getRoom(jid),1))
+		ssta = 1
+	msg += onoff(ssta)
+	writefile(cns,str(gl_censor))
+        send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
 	if text == '':
@@ -7,10 +34,13 @@ def status(type, jid, nick, text):
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
 	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
+	stat2 = cu.execute('select message,status from age where jid=? and room=?',('<temporary>'+text.lower()+'@',jid)).fetchone()
 
+	if stat2:
+		stat = stat2
 	if stat:
 		if stat[1]:
-			msg = u' покинул данную конференцию.'
+			msg = u'покинул данную конференцию.'
 		else:
 			stat = stat[0].split('\n',4)
 	
@@ -59,8 +89,8 @@ def get_dns(type, jid, nick, text):
 				break
 	if is_ip:
 		try:
-			os.system('nslookup '+text+' > tempo.dns')
-			result = readfile('tempo.dns').decode('utf-8')
+			os.system('nslookup '+text+' > tmp/tempo.dns')
+			result = readfile('tmp/tempo.dns').decode('utf-8')
 			result = result.split('name = ')
 			msg = result[1].split('.\n')[0]
 		except:
@@ -98,6 +128,7 @@ def ping(type, jid, nick, text):
 	lt = time.time()
 
 	no_answ = 1
+	is_answ = [None]
 	while to >= 0 and no_answ:
 		for aa in iq_answer:
 			if aa[0]==iqid:
@@ -128,7 +159,7 @@ def ping(type, jid, nick, text):
 			else:
 				msg = u'Пинг от '+text+' '+tpi+u' сек.'
 	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
         send_msg(type, jid, nick, msg)
 
 def replacer(msg):
@@ -156,7 +187,7 @@ def google(type, jid, nick,text):
         send_msg(type, jid, nick, msg)
 
 def translate(type, jid, nick,text):
-	trlang = ['sq','ar','bg','ca','zhCN','zhTW','hr','cs','da',
+	trlang = ['sq','ar','bg','ca','zh-CN','zh-TW','hr','cs','da',
 		  'nl','en','et','tl','fi','fr','gl','de','el','iw',
 		  'hi','hu','id','it','ja','ko','lv','lt','mt','no',
 		  'pl','pt','ro','ru','sr','sk','sl','es','sv','th','tr','uk','vi']
@@ -182,7 +213,7 @@ def translate(type, jid, nick,text):
 
 
 def svn_get(type, jid, nick,text):
-	tlog = 'tempo.log'
+	tlog = 'tmp/tempo.log'
 	if text[:7] !='http://':
                 text = 'http://'+text
 	count = 1
@@ -580,6 +611,7 @@ def iq_time(type, jid, nick, text):
 	to = timeout
 
 	no_answ = 1
+	is_answ = [None]
 	while to >= 0 and no_answ:
 		for aa in iq_answer:
 			if aa[0]==iqid:
@@ -604,7 +636,7 @@ def iq_time(type, jid, nick, text):
 			for iiq in iiqq:
 				msg = iiq+' '
 	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
         send_msg(type, jid, nick, msg)
 
 def iq_version(type, jid, nick, text):
@@ -624,6 +656,7 @@ def iq_version(type, jid, nick, text):
 	to = timeout
 
 	no_answ = 1
+	is_answ = [None]
 	while to >= 0 and no_answ:
 		for aa in iq_answer:
 			if aa[0]==iqid:
@@ -648,7 +681,7 @@ def iq_version(type, jid, nick, text):
 			for iiq in iiqq:
 				msg = iiq+' '
 	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+'сек).'
+		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
         send_msg(type, jid, nick, msg)
 
 def netwww(type, jid, nick, text):
@@ -661,7 +694,7 @@ def netwww(type, jid, nick, text):
 	page = f.read()
 	f.close()
 
-	print page
+#	print page
 	page = html_encode(page)
 	msg = get_tag(page,'title')+'\n'
 
@@ -742,7 +775,12 @@ def seen(type, jid, nick, text):
 					else:
 						msg += u'\tВышел '+un_unix(ms[i][2])+u' назад'
 					if ms[i][4] != '':
-						msg += ' ('+ms[i][4]+')'
+						if ms[i][4].count('\n') >= 4:
+							stat = ms[i][4].split('\n',4)[4]
+							if stat != '':
+								msg += ' ('+stat+')'
+						else:
+							msg += ' ('+ms[i][4]+')'
 				else:
 					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
 				cnt += 1
@@ -1044,13 +1082,23 @@ def weather_gis(type, jid, nick, text):
 
         send_msg(type, jid, nick, msg)
 
-def autoflood(type, jid, nick):
+def autoflood(type, jid, nick, text):
+	tmode = 0
+	if text:
+		if text.lower() == 'on':
+			tmode = 2
+		elif text.lower() == 'off':
+			tmode = 1
+
 	floods = getFile(fld,[(getRoom(jid),0)])
 	msg = u'Flood is '
 	is_found = 1
 	for sm in floods:
 		if sm[0] == getRoom(jid):
-			tsm = (sm[0],int(not sm[1]))
+			if tmode:
+				tsm = (sm[0],tmode-1)
+			else:
+				tsm = (sm[0],int(not sm[1]))
 			floods.remove(sm)
 			floods.append(tsm)
 			is_found = 0
@@ -1363,7 +1411,12 @@ def true_age(type, jid, nick, text):
 					else:
 						msg += u', Вышел '+un_unix(ms[i][2])+u' назад'
 					if ms[i][4] != '':
-						msg += ' ('+ms[i][4]+')'
+						if ms[i][4].count('\n') >= 4:
+							stat = ms[i][4].split('\n',4)[4]
+							if stat != '':
+								msg += ' ('+stat+')'
+						else:
+							msg += ' ('+ms[i][4]+')'
 
 				cnt += 1
 	else:
@@ -1376,6 +1429,7 @@ def true_age(type, jid, nick, text):
 def close_age_null():
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
 	for ab in ccu:
 		cu.execute('delete from age where room=? and jid=? and status=?', (ab[0],ab[2],0))
@@ -1385,6 +1439,7 @@ def close_age_null():
 def close_age():
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
 	tt = int(time.time())
 	for ab in ccu:
@@ -1396,6 +1451,7 @@ def close_age():
 def close_age_room(room):
 	mdb = sqlite3.connect(mainbase)
 	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
 	tt = int(time.time())
 	for ab in ccu:
@@ -1669,13 +1725,22 @@ def youtube(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 	
 
-def smile(type, jid, nick):
+def smile(type, jid, nick, text):
+	tmode = 0
+	if text:
+		if text.lower() == 'on':
+			tmode = 2
+		elif text.lower() == 'off':
+			tmode = 1
 	smiles = getFile(sml,[(getRoom(jid),0)])
 	msg = u'Smiles is '
 	is_found = 1
 	for sm in smiles:
 		if sm[0] == getRoom(jid):
-			tsm = (sm[0],int(not sm[1]))
+			if tmode:
+				tsm = (sm[0],tmode-1)
+			else:
+				tsm = (sm[0],int(not sm[1]))
 			smiles.remove(sm)
 			smiles.append(tsm)
 			is_found = 0
@@ -1994,17 +2059,17 @@ def helpme(type, jid, nick, text):
 
 def hidden_clear(type, jid, nick, text):
 	try:
-		cntr = int(text)-1
+		cntr = int(text)
 	except:
-		cntr = 19
+		cntr = 20
 
 	if cntr < 1 or cntr > 100:
-		cntr = 19
+		cntr = 20
         pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.25))+u' сек.')
+        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.3))+u' сек.')
         while (cntr>0):
                 cl.send(xmpp.Message(jid, '', "groupchat"))
-                time.sleep(1.25)
+                time.sleep(1.3)
                 cntr=cntr-1
         send_msg(type, jid, nick, u'стерильно!!!')
 	
@@ -2338,24 +2403,12 @@ def info(type, jid, nick):
 	msg += u'Время запуска: '+timeadd(starttime)+'\n'
 	msg += u'Локальное время: '+timeadd(tuple(localtime()))+'\n'
 	msg += u'Время работы: ' + get_uptime_str()+u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
-	msg += u'\nSmiles is '
-
-	ssta = 0
-	if os.path.isfile(sml):
-		smiles = eval(readfile(sml))
-		is_found = 1
-		for sm in smiles:
-			if sm[0] == getRoom(jid):
-				ssta = sm[1]
-				break
-	msg += onoff(ssta) + u' | Flood is '
-	ssta = 0
-	if os.path.isfile(fld):
-		floods = eval(readfile(fld))
-		for sm in floods:
-			if sm[0] == getRoom(jid):
-				ssta = sm[1]
-	msg += onoff(ssta)
+	smiles = getFile(sml,[(getRoom(jid),0)])
+	msg += u'\nSmiles: ' + onoff(int((getRoom(jid),1) in smiles))
+	floods = getFile(fld,[(getRoom(jid),0)])
+	msg += u' | Flood: ' + onoff(int((getRoom(jid),1) in floods))
+	gl_censor = getFile(cns,[(getRoom(jid),0)])
+	msg += u' | Censor: ' + onoff(int((getRoom(jid),1) in gl_censor))
 	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
 
         send_msg(type, jid, nick, msg)
@@ -3024,9 +3077,10 @@ comms = [(1, u'stats', stats, 1),
          (1, u'info', info, 1),
          (0, u'new', svn_info, 1),
          (0, u'svn', svn_get, 2),
-         (1, u'smile', smile, 1),
-         (1, u'flood', autoflood, 1),
+         (1, u'smile', smile, 2),
+         (1, u'flood', autoflood, 2),
          (1, u'inban', inban, 2),
+         (1, u'censor', censor_status, 2),
          (1, u'inmember', inmember, 2),
          (1, u'inadmin', inadmin, 2),
          (1, u'inowner', inowner, 2),
@@ -3051,3 +3105,4 @@ comms = [(1, u'stats', stats, 1),
 	 (1, u'prefix', set_prefix, 2),
 	 (1, u'backup', conf_backup, 2),
          (1, u'clear', hidden_clear, 2)]
+

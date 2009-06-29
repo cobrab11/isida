@@ -19,6 +19,7 @@ configname = set_folder+u'config.py'	# конфиг бота
 alfile = set_folder+u'aliases'		# сокращения
 fld = set_folder+u'flood'		# автоответчик
 sml = set_folder+u'smile'		# смайлы на роли
+cns = set_folder+u'censors'		# состояние цензора
 owners = set_folder+u'owner'		# база владельцев
 ignores = set_folder+u'ignore'		# черный список
 confs = set_folder+u'conf'		# список активных конф
@@ -47,7 +48,12 @@ def writefile(filename, data):
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
-		filebody = eval(readfile(filename))
+		while 1:
+			try:
+				filebody = eval(readfile(filename))
+				break
+			except:
+				sleep(0.5)
 	else:
 		filebody = default
 		writefile(filename,str(filebody))
@@ -516,7 +522,9 @@ def messageCB(sess,mess):
                 talk_count(room,jid,nick,text)
 
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0:
-		send_msg(type,room,nick,u'Фильтруем базар!')
+		gl_censor = getFile(cns,[(getRoom(room),0)])
+		if (getRoom(room),1) in gl_censor:
+			send_msg(type,room,nick,u'Фильтруем базар!')
 
 
 	no_comm = 1
@@ -544,14 +552,11 @@ def messageCB(sess,mess):
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
-	is_flood = 0
 	if room != selfjid:
-
 		floods = getFile(fld,[(getRoom(room),0)])
-		for sm in floods:
-			if sm[0] == getRoom(room) and sm[1]:
-				is_flood = 1
-				break
+		is_flood = (getRoom(room),1) in floods
+	else:
+		is_flood = 0
 
 	if no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 		if len(text)>100:
@@ -591,8 +596,8 @@ def getAnswer(tx,type):
 def to_censore(text):
         for c in censor:
 #		print c
-		matcher = re.compile(c)
-		if matcher.match(text):
+		matcher = re.compile(r'.*'+c.lower()+r'.*')
+		if matcher.match(r' '+text.lower()+r' '):
 			text = '*censored*'
 			break
         return text
@@ -647,25 +652,20 @@ def presenceCB(sess,mess):
 	if room != selfjid and nick == nowname:
 
 		smiles = getFile(sml,[(getRoom(room),0)])
-		for sm in smiles:
-			if sm[0] == getRoom(room) and sm[1]:
-				msg = u''
-				if role == 'participant' and affiliation == 'none':
-					msg = u' :-|'
-				if role == 'participant' and affiliation == 'member':
-					msg = u' :-)'
-				if role == 'moderator' and affiliation == 'member':
-					msg = u' :-"'
-				if role == 'moderator' and affiliation == 'admin':
-					msg = u' :-D'
-				if role == 'moderator' and affiliation == 'owner':
-					msg = u' 8-D'
-				nick = ''
-				type = 'groupchat'
-				if msg != u'':
-					send_msg(type, room, nick, msg)
-				break
-
+		if (getRoom(room),1) in smiles:
+			msg = u''
+			if role == 'participant' and affiliation == 'none':
+				msg = u' :-|'
+			elif role == 'participant' and affiliation == 'member':
+				msg = u' :-)'
+			elif role == 'moderator' and affiliation == 'member':
+				msg = u' :-"'
+			elif role == 'moderator' and affiliation == 'admin':
+				msg = u' :-D'
+			elif role == 'moderator' and affiliation == 'owner':
+				msg = u' 8-D'
+			if msg != u'':
+				send_msg('groupchat', room, '', msg)
 
 #	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 	
@@ -719,41 +719,45 @@ def presenceCB(sess,mess):
 			cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
 			mdb.commit()
 
-	if jid != 'None':
+	if jid == 'None':
+		jid = '<temporary>'+nick
+	else:
 		jid = getRoom(jid.lower())
-		mdb = sqlite3.connect(mainbase)
-		cu = mdb.cursor()
-		abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
-		tt = int(time.time())
-		cu.execute('delete from age where room=? and jid=?',(room, jid))
 
-		ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 
-		for ab in abc:
-			if type=='unavailable':
-				exit_type = ''
+	mdb = sqlite3.connect(mainbase)
+	cu = mdb.cursor()
+	abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
+	tt = int(time.time())
+	cu.execute('delete from age where room=? and jid=?',(room, jid))
+
+	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
+
+	for ab in abc:
+		if type=='unavailable':
+			exit_type = ''
+			exit_message = ''
+			if status=='307': #Kick
+				exit_type = u'Выгнали'
+				exit_message = reason
+			elif status=='301': #Ban
+				exit_type = u'Забанили'
+				exit_message = reason
+			else: #Leave
+				exit_type = u'Вышел'
+				exit_message = text
+			if exit_message == 'None':
 				exit_message = ''
-				if status=='307': #Kick
-					exit_type = u'Выгнали'
-					exit_message = reason
-				elif status=='301': #Ban
-					exit_type = u'Забанили'
-					exit_message = reason
-				else: #Leave
-					exit_type = u'Вышел'
-					exit_message = text
-				if exit_message == 'None':
-					exit_message = ''
 #				print exit_type, exit_message
-				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+		else:
+			if ab[5]:
+				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 			else:
-				if ab[5]:
-					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-				else:
-					cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-		if not len(abc):
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-		mdb.commit()
+				cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
+	if not len(abc):
+		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+	mdb.commit()
 
 def onoff(msg):
         if msg:
