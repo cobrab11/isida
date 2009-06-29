@@ -89,21 +89,18 @@ def get_dns(type, jid, nick, text):
 				break
 	if is_ip:
 		try:
-			os.system('nslookup '+text+' > tmp/tempo.dns')
-			result = readfile('tmp/tempo.dns').decode('utf-8')
-			result = result.split('name = ')
-			msg = result[1].split('.\n')[0]
+			msg = socket.gethostbyaddr(text)[0]
+
 		except:
 			msg = u'Не резолвится'
 	else:
-		resp = DNS.Request().req(text)
-		ans = resp.answers
-		msg = text+' - '
-		if len(ans):
+		try:
+			ans = socket.gethostbyname_ex(text)[2]
+			msg = text+' - '
 			for an in ans:
-				msg += an['data'] + ' | '
+				msg += an + ' | '
 			msg = msg[:-2]
-		else:
+		except:
 			msg = u'Не резолвится'
         send_msg(type, jid, nick, msg)
 
@@ -3047,8 +3044,8 @@ comms = [(1, u'stats', stats, 1),
          (2, u'leave', bot_leave, 2),
          (2, u'rejoin', bot_rejoin, 2),
          (2, u'pass', conf_pass, 2),
-         (2, u'owner', owner, 2),
-         (2, u'ignore', ignore, 2),
+         (2, u'bot_owner', owner, 2),
+         (2, u'bot_ignore', ignore, 2),
          (1, u'where', info_where, 1),
          (1, u'res', info_res, 2),
          (1, u'serv', info_serv, 2),

@@ -6,7 +6,7 @@ from random import *
 from sys import maxint
 from time import *
 from pdb import *
-import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator, sqlite3, simplejson, chardet, DNS
+import os, xmpp, time, sys, time, pdb, urllib, re, logging, thread, operator, sqlite3, simplejson, chardet, socket
 
 LOG_FILENAME = u'log/error.txt'		# логи
 
