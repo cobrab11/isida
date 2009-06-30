@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-global execute, lf_api, lfm_url, lfm_api
+global execute, lf_api, lfm_url, lfm_api, timer
+
+timer = []
 
 lfm_url = u'http://ws.audioscrobbler.com/2.0/'
 
