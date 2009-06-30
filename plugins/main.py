@@ -2228,6 +2228,8 @@ def bot_plugin(type, jid, nick, text):
                                 msg += commmm[1]+'['+str(commmm[0])+'], '
                                 comms.append(commmm)
                         msg = msg[:-2]
+			for tmr in timer:
+				gtimer.append(tmr)
                         
 	elif do == 'del':
                 if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
@@ -2240,6 +2242,8 @@ def bot_plugin(type, jid, nick, text):
                                         if i[1] == commmm[1]:
                                                 comms.remove(i)
                         msg = msg[:-2]
+			for tmr in timer:
+				gtimer.append(tmr)
 
 	elif do == 'local':
 		a = os.listdir('plugins/')
@@ -2691,6 +2695,10 @@ def html_encode(body):
 		else:
 			enc = chardet.detect(body)
 			enc = enc['encoding']
+	if body == None:
+		body = ''
+	if enc == None:
+		enc = 'UTF-8'
 	return unicode(body, enc)
 
 
@@ -3026,6 +3034,8 @@ def rss(type, jid, nick, text):
 # 0 - передавать параметры
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
+
+gtimer = []
 
 comms = [(1, u'stats', stats, 1),
 	 (1, u'gstats', gstats, 1),

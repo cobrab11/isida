@@ -23,6 +23,8 @@ def troll(type, jid, nick, text):
 		count -= 1
 	send_msg(type, jid, nick, u'done')
 
-global execute
+global execute, timer
+
+timer = []
 
 execute = [(2, u'troll', troll, 2)]

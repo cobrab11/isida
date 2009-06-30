@@ -253,6 +253,12 @@ dns резолвер
 Плагин lastfm. Топ треков
 {tasteometer}
 Плагин lastfm. Музакальная совместимость
+{tban}
+Плагин muc. Временный бан.
+tban show [jid] - показать временные баны
+tban nick
+timeD|H|M|S
+reason - бан ника nick на срок time по причине reason
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.

@@ -7,7 +7,7 @@ def gtalkers(type, jid, nick, text):
 	cu = mdb.cursor()
 	if len(text):
 		ttext = '%'+text+'%'
-		tma = cu.execute('select * from talkers where room=? and (jid like ? or nick like ?) order by -words',(jid,ttext,ttext)).fetchmany(10)
+		tma = cu.execute('select * from talkers where (jid like ? or nick like ? or room like ?) order by -words',(ttext,ttext,ttext)).fetchmany(10)
 	else:
 		tma = cu.execute('select * from talkers order by -words').fetchmany(10)
 
@@ -62,7 +62,9 @@ def talkers(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-global execute
+global execute, timer
+
+timer = []
 
 execute = [(1, u'talkers', talkers, 2),
 	   (1, u'gtalkers', gtalkers, 2)]

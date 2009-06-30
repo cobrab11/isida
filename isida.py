@@ -204,6 +204,8 @@ if os.path.isfile(plname):
                 execfile('plugins/'+pl)
                 for commmm in execute:
                         comms.append(commmm)
+		for tmr in timer:
+			gtimer.append(tmr)
 else:
 	plugins = []
 	writefile(plname,str(plugins))
@@ -815,6 +817,12 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
+	for tmr in gtimer:
+	        try:
+			thread.start_new_thread(tmr,())
+        	except:
+        	        logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
