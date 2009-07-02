@@ -821,7 +821,7 @@ def schedule():
 	        try:
 			thread.start_new_thread(tmr,())
         	except:
-        	        logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+        	        sleep(1)
 
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:

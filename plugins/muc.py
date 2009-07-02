@@ -170,16 +170,18 @@ def muc_role(type, jid, nick, text, role):
 
 def check_unban():
 	unban_log = getFile(tban,[])
-	ubl = []
-	for ub in unban_log:
-		if ub[2]:
-			ubl.append((ub[0],ub[1],ub[2]-1))
-		else:
-			iqid = str(randint(1,100000))
-			i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(str(ub[1]))},[])])])
-			cl.send(i)
-	writefile(tban,str(ubl))
+	if unban_log != '[]':
+		ubl = []
+		for ub in unban_log:
+			if ub[2]:
+				ubl.append((ub[0],ub[1],ub[2]-1))
+			else:
+				iqid = str(randint(1,100000))
+				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(str(ub[1]))},[])])])
+				cl.send(i)
+		writefile(tban,str(ubl))
 	sleep(1)
+	sys.exit(0)
 
 # ----------------------------------------------
 
