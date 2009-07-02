@@ -1018,9 +1018,13 @@ def fspace(mass):
 		bdd.append(b)
 	return bdd
 
+def weather_gis2(type, jid, nick, text):
+        send_msg(type, jid, nick, u'Команда временно не доступна!')
+
 def weather_gis(type, jid, nick, text):
-	ft = ord(text[0].upper())-1040+192
-	ft = hex(ft).replace('0x','%')
+	ft = ''
+	for tex in text:
+		ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
 	link = 'http://search.gismeteo.ru/?req=findtown&town='+ft+'&pda=1'
 	f = urllib.urlopen(link)
 	msg = f.read()
@@ -3082,7 +3086,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'wzcity', weather_city, 2),
          (0, u'wzz', weather_raw, 2),
          (0, u'wz', weather, 2),
-         (0, u'gis', weather_gis, 2),
+         (0, u'gis', weather_gis2, 2),
          (0, u'commands', info_comm, 1),
          (0, u'uptime', uptime, 1),
          (1, u'info', info, 1),
