@@ -575,15 +575,21 @@ def messageCB(sess,mess):
 	if no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 		if len(text)>100:
 			text = u'Слишком многа букаф!'
+			send_msg(type, room, nick, text)
 		else:
 			text = getAnswer(text,type)
-		send_msg(type, room, nick, text)
+			thread.start_new_thread(send_msg_human,(type, room, nick, text))
 
 	for tmp in gmessage:
 	        try:
 			thread.start_new_thread(tmp,(room,jid,nick,type,text))
         	except:
         	        sleep(1)
+
+def send_msg_human(type, room, nick, text):
+	sleep(len(text)/5)
+	send_msg(type, room, nick, text)
+	sys.exit(0)	
 
 # исправить этот костыль!!!
 def thread_log(proc, *params):
