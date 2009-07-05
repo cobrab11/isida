@@ -600,6 +600,7 @@ def thread_log(proc, *params):
                         proc(params[0], params[1], params[2], params[3])
         except:
                 logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+	sys.exit(0)
 
 def getAnswer(tx,type):
 	mdb = sqlite3.connect(mainbase)
