@@ -1086,10 +1086,6 @@ def weather_gis(type, jid, nick, text):
 		b = body.split('\n')
 		if len(b) == 69:
 			b.insert(5,' ')
-
-		for zz in b:
-			print zz
-
 		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
 		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
 		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
