@@ -435,6 +435,8 @@ def iqCB(sess,iq):
 				iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
 		if nspace == NS_DISCO_ITEMS:
 				iq_answer.append((id, unicode(iq)))
+		if nspace == NS_LAST:
+				iq_answer.append((id, unicode(iq)))
 
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):

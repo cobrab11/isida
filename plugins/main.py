@@ -1,5 +1,52 @@
 # -*- coding: utf-8 -*-
 
+def iq_uptime(type, jid, nick, text):
+	global iq_answer
+	if text == '':
+		who = getRoom(jid)+'/'+nick
+	else:
+		who = text
+		for mega1 in megabase:
+			if mega1[0] == jid and mega1[1] == text:
+				who = getRoom(jid)+'/'+text
+				break
+
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_LAST},[])])
+	cl.send(i)
+	to = timeout
+
+	no_answ = 1
+	is_answ = [None]
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.05)
+		to -= 0.05
+
+	iiqq = []
+	for iiq in is_answ:
+		if iiq != None:
+			iiqq.append(iiq)
+		else:
+			iiqq.append('None')
+	if to > 0:
+		if iiqq == ['None']:
+			msg = u'Что-то не получается...'
+		else:
+			try:
+				msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
+			except:
+				msg = u'Что-то не получается...'
+
+	else:
+		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+        send_msg(type, jid, nick, msg)
+
 def censor_status(type, jid, nick, text):
 	tmode = 0
 	if text:
@@ -146,7 +193,7 @@ def ping(type, jid, nick, text):
 			iiqq.append('None')
 	if to > 0:
 		if iiqq == ['None']:
-			msg = u'Что то не получается...'
+			msg = u'Что-то не получается...'
 		else:
 			tpi = ct-lt
 			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
@@ -712,7 +759,6 @@ def netwww(type, jid, nick, text):
 	page = rss_replace(page)
 	page = rss_del_nn(page)
 	page = page.replace('\n ','')
-	page = page.replace('\n\n','\n')
 
 	msg += page
 
@@ -1309,7 +1355,7 @@ def dfn(type, jid, nick, text):
 				cu.execute('delete from wtf where wtfword=?',(what,))
 			idx = ww[0]
 		else:
-			msg = u'Ммм.. что то новенькое, ща запомню!'
+			msg = u'Ммм.. Что-то новенькое, ща запомню!'
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
@@ -1345,7 +1391,7 @@ def gdfn(type, jid, nick, text):
 			cu.execute('delete from wtf where wtfword=?',(what,))
 			idx = ww[0]
 		else:
-			msg = u'Ммм.. что то новенькое, ща запомню!'
+			msg = u'Ммм.. Что-то новенькое, ща запомню!'
 			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
 
 		if text != '':
@@ -3099,7 +3145,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'wz', weather, 2),
          (0, u'gis', weather_gis, 2),
          (0, u'commands', info_comm, 1),
-         (0, u'uptime', uptime, 1),
+         (0, u'bot_uptime', uptime, 1),
          (1, u'info', info, 1),
          (0, u'new', svn_info, 1),
          (0, u'svn', svn_get, 2),
@@ -3113,6 +3159,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'ver', iq_version, 2),
          (0, u'ping', ping, 2),
          (0, u'time', iq_time, 2),
+         (0, u'uptime', iq_uptime, 2),
          (2, u'log', get_log, 2),
          (2, u'limit', conf_limit, 2),
          (2, u'plugin', bot_plugin, 2),

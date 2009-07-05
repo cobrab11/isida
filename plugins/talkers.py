@@ -66,5 +66,5 @@ global execute, timer
 
 timer = []
 
-execute = [(1, u'talkers', talkers, 2),
-	   (1, u'gtalkers', gtalkers, 2)]
+execute = [(0, u'talkers', talkers, 2),
+	   (0, u'gtalkers', gtalkers, 2)]
