@@ -1028,7 +1028,12 @@ def weather_gis(type, jid, nick, text):
 		except:
 			ft = ''
 			for tex in text:
-				ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
+				if ord(tex) == 32:
+					ft += '%20'
+				elif ord(tex)<127:
+					ft += tex
+				else:
+					ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
 			link = 'http://wap.gismeteo.ru/gm/normal/node/search_result/6/?like_field_sname='+ft
 			f = urllib.urlopen(link)
 			body = f.read()
@@ -1053,13 +1058,21 @@ def weather_gis(type, jid, nick, text):
 		body = html_encode(body)
 		body = replacer(body)
 		body = body.split('#006cb7')[3]
+		body = body.replace(u',  м/с',u' ')
+		body = body.replace(u'безветрие',u'штиль')
 		b = body.split('\n')
-		msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
+		if len(b) == 69:
+			b.insert(5,'')
+		if len(b[5]):
+			msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
+		else:
+			msg = b[6]+', '+b[4]+' ('+b[1]+')'
 		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
-		msg += u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11]
-		msg += u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21]
-		msg += u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31]
-		msg += u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41]
+		ms = ['']
+		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
+		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
+		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
+		ms.append(u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41])
 
 		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1'
 		f = urllib.urlopen(link)
@@ -1068,12 +1081,23 @@ def weather_gis(type, jid, nick, text):
 		body = html_encode(body)
 		body = replacer(body)
 		body = body.split('#006cb7')[3]
+		body = body.replace(u',  м/с',u' ')
+		body = body.replace(u'безветрие',u'штиль')
 		b = body.split('\n')
-		msg += u'\n\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11]
-		msg += u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21]
-		msg += u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31]
-		msg += u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41]
+		if len(b) == 69:
+			b.insert(5,' ')
 
+		for zz in b:
+			print zz
+
+		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
+		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
+		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
+		ms.append(u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41])
+		
+		beg = tuple(localtime())[3]/4
+		for tmp in ms[beg:beg+4]:
+			msg += tmp
         send_msg(type, jid, nick, msg)
 
 def autoflood(type, jid, nick, text):
