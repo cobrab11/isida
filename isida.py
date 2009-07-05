@@ -196,16 +196,26 @@ def arr_del_semi_find(array, string):
 # upload addons
 execfile('plugins/main.py')
 plname = u'plugins/list.txt'
+gtimer = []
+gpresence = []
+gmessage = []
 
 if os.path.isfile(plname):
         plugins = eval(readfile(plname))
         for pl in plugins:
+		presence_control = []
+		message_control = []
+		iq_control = []
                 pprint('Append plugin: '+pl)
                 execfile('plugins/'+pl)
                 for commmm in execute:
                         comms.append(commmm)
 		for tmr in timer:
 			gtimer.append(tmr)
+		for tmp in presence_control:
+			gpresence.append(tmp)
+		for tmp in message_control:
+			gmessage.append(tmp)
 else:
 	plugins = []
 	writefile(plname,str(plugins))
@@ -567,6 +577,12 @@ def messageCB(sess,mess):
 			text = getAnswer(text,type)
 		send_msg(type, room, nick, text)
 
+	for tmp in gmessage:
+	        try:
+			thread.start_new_thread(tmp,(room,jid,nick,type,text))
+        	except:
+        	        sleep(1)
+
 # исправить этот костыль!!!
 def thread_log(proc, *params):
         try:
@@ -761,6 +777,13 @@ def presenceCB(sess,mess):
 		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	mdb.commit()
 
+	for tmp in gpresence:
+	        try:
+			thread.start_new_thread(tmp,(room,jid,nick,type,text))
+        	except:
+        	        sleep(1)
+
+
 def onoff(msg):
         if msg:
                 return 'ON'
@@ -820,6 +843,7 @@ def schedule():
 	for tmr in gtimer:
 	        try:
 			thread.start_new_thread(tmr,())
+			sleep(1)
         	except:
         	        sleep(1)
 

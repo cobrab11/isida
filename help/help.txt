@@ -168,6 +168,7 @@ gdfn word= - удаляет определение word
 Исполнение внешнего кода.
 {gis}
 Погода с GisMeteo.
+gis город|код_города
 {seen}
 Показывает время входа/выхода.
 {seenjid}
@@ -255,10 +256,34 @@ dns резолвер
 Плагин lastfm. Музакальная совместимость
 {tban}
 Плагин muc. Временный бан.
-tban show [jid] - показать временные баны
+tban show|del [jid] - показать/удалить временные баны
 tban nick
 timeD|H|M|S
 reason - бан ника nick на срок time по причине reason
+{akick}
+Плагин muc. Автокик.
+akick show|del [jid] - показать/удалить автокик
+akick nick
+timeD|H|M|S
+reason - автоматически выгонять ник nick на срок time по причине reason
+{avisitor}
+Плагин muc. Авто гость.
+avisitor show|del [jid] - показать/удалить авто гостя
+avisitor nick
+timeD|H|M|S
+reason - автоматически делать ник nick гостем на срок time по причине reason
+{amoderator}
+Плагин muc. Авто модератор.
+amoderator show|del [jid] - показать/удалить авто модератор
+amoderator nick
+timeD|H|M|S
+reason - автоматически делать ник nick модератором на срок time по причине reason
+{aparticipant}
+Плагин muc. Авто участник.
+aparticipant show|del [jid] - показать/удалить авто участник
+aparticipant nick
+timeD|H|M|S
+reason - автоматически делать ник nick участником на срок time по причине reason
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.

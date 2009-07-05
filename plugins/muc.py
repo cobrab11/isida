@@ -2,6 +2,8 @@
 # -*- coding: utf -*-
 
 tban = set_folder+u'temporary.ban'		# лог временного бана
+af_alist = set_folder+u'alist.aff'		# alist аффиляций
+ro_alist = set_folder+u'alist.rol'		# alist ролей
 
 # -------------- affiliation -----------------
 
@@ -13,14 +15,34 @@ def muc_tempo_ban(type, jid, nick,text):
 		ubl = getFile(tban,[])
 		msg = ''
 		for ub in ubl:
-			if ub[0] == jid and ub[1].count(text):
-				msg += u'\n'+ub[1]+u'\t'+un_unix(ub[2])
+			if ub[0] == jid and ub[1].count(text.lower()):
+				msg += u'\n'+ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
 		if len(msg):
 			msg = u'Найдено:'+msg
 		else:
 			msg = u'Не найдено!'
 		send_msg(type, jid, nick, msg)
-		
+
+	elif text[:3].lower() == 'del' and not text.count('\n'):
+		text = text[4:]
+		if not len(text):
+			text = '@@'
+		ubl = getFile(tban,[])
+		msg = ''
+		for ub in ubl:
+			if ub[0] == jid and ub[1] == text.lower():
+				msg += ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
+				iqid = str(randint(1,100000))
+				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(str(ub[1]))},[])])])
+				cl.send(i)
+				ubl.remove(ub)
+		if len(msg):
+			msg = u'Удалено: '+msg
+			writefile(tban,str(ubl))
+		else:
+			msg = u'Не найдено!'
+		send_msg(type, jid, nick, msg)
+
 	else:
 		muc_tempo_ban2(type, jid, nick,text)
 
@@ -28,8 +50,8 @@ def muc_tempo_ban2(type, jid, nick,text):
 	skip = 1
 	if len(text):
 		who = text.split('\n',2)[0]
-		ttime = text.split('\n',2)[1]
 		try:
+			ttime = text.split('\n',2)[1]
 			tttime = int(ttime[:-1])
 			tmode = ttime[-1:].lower()
 			tkpd = {'s':1, 'm':60, 'h':3600, 'd':86400}
@@ -70,7 +92,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 		for ub in ubl:
 			if ub[0] == jid and ub[1] == whojid:
 				ubl.remove(ub)
-		ubl.append((jid,whojid,tttime))
+		ubl.append((jid,whojid,tttime+int(time.time())))
 		writefile(tban,str(ubl))
 		send_msg(type, jid, nick, 'done')
 
@@ -166,6 +188,95 @@ def muc_role(type, jid, nick, text, role):
 		send_msg(type, jid, nick, 'done')
 
 # ----------------------------------------------
+# role nick
+# time
+# reason
+def muc_akick(type, jid, nick,text):
+	muc_arole(type, jid, nick, text, 'none')
+
+def muc_aparticipant(type, jid, nick,text):
+	muc_arole(type, jid, nick, text, 'participant')
+
+def muc_avisitor(type, jid, nick,text):
+	muc_arole(type, jid, nick, text, 'visitor')
+
+def muc_amoderator(type, jid, nick,text):
+	muc_arole(type, jid, nick, text, 'moderator')
+
+def muc_arole(type, jid, nick, text, role):
+	skip = 1
+	if len(text):
+		if text[:4].lower() == 'show' and not text.count('\n'):
+			text = text[5:]
+			if not len(text):
+				text = '.'
+			alist_role = getFile(ro_alist,[])
+			msg = ''
+			if alist_role != '[]':
+				for tmp in alist_role:
+					if tmp[0] == jid and tmp[3] == role and tmp[2].count(text.lower()):
+						msg += u'\n'+tmp[2]+'\t'+tmp[4]+' (by '+tmp[1]+')'
+						if tmp[5]:
+							msg += '\t'+un_unix(tmp[5]-int(time.time()))
+			if not len(msg):
+				if text == '.':
+					msg = u'Список пуст!'
+				else:
+					msg = u'Не найдено!'
+
+		elif text.lower() == 'clear':
+			writefile(ro_alist,str('[]'))
+			msg = u'Очищено!'
+
+		else:
+			who = text.split('\n',2)[0]
+			try:
+				ttime = text.split('\n',2)[1]
+				tttime = int(ttime[:-1])
+				tmode = ttime[-1:].lower()
+				tkpd = {'s':1, 'm':60, 'h':3600, 'd':86400}
+				tttime = tttime*tkpd[tmode]
+			except:
+				tttime = 0
+				try:
+					reason = text.split('\n',2)[1]
+				except:
+					reason = u'No reason!'
+			if tttime:
+				try:
+					reason = text.split('\n',2)[2]
+				except:
+					reason = u'No reason!'
+
+			mdb = sqlite3.connect(mainbase)
+			cu = mdb.cursor()
+			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+			if len(fnd) == 1:
+				whonick = fnd[0][0]
+				whojid = fnd[0][1]
+				skip = 0
+			elif len(fnd) > 1:
+				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			else:
+				msg = u'Я не в курсе кто такой '+who
+	else:
+		msg = u'Ась?'
+	
+	if skip:
+	        send_msg(type, jid, nick, msg)
+	else:
+		alist_role = getFile(ro_alist,[])
+		for tmp in alist_role:
+			if tmp[0] == jid and tmp[2] == whojid and tmp[3] == role:
+				alist_role.remove(tmp)
+		alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
+		iqid = str(randint(1,100000))
+		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':whonick},[Node('reason',{},reason)])])])
+		cl.send(i)
+		writefile(ro_alist,str(alist_role))
+		send_msg(type, jid, nick, 'done')
+# ----------------------------------------------
+
 # room, jid, time
 
 def check_unban():
@@ -173,21 +284,52 @@ def check_unban():
 	if unban_log != '[]':
 		ubl = []
 		for ub in unban_log:
-			if ub[2]:
-				ubl.append((ub[0],ub[1],ub[2]-1))
+			if ub[2] > int(time.time()):
+				ubl.append(ub)
 			else:
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(str(ub[1]))},[])])])
 				cl.send(i)
-		writefile(tban,str(ubl))
-	sleep(1)
+		if unban_log != ubl:
+			writefile(tban,str(ubl))
+	sys.exit(0)
+
+def decrease_alist_role():
+	alist_role = getFile(ro_alist,[])
+	if alist_role != []:
+		tmp_role = []
+		for tmp in alist_role:
+			if tmp[5] == 0 or tmp[5] > int(time.time()):
+				tmp_role.append(tmp)
+		if alist_role != tmp_role:
+			writefile(ro_alist,str(tmp_role))
+	sys.exit(0)
+
+# ----------------------------------------------
+#room,jid,nick,type,text
+
+def alist_role_presence(room,jid,nick,type,text):
+#	print 'presence:',room,jid,nick,type,text
+	alist_role = getFile(ro_alist,[])
+	if alist_role != []:
+		for tmp in alist_role:
+			if tmp[0] == room and tmp[2] == jid:
+				iqid = str(randint(1,100000))
+				i = Node('iq', {'id': iqid, 'type': 'set', 'to':tmp[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':tmp[3], 'nick':nick},[Node('reason',{},tmp[4])])])])
+				cl.send(i)
+	sys.exit(0)
+
+def alist_message(room,jid,nick,type,text):
+#	print 'message:',room,jid,nick,type,text
 	sys.exit(0)
 
 # ----------------------------------------------
 
-global execute, timer
+global execute, timer, presence_control, message_control
 
-timer = [check_unban]
+timer = [check_unban,decrease_alist_role]
+presence_control = [alist_role_presence]
+message_control = [alist_message]
 
 execute = [(1, u'ban', muc_ban, 2),
 	   (1, u'tban', muc_tempo_ban, 2),
@@ -198,4 +340,8 @@ execute = [(1, u'ban', muc_ban, 2),
 	   (1, u'kick', muc_kick, 2),
 	   (1, u'participant', muc_participant, 2),
 	   (1, u'visitor', muc_visitor, 2),
-	   (1, u'moderator', muc_moderator, 2)]
+	   (1, u'moderator', muc_moderator, 2),
+	   (1, u'akick', muc_akick, 2),
+	   (1, u'aparticipant', muc_aparticipant, 2),
+	   (1, u'avisitor', muc_avisitor, 2),
+	   (1, u'amoderator', muc_amoderator, 2)]

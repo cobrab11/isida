@@ -1018,72 +1018,61 @@ def fspace(mass):
 		bdd.append(b)
 	return bdd
 
-def weather_gis2(type, jid, nick, text):
-        send_msg(type, jid, nick, u'Команда временно не доступна!')
-
 def weather_gis(type, jid, nick, text):
-	ft = ''
-	for tex in text:
-		ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
-	link = 'http://search.gismeteo.ru/?req=findtown&town='+ft+'&pda=1'
-	f = urllib.urlopen(link)
-	msg = f.read()
-	f.close()
-
-	msg = html_encode(msg)
-
-	if msg.count(u'не найдено'):
-		msg = u'Город не найден!'
+	city_code = None
+	if text == '':
+		msg = u'gis город|код города'
 	else:
-		pos = msg.lower().find(text.lower())-34
-		if pos < 0:
-			msg = u'Город не найден!'
-		else:
-			link = msg[pos:pos+32]
+		try:
+			city_code = str(int(text))
+		except:
+			ft = ''
+			for tex in text:
+				ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
+			link = 'http://wap.gismeteo.ru/gm/normal/node/search_result/6/?like_field_sname='+ft
 			f = urllib.urlopen(link)
-			msg = f.read()
+			body = f.read()
 			f.close()
-			msg = html_encode(msg)
-			msg = msg.split('</table>')
+			body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
+			giss = []
+			for tmp in body:
+				giss.append((tmp.split('&')[0],tmp.split('gen_past_date_0">')[1].split('</a>')[0]))
+			if len(giss) == 1:
+				city_code = giss[0][0]
+			elif len(giss) == 0:
+				msg = u'Город '+text+u' не найден!'
+			else:
+				msg = u'Найдено больше одного города! Воспользуйтесь командой gis код_города'
+				for tmp in giss:
+					msg += u'\n'+tmp[0]+u' — '+tmp[1]
+	if city_code:
+		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_type/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_0&ed_field_date=gen_past_date_0'
+		f = urllib.urlopen(link)
+		body = f.read()
+		f.close()
+		body = html_encode(body)
+		body = replacer(body)
+		body = body.split('#006cb7')[3]
+		b = body.split('\n')
+		msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
+		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
+		msg += u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11]
+		msg += u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21]
+		msg += u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31]
+		msg += u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41]
 
-			he = rss_del_html(msg[1])
-			he = he.split('\r\n')
-			bdd = []
-			for b in he:
-				if len(b) and len(b) != b.count(' '):
-					while b[0] == ' ':
-						b = b[1:]
-				bdd.append(b)
-			he = bdd[13]+u', '+bdd[16]
-
-			bd = rss_del_html(msg[2].replace('&deg;',u'°'))
-			bd = bd.split('\r\n')
-			bdd = []
-			for b in bd:
-				if len(b) and len(b) != b.count(' '):
-					while b[0] == ' ':
-						b = b[1:]
-				bdd.append(b)
-			bd = bdd
-
-			osad = msg[2].split('alt=\"')
-			osad = osad[1][:osad[1].find('\"')]+'\t'+osad[2][:osad[2].find('\"')]+'\t'+osad[3][:osad[3].find('\"')]
-			osad = osad.replace(u'облачно',u'обл.')
-			osad = osad.replace(u'небольшой',u'неб.')
-			osad = osad.replace(u'пасмурно',u'пасм.')
-			osad = osad.replace(u'временами',u'врем.')
-			osad = osad.replace(u',без осадков',u'')
-
-			bdd = '\t\t'+bd[7]+'\t'+bd[8]+'\t'+bd[9]
-			bdd += u'\nОсадки\t\t'+ osad
-			bdd += '\n'+bd[18]+'\t\t'+bd[19]+'\t'+bd[20]+'\t'+bd[21]
-			bdd += '\n'+bd[24]+'\t\t'+bd[25]+'\t'+bd[26]+'\t'+bd[27]
-			bdd += '\n'+bd[30]+'\t\t'+bd[31]+'\t'+bd[32]+'\t'+bd[33]
-			bdd += '\n'+bd[36]+'\t\t'+bd[37]+'\t'+bd[38]+'\t'+bd[39]
-			bdd += '\n'+bd[42]+'\t\t'+bd[43]+'\t'+bd[44]+'\t'+bd[45]
-
-			msg = he
-			msg += '\n'+ bdd
+		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1'
+		f = urllib.urlopen(link)
+		body = f.read()
+		f.close()
+		body = html_encode(body)
+		body = replacer(body)
+		body = body.split('#006cb7')[3]
+		b = body.split('\n')
+		msg += u'\n\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11]
+		msg += u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21]
+		msg += u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31]
+		msg += u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41]
 
         send_msg(type, jid, nick, msg)
 
@@ -1355,7 +1344,7 @@ def un_unix(val):
 	tday = int(val/24)
 	ret = tZ(thour)+':'+tZ(tmin)+':'+tZ(tsec)
 	if tday:
-		ret = str(tday)+'d '+ret
+		ret = str(tday)+' day(s) '+ret
 	return ret
 
 def true_age(type, jid, nick, text):
@@ -2213,7 +2202,7 @@ def conf_limit(type, jid, nick, text):
 	
 
 def bot_plugin(type, jid, nick, text):
-	global plname, plugins, execute
+	global plname, plugins, execute, gtimer, gpresence, gmassage
 	text = text.split(' ')
 	do = ''
 	nnick = ''
@@ -2234,6 +2223,10 @@ def bot_plugin(type, jid, nick, text):
                         msg = msg[:-2]
 			for tmr in timer:
 				gtimer.append(tmr)
+			for tmp in presence_control:
+				gpresence.append(tmp)
+			for tmp in message_control:
+				gmessage.append(tmp)
                         
 	elif do == 'del':
                 if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
@@ -2247,7 +2240,11 @@ def bot_plugin(type, jid, nick, text):
                                                 comms.remove(i)
                         msg = msg[:-2]
 			for tmr in timer:
-				gtimer.append(tmr)
+				gtimer.remove(tmr)
+			for tmp in presence_control:
+				gpresence.remove(tmp)
+			for tmp in message_control:
+				gmessage.remove(tmp)
 
 	elif do == 'local':
 		a = os.listdir('plugins/')
@@ -2678,10 +2675,9 @@ def rss_del_nn(ms):
 	ms = ms.replace('\r','')
 	ms = ms.replace('\t','')
 	ms = ms.replace('\n \n','\n')
-	ms = ms.replace('\n\n','\n')
-
+	while ms.count('\n\n'):
+		ms = ms.replace('\n\n','\n')
 	ms += '\n'
-
 	return ms
 
 def html_encode(body):
@@ -2689,22 +2685,19 @@ def html_encode(body):
 	if encidx >= 0:
 		enc = body[encidx+10:encidx+30]
 		enc = enc[:enc.find('?>')-1]
-		enc = enc.upper()
 	else:
 		encidx = body.find('charset=')
 		if encidx >= 0:
 			enc = body[encidx+8:encidx+30]
 			enc = enc[:enc.find('"')]
-			enc = enc.upper()
 		else:
-			enc = chardet.detect(body)
-			enc = enc['encoding']
+			enc = chardet.detect(body)['encoding']
+
 	if body == None:
 		body = ''
-	if enc == None:
-		enc = 'UTF-8'
-	return unicode(body, enc)
-
+	if enc == None or enc == '':
+		enc = 'utf-8'
+	return unicode(body,enc)
 
 #[room, nick, role, affiliation, jid]
 
@@ -3039,8 +3032,6 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-gtimer = []
-
 comms = [(1, u'stats', stats, 1),
 	 (1, u'gstats', gstats, 1),
          (2, u'quit', bot_exit, 2),
@@ -3086,7 +3077,8 @@ comms = [(1, u'stats', stats, 1),
          (0, u'wzcity', weather_city, 2),
          (0, u'wzz', weather_raw, 2),
          (0, u'wz', weather, 2),
-         (0, u'gis', weather_gis2, 2),
+         (0, u'gis', weather_gis, 2),
+         (0, u'giscode', weather_gis_code, 2),
          (0, u'commands', info_comm, 1),
          (0, u'uptime', uptime, 1),
          (1, u'info', info, 1),
