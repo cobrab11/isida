@@ -1,7 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-def sys_shell(type, jid, nick, text, mode):
+def shell(type, jid, nick, text):
+	sysshell(type, jid, nick, text, 0)
+
+def shell_silent(type, jid, nick, text):
+	sysshell(type, jid, nick, text, 1)
+
+def sysshell(type, jid, nick, text, mode):
 	if os.path.isfile('tmp'):
 		os.system('rm -r tmp')
 	a = os.system(text+' > tmp')
@@ -16,15 +22,7 @@ def sys_shell(type, jid, nick, text, mode):
 			msg = u'Ошибка получения результата!'
 	send_msg(type, jid, nick, msg)
 
-def shell(type, jid, nick, text):
-	sys_shell(type, jid, nick, text, 0)
-
-def shell_silent(type, jid, nick, text):
-	sys_shell(type, jid, nick, text, 1)
-
-global execute, timer, sys_shell
-
-timer = []
+global execute
 
 execute = [(2, u'sh', shell, 2),
 	   (2, u'sh_silent', shell_silent, 2)]

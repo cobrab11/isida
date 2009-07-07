@@ -70,12 +70,15 @@ def muc_tempo_ban2(type, jid, nick,text):
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
-				whojid = fnd[0][0]
+				msg = 'done'
+				whojid = getRoom(str(fnd[0][0]))
 				skip = 0
 			elif len(fnd) > 1:
 				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 			else:
-				msg = u'Я не в курсе кто такой '+who
+				msg = u'Я не в курсе кто такой '+who+u' и баню как есть!'
+				whojid = who
+				skip = 0
 		else:
 			msg = u'Ошибка формата времени!'
 	else:
@@ -85,7 +88,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 	        send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
-		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':getRoom(str(whojid))},[Node('reason',{},reason)])])])
+		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':whojid},[Node('reason',{},reason)])])])
 		cl.send(i)
 
 		ubl = getFile(tban,[])
@@ -94,7 +97,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 				ubl.remove(ub)
 		ubl.append((jid,whojid,tttime+int(time.time())))
 		writefile(tban,str(ubl))
-		send_msg(type, jid, nick, 'done')
+		send_msg(type, jid, nick, msg)
 
 def muc_ban(type, jid, nick,text):
 	muc_affiliation(type, jid, nick, text, 'outcast')
@@ -125,12 +128,15 @@ def muc_affiliation(type, jid, nick, text, aff):
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
-			whojid = fnd[0][0]
+			msg = 'done'
+			whojid = getRoom(str(fnd[0][0]))
 			skip = 0
 		elif len(fnd) > 1:
 			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 		else:
-			msg = u'Я не в курсе кто такой '+who
+			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
+			whojid = who
+			skip = 0
 	else:
 		msg = u'Ась?'
 
@@ -138,9 +144,9 @@ def muc_affiliation(type, jid, nick, text, aff):
 	        send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
-		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':getRoom(str(whojid))},[Node('reason',{},reason)])])])
+		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':whojid},[Node('reason',{},reason)])])])
 		cl.send(i)
-		send_msg(type, jid, nick, 'done')
+		send_msg(type, jid, nick, msg)
 
 # -------------- role -----------------
 
@@ -171,11 +177,14 @@ def muc_role(type, jid, nick, text, role):
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
 			whonick = fnd[0][0]
+			msg = 'done'
 			skip = 0
 		elif len(fnd) > 1:
 			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 		else:
-			msg = u'Я не в курсе кто такой '+who
+			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
+			whonick = who
+			skip = 0
 	else:
 		msg = u'Ась?'
 
@@ -185,7 +194,7 @@ def muc_role(type, jid, nick, text, role):
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':whonick},[Node('reason',{},reason)])])])
 		cl.send(i)
-		send_msg(type, jid, nick, 'done')
+		send_msg(type, jid, nick, msg)
 
 # ----------------------------------------------
 # role nick

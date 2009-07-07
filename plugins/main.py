@@ -258,7 +258,7 @@ def translate(type, jid, nick,text):
 
 def svn_get(type, jid, nick,text):
 	tlog = 'tempo.log'
-	if text[:7] !='http://':
+	if text[:7] !='http://' and text[:8] !='https://':
                 text = 'http://'+text
 	count = 1
 	revn = 0
@@ -901,7 +901,7 @@ def seenjid(type, jid, nick, text):
 	else:
 		msg = u'Не найдено!'
 
-        send_msg(type, jid, nick, msg)
+        send_msg('chat', jid, nick, msg)
 
 def alias(type, jid, nick, text):
 	global aliases

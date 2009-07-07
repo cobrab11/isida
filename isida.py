@@ -206,6 +206,7 @@ if os.path.isfile(plname):
 		presence_control = []
 		message_control = []
 		iq_control = []
+		timer = []
                 pprint('Append plugin: '+pl)
                 execfile('plugins/'+pl)
                 for commmm in execute:
