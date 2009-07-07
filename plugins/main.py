@@ -258,7 +258,7 @@ def translate(type, jid, nick,text):
 
 def svn_get(type, jid, nick,text):
 	tlog = 'tempo.log'
-	if text[:7] !='http://' and text[:8] !='https://':
+	if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://':
                 text = 'http://'+text
 	count = 1
 	revn = 0
