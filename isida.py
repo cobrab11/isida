@@ -33,7 +33,9 @@ saytobase = set_folder+u'sayto.db'	# база команды "передать"
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
-global execute, prefix, comms
+global execute, prefix, comms, prev_time
+
+prev_time = int(time.time())
 
 def readfile(filename):
 	fp = file(filename)
@@ -850,12 +852,18 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
+	global prev_time
+	tmp_time = int(time.time())
+	if tmp_time > prev_time:
+		prev_time = tmp_time
+		now_schedule()
+
+def now_schedule():
 	for tmr in gtimer:
 	        try:
 			thread.start_new_thread(tmr,())
-			sleep(1)
         	except:
-        	        sleep(1)
+        	        sleep(0.01)
 
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
@@ -886,11 +894,11 @@ def schedule():
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
-			sleep(0.05)
+			sleep(0.01)
 		except:
-			sleep(0.05)
+			sleep(0.01)
 	else:
-		sleep(0.05)
+		sleep(0.01)
 
 def talk_count(room,jid,nick,text):
 
