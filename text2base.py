@@ -31,6 +31,7 @@ idx = 1
 for i in answer:
 	if i != '':
 		cu.execute('insert into answer values (?,?)', (idx,i))
+		idx += 1
 print 'Write base file'
 mdb.commit()
 print 'Finished!'
