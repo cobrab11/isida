@@ -609,7 +609,7 @@ def getAnswer(tx,type):
 	mdb = sqlite3.connect(mainbase)
 	answers = mdb.cursor()
 	la = len(answers.execute('select * from answer').fetchall())
-	mrand = str(randint(1,la))
+	mrand = randint(1,la)
 	answers.execute('select * from answer where ind=?', (mrand,))
 
 	for aa in answers:
