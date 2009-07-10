@@ -234,8 +234,13 @@ def muc_arole(type, jid, nick, text, role):
 					msg = u'Не найдено!'
 
 		elif text.lower() == 'clear':
-			writefile(ro_alist,str('[]'))
-			msg = u'Очищено!'
+                        alist_role = getFile(ro_alist,[])
+                        tmp_role = []
+                        for tmp in alist_role:
+                                if tmp[0] != jid:
+                                        tmp_role.append(tmp)
+			writefile(ro_alist,str(tmp_role))
+			msg = u'Очищено для '+str(jid)
 
 		else:
 			who = text.split('\n',2)[0]
@@ -256,6 +261,8 @@ def muc_arole(type, jid, nick, text, role):
 					reason = text.split('\n',2)[2]
 				except:
 					reason = u'No reason!'
+                        else:
+                                reason = u'No reason!'
 
 			mdb = sqlite3.connect(mainbase)
 			cu = mdb.cursor()
@@ -278,7 +285,10 @@ def muc_arole(type, jid, nick, text, role):
 		for tmp in alist_role:
 			if tmp[0] == jid and tmp[2] == whojid and tmp[3] == role:
 				alist_role.remove(tmp)
-		alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
+		if tttime:
+        		alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
+        	else:
+                        alist_role.append((jid,nick,whojid,role,reason,0))
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':whonick},[Node('reason',{},reason)])])])
 		cl.send(i)
