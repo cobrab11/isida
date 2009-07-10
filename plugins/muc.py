@@ -261,8 +261,6 @@ def muc_arole(type, jid, nick, text, role):
 					reason = text.split('\n',2)[2]
 				except:
 					reason = u'No reason!'
-                        else:
-                                reason = u'No reason!'
 
 			mdb = sqlite3.connect(mainbase)
 			cu = mdb.cursor()
