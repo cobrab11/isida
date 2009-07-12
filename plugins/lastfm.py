@@ -231,7 +231,7 @@ exec_no = [(0, u'lasttracks', no_api, 1),
 
 if os.path.isfile(apifile):
 	lfm_api = str(readfile(apifile))
-	if len(lfm_api) == 33:
+	if len(lfm_api) >= 30:
 		execute = exec_yes
 	else:
 		execute = exec_no
