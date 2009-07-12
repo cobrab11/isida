@@ -16,7 +16,7 @@ def call_body(type, jid, nick, text):
 			whojid = getRoom(str(fnd[0][0]))
 			is_found = 0
 			for tmp in megabase:
-				if tmp[0] == jid and tmp[4] == whojid:
+				if tmp[0] == jid and getRoom(tmp[4]) == whojid:
 					is_found = 1
 					break
 			if is_found:
