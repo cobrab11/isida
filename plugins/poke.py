@@ -49,6 +49,8 @@ def to_poke(type, jid, nick, text):
 			msg = u'Не могу добавить! Нет ключевого слова "NICK"!'
 	elif text == '' or text == nick:
 		msg = u'Самотык? 8-D'
+	elif get_access(jid,text)[1] == selfjid:
+		msg = u'Ща зобаню по ip за такие шутки!'
 	else:
 		mdb = sqlite3.connect(mainbase)
 		cu = mdb.cursor()
