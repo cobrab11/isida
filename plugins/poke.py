@@ -3,7 +3,7 @@
 
 def to_poke(type, jid, nick, text):
 	predef_poke = [u'дала NICK... просто дала... :-"',
-			u'потыкала палочкой NICK...',
+			u'потыкала палочкой NICK в глаз...',
 			u'предложила NICK козявку :-[',
 			u'накормила NICK пургеном с толчёным стеклом!',
 			u'прошептала NICK в ухо тихонько БУГАГА!',
@@ -11,7 +11,7 @@ def to_poke(type, jid, nick, text):
 			u'кинула ломик в сторону NICK',
 			u'дала NICK клубничного йаду',
 			u'попрыгала с бубном вокруг NICK',
-			u'тыкает NICK со словами "купи мороженного, гадка!"']
+			u'тыкает NICK со словами "купи мороженного, гадюка!"']
 	poke_file = 'plugins/poke.txt'
         ta = get_access(jid,nick)
         access_mode = ta[0]
@@ -52,18 +52,17 @@ def to_poke(type, jid, nick, text):
 	elif get_access(jid,text)[1] == selfjid:
 		msg = u'Ща зобаню по ip за такие шутки!'
 	else:
-		mdb = sqlite3.connect(mainbase)
-		cu = mdb.cursor()
-		is_here = cu.execute('select status from age where room=? and nick=?',(jid,text)).fetchone()
-		mdb.close()
-		if is_here == None:
-			msg = u'Я никогда не видела тут '+text
-		elif is_here == (1,):
-			msg = u'Или я дура, или '+text+u' вышел из конфы'
-		else: 
+		is_found = 0
+		for tmp in megabase:
+			if tmp[0] == jid and tmp[1] == text:
+				is_found = 1
+				break
+		if is_found:
 			msg = '/me '+dpoke[randint(0,len(dpoke)-1)]
 			msg = msg.replace('NICK',text)
 			nick = ''
+		else:
+			msg = u'Или я дура, или '+text+u' тут нету...'
 	send_msg(type, jid, nick, msg)
 
 global execute
