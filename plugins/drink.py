@@ -11,28 +11,40 @@ def to_drink(type, jid, nick, text):
 		u'сентябрь',u'октябрь',u'ноябрь',u'декабрь']
 	mmas2 = [u'января',u'февраля',u'марта',u'апреля',u'мая',u'июня',u'июля',u'августа',
 		u'сентября',u'октября',u'ноября',u'декабря']
-	if len(text) <= 2:
-		ltim = tuple(localtime())
-		text = str(ltim[2])+'.'+str(ltim[1])
-	or_text = text
-	if text.count('.')==1:
-		text = text.split('.')
-	elif text.count(' ')==1:
-		text = text.split(' ')
-	else:
-		text = [text]
 	date_file = 'plugins/date.txt'
 	if os.path.isfile(date_file):
 		ddate = readfile(date_file).decode('UTF')
 		if ddate == '':
 			msg = u'Ошибка чтения файла!'
 		else:
+			if len(text) <= 2:
+				ltim = tuple(localtime())
+				text = str(ltim[2])+' '+mmas2[ltim[1]-1]
+				if not ddate.count(str(ltim[2])+'.'+str(ltim[1])) and ltim[6] == 6:
+					if ltim[0]/4.0 == int(ltim[0]/4):
+						mtab = [31,29,31,30,31,30,31,31,30,31,30,31]
+					else:
+						mtab = [31,28,31,30,31,30,31,31,30,31,30,31]
+					text = str(int(ltim[2]/7.0)+1*(int(ltim[2]/7.0)!=(ltim[2]/7.0))) + u' воскресенье '+mmas2[ltim[1]-1]
+					if ltim[2]+7 > mtab[ltim[1]]:
+						week = u'последнее воскресенье '+mmas2[ltim[1]-1]
+					else:
+						week = u''
+			or_text = text
+			if text.count('.')==1:
+				text = text.split('.')
+			elif text.count(' ')==1:
+				text = text.split(' ')
+			else:
+				text = [text]
 			msg = ''
 			ddate = ddate.split('\n')
 			ltxt = len(text)
 			for tmp in ddate:
 				if len(text)!=2:
 					if tmp.lower().count(text[0].lower()):
+						msg += '\n'+tmp
+					if tmp.lower().count(week.lower()) and week != '':
 						msg += '\n'+tmp
 				else:
 					try:
