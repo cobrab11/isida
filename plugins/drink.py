@@ -14,6 +14,7 @@ def to_drink(type, jid, nick, text):
 	date_file = 'plugins/date.txt'
 	if os.path.isfile(date_file):
 		ddate = readfile(date_file).decode('UTF')
+		week = u''
 		if ddate == '':
 			msg = u'Ошибка чтения файла!'
 		else:
@@ -28,8 +29,6 @@ def to_drink(type, jid, nick, text):
 					text = str(int(ltim[2]/7.0)+1*(int(ltim[2]/7.0)!=(ltim[2]/7.0))) + u' воскресенье '+mmas2[ltim[1]-1]
 					if ltim[2]+7 > mtab[ltim[1]]:
 						week = u'последнее воскресенье '+mmas2[ltim[1]-1]
-					else:
-						week = u''
 			or_text = text
 			if text.count('.')==1:
 				text = text.split('.')
