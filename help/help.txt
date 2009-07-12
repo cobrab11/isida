@@ -299,6 +299,10 @@ poke add фраза - добавить фразу
 poke del номер_фразы - удалить фразу
 {true}
 Плагин istrue. Проверка фразы на правдивость.
+{invite}
+Плагин invite. Пригласить участника в конференцию.
+invite nick|jid
+причина
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.
