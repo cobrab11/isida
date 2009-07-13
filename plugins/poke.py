@@ -2,6 +2,7 @@
 # -*- coding: utf -*-
 
 def to_poke(type, jid, nick, text):
+	text = reduce_spaces(text)
 	predef_poke = [u'дала NICK... просто дала... :-"',
 			u'потыкала палочкой NICK в глаз...',
 			u'предложила NICK козявку :-[',

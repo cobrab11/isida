@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+def reduce_spaces(text):
+	while text[0] == ' ':
+		text = text[1:]
+	while text[-1:] == ' ':
+		text = text[:-1]
+	return text
+
 def iq_uptime(type, jid, nick, text):
 	global iq_answer
 	if text == '':
