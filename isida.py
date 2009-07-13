@@ -680,7 +680,6 @@ def presenceCB(sess,mess):
 			nowname = nickname
 
 	if room != selfjid and nick == nowname:
-
 		smiles = getFile(sml,[(getRoom(room),0)])
 		if (getRoom(room),1) in smiles:
 			msg = u''

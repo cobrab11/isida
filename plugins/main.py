@@ -871,6 +871,7 @@ def seenjid(type, jid, nick, text):
 				r_was = 0
 			ms.append((aa[1],r_age,r_was,aa[6],aa[7],aa[2]))
 			is_found = 1
+	xtype = None
 	if is_found:
 		lms = len(ms)
 		for i in range(0,lms-1):
@@ -884,6 +885,7 @@ def seenjid(type, jid, nick, text):
 		if lms == 1 and nick == text:
 			msg = u'Я тебя вижу!!!'
 		else:
+			xtype = True
 			msg = u'Я видела:'
 			cnt = 1
 			for i in range(0,lms):
@@ -900,8 +902,12 @@ def seenjid(type, jid, nick, text):
 				cnt += 1
 	else:
 		msg = u'Не найдено!'
-
-        send_msg('chat', jid, nick, msg)
+	if type == 'groupchat' and xtype:
+		send_msg(type,jid,nick,u'Результат отправлен Вам в приват.')
+		send_msg('chat', jid, nick, msg)
+	else:
+		send_msg(type, jid, nick, msg)
+		
 
 def alias(type, jid, nick, text):
 	global aliases
@@ -3079,9 +3085,12 @@ def rss(type, jid, nick, text):
 			if lng > 1 and submode == 'full':
 				msg = msg[:-1]
 		else:
-			feed = html_encode(feed)
-			title = get_tag(feed,'title')
-			msg = u'bad url or rss/atom not found at '+link+' - '+title
+			if text[4] == 'silent':
+				nosend = 1
+			else:
+				feed = html_encode(feed)
+				title = get_tag(feed,'title')
+				msg = u'bad url or rss/atom not found at '+link+' - '+title
         if not nosend:
 		send_msg(type, jid, nick, msg)
 	

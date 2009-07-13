@@ -115,6 +115,23 @@ def muc_owner(type, jid, nick,text):
 	muc_affiliation(type, jid, nick, text, 'owner')
 
 def muc_affiliation(type, jid, nick, text, aff):
+	tmppos = arr_semi_find(confbase, jid)
+	if tmppos == -1:
+		nowname = nickname
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '':
+			nowname = nickname
+	xtype = ''
+	for base in megabase:
+		if base[0].lower() == jid and base[1] == nowname:
+			xtype = base[3]
+			break
+	if xtype == 'owner':
+		msg = u'Команда блокирована!'
+		text = ''
+	else:
+		msg = u'Ась?'
 	skip = 1
 	if len(text):
 		if text.count('\n'):
@@ -137,9 +154,6 @@ def muc_affiliation(type, jid, nick, text, aff):
 			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
 			whojid = who
 			skip = 0
-	else:
-		msg = u'Ась?'
-
 	if skip:
 	        send_msg(type, jid, nick, msg)
 	else:
@@ -352,8 +366,8 @@ execute = [(1, u'ban', muc_ban, 2),
 	   (1, u'tban', muc_tempo_ban, 2),
 	   (1, u'none', muc_none, 2),
 	   (1, u'member', muc_member, 2),
-	   (1, u'admin', muc_admin, 2),
-	   (1, u'owner', muc_owner, 2),
+#	   (1, u'admin', muc_admin, 2),
+#	   (1, u'owner', muc_owner, 2),
 	   (1, u'kick', muc_kick, 2),
 	   (1, u'participant', muc_participant, 2),
 	   (1, u'visitor', muc_visitor, 2),
