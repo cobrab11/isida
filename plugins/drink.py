@@ -44,27 +44,25 @@ def to_drink(type, jid, nick, text):
 			ddate = ddate.split('\n')
 			ltxt = len(text)
 			for tmp in ddate:
-				if len(or_text) or len(week1) or len(week2):
-					if tmp.lower().count(or_text.lower()):
-						msg += '\n'+tmp
-					if tmp.lower().count(week1.lower()) and week1 != '':
-						msg += '\n'+tmp
-					if tmp.lower().count(week2.lower()) and week2 != '':
-						msg += '\n'+tmp
-				else:
-					try:
-						ttmp = tmp.split(' ')[0].split('.')
-						tday = [ttmp[0]]
-						tday.append(dmas[int(ttmp[0])-1])
-						tmonth = [ttmp[1]]
-						tmonth.append(mmas1[int(ttmp[1])-1])
-						tmonth.append(mmas2[int(ttmp[1])-1])
-						tmonth.append(str(int(ttmp[1])))
-						t = tday.index(text[0])
-						t = tmonth.index(text[1])
-						msg += '\n'+tmp
-					except:
-						t = None
+				if tmp.lower().count(or_text.lower()):
+					msg += '\n'+tmp
+				if tmp.lower().count(week1.lower()) and week1 != '':
+					msg += '\n'+tmp
+				if tmp.lower().count(week2.lower()) and week2 != '':
+					msg += '\n'+tmp
+				try:
+					ttmp = tmp.split(' ')[0].split('.')
+					tday = [ttmp[0]]
+					tday.append(dmas[int(ttmp[0])-1])
+					tmonth = [ttmp[1]]
+					tmonth.append(mmas1[int(ttmp[1])-1])
+					tmonth.append(mmas2[int(ttmp[1])-1])
+					tmonth.append(str(int(ttmp[1])))
+					t = tday.index(text[0])
+					t = tmonth.index(text[1])
+					msg += '\n'+tmp
+				except:
+					t = None
 
 			if msg == '':
 				msg = u'Повод '+or_text+u' не найден!'
