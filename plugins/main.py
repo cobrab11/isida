@@ -733,35 +733,46 @@ def iq_version(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def netwww(type, jid, nick, text):
+	if text.count('\n'):
+		regex = text.split('\n')[0]
+		text = text.split('\n')[1]
+	else:
+		regex = None
 	text = text.encode('utf-8')
 	text = text.replace('\\x','%')
 	text = text.replace(' ','%20')
 	if text[:7] !='http://':
-                text = 'http://'+text
+       	        text = 'http://'+text
 	f = urllib.urlopen(text)
 	page = f.read()
 	f.close()
 
 #	print page
 	page = html_encode(page)
-	msg = get_tag(page,'title')+'\n'
+	if regex:
+		match = re.findall(regex,page)
+		if len(match):
+			msg = match[0]
+		else:
+			msg = u'RegExp не найден!'
+	else:
+		msg = get_tag(page,'title')+'\n'
 
-	for a in range(0,page.count('<style')):
-		ttag = get_tag_full(page,'style')
-		page = page.replace(ttag,'')
+		for a in range(0,page.count('<style')):
+			ttag = get_tag_full(page,'style')
+			page = page.replace(ttag,'')
 
-	for a in range(0,page.count('<script')):
-		ttag = get_tag_full(page,'script')
-		page = page.replace(ttag,'')
+		for a in range(0,page.count('<script')):
+			ttag = get_tag_full(page,'script')
+			page = page.replace(ttag,'')
 
-	page = rss_replace(page)
-	page = rss_repl_html(page)
-	page = rss_replace(page)
-	page = rss_del_nn(page)
-	page = page.replace('\n ','')
+		page = rss_replace(page)
+		page = rss_repl_html(page)
+		page = rss_replace(page)
+		page = rss_del_nn(page)
+		page = page.replace('\n ','')
 
-	msg += page
-
+		msg += page
 	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
