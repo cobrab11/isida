@@ -739,6 +739,22 @@ def iq_version(type, jid, nick, text):
 		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
         send_msg(type, jid, nick, msg)
 
+def unhtml(page):
+	for a in range(0,page.count('<style')):
+		ttag = get_tag_full(page,'style')
+		page = page.replace(ttag,'')
+
+	for a in range(0,page.count('<script')):
+		ttag = get_tag_full(page,'script')
+		page = page.replace(ttag,'')
+
+	page = rss_replace(page)
+	page = rss_repl_html(page)
+	page = rss_replace(page)
+	page = rss_del_nn(page)
+	page = page.replace('\n ','')
+	return page
+
 def netwww(type, jid, nick, text):
 	if text.count('\n'):
 		regex = text.split('\n')[0]
@@ -756,30 +772,16 @@ def netwww(type, jid, nick, text):
 
 #	print page
 	page = html_encode(page)
+	page = rss_replace(page)
 	if regex:
-		match = re.findall(regex,page)
+		match = '' #re.findall(regex,page)
 		if len(match):
-			msg = match[0]
+			msg = unhtml(match[0])
 		else:
 			msg = u'RegExp не найден!'
 	else:
 		msg = get_tag(page,'title')+'\n'
-
-		for a in range(0,page.count('<style')):
-			ttag = get_tag_full(page,'style')
-			page = page.replace(ttag,'')
-
-		for a in range(0,page.count('<script')):
-			ttag = get_tag_full(page,'script')
-			page = page.replace(ttag,'')
-
-		page = rss_replace(page)
-		page = rss_repl_html(page)
-		page = rss_replace(page)
-		page = rss_del_nn(page)
-		page = page.replace('\n ','')
-
-		msg += page
+		msg += unhtml(page)
 	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
@@ -1131,12 +1133,16 @@ def weather_gis(type, jid, nick, text):
 		body = body.replace(u',  м/с',u' ')
 		body = body.replace(u'безветрие',u'штиль')
 		b = body.split('\n')
-		if len(b) == 69:
+		if b[7] == u'На неделю':
 			b.insert(5,'')
 		if len(b[5]):
 			msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
 		else:
 			msg = b[6]+', '+b[4]+' ('+b[1]+')'
+		cnt = 0
+		for i in b:
+			print cnt, i
+			cnt += 1
 		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
 		ms = ['']
 		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
@@ -1154,8 +1160,8 @@ def weather_gis(type, jid, nick, text):
 		body = body.replace(u',  м/с',u' ')
 		body = body.replace(u'безветрие',u'штиль')
 		b = body.split('\n')
-		if len(b) == 69:
-			b.insert(5,' ')
+		if b[7] == u'На неделю':
+			b.insert(5,'')
 		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
 		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
 		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
@@ -1655,7 +1661,10 @@ def weather(type, jid, nick, text):
 		wzr.append(sfind(wzz,'Visibility'))	# 7
 		wzr.append(sfind(wzz,'Pressure'))	# 8
 
-		msg = wzr[0][:wzr[0].find(')')+1]
+		if wzr[0].count(')'):
+			msg = wzr[0][:wzr[0].find(')')+1]
+		else:
+			msg = wzr[0]
 		msg += '\n'+ wzr[1]
 
 		wzz1 = wzr[2].find(':')+1 # Temperature
