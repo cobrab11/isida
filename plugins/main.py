@@ -526,9 +526,9 @@ def disco(type, jid, nick, text):
 				dname = get_subtag(ii,'name')
 				cu.execute('insert into tempo values (?)', (dname,))
 			if len(what):
-				cm = cu.execute('select * from tempo where (nick like ?) order by nick',('%'+what+'%',)).fetchmany(hm)
+				cm = cu.execute('select * from tempo where (nick like ?) order by nick',('%'+what+'%',)).fetchall()
 			else:
-				cm = cu.execute('select * from tempo order by nick').fetchmany(hm)
+				cm = cu.execute('select * from tempo order by nick').fetchall()
 			if len(cm):
 				msg = u'Всего: '+str(len(cm))+' - '
 				for i in cm:
@@ -774,7 +774,9 @@ def netwww(type, jid, nick, text):
 	page = html_encode(page)
 	page = rss_replace(page)
 	if regex:
-		match = '' #re.findall(regex,page)
+#		try: match = re.search(regex, page, re.S).groups()
+#		except: match = ''
+		match = ''
 		if len(match):
 			msg = unhtml(match[0])
 		else:
