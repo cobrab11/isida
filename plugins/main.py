@@ -1110,18 +1110,24 @@ def weather_gis(type, jid, nick, text):
 			f = urllib.urlopen(link)
 			body = f.read()
 			f.close()
-			body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
-			giss = []
-			for tmp in body:
-				giss.append((tmp.split('&')[0],tmp.split('gen_past_date_0">')[1].split('</a>')[0]))
-			if len(giss) == 1:
-				city_code = giss[0][0]
-			elif len(giss) == 0:
-				msg = u'Город '+text+u' не найден!'
-			else:
-				msg = u'Найдено больше одного города! Воспользуйтесь командой gis код_города'
-				for tmp in giss:
-					msg += u'\n'+tmp[0]+u' — '+tmp[1]
+			try:
+				body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
+				giss = []
+				for tmp in body:
+					giss.append((tmp.split('&')[0],tmp.split('gen_past_date_0">')[1].split('</a>')[0]))
+				if len(giss) == 1:
+					city_code = giss[0][0]
+				elif len(giss) == 0:
+					msg = u'Город '+text+u' не найден!'
+				else:
+					msg = u'Найдено больше одного города! Воспользуйтесь командой gis код_города'
+					for tmp in giss:
+						msg += u'\n'+tmp[0]+u' — '+tmp[1]
+			except:
+				if body.lower().count(u'forbidden'):
+					msg = u'Доступ с серверу погоды запрещён на стороне сервера.'
+				else:
+					msg = u'К сожалению сервер не отвечает.'
 	if city_code:
 		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_type/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_0&ed_field_date=gen_past_date_0'
 		f = urllib.urlopen(link)
