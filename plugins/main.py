@@ -1125,7 +1125,7 @@ def weather_gis(type, jid, nick, text):
 						msg += u'\n'+tmp[0]+u' — '+tmp[1]
 			except:
 				if body.lower().count(u'forbidden'):
-					msg = u'Доступ с серверу погоды запрещён на стороне сервера.'
+					msg = u'Доступ к серверу погоды запрещён на стороне сервера.'
 				else:
 					msg = u'К сожалению сервер не отвечает.'
 	if city_code:

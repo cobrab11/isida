@@ -6,6 +6,18 @@ timer = []
 
 lfm_url = u'http://ws.audioscrobbler.com/2.0/'
 
+def lastonetrack(type, jid, nick, text):
+	ms = lf_api('user.getrecenttracks',text, '<track')
+	if len(ms):
+		cnt = len(ms)
+	else:
+		cnt = 0
+	if cnt >=2:
+		msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+get_tag(ms[1],'date')+']'
+	else:
+		msg = u'Недоступно.'
+        send_msg(type, jid, nick, msg)
+
 def lf_api(method, user, splitter):
 	user = user.lower()
 	user = user.encode('utf-8')
@@ -208,6 +220,7 @@ def no_api(type, jid, nick):
 apifile = 'plugins/LastFM.api'
 
 exec_yes = [(0, u'lasttracks', lasttracks, 2),
+	    (0, u'last', lastonetrack, 2),
 	    (0, u'lastfriends', lastfriends, 2),
 	    (0, u'lastloved', lastloved, 2),
 	    (0, u'lastneighbours', lastneighbours, 2),
@@ -219,6 +232,7 @@ exec_yes = [(0, u'lasttracks', lasttracks, 2),
 	    (0, u'tasteometer', tasteometer, 2)]
 
 exec_no = [(0, u'lasttracks', no_api, 1),
+	   (0, u'last', no_api, 1),
 	   (0, u'lastfriends', no_api, 1),
 	   (0, u'lastloved', no_api, 1),
 	   (0, u'lastneighbours', no_api, 1),
