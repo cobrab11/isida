@@ -13,7 +13,7 @@ def muc_tempo_ban(type, jid, nick,text):
 		if not len(text):
 			text = '.'
 		ubl = getFile(tban,[])
-		msg = ''
+		msg = u''
 		for ub in ubl:
 			if ub[0] == jid and ub[1].count(text.lower()):
 				msg += u'\n'+ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
@@ -28,7 +28,7 @@ def muc_tempo_ban(type, jid, nick,text):
 		if not len(text):
 			text = '@@'
 		ubl = getFile(tban,[])
-		msg = ''
+		msg = u''
 		for ub in ubl:
 			if ub[0] == jid and ub[1] == text.lower():
 				msg += ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
@@ -70,7 +70,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
-				msg = 'done'
+				msg = u'done'
 				whojid = getRoom(str(fnd[0][0]))
 				skip = 0
 			elif len(fnd) > 1:
@@ -145,7 +145,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
-			msg = 'done'
+			msg = u'done'
 			whojid = getRoom(str(fnd[0][0]))
 			skip = 0
 		elif len(fnd) > 1:
@@ -191,7 +191,7 @@ def muc_role(type, jid, nick, text, role):
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
 			whonick = fnd[0][0]
-			msg = 'done'
+			msg = u'done'
 			skip = 0
 		elif len(fnd) > 1:
 			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
@@ -234,7 +234,7 @@ def muc_arole(type, jid, nick, text, role):
 			if not len(text):
 				text = '.'
 			alist_role = getFile(ro_alist,[])
-			msg = ''
+			msg = u''
 			if alist_role != '[]':
 				for tmp in alist_role:
 					if tmp[0] == jid and tmp[3] == role and tmp[2].count(text.lower()):
@@ -295,7 +295,7 @@ def muc_arole(type, jid, nick, text, role):
 	else:
 		alist_role = getFile(ro_alist,[])
 		for tmp in alist_role:
-			if tmp[0] == jid and tmp[2] == whojid and tmp[3] == role:
+			if tmp[0] == jid and tmp[2] == whojid:
 				alist_role.remove(tmp)
 		if tttime:
         		alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
@@ -337,6 +337,39 @@ def decrease_alist_role():
 	sys.exit(0)
 
 # ----------------------------------------------
+def muc_afind(type, jid, nick, text):
+	skip = 1
+	if len(text):
+			who = text
+			mdb = sqlite3.connect(mainbase)
+			cu = mdb.cursor()
+			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+			if len(fnd) == 1:
+				whonick = fnd[0][0]
+				whojid = fnd[0][1]
+				skip = 0
+			elif len(fnd) > 1:
+				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			else:
+				msg = u'Я не в курсе кто такой '+who
+	else:
+		msg = u'Ась?'
+	
+	if not skip:
+		alist_role = getFile(ro_alist,[])
+		not_found = 1
+		for tmp in alist_role:
+			if tmp[0] == jid and tmp[2] == whojid:
+				msg = u'Найдено в списке: '+tmp[3]+' ('+tmp[2]+u'), причина: '+tmp[4]+' (by '+tmp[1]+')'
+				if tmp[5]:
+					msg += ' '+un_unix(tmp[5]-int(time.time()))
+				not_found = 0
+				break
+		if not_found:
+			msg = text + u' в alist не найдено.'
+	send_msg(type, jid, nick, msg)
+	sys.exit(0)
+# ----------------------------------------------
 #room,jid,nick,type,text
 
 def alist_role_presence(room,jid,nick,type,text):
@@ -368,6 +401,7 @@ execute = [(1, u'ban', muc_ban, 2),
 	   (1, u'member', muc_member, 2),
 #	   (1, u'admin', muc_admin, 2),
 #	   (1, u'owner', muc_owner, 2),
+	   (1, u'afind', muc_afind, 2),
 	   (1, u'kick', muc_kick, 2),
 	   (1, u'participant', muc_participant, 2),
 	   (1, u'visitor', muc_visitor, 2),

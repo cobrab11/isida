@@ -1145,10 +1145,6 @@ def weather_gis(type, jid, nick, text):
 			msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
 		else:
 			msg = b[6]+', '+b[4]+' ('+b[1]+')'
-		cnt = 0
-		for i in b:
-			print cnt, i
-			cnt += 1
 		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
 		ms = ['']
 		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
