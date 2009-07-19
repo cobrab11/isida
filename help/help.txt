@@ -316,6 +316,8 @@ poke del номер_фразы - удалить фразу
 Плагин invite. Пригласить участника в конференцию.
 invite nick|jid
 причина
+{turn}
+Плагин turn. "Перевернуть" последнее сообщение с русского на английский и обратно.
 {about}
         Isida Jabber-bot
 © 2oo9 Disabler Production Lab.
