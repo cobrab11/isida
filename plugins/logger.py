@@ -99,7 +99,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			if mode and jid != 'None':
 				log_body += u' ('+jid+u')'
 			if len(exit_type): log_body += u' '+exit_type.lower()
-			else: log_body += u'вышел '
+			else: log_body += u' вышел'
 			if exit_message != '':
 				log_body += u' ('+exit_message+') '
 			log_body += u'</font></i></a><br>'
