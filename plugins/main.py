@@ -1,5 +1,57 @@
 # -*- coding: utf-8 -*-
 
+def get_affiliation(jid,nick):
+	xtype = ''
+	for base in megabase:
+		if base[0].lower() == jid and base[1] == nick:
+			xtype = base[3]
+			break
+	return xtype
+
+def comm_on_off(type, jid, nick, text):
+	cof = getFile(conoff,[])
+	if len(text):
+		if text[:3] == 'on ':
+			text = text[3:].lower()
+			if len(text):
+				if cof.count((jid,text)):
+					if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+						cof.remove((jid,text))
+						writefile(conoff, str(cof))
+						msg = u'Вклчено: '+text
+					else:
+						msg = u'Включение команд доступно только владельцу конференции'
+				else: msg = u'Для данной конференции команда '+text+u' не была отключена!'
+			else:
+				msg = u'Что включить?'
+		if text[:4] == 'off ':
+			text = text[4:].lower()
+			if len(text):
+				fl = 0
+				for cm in comms:
+					if cm[1] == text:
+						fl = 1
+						break
+				if fl:
+					if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+						cof.append((jid,text))
+						writefile(conoff, str(cof))
+						msg = u'Отклчено: '+text
+					else:
+						msg = u'Отключение команд доступно только владельцу конференции'
+				else:
+					msg = u'Команда '+text+u' не найдена!'
+			else:
+				msg = u'Что отключить?'
+	else:
+		msg = ''
+		for tmp in cof:
+			if tmp[0] == jid: msg += tmp[1] + u', '
+		if len(msg): msg = u'Отключены команды: ' + msg[:-2]
+		else: msg = u'Для данной конференции нет отключенных команд' 
+
+        send_msg(type, jid, nick, msg)
+
 def reduce_spaces(text):
 	while text[0] == ' ':
 		text = text[1:]
@@ -3193,6 +3245,7 @@ comms = [(1, u'stats', stats, 1),
          (0, u'wz', weather, 2),
          (0, u'gis', weather_gis, 2),
          (0, u'commands', info_comm, 1),
+         (1, u'comm', comm_on_off, 2),
          (0, u'bot_uptime', uptime, 1),
          (1, u'info', info, 1),
          (0, u'new', svn_info, 1),

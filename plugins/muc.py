@@ -76,9 +76,12 @@ def muc_tempo_ban2(type, jid, nick,text):
 			elif len(fnd) > 1:
 				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 			else:
-				msg = u'Я не в курсе кто такой '+who+u' и баню как есть!'
-				whojid = who
-				skip = 0
+				if who.count('.'):
+					msg = u'Я не в курсе кто такой '+who+u' и баню как есть!'
+					whojid = who
+					skip = 0
+				else:
+					msg = u'Я не в курсе кто такой '+who
 		else:
 			msg = u'Ошибка формата времени!'
 	else:
@@ -319,7 +322,7 @@ def check_unban():
 				ubl.append(ub)
 			else:
 				iqid = str(randint(1,100000))
-				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(str(ub[1]))},[])])])
+				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(unicode(ub[1]))},[])])])
 				cl.send(i)
 		if unban_log != ubl:
 			writefile(tban,str(ubl))

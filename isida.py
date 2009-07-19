@@ -27,6 +27,7 @@ tmpf = set_folder+u'tmp'		# флаг завершения бота
 feeds = set_folder+u'feed'		# список rss каналов
 lafeeds = set_folder+u'lastfeeds'	# последние новости по каждому каналу
 cens = set_folder+u'censor.txt'     	# список "запрещенных" слов для болтуна
+conoff = set_folder+u'commonoff'     	# список "запрещенных" команд для бота
 
 mainbase = set_folder+u'main.db'	# основная база данных
 saytobase = set_folder+u'sayto.db'	# база команды "передать"
@@ -484,7 +485,13 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
 	for parse in comms:
 		if access_mode >= parse[0] and nick != nowname:
-        	        if text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' ':
+			cof = getFile(conoff,[])
+			not_offed = 1
+			for co in cof:
+				if co[0]==jid and co[1]==text.lower()[:len(co[1])]:
+					not_offed = 0
+					break
+        	        if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
                                 if not parse[3]:
