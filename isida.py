@@ -483,12 +483,12 @@ def iqCB(sess,iq):
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
+	cof = getFile(conoff,[])
 	for parse in comms:
 		if access_mode >= parse[0] and nick != nowname:
-			cof = getFile(conoff,[])
 			not_offed = 1
 			for co in cof:
-				if co[0]==jid and co[1]==text.lower()[:len(co[1])]:
+				if co[0]==room and co[1]==text.lower()[:len(co[1])]:
 					not_offed = 0
 					break
         	        if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
