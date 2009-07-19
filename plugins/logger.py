@@ -49,7 +49,8 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if nick == '':
 		log_body += u'<font color=#a00000>'+text+u'</font></a><br>'
 	else:
-		log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
+		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>'
+		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
 
 	if not os.path.isfile(curr_file):
 		header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'+room+'</title></head><body>'
@@ -91,18 +92,19 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		text = html_repl(text)
 		text = text.replace('\n','<br>')
 
-		log_body = u'<a><font color=gray size="small">['+onlytimeadd(tuple(localtime()))+']</font> '
+		log_body = u'<a><font color=gray>['+onlytimeadd(tuple(localtime()))+']</font><i> '
 
 		if type == 'unavailable': 
-			log_body += u'<font color=#00a000 size="small">'+nick
+			log_body += u'<font color=#00a000>'+nick
 			if mode and jid != 'None':
 				log_body += u' ('+jid+u')'
-			log_body += u' '+exit_type.lower()
+			if len(exit_type): log_body += u' '+exit_type.lower()
+			else: log_body += u'вышел '
 			if exit_message != '':
 				log_body += u' ('+exit_message+') '
-			log_body += u'</font></a><br>'
+			log_body += u'</font></i></a><br>'
 		else:
-			log_body += u'<font color=#00a000 size="small">'+nick
+			log_body += u'<font color=#00a000>'+nick
 			if not_found == 0:
 				if mode and jid != 'None':
 					log_body += u' ('+jid+u')'
@@ -118,7 +120,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 				else:  log_body += ' [0]'
 				if text != 'None':  log_body += ' ('+text+')'
 
-			log_body += '</font></a><br>'
+			log_body += '</font></i></a><br>'
 
 		if not os.path.isfile(curr_file):
 			header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'+room+'</title></head><body>'
