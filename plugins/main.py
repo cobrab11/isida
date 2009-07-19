@@ -1620,18 +1620,13 @@ def weather_raw(type, jid, nick, text):
 	f = urllib.urlopen(link)
 	msg = f.read()
 	f.close()
-
 	msg = msg[:-1]
-
-	if msg.count('Not Found'):
-		msg = u'Город не найден!'
-
+	if msg.count('Not Found'): msg = u'Город не найден!'
         send_msg(type, jid, nick, msg)
 
 def sfind(mass,stri):
 	for a in mass:
-		if a.count(stri):
-			return a
+		if a.count(stri): return a
 	return ''
 
 def weather(type, jid, nick, text):
@@ -1641,8 +1636,7 @@ def weather(type, jid, nick, text):
 	wzz = f.read()
 	f.close()
 
-	if wzz.count('Not Found'):
-		msg = u'Город не найден!'
+	if wzz.count('Not Found'): msg = u'Город не найден!'
 	else:
 		wzz = wzz.split('\n')
 
@@ -1657,10 +1651,8 @@ def weather(type, jid, nick, text):
 		wzr.append(sfind(wzz,'Visibility'))	# 7
 		wzr.append(sfind(wzz,'Pressure'))	# 8
 
-		if wzr[0].count(')'):
-			msg = wzr[0][:wzr[0].find(')')+1]
-		else:
-			msg = wzr[0]
+		if wzr[0].count(')'): msg = wzr[0][:wzr[0].find(')')+1]
+		else: msg = wzr[0]
 		msg += '\n'+ wzr[1]
 
 		wzz1 = wzr[2].find(':')+1 # Temperature
@@ -1674,12 +1666,9 @@ def weather(type, jid, nick, text):
 		msg += '\n'+ wzr[3][:wzz1-1] + wzr[3][wzz2+1:wzz3]
 
 		msg += '\n'+ wzr[4]
-		if len(wzr[5]):
-			msg += ','+ wzr[5][wzr[5].find(':')+1:]
-		if len(wzr[6]):
-			msg += ','+ wzr[6][wzr[6].find(':')+1:]
-		if not (len(wzr[5])+len(wzr[6])):
-			msg += ', clear'
+		if len(wzr[5]): msg += ','+ wzr[5][wzr[5].find(':')+1:]
+		if len(wzr[6]): msg += ','+ wzr[6][wzr[6].find(':')+1:]
+		if not (len(wzr[5])+len(wzr[6])): msg += ', clear'
 
 		msg += '\n'+ wzr[7][:-2]
 		
@@ -1688,6 +1677,43 @@ def weather(type, jid, nick, text):
 		wzz3 = wzr[8].find('(',wzz2)
 		msg += ', '+ wzr[8][:wzz1-1]+': '+wzr[8][wzz3+1:-1]
 
+        send_msg(type, jid, nick, msg)
+
+def weather_short(type, jid, nick, text):
+	text = text.upper()
+	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
+	f = urllib.urlopen(link)
+	wzz = f.read()
+	f.close()
+
+	if wzz.count('Not Found'): msg = u'Город не найден!'
+	else:
+		wzz = wzz.split('\n')
+
+		wzr = []
+		wzr.append(wzz[0])			# 0
+		wzr.append(sfind(wzz,'Temperature'))	# 2
+		wzr.append(sfind(wzz,'Wind'))		# 3
+		wzr.append(sfind(wzz,'Relative'))	# 4
+		wzr.append(sfind(wzz,'Sky'))		# 5
+		wzr.append(sfind(wzz,'Weather'))	# 6
+
+		if wzr[0].count(')'): msg = wzr[0][:wzr[0].find(')')+1]
+		else: msg = wzr[0]
+
+		wzz1 = wzr[1].find(':')+1 # Temperature
+		wzz2 = wzr[1].find('(',wzz1)
+		wzz3 = wzr[1].find(')',wzz2)
+		msg += ' | '+ wzr[1][:wzz1] + ' ' + wzr[1][wzz2+1:wzz3]
+
+		wzz1 = wzr[2].find('(')
+		wzz2 = wzr[2].find(')',wzz1)
+		wzz3 = wzr[2].find(':',wzz2)
+		msg += ' | '+ wzr[2][:wzz1-1] + wzr[2][wzz2+1:wzz3]
+		msg += ' | '+ wzr[3]
+		if len(wzr[4]): msg += ','+ wzr[4][wzr[4].find(':')+1:]
+		if len(wzr[5]): msg += ','+ wzr[5][wzr[5].find(':')+1:]
+		if not (len(wzr[4])+len(wzr[5])): msg += ', clear'
         send_msg(type, jid, nick, msg)
 
 def get_local_prefix(jid):
@@ -1701,10 +1727,8 @@ def get_local_prefix(jid):
 	return lprefix
 
 def get_prefix(prefix):
-	if prefix != u'':
-	        return prefix
-	else:
-		return u'отсутствует'
+	if prefix != u'': return prefix
+	else: return u'отсутствует'
 
 #  0     1            2     3      4
 # [1,prefix+cmd, exe_alias, 0, prefix+cbody])
@@ -1713,14 +1737,9 @@ def set_prefix(type, jid, nick, text):
         global preffile, prefix
 	msg = u'Префикс команд: '
 
-        if text != '':
-                lprefix = text
-
-	if text.lower() == 'none':
-		lprefix = u''
-
-	if text.lower() == 'del':
-		lprefix = prefix
+        if text != '': lprefix = text
+	if text.lower() == 'none': lprefix = u''
+	if text.lower() == 'del': lprefix = prefix
 
 	if len(text):
 	        if os.path.isfile(preffile):
@@ -1734,10 +1753,8 @@ def set_prefix(type, jid, nick, text):
 		else:
 			pref = [(getRoom(jid),lprefix)]
 			writefile(preffile,str(pref))
-	else:
-		lprefix = get_local_prefix(jid)
+	else: lprefix = get_local_prefix(jid)
 	msg += get_prefix(lprefix)
-
 	send_msg(type, jid, nick, msg)
 	
 def inban(type, jid, nick, text):
@@ -3172,6 +3189,7 @@ comms = [(1, u'stats', stats, 1),
          (1, u'www', netwww, 2),
          (0, u'wzcity', weather_city, 2),
          (0, u'wzz', weather_raw, 2),
+         (0, u'wzs', weather_short, 2),
          (0, u'wz', weather, 2),
          (0, u'gis', weather_gis, 2),
          (0, u'commands', info_comm, 1),
