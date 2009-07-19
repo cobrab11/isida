@@ -19,30 +19,40 @@ def comm_on_off(type, jid, nick, text):
 						cof.remove((jid,text))
 						writefile(conoff, str(cof))
 						msg = u'Вклчено: '+text
-					else:
-						msg = u'Включение команд доступно только владельцу конференции'
+					else: msg = u'Включение команд доступно только владельцу конференции'
 				else: msg = u'Для данной конференции команда '+text+u' не была отключена!'
-			else:
-				msg = u'Что включить?'
+			else: msg = u'Что включить?'
 		if text[:4] == 'off ':
-			text = text[4:].lower()
-			if len(text):
-				fl = 0
-				for cm in comms:
-					if cm[1] == text:
-						fl = 1
-						break
-				if fl:
-					if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
-						cof.append((jid,text))
-						writefile(conoff, str(cof))
-						msg = u'Отклчено: '+text
-					else:
-						msg = u'Отключение команд доступно только владельцу конференции'
-				else:
-					msg = u'Команда '+text+u' не найдена!'
-			else:
-				msg = u'Что отключить?'
+			if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+				text = text[4:].lower()
+				if len(text):
+					text = text.split(' ')
+					msg_found = ''
+					msg_notfound = ''
+					msg_offed = ''
+					for tex in text:
+						fl = 0
+						for cm in comms:
+							if cm[1] == tex:
+								fl = 1
+								break
+						if fl:
+							if not cof.count((jid,tex)):
+								cof.append((jid,tex))
+								writefile(conoff, str(cof))
+								msg_found += tex + ', '
+							else: msg_offed += tex + ', '
+						else: msg_notfound += tex + ', '
+					if len(msg_found): msg = u'Отключены команды: '+msg_found[:-2]
+					else: msg = u''
+					if len(msg_offed):
+						if msg != '': msg += '\n'
+						msg += u'Отключенные ранее команды: '+msg_offed[:-2]
+					if len(msg_notfound):
+						if msg != '': msg += '\n'
+						msg += u'Не найдены команды: '+msg_notfound[:-2]
+				else: msg = u'Что отключить?'
+			else: msg = u'Отключение команд доступно только владельцу конференции'
 	else:
 		msg = ''
 		for tmp in cof:
