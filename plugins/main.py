@@ -32,10 +32,11 @@ def comm_on_off(type, jid, nick, text):
 					msg_offed = ''
 					for tex in text:
 						fl = 0
-						for cm in comms:
-							if cm[1] == tex:
-								fl = 1
-								break
+						if tex != 'comm':
+							for cm in comms:
+								if cm[1] == tex:
+									fl = 1
+									break
 						if fl:
 							if not cof.count((jid,tex)):
 								cof.append((jid,tex))

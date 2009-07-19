@@ -487,10 +487,11 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	for parse in comms:
 		if access_mode >= parse[0] and nick != nowname:
 			not_offed = 1
-			for co in cof:
-				if co[0]==room and co[1]==text.lower()[:len(co[1])]:
-					not_offed = 0
-					break
+			if access_mode != 2:
+				for co in cof:
+					if co[0]==room and co[1]==text.lower()[:len(co[1])]:
+						not_offed = 0
+						break
         	        if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
