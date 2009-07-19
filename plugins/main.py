@@ -335,22 +335,19 @@ def sayto(type, jid, nick, text):
 def getMucItems(jid,affil,ns):
 	global banbase,raw_iq
 	iqid = str(randint(1,100000))
-	banbase = []
 	raw_iq = []
-	if ns == NS_MUC_ADMIN:
-		i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
-	else:
-		i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
+	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
+	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
 	cl.send(i)
-	while banbase == []:
-	 	sleep(0.5)
-	while banbase[-1] != (u'TheEnd', u'None'):
-		sleep(0.1)
-	banbase = banbase[:-1]
-	return (banbase,raw_iq)
+	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	bb = []
+	for b in banbase: 
+		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+	for b in banbase:
+		if b[2] == iqid: banbase.remove(b)
+	return (bb,raw_iq)
 
 def conf_backup(type, jid, nick, text):
-	global banbase
 	if len(text):
 		text = text.split(' ')
 		mode = text[0]
@@ -1001,87 +998,82 @@ def alias(type, jid, nick, text):
 
 def inowner(type, jid, nick, text):
 	global banbase
-	banbase = []
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'owner'})])])
+	iqid = str(randint(1,1000000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'owner'})])])
 	cl.send(i)
-	while banbase == []:
-		sleep(0.5)
-	while banbase[-1] != (u'TheEnd', u'None'):
-		sleep(0.1)
-
-	banbase = banbase[:-1]
-	msg = u'Всего владельцев: '+str(len(banbase))
+	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	bb = []
+	for b in banbase:
+		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+	for b in banbase:
+		if b[2] == iqid: banbase.remove(b)
+	msg = u'Всего владельцев: '+str(len(bb))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
 		cnt = 1
-		for i in banbase:
+		for i in bb:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd:
-			mmsg = u', совпадений нет!'
+		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-	banbase = []
         send_msg(type, jid, nick, msg)
 
 def inadmin(type, jid, nick, text):
 	global banbase
-	banbase = []
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin'})])])
+	iqid = str(randint(1,1000000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin'})])])
 	cl.send(i)
-	while banbase == []:
-		sleep(0.5)
-	while banbase[-1] != (u'TheEnd', u'None'):
-		sleep(0.1)
-
-	banbase = banbase[:-1]
-	msg = u'Всего админов: '+str(len(banbase))
+	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	bb = []
+	for b in banbase:
+		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+	for b in banbase:
+		if b[2] == iqid: banbase.remove(b)
+	msg = u'Всего администраторов: '+str(len(bb))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
 		cnt = 1
-		for i in banbase:
+		for i in bb:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
 				fnd = 0
 				cnt += 1
-		if fnd:
-			mmsg = u', совпадений нет!'
+		mmsg = mmsg[:-1]
+		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-	banbase = []
         send_msg(type, jid, nick, msg)
 
 def inmember(type, jid, nick, text):
 	global banbase
-	banbase = []
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'member'})])])
+	iqid = str(randint(1,1000000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'member'})])])
 	cl.send(i)
-	while banbase == []:
-		sleep(0.5)
-	while banbase[-1] != (u'TheEnd', u'None'):
-		sleep(0.1)
+	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	bb = []
+	for b in banbase:
+		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+	for b in banbase:
+		if b[2] == iqid: banbase.remove(b)
 
-	banbase = banbase[:-1]
-	msg = u'Всего мемберов: '+str(len(banbase))
+	msg = u'Всего постоянных участников: '+str(len(bb))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
 		cnt = 1
-		for i in banbase:
+		for i in bb:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+'\n'
+				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd:
-			mmsg = u', совпадений нет!'
+		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-	banbase = []
         send_msg(type, jid, nick, msg)
-
 
 def fspace(mass):
 	bdd = []
@@ -1750,30 +1742,28 @@ def set_prefix(type, jid, nick, text):
 	
 def inban(type, jid, nick, text):
 	global banbase
-	banbase = []
-	i = Node('iq', {'id': randint(1,1000), 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
+	iqid = str(randint(1,1000000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
 	cl.send(i)
-	while banbase == []:
-		sleep(0.5)
-	while banbase[-1] != (u'TheEnd', u'None'):
-		sleep(0.1)
-
-	banbase = banbase[:-1]
-	msg = u'Всего в бане: '+str(len(banbase))
+	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	bb = []
+	for b in banbase:
+		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+	for b in banbase:
+		if b[2] == iqid: banbase.remove(b)
+	msg = u'Всего в бане: '+str(len(bb))
 	if text != '':
 		mmsg = u', найдено:\n'
 		fnd = 1
 		cnt = 1
-		for i in banbase:
+		for i in bb:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
 				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd:
-			mmsg = u', совпадений нет!'
+		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-	banbase = []
         send_msg(type, jid, nick, msg)
 
 def youtube(type, jid, nick, text):

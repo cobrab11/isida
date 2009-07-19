@@ -419,7 +419,6 @@ def iqCB(sess,iq):
                 if nspace == NS_MUC_ADMIN:
 #                        ccount = cparse.count('<item affiliation=\"outcast\"')
                         cparse = cparse.split('<item')
-			banbase = []
                         for banm in cparse[1:]:
 				st_index = banm.find('jid=\"')+5
 				cjid=banm[st_index:banm.find('\"',st_index)]
@@ -427,10 +426,10 @@ def iqCB(sess,iq):
 					creason = u'No reason'
 				else:
 					creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
-				banbase.append((cjid, creason))
-			banbase.append((u'TheEnd', u'None'))
+				banbase.append((cjid, creason, str(id)))
+			banbase.append((u'TheEnd', u'None',str(id)))
 		if nspace == NS_MUC_OWNER:
-			banbase.append((u'TheEnd', u'None'))
+			banbase.append((u'TheEnd', u'None',str(id)))
 		if nspace == NS_VERSION:
 				iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
 
