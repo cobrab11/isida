@@ -18,7 +18,7 @@ def comm_on_off(type, jid, nick, text):
 					if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
 						cof.remove((jid,text))
 						writefile(conoff, str(cof))
-						msg = u'Вклчено: '+text
+						msg = u'Включено: '+text
 					else: msg = u'Включение команд доступно только владельцу конференции'
 				else: msg = u'Для данной конференции команда '+text+u' не была отключена!'
 			else: msg = u'Что включить?'

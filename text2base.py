@@ -16,7 +16,7 @@ def readfile(filename):
 	return data
 
 print 'Read textfile'
-answer = readfile('answers.txt')
+answer = readfile('answers.txt').decode('utf-8')
 answer = answer.split('\n')
 
 print 'Open and clean database'
@@ -30,7 +30,7 @@ print 'Let\'s start!'
 idx = 1
 for i in answer:
 	if i != '':
-		cu.execute('insert into answer values (?,?)', (idx,i))
+		cu.execute('insert into answer values (?,?)', (idx,unicode(i)))
 		idx += 1
 print 'Write base file'
 mdb.commit()

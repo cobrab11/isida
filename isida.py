@@ -102,6 +102,10 @@ def timeadd(lt):
 	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
 	return st
 
+def onlytimeadd(lt):
+	st = tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+	return st
+
 def pprint(text):
         text = text
 	zz = parser('['+timeadd(tuple(localtime()))+'] '+text)
@@ -516,6 +520,8 @@ def messageCB(sess,mess):
 
 	lprefix = get_local_prefix(room)
 
+	back_text = text
+
 #        print '---\n', 'room:',parser(room),'\nnick:',parser(nick),'\ntext:',parser(text),'\ntype:', parser(type),'\ntowh:',parser(towh),'\nstamp:', parser(stamp)
 
         rn = room+"/"+nick
@@ -590,9 +596,10 @@ def messageCB(sess,mess):
 			text = getAnswer(text,type)
 			thread.start_new_thread(send_msg_human,(type, room, nick, text))
 
+
 	for tmp in gmessage:
 	        try:
-			thread.start_new_thread(tmp,(room,jid,nick,type,text))
+			thread.start_new_thread(tmp,(room,jid,nick,type,back_text))
         	except:
         	        sleep(1)
 
@@ -710,6 +717,7 @@ def presenceCB(sess,mess):
 		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 		cl.send(j)
 
+	not_found = 0
 	if type=='unavailable' and nick != '':
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
@@ -733,13 +741,13 @@ def presenceCB(sess,mess):
 				else:
 				        send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])
 			sdb.commit()
-		not_found = 1
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)
 				megabase.append([room, nick, role, affiliation, jid])
-				not_found = 0
-		if not_found:
+				if role != mmb[2] or affiliation != mmb[3]: not_found = 1
+				else: not_found = 2
+		if not not_found:
 			megabase.append([room, nick, role, affiliation, jid])
 
 	if not megabase2.count([room, nick, role, affiliation, jid]):
@@ -769,10 +777,10 @@ def presenceCB(sess,mess):
 
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 
+	exit_type = ''
+	exit_message = ''
 	for ab in abc:
 		if type=='unavailable':
-			exit_type = ''
-			exit_message = ''
 			if status=='307': #Kick
 				exit_type = u'Выгнали'
 				exit_message = reason
@@ -797,7 +805,7 @@ def presenceCB(sess,mess):
 
 	for tmp in gpresence:
 	        try:
-			thread.start_new_thread(tmp,(room,jid,nick,type,text))
+			thread.start_new_thread(tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
         	except:
         	        sleep(1)
 
