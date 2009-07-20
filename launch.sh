@@ -6,4 +6,4 @@ svn up
 echo `svnversion` > settings/version
 
 #launch bot
-python2.5 start.py
+python start.py

@@ -601,7 +601,7 @@ def messageCB(sess,mess):
 	        try:
 			thread.start_new_thread(tmp,(room,jid,nick,type,back_text))
         	except:
-        	        sleep(1)
+        	        sleep(0.1)
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/5)
@@ -807,7 +807,7 @@ def presenceCB(sess,mess):
 	        try:
 			thread.start_new_thread(tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
         	except:
-        	        sleep(1)
+        	        sleep(0.1)
 
 
 def onoff(msg):
