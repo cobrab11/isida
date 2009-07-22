@@ -12,7 +12,11 @@ svn co http://isida.googlecode.com/svn/trunk isida
 
 - update -
 
-after global bot update - launch sh update script for correct update.
+after global bot update - launch "sh update" script for correct update.
+
+- first start -
+
+when bot starts first time launch script for databases creation "python create_databases.py"
 
 that's all :)
 

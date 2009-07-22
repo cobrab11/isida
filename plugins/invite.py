@@ -42,4 +42,4 @@ def call_body(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'invite', call_body, 2)]
+execute = [(0, u'invite', call_body, 2, u'Пригласить участника в конференцию.\ninvite nick|jid\n[причина]')]

@@ -14,4 +14,4 @@ def is_true(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'true', is_true, 2)]
+execute = [(0, u'true', is_true, 2, u'Проверка выражения на правдивость.')]

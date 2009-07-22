@@ -27,4 +27,4 @@ global execute, timer
 
 timer = []
 
-execute = [(2, u'troll', troll, 2)]
+execute = [(2, u'troll', troll, 2, u'')]

@@ -3,7 +3,7 @@
 
 # Поиск по глобальной базе "болтунов"
 def gtalkers(type, jid, nick, text):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
 	if len(text):
 		ttext = '%'+text+'%'
@@ -28,7 +28,7 @@ def gtalkers(type, jid, nick, text):
 
 # Поиск по базе "блтунов" в пределах одной конференции
 def talkers(type, jid, nick, text):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
 	if len(text):
 		ttext = '%'+text+'%'
@@ -66,5 +66,5 @@ global execute, timer
 
 timer = []
 
-execute = [(0, u'talkers', talkers, 2),
-	   (0, u'gtalkers', gtalkers, 2)]
+execute = [(0, u'talkers', talkers, 2, u'Показ локальной базы "Болтунов"'),
+	   (0, u'gtalkers', gtalkers, 2, u'Показ глобальной базы "Болтунов"')]

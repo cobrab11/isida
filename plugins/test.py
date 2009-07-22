@@ -11,5 +11,5 @@ global execute, timer
 
 timer = []
 
-execute = [(0, u'test', test, 1),
-	   (0, u'тест', test_rus, 1)]
+execute = [(0, u'test', test, 1, u'Проверка на "живость" бота.'),
+	   (0, u'тест', test_rus, 1, u'Проверка на "живость" бота.')]

@@ -69,4 +69,4 @@ def to_poke(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'poke', to_poke, 2)]
+execute = [(0, u'poke', to_poke, 2, u'Команда "тык"\npoke nick - сказать случайную фразу nick\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу')]

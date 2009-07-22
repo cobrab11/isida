@@ -75,4 +75,4 @@ def to_drink(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'drink', to_drink, 2)]
+execute = [(0, u'drink', to_drink, 2, u'Поиск повода выпить ;)\ndrink [повод/дата]')]

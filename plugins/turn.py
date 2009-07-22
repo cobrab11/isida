@@ -48,4 +48,4 @@ global execute
 message_control = [append_to_turner]
 presence_control = [remove_from_turner]
 
-execute = [(0, u'turn', turner, 2)]
+execute = [(0, u'turn', turner, 2, u'"Перевернуть" последнее сообщение с русского на английский и обратно.')]

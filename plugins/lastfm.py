@@ -219,29 +219,29 @@ def no_api(type, jid, nick):
 
 apifile = 'plugins/LastFM.api'
 
-exec_yes = [(0, u'lasttracks', lasttracks, 2),
-	    (0, u'last', lastonetrack, 2),
-	    (0, u'lastfriends', lastfriends, 2),
-	    (0, u'lastloved', lastloved, 2),
-	    (0, u'lastneighbours', lastneighbours, 2),
-	    (0, u'lastplaylist', lastplaylist, 2),
-	    (0, u'topalbums', topalbums, 2),
-	    (0, u'topartists', topartists, 2),
-	    (0, u'toptags', toptags, 2),
-	    (0, u'toptracks', toptracks, 2),
-	    (0, u'tasteometer', tasteometer, 2)]
+exec_yes = [(0, u'lasttracks', lasttracks, 2, u'Последние скробленные треки'),
+	    (0, u'last', lastonetrack, 2, u'Последний скробленный трек'),
+	    (0, u'lastfriends', lastfriends, 2, u'Последние друзья'),
+	    (0, u'lastloved', lastloved, 2, u'Последние любимые треки'),
+	    (0, u'lastneighbours', lastneighbours, 2, u'Соседи по вкусам'),
+	    (0, u'lastplaylist', lastplaylist, 2, u'Последний плейлист'),
+	    (0, u'topalbums', topalbums, 2, u'Топ альбомов'),
+	    (0, u'topartists', topartists, 2, u'Топ исполнителей'),
+	    (0, u'toptags', toptags, 2, u'Топ тегов'),
+	    (0, u'toptracks', toptracks, 2, u'Топ треков'),
+	    (0, u'tasteometer', tasteometer, 2, u'Музакальная совместимость')]
 
-exec_no = [(0, u'lasttracks', no_api, 1),
-	   (0, u'last', no_api, 1),
-	   (0, u'lastfriends', no_api, 1),
-	   (0, u'lastloved', no_api, 1),
-	   (0, u'lastneighbours', no_api, 1),
-	   (0, u'lastplaylist', no_api, 1),
-	   (0, u'topalbums', no_api, 1),
-	   (0, u'topartists', no_api, 1),
-	   (0, u'toptags', no_api, 1),
-	   (0, u'toptracks', no_api, 1),
-	   (0, u'tasteometer', no_api, 1)]
+exec_no = [(0, u'lasttracks', no_api, 1, u''),
+	   (0, u'last', no_api, 1, u''),
+	   (0, u'lastfriends', no_api, 1, u''),
+	   (0, u'lastloved', no_api, 1, u''),
+	   (0, u'lastneighbours', no_api, 1, u''),
+	   (0, u'lastplaylist', no_api, 1, u''),
+	   (0, u'topalbums', no_api, 1, u''),
+	   (0, u'topartists', no_api, 1, u''),
+	   (0, u'toptags', no_api, 1, u''),
+	   (0, u'toptracks', no_api, 1, u''),
+	   (0, u'tasteometer', no_api, 1, u'')]
 
 if os.path.isfile(apifile):
 	lfm_api = str(readfile(apifile))

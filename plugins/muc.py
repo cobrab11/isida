@@ -66,7 +66,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 				reason = u'No reason!'
 
 			reason = u'бан сроком '+un_unix(tttime)+u', начиная с '+timeadd(tuple(localtime()))+u', по причине: '+reason
-			mdb = sqlite3.connect(mainbase)
+			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
@@ -144,7 +144,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 			who = text
 			reason = u'by Isida!'
 
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
@@ -189,7 +189,7 @@ def muc_role(type, jid, nick, text, role):
 			who = text
 			reason = u'by Isida!'
 
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
@@ -279,7 +279,7 @@ def muc_arole(type, jid, nick, text, role):
 				except:
 					reason = u'No reason!'
 
-			mdb = sqlite3.connect(mainbase)
+			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
@@ -344,7 +344,7 @@ def muc_afind(type, jid, nick, text):
 	skip = 1
 	if len(text):
 			who = text
-			mdb = sqlite3.connect(mainbase)
+			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
@@ -398,18 +398,18 @@ timer = [check_unban,decrease_alist_role]
 presence_control = [alist_role_presence]
 message_control = [alist_message]
 
-execute = [(1, u'ban', muc_ban, 2),
-	   (1, u'tban', muc_tempo_ban, 2),
-	   (1, u'none', muc_none, 2),
-	   (1, u'member', muc_member, 2),
-#	   (1, u'admin', muc_admin, 2),
-#	   (1, u'owner', muc_owner, 2),
-	   (1, u'afind', muc_afind, 2),
-	   (1, u'kick', muc_kick, 2),
-	   (1, u'participant', muc_participant, 2),
-	   (1, u'visitor', muc_visitor, 2),
-	   (1, u'moderator', muc_moderator, 2),
-	   (1, u'akick', muc_akick, 2),
-	   (1, u'aparticipant', muc_aparticipant, 2),
-	   (1, u'avisitor', muc_avisitor, 2),
-	   (1, u'amoderator', muc_amoderator, 2)]
+execute = [(1, u'ban', muc_ban, 2, u'Забанить участника'),
+	   (1, u'tban', muc_tempo_ban, 2, u'Временный бан.\ntban show|del [jid] - показать/удалить временные баны\ntban nick\ntimeD|H|M|S\nreason - бан ника nick на срок time по причине reason'),
+	   (1, u'none', muc_none, 2, u'Удаление аффиляции'),
+	   (1, u'member', muc_member, 2, u'Сделать участника постоянным'),
+#	   (1, u'admin', muc_admin, 2, u''),
+#	   (1, u'owner', muc_owner, 2, u''),
+	   (1, u'afind', muc_afind, 2, u'Поиск учстника в alist.'),
+	   (1, u'kick', muc_kick, 2, u'Выгнать участника'),
+	   (1, u'participant', muc_participant, 2, u'Сделать участника без полномочий'),
+	   (1, u'visitor', muc_visitor, 2, u'Сделать участника гостем'),
+	   (1, u'moderator', muc_moderator, 2, u'Сделать учасника модератором'),
+	   (1, u'akick', muc_akick, 2, u'Автокик.\nakick show|del [jid] - показать/удалить автокик\nakick nick\ntimeD|H|M|S\nreason - автоматически выгонять ник nick на срок time по причине reason'),
+	   (1, u'aparticipant', muc_aparticipant, 2, u'Автоучастник.\naparticipant show|del [jid] - показать/удалить автоучастник\naparticipant nick\ntimeD|H|M|S\nreason - автоматически делать ник nick участником на срок time по причине reason'),
+	   (1, u'avisitor', muc_avisitor, 2, u'Автогость.\navisitor show|del [jid] - показать/удалить автогостя\navisitor nick\ntimeD|H|M|S\nreason - автоматически делать ник nick гостем на срок time по причине reason'),
+	   (1, u'amoderator', muc_amoderator, 2, u'Автомодератор.\namoderator show|del [jid] - показать/удалить автомодератор\namoderator nick\ntimeD|H|M|S\nreason - автоматически делать ник nick модератором на срок time по причине reason')]

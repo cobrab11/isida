@@ -29,8 +29,12 @@ lafeeds = set_folder+u'lastfeeds'	# последние новости по ка�
 cens = set_folder+u'censor.txt'     	# список "запрещенных" слов для болтуна
 conoff = set_folder+u'commonoff'     	# список "запрещенных" команд для бота
 
-mainbase = set_folder+u'main.db'	# основная база данных
 saytobase = set_folder+u'sayto.db'	# база команды "передать"
+agestatbase = set_folder+u'agestat.db'	# статистика возрастов
+jidbase = set_folder+u'jidbase.db'	# статистика jid'ов
+talkersbase = set_folder+u'talkers.db'	# статистика болтунов
+wtfbase = set_folder+u'wtfbase.db'	# определения
+answersbase = set_folder+u'answers.db'	# ответы бота
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)
 
@@ -134,7 +138,7 @@ dm = 1
 prefix = u'_'
 msg_limit = 1000
 botName = 'Isida-Bot'
-botVersion = 'v1.7'
+botVersion = 'v1.8'
 capsVersion = botVersion[1:]
 banbase = []
 iq_answer = []
@@ -216,8 +220,8 @@ if os.path.isfile(plname):
 		timer = []
                 pprint('Append plugin: '+pl)
                 execfile('plugins/'+pl)
-                for commmm in execute:
-                        comms.append(commmm)
+                for cm in execute:
+                        comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
 		for tmr in timer:
 			gtimer.append(tmr)
 		for tmp in presence_control:
@@ -620,7 +624,7 @@ def thread_log(proc, *params):
 	sys.exit(0)
 
 def getAnswer(tx,type):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(answersbase)
 	answers = mdb.cursor()
 	la = len(answers.execute('select * from answer').fetchall())
 	mrand = str(randint(1,la))
@@ -754,7 +758,7 @@ def presenceCB(sess,mess):
 		megabase2.append([room, nick, role, affiliation, jid])
 
 	if jid != 'None':
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(jidbase)
 		cu = mdb.cursor()
 		aa1 = jid[:jid.index('@')]
 		aa2 = jid[jid.index('@')+1:jid.index('/')]
@@ -769,7 +773,7 @@ def presenceCB(sess,mess):
 		jid = getRoom(jid.lower())
 
 
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
 	tt = int(time.time())
@@ -918,7 +922,7 @@ def talk_count(room,jid,nick,text):
 
         jid = getRoom(jid)
 
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
 	tlen = len(cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchall())
 	cu.execute('select * from talkers where room=? and jid=?',(room,jid))
@@ -948,27 +952,6 @@ else:
 	starttime = tuple(localtime())
 
 sesstime = int(time.time())
-
-mtb = os.path.isfile(mainbase)
-
-mdb = sqlite3.connect(mainbase)
-cu = mdb.cursor()
-if not mtb:
-	cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
-	cu.execute('''create table answer (ind integer, body text)''')
-	cu.execute('''create table jid (login text, server text, resourse text)''')
-	cu.execute('''create table talkers (room text, jid text, nick text, words integer, frases integer)''')
-	cu.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text)''')
-	cu.execute('insert into answer values (?,?)', (1,u';-)'))
-	cu.execute('insert into answer values (?,?)', (2,u'Привет'))
-	mdb.commit()
-
-stb = os.path.isfile(saytobase)
-sdb = sqlite3.connect(saytobase)
-cu = sdb.cursor()
-if not stb:
-	cu.execute('''create table st (who text, room text, jid text, message text)''')
-	sdb.commit()
 
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])

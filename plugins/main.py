@@ -148,7 +148,7 @@ def censor_status(type, jid, nick, text):
 def status(type, jid, nick, text):
 	if text == '':
 		text = nick
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
 	stat2 = cu.execute('select message,status from age where jid=? and room=?',('<temporary>'+text.lower()+'@',jid)).fetchone()
@@ -370,7 +370,7 @@ def sayto(type, jid, nick, text):
 		to = text[:text.find(' ')]
 		what = text[text.find(' ')+1:]
 		frm = nick + '\n' + str(int(time.time()))
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select * from age where room=? and (nick=? or jid=?)',(jid,to,to)).fetchall()
 		if len(fnd) == 1:
@@ -847,143 +847,80 @@ def netwww(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
-        while text[-1:] == ' ':
-                text = text[:-1]
-        
+	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
 	if len(text)>=2:
-		try:
-			llim = int(text[0])
-		except:
-			llim = 10
-
+		try: llim = int(text[0])
+		except: llim = 10
 		text = text[1]
-	else:
-		text = text[0]
-
-	if llim > 100:
-		llim = 100
-	if text == '':
-		text = nick
-	is_found = 0
-	ms = []
-	mdb = sqlite3.connect(mainbase)
-	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
-	for aa in cu:
-		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
-			if aa[5]:
-				r_age = aa[4]
-				r_was = int(time.time())-aa[3]
-			else:
-				r_age = int(time.time())-aa[3]
-				r_was = 0
-			ms.append((aa[1],r_age,r_was,aa[6],aa[7]))
-			is_found = 1
-	if is_found:
-		lms = len(ms)
-		for i in range(0,lms-1):
-			for j in range(i,lms):
-				if ms[i][1] < ms[j][1]:
-					jj = ms[i]
-					ms[i] = ms[j]
-					ms[j] = jj
-		if lms > llim:
-			lms = llim
-		if lms == 1 and nick == text:
-			msg = u'Я тебя вижу!!!'
-		else:
+	else: text = text[0]
+	if text != '':
+		if llim > 100: llim = 100
+		is_found = 0
+		ms = []
+		mdb = sqlite3.connect(agestatbase)
+		cu = mdb.cursor()
+		text = '%'+text.lower()+'%'
+		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
+		if sbody:
 			msg = u'Я видела:'
 			cnt = 1
-			for i in range(0,lms):
-				msg += '\n'+str(cnt)+'. '+ms[i][0]
-				if ms[i][2]:
-					if ms[i][3] != '':
-						msg += u'\t'+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
-					else:
-						msg += u'\tВышел '+un_unix(ms[i][2])+u' назад'
-					if ms[i][4] != '':
-						if ms[i][4].count('\n') >= 4:
-							stat = ms[i][4].split('\n',4)[4]
-							if stat != '':
-								msg += ' ('+stat+')'
-						else:
-							msg += ' ('+ms[i][4]+')'
-				else:
-					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
-				cnt += 1
-	else:
-		msg = u'Не найдено!'
+			for tmp in sbody:
+				msg += '\n'+str(cnt)+'. '+tmp[1]
 
+				if tmp[5]:
+					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					if tmp[7] != '':
+						if tmp[7].count('\n') >= 4:
+							stat = tmp[7].split('\n',4)[4]
+							if stat != '': msg += ' ('+stat+')'
+						else: msg += ' ('+tmp[7]+')'
+				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
+				cnt += 1
+		else: msg = u'Не найдено!'
+	else: msg = u'Ась?'
         send_msg(type, jid, nick, msg)
 
 def seenjid(type, jid, nick, text):
-        while text[-1:] == ' ':
-                text = text[:-1]
-        
+	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
 	if len(text)>=2:
-		try:
-			llim = int(text[0])
-		except:
-			llim = 10
-
+		try: llim = int(text[0])
+		except: llim = 10
 		text = text[1]
-	else:
-		text = text[0]
-
-	if llim > 100:
-		llim = 100
-	if text == '':
-		text = nick
-	is_found = 0
-	ms = []
-	mdb = sqlite3.connect(mainbase)
-	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
-	for aa in cu:
-		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
-			if aa[5]:
-				r_age = aa[4]
-				r_was = int(time.time())-aa[3]
-			else:
-				r_age = int(time.time())-aa[3]
-				r_was = 0
-			ms.append((aa[1],r_age,r_was,aa[6],aa[7],aa[2]))
-			is_found = 1
+	else: text = text[0]
 	xtype = None
-	if is_found:
-		lms = len(ms)
-		for i in range(0,lms-1):
-			for j in range(i,lms):
-				if ms[i][1] < ms[j][1]:
-					jj = ms[i]
-					ms[i] = ms[j]
-					ms[j] = jj
-		if lms > llim:
-			lms = llim
-		if lms == 1 and nick == text:
-			msg = u'Я тебя вижу!!!'
-		else:
+	if text != '':
+		if llim > 100: llim = 100
+		is_found = 0
+		ms = []
+		mdb = sqlite3.connect(agestatbase)
+		cu = mdb.cursor()
+		text = '%'+text.lower()+'%'
+		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
+		if sbody:
 			xtype = True
 			msg = u'Я видела:'
 			cnt = 1
-			for i in range(0,lms):
-				msg += '\n'+str(cnt)+'. '+ms[i][0]+' ('+ms[i][5]+')'
-				if ms[i][2]:
-					if ms[i][3] != '':
-						msg += u'\t'+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
-					else:
-						msg += u'\tВышел '+un_unix(ms[i][2])+u' назад'
-					if ms[i][4] != '':
-						msg += ' ('+ms[i][4]+')'
-				else:
-					msg += u'\tнаходится тут: '+un_unix(ms[i][1])
+			for tmp in sbody:
+				msg += '\n'+str(cnt)+'. '+tmp[1]+' ('+tmp[2]+')'
+
+				if tmp[5]:
+					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					if tmp[7] != '':
+						if tmp[7].count('\n') >= 4:
+							stat = tmp[7].split('\n',4)[4]
+							if stat != '': msg += ' ('+stat+')'
+						else: msg += ' ('+tmp[7]+')'
+				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
 				cnt += 1
-	else:
-		msg = u'Не найдено!'
+		else: msg = u'Не найдено!'
+	else: msg = u'Ась?'
+
 	if type == 'groupchat' and xtype:
 		send_msg(type,jid,nick,u'Результат отправлен Вам в приват.')
 		send_msg('chat', jid, nick, msg)
@@ -1294,7 +1231,7 @@ def calc(type, jid, nick, text):
 def wtfsearch(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
 		text = '%'+text+'%'
 		ww = cu.execute('select * from wtf where (room=? or room=? or room=?) and (room like ? or jid like ? or nick like ? or wtfword like ? or wtftext like ? or time like ?)',(jid,'global','import',text,text,text,text,text,text)).fetchall()
@@ -1311,7 +1248,7 @@ def wtfsearch(type, jid, nick, text):
 
 def wtfrand(type, jid, nick):
 	msg = u'Всё, что я знаю это: '
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(wtfbase)
 	cu = mdb.cursor()
 
 	ww = cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import')).fetchall()
@@ -1325,7 +1262,7 @@ def wtfrand(type, jid, nick):
 
 def wtfnames(type, jid, nick, text):
 	msg = u'Всё, что я знаю это: '
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(wtfbase)
 	cu = mdb.cursor()
 
 	if text == 'all':
@@ -1343,7 +1280,7 @@ def wtfnames(type, jid, nick, text):
         send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(wtfbase)
 	cu = mdb.cursor()
 	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
 	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
@@ -1383,7 +1320,7 @@ def wtfp(type, jid, nick, text):
 def wtf_get(ff,type, jid, nick, text):
 	msg = u'Чего искать то будем?'
 	if len(text):
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
 		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text)).fetchall())
 		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text))
@@ -1425,7 +1362,7 @@ def dfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
 		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
 		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
@@ -1465,7 +1402,7 @@ def gdfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
 		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
 		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
@@ -1503,80 +1440,46 @@ def un_unix(val):
 	return ret
 
 def true_age(type, jid, nick, text):
-        while text[-1:] == ' ':
-                text = text[:-1]
-        
+	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
 	if len(text)>=2:
-		try:
-			llim = int(text[0])
-		except:
-			llim = 10
-
+		try: llim = int(text[0])
+		except: llim = 10
 		text = text[1]
-	else:
-		text = text[0]
-
-	if llim > 100:
-		llim = 100
-	if text == '':
-		text = nick
-	is_found = 0
-	ms = []
-	mdb = sqlite3.connect(mainbase)
-	cu = mdb.cursor()
-	cu.execute('select * from age order by room')
-	for aa in cu:
-		if aa[0]==jid and (aa[1].lower().count(text.lower()) or aa[2].lower().count(text.lower())):
-			if aa[5]:
-				r_age = aa[4]
-				r_was = int(time.time())-aa[3]
-			else:
-				r_age = int(time.time())-aa[3]+aa[4]
-				r_was = 0
-			ms.append((aa[1],r_age,r_was,aa[6],aa[7]))
-			is_found = 1
-	if is_found:
-		lms = len(ms)
-		for i in range(0,lms-1):
-			for j in range(i,lms):
-				if ms[i][1] < ms[j][1]:
-					jj = ms[i]
-					ms[i] = ms[j]
-					ms[j] = jj
-		if lms > llim:
-			lms = llim
-		if lms == 1 and nick == text:
-			msg = u'Время твоего нахождения в конфе: '+un_unix(ms[0][1])
-		else:
-			msg = u'Время нахождения в конфе:'
+	else: text = text[0]
+	if text != '':
+		if llim > 100: llim = 100
+		is_found = 0
+		ms = []
+		mdb = sqlite3.connect(agestatbase)
+		cu = mdb.cursor()
+		text = '%'+text.lower()+'%'
+		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
+		if sbody:
+			msg = u'Я видела:'
 			cnt = 1
-			for i in range(0,lms):
-				msg += '\n'+str(cnt)+'. '+ms[i][0]+'\t'+un_unix(ms[i][1])
-				if ms[i][2]:
-					if ms[i][3] != '':
-						msg += u', '+ms[i][3]+' '+un_unix(ms[i][2])+u' назад'
-					else:
-						msg += u', Вышел '+un_unix(ms[i][2])+u' назад'
-					if ms[i][4] != '':
-						if ms[i][4].count('\n') >= 4:
-							stat = ms[i][4].split('\n',4)[4]
-							if stat != '':
-								msg += ' ('+stat+')'
-						else:
-							msg += ' ('+ms[i][4]+')'
+			for tmp in sbody:
+				if tmp[5]: r_age = tmp[4]
+				else: r_age = int(time.time())-tmp[3]+tmp[4]
+				msg += '\n'+str(cnt)+'. '+tmp[1]+u'\t'+un_unix(r_age)+u', '
 
+				if tmp[5]:
+					if tmp[6] != '': msg += tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					else: msg += u'Вышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+					if tmp[7] != '':
+						if tmp[7].count('\n') >= 4:
+							stat = tmp[7].split('\n',4)[4]
+							if stat != '': msg += ' ('+stat+')'
+						else: msg += ' ('+tmp[7]+')'
+				else: msg += u'находится тут: '+un_unix(int(time.time()-tmp[3]))
 				cnt += 1
-	else:
-		msg = u'Не найдено!'
-
-#agebase.append((room, nick,getRoom(jid),tt,ab[4],0))
+		else: msg = u'Не найдено!'
+	else: msg = u'Ась?'
         send_msg(type, jid, nick, msg)
 
-#cu.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
 def close_age_null():
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
@@ -1586,7 +1489,7 @@ def close_age_null():
 	mdb.commit()
 
 def close_age():
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
@@ -1598,7 +1501,7 @@ def close_age():
 	mdb.commit()
 
 def close_age_room(room):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
@@ -2171,57 +2074,34 @@ def gsay(type, jid, nick, text):
 	
 
 def helpme(type, jid, nick, text):
-	pprint(text)
-	hlpfile = 'help/help.txt'
-	helps = []
-	if os.path.isfile(hlpfile):
-		hlp = readfile(hlpfile)
-		hlp = hlp.split('{')
-		for hh in hlp:
-			if len(hh):
-				hh = hh.decode('utf-8')
-				hhh = hh.split('}')
-				helps.append((hhh[0],hhh[1][:-1]))
-
-	if text != '':
-		mesg = u'Префикс команд: '+get_local_prefix(jid)+u'\nДоступна справка по командам:\n'
-
-	        cnt = 0
-       		for i in range(0,3):
-        	        mesg += '['+str(i)+'] '
-        		for hlp in helps:
-        	                for cmdd in comms:
-					tc = cmdd[1]
-        	                        if tc == hlp[0] and cmdd[0] == i:
-        	                                mesg += hlp[0] + ', '
-        	                                cnt += 1
-        	        mesg = mesg[:-2]
-        	        mesg += '\n'
-        	if cnt != len(helps):
-        	        mesg += '[?] '
-        	        for hlp in helps:
-        	                fl = 1
-        	                for cmdd in comms:
-					tc = cmdd[1]
-        	                        if tc == hlp[0]:
-        	                                fl = 0
-        	                if fl:
-        	                        mesg += hlp[0] + ', '
-        	        mesg = mesg[:-1]
-		mesg = mesg[:-1]
-
+	if text == u'about':
+		msg = u'Isida Jabber-bot | © 2oo9 Disabler Production Lab. | http://isida.googlecode.com'
+	elif text == u'donation':
+		msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
+	elif text == u'доступ':
+		msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
+	elif text != '':
+		msg = u'Префикс команд: '+get_local_prefix(jid)+u', Доступна справка по командам:\n'
+		tmpbase = sqlite3.connect(':memory:')
+		cu = tmpbase.cursor()
+		cu.execute('''create table tempo (level integer, name text, body text)''')
+		for tmp in comms:
+			cu.execute('insert into tempo values (?,?,?)', (tmp[0], tmp[1], tmp[4]))
+		cm = cu.execute('select body from tempo where name=?',(text,)).fetchone()
+		if cm:
+			msg = cm[0]
+		else:
+			cm = cu.execute('select * from tempo order by name').fetchall()
+			tmpbase.close()
+       			for i in range(0,3):
+        		        msg += '['+str(i)+'] '
+        			for tmp in cm:
+					if tmp[0] == i and tmp[2] != u'':
+						msg += tmp[1] + ', '
+				msg = msg[:-2]+'\n'
 	else:
-		mesg = u'Isida Jabber Bot\nИнформационно-справочный бот\nhttp://isida.googlecode.com\n© 2oo9 Disabler Production Lab.\nСправка по командам: help команда'
-
-	for hlp in helps:
-		if text.lower() == hlp[0]:
-			mesg = u'Справочная информация: ' + hlp[1]
-			for cmdd in comms:
-				tc = cmdd[1]
-                                if tc == hlp[0]:
-                                        mesg = u'Уровень доступа: '+str(cmdd[0]) + hlp[1]
-
-	send_msg(type, jid, nick, mesg)
+		msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida.googlecode.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
+	send_msg(type, jid, nick, msg)
 	
 
 def hidden_clear(type, jid, nick, text):
@@ -2390,9 +2270,9 @@ def bot_plugin(type, jid, nick, text):
                         plugins.append(nnick)
                         execfile('plugins/'+nnick)
                         msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
-                        for commmm in execute:
-                                msg += commmm[1]+'['+str(commmm[0])+'], '
-                                comms.append(commmm)
+	                for cm in execute:
+				msg += cm[1]+'['+str(cm[0])+'], '
+	                        comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
                         msg = msg[:-2]
 			for tmr in timer:
 				gtimer.append(tmr)
@@ -2594,7 +2474,7 @@ def info(type, jid, nick):
 	
 
 def info_res(type, jid, nick, text):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(jidbase)
 	cu = mdb.cursor()
 	if text == 'count':
 		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
@@ -2623,7 +2503,7 @@ def info_res(type, jid, nick, text):
 	
 
 def info_serv(type, jid, nick, text):
-	mdb = sqlite3.connect(mainbase)
+	mdb = sqlite3.connect(jidbase)
 	cu = mdb.cursor()
 	if text == 'count':
 		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
@@ -2673,7 +2553,7 @@ def info_base(type, jid, nick):
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
 	if text != '':
-		mdb = sqlite3.connect(mainbase)
+		mdb = sqlite3.connect(jidbase)
 		cu = mdb.cursor()
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
@@ -3204,90 +3084,89 @@ def rss(type, jid, nick, text):
 # 2 - владельцу бота
 
 # в конце
-# 0 - передавать параметры
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(1, u'stats', stats, 1),
-	 (1, u'gstats', gstats, 1),
-         (2, u'quit', bot_exit, 2),
-         (2, u'restart', bot_restart, 2),
-         (2, u'update', bot_update, 2),
-         (1, u'say', say, 2),
-         (0, u'calc', calc, 2),
-         (0, u'age', true_age, 2),
-         (0, u'seen', seen, 2),
-         (1, u'seenjid', seenjid, 2),
-         (2, u'exec', execute, 2),
-         (2, u'gsay', gsay, 2),
-         (0, u'help', helpme, 2),
-         (2, u'join', bot_join, 2),
-         (2, u'leave', bot_leave, 2),
-         (2, u'rejoin', bot_rejoin, 2),
-         (2, u'pass', conf_pass, 2),
-         (2, u'bot_owner', owner, 2),
-         (2, u'bot_ignore', ignore, 2),
-         (1, u'where', info_where, 1),
-         (1, u'res', info_res, 2),
-         (1, u'serv', info_serv, 2),
-         (0, u'inbase', info_base, 1),
-         (2, u'search', info_search, 2),
-         (1, u'look', real_search, 2),
-         (2, u'glook', real_search_owner, 2),
-         (1, u'tempo', tmp_search, 2),
-         (2, u'gtempo', gtmp_search, 2),
-         (1, u'rss', rss, 2),
-         (0, u'wtfrand', wtfrand, 1),
-         (0, u'wtfnames', wtfnames, 2),
-         (0, u'wtfcount', wtfcount, 1),
-         (0, u'wtfsearch', wtfsearch, 2),
-         (2, u'wwtf', wwtf, 2),
-         (0, u'wtff', wtff, 2),
-         (0, u'wtfp', wtfp, 2),
-         (0, u'wtf', wtf, 2),
-         (1, u'dfn', dfn, 2),
-         (2, u'gdfn', gdfn, 2),
-         (1, u'alias', alias, 2),
-         (0, u'youtube', youtube, 2),
-         (1, u'www', netwww, 2),
-         (0, u'wzcity', weather_city, 2),
-         (0, u'wzz', weather_raw, 2),
-         (0, u'wzs', weather_short, 2),
-         (0, u'wz', weather, 2),
-         (0, u'gis', weather_gis, 2),
-         (0, u'commands', info_comm, 1),
-         (1, u'comm', comm_on_off, 2),
-         (0, u'bot_uptime', uptime, 1),
-         (1, u'info', info, 1),
-         (0, u'new', svn_info, 1),
-         (0, u'svn', svn_get, 2),
-         (1, u'smile', smile, 2),
-         (1, u'flood', autoflood, 2),
-         (1, u'inban', inban, 2),
-         (1, u'censor', censor_status, 2),
-         (1, u'inmember', inmember, 2),
-         (1, u'inadmin', inadmin, 2),
-         (1, u'inowner', inowner, 2),
-         (0, u'ver', iq_version, 2),
-         (0, u'ping', ping, 2),
-         (0, u'time', iq_time, 2),
-         (0, u'uptime', iq_uptime, 2),
-         (2, u'log', get_log, 2),
-         (2, u'limit', conf_limit, 2),
-         (2, u'plugin', bot_plugin, 2),
-         (0, u'def', defcode, 2),
-         (2, u'error', show_error, 2),
-         (0, u'whoami', info_access, 1),
-         (0, u'whois', info_whois, 2),
-         (0, u'disco', disco, 2),
-         (0, u'tr', translate, 2),
-         (0, u'google', google, 2),
-         (0, u'sayto', sayto, 2),
-         (0, u'dns', get_dns, 2),
-         (0, u'tld', get_tld, 2),
-         (0, u'status', status, 2),
-         (1, u'whereis', whereis, 2),
-	 (1, u'prefix', set_prefix, 2),
-	 (1, u'backup', conf_backup, 2),
-         (1, u'clear', hidden_clear, 2)]
+comms = [(1, u'stats', stats, 1, u'Локальная статистика посещений конференции'),
+	 (1, u'gstats', gstats, 1, u'Глобальная статистика посещений конференций'),
+         (2, u'quit', bot_exit, 2, u'Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.'),
+         (2, u'restart', bot_restart, 2, u'Перезапуск бота. Можно указать параметр, который будет показан в статусе бота при перезапуске.'),
+         (2, u'update', bot_update, 2, u'Самообновление бота из SVN.'),
+         (1, u'say', say, 2, u'Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.'),
+         (0, u'calc', calc, 2, u'Калькулятор.'),
+         (0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
+         (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
+         (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
+         (2, u'exec', execute, 2, u'Исполнение внешнего кода.'),
+         (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.'),
+         (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы.'),
+         (2, u'join', bot_join, 2, u'Вход в конференцию:\njoin room@conference.server.ru/nick - вход в конференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.'),
+         (2, u'leave', bot_leave, 2, u'Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room'),
+         (2, u'rejoin', bot_rejoin, 2, u'Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room'),
+         (2, u'pass', conf_pass, 2, u'Временный пароль для входа в конференции.'),
+         (2, u'bot_owner', owner, 2, u'Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.'),
+         (2, u'bot_ignore', ignore, 2, u'Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.'),
+         (1, u'where', info_where, 1, u'Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.'),
+         (1, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
+         (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
+         (0, u'inbase', info_base, 1, u'Идентификация Вас в глобальной базе.'),
+         (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
+         (1, u'look', real_search, 2, u'Поиск участника по конференциям, где находится бот.'),
+         (2, u'glook', real_search_owner, 2, u'Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.'),
+         (1, u'tempo', tmp_search, 2, u'Локальный поиск во временной базе.'),
+         (2, u'gtempo', gtmp_search, 2, u'Глобальный поиск во временной базе.'),
+         (1, u'rss', rss, 2, u'Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. H - часы, M - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.'),
+         (0, u'wtfrand', wtfrand, 1, u'Показ случайного обределения из базы слов.'),
+         (0, u'wtfnames', wtfnames, 2, u'Показ списка определений в конференции.\nwtfnames [all|global|import]'),
+         (0, u'wtfcount', wtfcount, 1, u'Показ количества определений в конференции.'),
+         (0, u'wtfsearch', wtfsearch, 2, u'Поиск по базе определний.'),
+         (2, u'wwtf', wwtf, 2, u'Показ инфонмации о том, кто сделал определение.'),
+         (0, u'wtff', wtff, 2, u'Показ определения вместе с ником и датой.'),
+         (0, u'wtfp', wtfp, 2, u'Показ определения в приват, независимо от куда поступила команда.\nwtfp word - показать определение word себе в приват\nwtfp word\nnick - показать определение word в приват nick'),
+         (0, u'wtf', wtf, 2, u'Показ определения.'),
+         (1, u'dfn', dfn, 2, u'Установка определения.\ndfn word=definition - запоминает definition как определение word\ndfn word= - удаляет определение word'),
+         (2, u'gdfn', gdfn, 2, u'Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word'),
+         (1, u'alias', alias, 2, u'Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.'),
+         (0, u'youtube', youtube, 2, u'Поиск по YouTube'),
+         (1, u'www', netwww, 2, u'Показывает содержимое веб страницы.\nwww regexp\n[http://]url - страница, обработанная regexp\nwww [http://]url - страница с убранными html тегами'),
+         (0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity страна город, где страна - двухбуквенное сокращание, например ru или ua, город - фрагмент названия города.'),
+         (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
+         (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
+         (0, u'wz', weather, 2, u'Погода по коду аэропорта. Оптимизированный вариант.'),
+         (0, u'gis', weather_gis, 2, u'Погода с GisMeteo.\ngis город|код_города'),
+         (0, u'commands', info_comm, 1, u'Показывает список доступных комманд.'),
+         (1, u'comm', comm_on_off, 2, u'Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд'),
+         (0, u'bot_uptime', uptime, 1, u'Время работы бота.'),
+         (1, u'info', info, 1, u'Различная информация о боте.'),
+         (0, u'new', svn_info, 1, u'Показ svn-лога последнего обновления бота'),
+         (0, u'svn', svn_get, 2, u'Показ svn-лога.\nsvn [http://]url [limit] - показ последней ревизий или нескольких, если указан параметр limit\nsvn [http://]url rXXX - показ ревизии с номером XXX'),
+         (1, u'smile', smile, 2, u'Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [on|off]'),
+         (1, u'flood', autoflood, 2, u'Включение/выключение самообучающегося автоответчика.\nflood [on|off]'),
+         (1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),
+         (1, u'censor', censor_status, 2, u'Включение/выключение цензор-нотификатора.\ncensor [on|off]'),
+         (1, u'inmember', inmember, 2, u'Поиск по member списку конференции.'),
+         (1, u'inadmin', inadmin, 2, u'Поиск по admin списку конференции.'),
+         (1, u'inowner', inowner, 2, u'Поиск по owner списку конференции.'),
+         (0, u'ver', iq_version, 2, u'Версия клиента'),
+         (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
+         (0, u'time', iq_time, 2, u'Локальное время клиента'),
+         (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а'),
+         (2, u'log', get_log, 2, u'Показ лога работы бота:\nlog len [data] - размер лога за дату или текущий день\nlog show data from-to - показ записей лога с "from" по "to" за дату "date"'),
+         (2, u'limit', conf_limit, 2, u'Размер сообщения, свыше которого сообщения будут разбиавться на части кратные этому размеру.'),
+         (2, u'plugin', bot_plugin, 2, u'Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name.py - добавить плагин.\nplugin del name.py - удалить плагин.'),
+         (0, u'def', defcode, 2, u'Территориальная пренадлежность номера мобильного телефона. Внимание! Указывайте не менее 7 первых цифр номера во избежании большого количества сообщений!'),
+         (2, u'error', show_error, 2, u'Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]'),
+         (0, u'whoami', info_access, 1, u'Ваша идентификация перед ботом.'),
+         (0, u'whois', info_whois, 2, u'Идентификация перед ботом.'),
+         (0, u'disco', disco, 2, u'Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов'),
+         (0, u'tr', translate, 2, u'Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода'),
+         (0, u'google', google, 2, u'Поиск через google'),
+         (0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message"'),
+         (0, u'dns', get_dns, 2, u'dns резолвер'),
+         (0, u'tld', get_tld, 2, u'Поиск доменных зон TLD'),
+         (0, u'status', status, 2, u'Показ статуса.'),
+         (1, u'whereis', whereis, 2, u'Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld'),
+	 (1, u'prefix', set_prefix, 2, u'Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.'),
+	 (1, u'backup', conf_backup, 2, u'Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей'),
+         (1, u'clear', hidden_clear, 2, u'Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.')]
 
