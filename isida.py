@@ -627,6 +627,7 @@ def getAnswer(tx,type):
 	mdb = sqlite3.connect(answersbase)
 	answers = mdb.cursor()
 	la = len(answers.execute('select * from answer').fetchall())
+	print la
 	mrand = str(randint(1,la))
 	answers.execute('select * from answer where ind=?', (mrand,))
 

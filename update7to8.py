@@ -77,9 +77,11 @@ tmp = cu.execute('select * from answer').fetchall()
 print 'Import auto-answer base ...', len(tmp)
 cnt = 1
 for aa in tmp:
-	cu.execute('insert into answer values (?,?)', (cnt,aa[1]))
+	cu_answst.execute('insert into answer values (?,?)', (cnt,aa[1]))
 	cnt += 1
 answst.commit()
+tmp = cu_answst.execute('select * from answer').fetchall()
+print 'Imported auto-answer base ...', len(tmp)
 answst.close()
 
 

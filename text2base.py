@@ -4,7 +4,7 @@
 import os, sys, sqlite3
 
 set_folder = u'settings/'		# папка настроек
-mainbase = set_folder+u'main.db'	# основная база данных
+mainbase = set_folder+u'answers.db'	# основная база данных
 
 print 'Autoanswer text to base convertor for Isida Jabber Bot'
 print '(c) Disabler Production Lab.'
