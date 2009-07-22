@@ -64,7 +64,7 @@ tmp = cu.execute('select * from wtf').fetchall()
 cnt = 1
 print 'Import wtf base ...', len(tmp)
 for aa in tmp:
-	cu_wtfst.execute('insert into wtf values (?,?,?,?,?,?,?)', (cnt,aa[0],aa[1],aa[2],aa[3],aa[4],aa[5]))
+	cu_wtfst.execute('insert into wtf values (?,?,?,?,?,?,?)', (cnt,aa[1],aa[2],aa[3],aa[4],aa[5],aa[6]))
 	cnt += 1
 wtfst.commit()
 wtfst.close()
@@ -77,7 +77,7 @@ tmp = cu.execute('select * from answer').fetchall()
 print 'Import auto-answer base ...', len(tmp)
 cnt = 1
 for aa in tmp:
-	cu.execute('insert into answer values (?,?)', (cnt,aa[0]))
+	cu.execute('insert into answer values (?,?)', (cnt,aa[1]))
 	cnt += 1
 answst.commit()
 answst.close()
