@@ -31,7 +31,7 @@ conoff = set_folder+u'commonoff'     	# список "запрещенных" к
 
 saytobase = set_folder+u'sayto.db'	# база команды "передать"
 agestatbase = set_folder+u'agestat.db'	# статистика возрастов
-jidbase = set_folder+u'jidbase.db'	# статистика jid'ов
+jid_base = set_folder+u'jidbase.db'	# статистика jid'ов
 talkersbase = set_folder+u'talkers.db'	# статистика болтунов
 wtfbase = set_folder+u'wtfbase.db'	# определения
 answersbase = set_folder+u'answers.db'	# ответы бота
@@ -758,7 +758,7 @@ def presenceCB(sess,mess):
 		megabase2.append([room, nick, role, affiliation, jid])
 
 	if jid != 'None':
-		mdb = sqlite3.connect(jidbase)
+		mdb = sqlite3.connect(jid_base)
 		cu = mdb.cursor()
 		aa1 = jid[:jid.index('@')]
 		aa2 = jid[jid.index('@')+1:jid.index('/')]

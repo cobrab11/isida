@@ -1,21 +1,108 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-'''	if text[:1] == '#':
-		try:
-			link = 'http://juick.com/'+str(int(text[1:]))
-			body = urllib.urlopen(link).read()
-			body = html_encode(body)
-			print rss_del_html(body)
-			msg = u'ok'
-		except:
-			msg = u'Не верный номер поста'
-'''
-
 def juick(type, jid, nick, text):
 	if text[:9]== 'tag user ': juick_tag_user(type, jid, nick, text[9:])
 	elif text[:8]== 'tag msg ': juick_tag_msg(type, jid, nick, text[8:])
+	elif text[:4]== 'msg ': juick_msg(type, jid, nick, text[4:])
+	elif text[:5]== 'user ': juick_user(type, jid, nick, text[5:])
+	elif text[:5]== 'info ': juick_user_info(type, jid, nick, text[5:])
 	else: send_msg(type, jid, nick, u'Курим помощь по команде!')
+
+def juick_user_info(type, jid, nick, text):
+	if len(text):
+		try: mlen = int(text.split(' ')[1])
+		except: mlen = 3
+		try: mlim = int(text.split(' ')[2])
+		except: mlim = 50
+		text = text.split(' ')[0]
+		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/friends'
+		body = urllib.urlopen(link).read()
+		body = html_encode(body)
+		if body.count('<title>404 Not Found</title>'):
+			msg = u'Пользователь '+text+u' не найден'
+		else:
+			msg = get_tag(body,'h1')
+			tb = body.split('<div id="content">')[1]
+			msg += '\n'+get_tag(tb,'h2')+' - '
+			for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
+				msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+			tb = body.split('</p>')[1]
+			msg = msg[:-2]+'\n'+get_tag(tb,'h2')+' - '
+			for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
+				msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+			msg = msg[:-2]
+
+			
+	else: msg = u'Кто нужен то?'
+	send_msg(type, jid, nick, msg)
+
+def juick_user(type, jid, nick, text):
+	if len(text):
+		try: mlen = int(text.split(' ')[1])
+		except: mlen = 3
+		try: mlim = int(text.split(' ')[2])
+		except: mlim = 50
+		text = text.split(' ')[0]
+		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
+		body = urllib.urlopen(link).read()
+		body = html_encode(body)
+		if body.count('<title>404 Not Found</title>'):
+			msg = u'Пользователь '+text+u' не найден'
+		else:
+			msg = get_tag(body,'h1')
+			mes = body.split('<li id="')
+			mesg = ''
+			for us in mes[1:mlen+1]:
+				mesg += '\n'+get_tag(us.split('<small>')[1],'a')+' - '
+				mm = rss_del_html(get_tag(us,'div'))
+				if len(mm)<mlim: mesg += mm
+				else: mesg += mm[:mlim]+'[...]'
+				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
+				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
+			msg += mesg
+	else: msg = u'Кто нужен то?'
+	send_msg(type, jid, nick, msg)
+
+def juick_msg(type, jid, nick, text):
+	if len(text):
+		try:
+			if text.count('/'):
+				link = 'http://juick.com/'+text.split('/')[0]
+				post = int(text.split('/')[1])
+			else: 
+				post = 0
+				link = 'http://juick.com/'+text.split(' ')[0]
+			try: repl_limit = int(text.split(' ')[1])
+			except: repl_limit = 3
+			body = urllib.urlopen(link).read()
+			body = html_encode(body)
+			if body.count('<title>404 Not Found</title>'):
+				msg = u'Пост #'+text+u' не найден'
+			else:
+				msg = get_tag(body,'h1')+' - '+get_tag(body.split('<p>')[1],'div')
+			repl = get_tag(body.split('<p>')[1],'h2')
+			if repl.lower().count('('):
+				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
+				msg += u' (Ответов: '+str(hm_repl)+')'
+			else:
+				hm_repl = 0
+				msg += u' (Нет ответов)'
+			frm = get_tag(body.split('<p>')[1],'small')
+			msg += frm[frm.find(' '):]
+			cnt = 1
+			if hm_repl:
+				if not post:
+					for rp in body.split('<li id="')[1:repl_limit+1]:
+						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp,'div')
+						cnt += 1
+				else:
+					msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
+			msg = rss_del_html(msg)
+		except:
+			msg = u'Неверный номер поста'
+	else: msg = u'Какой пост найти?'
+	send_msg(type, jid, nick, msg)
 
 def juick_tag_user(type, jid, nick, text):
 	if len(text):
@@ -61,4 +148,4 @@ def juick_tag_msg(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'juick', juick, 2, u'Миниблоги http://juick.com\njuick tag user <tag>\njuick tag msg <tag> [лимит_сообщенй [лимит_размера_сообщений]]')]
+execute = [(0, u'juick', juick, 2, u'Миниблоги http://juick.com\njuick tag user <tag> - пользователи, использующие теги\njuick tag msg <tag> [лимит_сообщенй [лимит_размера_сообщений]] - сообщения с заданными тегами\njuick msg <номер_поста>[ количество] - пост+количество ответов\njuick msg <номер_поста/номер_ответа> - пост+ответ на пост\njuick user <user> [лимит_сообщенй [лимит_размера_сообщений]] - последние сообщения пользователя\njuick info <user> - информация о пользователе')]

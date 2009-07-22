@@ -2474,7 +2474,7 @@ def info(type, jid, nick):
 	
 
 def info_res(type, jid, nick, text):
-	mdb = sqlite3.connect(jidbase)
+	mdb = sqlite3.connect(jid_base)
 	cu = mdb.cursor()
 	if text == 'count':
 		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
@@ -2503,7 +2503,7 @@ def info_res(type, jid, nick, text):
 	
 
 def info_serv(type, jid, nick, text):
-	mdb = sqlite3.connect(jidbase)
+	mdb = sqlite3.connect(jid_base)
 	cu = mdb.cursor()
 	if text == 'count':
 		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
@@ -2553,7 +2553,7 @@ def info_base(type, jid, nick):
 def info_search(type, jid, nick, text):
         msg = u'Чего искать то будем?'
 	if text != '':
-		mdb = sqlite3.connect(jidbase)
+		mdb = sqlite3.connect(jid_base)
 		cu = mdb.cursor()
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
