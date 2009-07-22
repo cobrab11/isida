@@ -80,8 +80,6 @@ for aa in tmp:
 	cu_answst.execute('insert into answer values (?,?)', (cnt,aa[1]))
 	cnt += 1
 answst.commit()
-tmp = cu_answst.execute('select * from answer').fetchall()
-print 'Imported auto-answer base ...', len(tmp)
 answst.close()
 
 
