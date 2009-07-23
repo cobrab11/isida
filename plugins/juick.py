@@ -23,17 +23,46 @@ def juick_user_info(type, jid, nick, text):
 			msg = u'Пользователь '+text+u' не найден'
 		else:
 			msg = get_tag(body,'h1')
-			tb = body.split('<div id="content">')[1]
-			msg += '\n'+get_tag(tb,'h2')+' - '
-			for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
-				msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
-			tb = body.split('</p>')[1]
-			msg = msg[:-2]+'\n'+get_tag(tb,'h2')+' - '
-			for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
-				msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
-			msg = msg[:-2]
-
-			
+			tb = body.split('<div id="content">')[1].split('</div>')[0]
+			try:
+				if len(tb)>=20 and tb.count('I read'):
+					msg += '\n'+get_tag(tb,'h2')+' - '
+					for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
+						msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+					msg = msg[:-2]
+				else: msg += '\nNo readers'
+			except:
+				msg += '\nNo readers'
+			try:
+				if len(tb)>=20 and tb.count('My read'):			
+					tb = body.split('</p>')[1]
+					msg += '\n'+get_tag(tb,'h2')+' - '
+					for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
+						msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+					msg = msg[:-2]
+				else: msg += '\nNo readers'
+			except:
+				msg += '\nNo readers'
+			try:
+				tb = body.split('<div id="lcol">')[1].split('<div>')[0]
+				if len(tb)>=20 and tb.count('</a></p>'):
+					tb.split('</a></p>')[0]
+#					msg += '\n'+get_tag(tb,'h2')+':'
+					for ttb in tb.split('<br/>')[1:]:
+						msg += '\n'+get_tag(ttb,'a')+' - '+get_subtag(ttb,'href')
+				else: msg += '\nNo info'
+			except:
+				msg += '\nNo info'
+			try:
+				if body.count('<h2>Tags</h2>'):
+					tb = body.split('<h2>Tags</h2>')[1].split('</p>')[0]
+					msg += u'\nTags: '
+					for ttb in tb.split('<a href')[1:]:
+						msg += ttb[ttb.find('>')+1:ttb.find('<',ttb.find('>'))]+', '
+					msg = msg[:-2]
+				else: msg += '\nNo tags'
+			except:
+				msg += '\nNo tags'
 	else: msg = u'Кто нужен то?'
 	send_msg(type, jid, nick, msg)
 
@@ -67,6 +96,7 @@ def juick_user(type, jid, nick, text):
 def juick_msg(type, jid, nick, text):
 	if len(text):
 		try:
+			text = text.replace('#','')
 			if text.count('/'):
 				link = 'http://juick.com/'+text.split('/')[0]
 				post = int(text.split('/')[1])
