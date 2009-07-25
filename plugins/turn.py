@@ -7,23 +7,27 @@ def turner(type, jid, nick, text):
 	global turn_base
 	rtab = u'йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>~'
 	ltab = u'qwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ'
-	for tmp in turn_base:
-		if tmp[0] == jid and tmp[1] == nick:
-			turn_base.remove(tmp)
-			msg = ''
-			for tex in tmp[2]:
-				notur = 1
-				for i in range(0,len(rtab)):
-					if tex == rtab[i]:
-						msg += ltab[i]
-						notur = 0
-						break
-				if notur: msg += tex
-			gl_censor = getFile(cns,[(getRoom(jid),0)])
-			if int((getRoom(jid),1) in gl_censor):
-				msg = to_censore(msg)
-			send_msg(type, jid, nick, msg)
-			break
+	if text == '':
+		for tmp in turn_base:
+			if tmp[0] == jid and tmp[1] == nick:
+				turn_base.remove(tmp)
+				to_turn = tmp[2]
+				break
+	else:
+		to_turn = text
+	msg = ''
+	for tex in to_turn:
+		notur = 1
+		for i in range(0,len(rtab)):
+			if tex == rtab[i]:
+				msg += ltab[i]
+				notur = 0
+				break
+		if notur: msg += tex
+	gl_censor = getFile(cns,[(getRoom(jid),0)])
+	if int((getRoom(jid),1) in gl_censor):
+		msg = to_censore(msg)
+	send_msg(type, jid, nick, msg)
 
 def append_to_turner(room,jid,nick,type,text):
 	global turn_base
@@ -48,4 +52,4 @@ global execute
 message_control = [append_to_turner]
 presence_control = [remove_from_turner]
 
-execute = [(0, u'turn', turner, 2, u'"Перевернуть" последнее сообщение с русского на английский и обратно.')]
+execute = [(0, u'turn', turner, 2, u'если не задан текст - "переворачивает" последнее сообщение с русской раскладки на английскую и обратно.')]

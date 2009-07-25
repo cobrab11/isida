@@ -318,9 +318,12 @@ def os_version():
 	                "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
 	                key)
 	        osInfo = get("ProductName")
-	        spInfo = get("CSDVersion")
 	        buildInfo = get("CurrentBuildNumber")
-	        japytOs = osInfo+' '+spInfo+' (Build: '+buildInfo+') / Python v'+japytPyVer
+		try:
+			spInfo = get("CSDVersion")
+			japytOs = osInfo+' '+spInfo+' (Build: '+buildInfo+') / Python v'+japytPyVer
+		except:
+			japytOs = osInfo+' (Build: '+buildInfo+') / Python v'+japytPyVer
 	else:
 	        japytOs = 'unknown'
 	return japytOs
