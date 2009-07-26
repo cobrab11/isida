@@ -54,8 +54,8 @@ answst = sqlite3.connect(answers)
 cu_answst = answst.cursor()
 if not stb:
 	cu_answst.execute('''create table answer (ind integer, body text)''')
-	cu.execute('insert into answer values (?,?)', (1,u';-)'))
-	cu.execute('insert into answer values (?,?)', (2,u'Привет'))
+	cu_answst.execute('insert into answer values (?,?)', (1,u';-)'))
+	cu_answst.execute('insert into answer values (?,?)', (2,u'Привет'))
 	answst.commit()
 answst.close()
 
