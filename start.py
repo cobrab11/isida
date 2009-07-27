@@ -23,6 +23,7 @@ while 1:
 		mode = str(readfile('settings/tmp'))
 	if mode == 'update':
 		os.system('echo `svnversion` > settings/ver')
+		os.system('rm plugins/list.txt')
 		os.system('svn up')
 		os.system('echo `svnversion` > settings/version')
 		try:
