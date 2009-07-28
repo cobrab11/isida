@@ -25,9 +25,9 @@ def html_repl(ms):
 def append_message_to_log(room,jid,nick,type,text):
 #	print room,jid,nick,type,text
 	global public_log, system_log
-	if type == 'groupchat':
+	if type == 'groupchat' and text != 'None':
 		msg_logger(room,jid,nick,type,text,public_log)
-	if type == 'chat': nick = u'chat | '+nick
+	if type == 'chat' and text != 'None': nick = u'chat | '+nick
 	msg_logger(room,jid,nick,type,text,system_log)
 	sys.exit(0)
 
