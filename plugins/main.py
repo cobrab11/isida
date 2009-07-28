@@ -2675,17 +2675,9 @@ def rss_replace(ms):
 	m = 0
 	while m<len(ms):
 		try:
-			if ms[m:m+2] == u'&#':
-				if ms[2].lower() == 'x':
-					tnum = ms[m+3:ms.find(';',m+3)]
-				else:
-					tnum = ms[m+2:ms.find(';',m+2)]
-				num = isNumber(tnum[:5])
-				if num != 'None':
-					mm += unicode(num)
-					m += 3 + len(tnum)
-				else:
-					mm += ms[m]
+			if ms[m:m+2] == u'&#' and ms[m+6] == ';':
+					mm += u'—'
+					m += 6
 			else:
 				mm += ms[m]
 		except:

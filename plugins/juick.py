@@ -18,7 +18,7 @@ def juick_user_info(type, jid, nick, text):
 		text = text.split(' ')[0]
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/friends'
 		body = urllib.urlopen(link).read()
-		body = html_encode(body)
+		body = rss_replace(html_encode(body))
 		if body.count('<title>404 Not Found</title>'):
 			msg = u'Пользователь '+text+u' не найден'
 		else:
@@ -75,7 +75,7 @@ def juick_user(type, jid, nick, text):
 		text = text.split(' ')[0]
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
-		body = html_encode(body)
+		body = rss_replace(html_encode(body))
 		if body.count('<title>404 Not Found</title>'):
 			msg = u'Пользователь '+text+u' не найден'
 		else:
@@ -106,12 +106,14 @@ def juick_msg(type, jid, nick, text):
 			try: repl_limit = int(text.split(' ')[1])
 			except: repl_limit = 3
 			body = urllib.urlopen(link).read()
-			body = html_encode(body.replace('<div><a href','<div><a '))
+			body = rss_replace(html_encode(body.replace('<div><a href','<div><a ')))
 			if body.count('<title>404 Not Found</title>'):
 				msg = u'Пост #'+text+u' не найден'
 			else:
 				nname = get_tag(body,'h1')
-				msg = 'http://juick.com/'+nname[nname.find('(')+1:nname.find(')')]+'/'+text.split(' ')[0]+'\n'+nname+' - '+get_tag(body.split('<p>')[1],'div')
+				if nname.count('(') and nname.count(')'): uname = nname[nname.find('(')+1:nname.find(')')]
+				else: uname = nname
+				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0]+'\n'+nname+' - '+get_tag(body.split('<p>')[1],'div')
 			repl = get_tag(body.split('<p>')[1],'h2')
 			if repl.lower().count('('):
 				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
@@ -125,7 +127,6 @@ def juick_msg(type, jid, nick, text):
 			if hm_repl:
 				if not post:
 					for rp in body.split('<li id="')[1:repl_limit+1]:
-						print cnt, '--------------\n',rp
 						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp.split('by')[1],'a')+': '+get_tag(rp,'div')
 						cnt += 1
 				else:
@@ -143,7 +144,7 @@ def juick_tag_user(type, jid, nick, text):
 		if mlen > 20: mlen = 20
 		link = 'http://juick.com/last?tag='+text.split(' ')[0].encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
-		body = html_encode(body)
+		body = rss_replace(html_encode(body))
 		if body.count('<p>Tag not found</p>'):
 			msg = u'Тег '+text+u' не найден'
 		else:
@@ -165,7 +166,7 @@ def juick_tag_msg(type, jid, nick, text):
 		text = text.split(' ')[0]
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
-		body = html_encode(body)
+		body = rss_replace(html_encode(body))
 		if body.count('<p>Tag not found</p>'):
 			msg = u'Тег '+text+u' не найден'
 		else:
