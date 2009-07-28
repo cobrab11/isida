@@ -1,1 +1,1 @@
-[u'talkers.py', u'lastfm.py', u'test.py', u'antitroll.py', u'muc.py', u'shell.py', u'drink.py', u'poke.py', u'istrue.py', u'invite.py', u'turn.py', u'logger.py', u'idle.py', u'juick.py']
+[u'talkers.py', u'lastfm.py', u'test.py', u'antitroll.py', u'muc.py', u'shell.py', u'drink.py', u'poke.py', u'istrue.py', u'invite.py', u'turn.py', u'logger.py', u'idle.py', u'juick.py', u'www.py']

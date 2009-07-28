@@ -802,37 +802,6 @@ def unhtml(page):
 	page = page.replace('\n ','')
 	return page
 
-def netwww(type, jid, nick, text):
-	if text.count('\n'):
-		regex = text.split('\n')[0]
-		text = text.split('\n')[1]
-	else:
-		regex = None
-	text = text.encode('utf-8')
-	text = text.replace('\\x','%')
-	text = text.replace(' ','%20')
-	if text[:7] !='http://':
-       	        text = 'http://'+text
-	f = urllib.urlopen(text)
-	page = f.read()
-	f.close()
-
-#	print page
-	page = html_encode(page)
-	page = rss_replace(page)
-	if regex:
-#		try: match = re.search(regex, page, re.S).groups()
-#		except: match = ''
-		match = ''
-		if len(match):
-			msg = unhtml(match[0])
-		else:
-			msg = u'RegExp не найден!'
-	else:
-		msg = get_tag(page,'title')+'\n'
-		msg += unhtml(page)
-	send_msg(type, jid, nick, msg)
-
 def seen(type, jid, nick, text):
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
@@ -3107,7 +3076,6 @@ comms = [(1, u'stats', stats, 1, u'Локальная статистика по�
          (2, u'gdfn', gdfn, 2, u'Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word'),
          (1, u'alias', alias, 2, u'Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.'),
          (0, u'youtube', youtube, 2, u'Поиск по YouTube'),
-         (1, u'www', netwww, 2, u'Показывает содержимое веб страницы.\nwww regexp\n[http://]url - страница, обработанная regexp\nwww [http://]url - страница с убранными html тегами'),
          (0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity страна город, где страна - двухбуквенное сокращание, например ru или ua, город - фрагмент названия города.'),
          (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
          (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
