@@ -328,42 +328,29 @@ def translate(type, jid, nick,text):
 
 def svn_get(type, jid, nick,text):
 	tlog = 'tempo.log'
-	if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://':
-                text = 'http://'+text
+	if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://': text = 'http://'+text
 	count = 1
 	revn = 0
 	if text.count(' '):
 		text = text.split(' ')
 		url = text[0]
-		try:
-			count = int(text[1])
+		try: count = int(text[1])
 		except:
 			try:
-				if text[1][0].lower()=='r':
-					revn = int(text[1][1:])
+				if text[1].lower().count('r'): revn = int(text[1][text[1].find('r')+1:])
 			except:
 				revn = 0
 	else:
 		url=text
-	if os.path.isfile(tlog):
-		os.system('rm -r '+tlog)
-
-	if revn:
-		os.system('svn log '+url+' -r'+str(revn)+' > '+tlog)
+	if revn != 0: sh_exe = 'svn log '+url+' -r'+str(revn)
 	else:
-		if count > 10:
-			count = 10
-		os.system('svn log '+url+' --limit '+str(count)+' > '+tlog)
-	try:
-		result = readfile(tlog).decode('utf-8')
-	except:
-		result = ''
-
-	if len(result):
-		msg = u'last svn update: '+url+'\n'+result
-	else:
-		msg = url+u' - недоступно!'
-        send_msg(type, jid, nick, msg)
+		if count > 10: count = 10
+		sh_exe = 'svn log '+url+' --limit '+str(count)
+	sh_ex = "sh -c '%s' 2>&1"%(sh_exe.replace("'","'\\''"))
+	p = os.popen(sh_ex)
+	result = p.read().decode('utf8', 'replace')
+	msg = url+'\n'+result
+	send_msg(type, jid, nick, msg)
 
 def sayto(type, jid, nick, text):
 	if text.count(' '):

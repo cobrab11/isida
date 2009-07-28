@@ -2,25 +2,16 @@
 # -*- coding: utf -*-
 
 def shell(type, jid, nick, text):
-	sysshell(type, jid, nick, text, 0)
-
-def shell_silent(type, jid, nick, text):
 	sysshell(type, jid, nick, text, 1)
 
+def shell_silent(type, jid, nick, text):
+	sysshell(type, jid, nick, text, 0)
+
 def sysshell(type, jid, nick, text, mode):
-	if os.path.isfile('tmp'):
-		os.system('rm -r tmp')
-	a = os.system(text+' > tmp')
-	if a:
-		msg = u'Ошибка выполнения команды!'
-	else:
-		try:
-			msg = readfile('tmp').decode('utf-8')
-			if mode:
-				msg = 'done'
-		except:
-			msg = u'Ошибка получения результата!'
-	send_msg(type, jid, nick, msg)
+	sh_ex = "sh -c '%s' 2>&1"%(text.replace("'","'\\''"))
+	p = os.popen(sh_ex)
+	msg = p.read().decode('utf8', 'replace')
+	if mode: send_msg(type, jid, nick, msg)
 
 global execute
 
