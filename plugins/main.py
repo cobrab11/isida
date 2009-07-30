@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+def concat(list):
+	result = ''
+	for tmp in list:
+		result += tmp
+	return result
+
 def get_affiliation(jid,nick):
 	xtype = ''
 	for base in megabase:
