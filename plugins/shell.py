@@ -12,6 +12,7 @@ def sysshell(type, jid, nick, text, mode):
 		sh_ex = "bash -c '%s' 2>&1"%(text.replace("'","'\\''"))
 		p = os.popen(sh_ex)
 		msg = p.read().decode('utf8', 'replace')
+		p.close()
 	except: msg = u'Произошла ошибка обработки команды'
 	if mode: send_msg(type, jid, nick, msg)
 

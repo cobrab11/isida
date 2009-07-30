@@ -6,6 +6,7 @@ def srv_shell(text):
 		sh_ex = "bash -c '%s' 2>&1"%(text.replace("'","'\\''"))
 		p = os.popen(sh_ex)
 		msg = p.read().decode('utf8', 'replace')
+		p.close()
 	except: msg = u'Произошла ошибка обработки команды'
 	return msg
 

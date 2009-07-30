@@ -25,6 +25,7 @@ def svn_get(type, jid, nick,text):
 		sh_ex = "bash -c '%s' 2>&1"%(sh_exe.replace("'","'\\''"))
 		p = os.popen(sh_ex)
 		result = p.read().decode('utf8', 'replace')
+		p.close()
 		msg = url+'\n'+result
 	except: msg = u'Произошла ошибка обработки команды'
 	send_msg(type, jid, nick, msg)
