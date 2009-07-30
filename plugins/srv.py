@@ -2,9 +2,11 @@
 # -*- coding: utf -*-
 
 def srv_shell(text):
-	sh_ex = "sh -c '%s' 2>&1"%(text.replace("'","'\\''"))
-	p = os.popen(sh_ex)
-	msg = p.read().decode('utf8', 'replace')
+	try:
+		sh_ex = "bash -c '%s' 2>&1"%(text.replace("'","'\\''"))
+		p = os.popen(sh_ex)
+		msg = p.read().decode('utf8', 'replace')
+	except: msg = u'Произошла ошибка обработки команды'
 	return msg
 
 def srv_nslookup(type, jid, nick, text):

@@ -325,33 +325,6 @@ def translate(type, jid, nick,text):
 			msg = u'Формат команды: tr с_какого на_какой текст'
         send_msg(type, jid, nick, msg)
 
-
-def svn_get(type, jid, nick,text):
-	tlog = 'tempo.log'
-	if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://': text = 'http://'+text
-	count = 1
-	revn = 0
-	if text.count(' '):
-		text = text.split(' ')
-		url = text[0]
-		try: count = int(text[1])
-		except:
-			try:
-				if text[1].lower().count('r'): revn = int(text[1][text[1].find('r')+1:])
-			except:
-				revn = 0
-	else:
-		url=text
-	if revn != 0: sh_exe = 'svn log '+url+' -r'+str(revn)
-	else:
-		if count > 10: count = 10
-		sh_exe = 'svn log '+url+' --limit '+str(count)
-	sh_ex = "sh -c '%s' 2>&1"%(sh_exe.replace("'","'\\''"))
-	p = os.popen(sh_ex)
-	result = p.read().decode('utf8', 'replace')
-	msg = url+'\n'+result
-	send_msg(type, jid, nick, msg)
-
 def sayto(type, jid, nick, text):
 	if text.count(' '):
 		to = text[:text.find(' ')]
@@ -3086,7 +3059,6 @@ comms = [(1, u'stats', stats, 1, u'Локальная статистика по�
          (0, u'bot_uptime', uptime, 1, u'Время работы бота.'),
          (1, u'info', info, 1, u'Различная информация о боте.'),
          (0, u'new', svn_info, 1, u'Показ svn-лога последнего обновления бота'),
-         (0, u'svn', svn_get, 2, u'Показ svn-лога.\nsvn [http://]url [limit] - показ последней ревизий или нескольких, если указан параметр limit\nsvn [http://]url rXXX - показ ревизии с номером XXX'),
          (1, u'smile', smile, 2, u'Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [on|off]'),
          (1, u'flood', autoflood, 2, u'Включение/выключение самообучающегося автоответчика.\nflood [on|off]'),
          (1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),

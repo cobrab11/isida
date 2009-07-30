@@ -20,7 +20,7 @@ def anek(type, jid, nick):
 			if len(message)<500:
 				send_msg(type, jid, nick, unicode(message,'windows-1251'))
 			else:
-				send_msg(type, jid, nick, u'Отплавила в приват')
+				send_msg(type, jid, nick, u'Отправила в приват')
 				send_msg('chat', jid, nick, unicode(message,'windows-1251'))
 				return
 		else:
@@ -32,4 +32,4 @@ def anek(type, jid, nick):
 global execute
 
 
-execute = [(0, u'anek', anek, 1, u'показывает случайный анекдот с интернет ресурса | author ferym')]
+execute = [(0, u'anek', anek, 1, u'Показывает случайный анекдот с интернет ресурса | author ferym')]
