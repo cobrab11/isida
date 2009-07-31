@@ -7,7 +7,7 @@ from sys import maxint
 from time import *
 from pdb import *
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging
-import thread, operator, sqlite3, simplejson, chardet, socket, popen2
+import thread, operator, sqlite3, simplejson, chardet, socket, popen2, atexit
 
 LOG_FILENAME = u'log/error.txt'		# логи
 
@@ -112,9 +112,10 @@ def onlytimeadd(lt):
 	return st
 
 def pprint(text):
-        text = text
+	global dm
+	text = text
 	zz = parser('['+timeadd(tuple(localtime()))+'] '+text)
-#	print zz
+	if not dm: print zz
 
 def send_presence_all(sm):
 	for tocon in confbase:
@@ -991,20 +992,27 @@ pprint(u'bot jid: '+unicode(jid))
 psw = u''
 raw_iq = []
 
-if dm:
-	cl = Client(jid.getDomain(), debug=[])
-else:
-	cl = Client(jid.getDomain())
-cl.connect()
-pprint(u'Connected')
+try:
+	if dm:
+		cl = Client(jid.getDomain(), debug=[])
+	else:
+		cl = Client(jid.getDomain())
+	cl.connect()
+	pprint(u'Connected')
 
-if newBotJid:
-        pprint(u'New jid: '+unicode(jid.getNode())+'@'+unicode(domain))
-        features.register(cl, domain, {'username':node, 'password':password})
-        pprint(u'Registered')
+	if newBotJid:
+		pprint(u'New jid: '+unicode(jid.getNode())+'@'+unicode(domain))
+		features.register(cl, domain, {'username':node, 'password':password})
+		pprint(u'Registered')
 
-cl.auth(jid.getNode(), password, jid.getResource())
-pprint(u'Autheticated')
+	cl.auth(jid.getNode(), password, jid.getResource())
+	pprint(u'Autheticated')
+except:
+	reboot_time = 60
+	pprint(u'Auth error or no connection. Restart in '+str(reboot_time)+' sec.')
+	writefile(tmpf,str('restart'))
+	sleep(reboot_time)
+	while 1: sys.exit(0)
 
 pprint(u'Wait conference')
 for tocon in confbase:

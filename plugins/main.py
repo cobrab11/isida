@@ -2090,7 +2090,7 @@ def bot_rejoin(type, jid, nick, text):
 def bot_join(type, jid, nick, text):
         global lastserver, lastnick, confs, confbase
         text=unicode(text)
-        if text=='':
+        if text=='' or text.count(' '):
                 send_msg(type, jid, nick, u'косяк с аргументами!')
         else:
                 if toSymbolPosition(text,'@')<0:
