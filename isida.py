@@ -582,12 +582,12 @@ def messageCB(sess,mess):
 
 	for tmp in gmessage:
 		try:
-			thread.start_new_thread(message_thread,tmp,(room,jid,nick,type,back_text))
+			thread.start_new_thread(message_thread,(tmp,room,jid,nick,type,back_text))
 		except:
 			sleep(0.1)
 					
-def message_thread(func,param):
-	func(param)
+def message_thread(*param):
+	param[0](param[1],param[2],param[3],param[4],param[5])
 	sys.exit(0)
 
 def send_msg_human(type, room, nick, text):
@@ -791,11 +791,11 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		try: thread.start_new_thread(presence_thread,tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+		try: thread.start_new_thread(presence_thread,(tmp,room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 		except: sleep(0.1)
 
-def presence_thread(func,param):
-	func(param)
+def presence_thread(*param):
+	param[0](param[1],param[2],param[3],param[4],param[5])
 	sys.exit(0)
 	
 def onoff(msg):
@@ -826,14 +826,14 @@ def schedule():
 		prev_time = tmp_time
 		now_schedule()
 
-def timer_thread(func,param):
-	func(param)
+def timer_thread(*param):
+	param[0]()
 	sys.exit(0)
 		
 def now_schedule():
 	for tmr in gtimer:
 		try:
-			thread.start_new_thread(timer_thread,tmr,())
+			thread.start_new_thread(timer_thread,(tmr))
 		except:
 			sleep(0.01)
 
