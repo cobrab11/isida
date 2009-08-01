@@ -11,6 +11,8 @@ if not os.path.exists(log_folder): os.mkdir(log_folder)
 if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log): os.mkdir(system_log)
 
+log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'
+
 def html_repl(ms):
 	ms = ms.replace('&','&amp;')
 	ms = ms.replace('<','&lt;')
@@ -51,11 +53,11 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	else:
 		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>'
 		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
-
+	lht = room+' - '+str(lt[0])+'/'+str(lt[1])+'/'+str(lt[2])
+	log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
 	if not os.path.isfile(curr_file):
-		header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'+room+'</title></head><body>'
 		fl = open(curr_file, 'a')
-		fl.write(header.encode('utf-8'))
+		fl.write(log_he.encode('utf-8'))
 		fl.write(log_body.encode('utf-8'))
 	else:
 		fl = open(curr_file, 'a')
@@ -121,11 +123,11 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 				if text != 'None':  log_body += ' ('+text+')'
 
 			log_body += '</font></i></a><br>'
-
+		lht = room+' - '+str(lt[0])+'/'+str(lt[1])+'/'+str(lt[2])
+		log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
 		if not os.path.isfile(curr_file):
-			header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'+room+'</title></head><body>'
 			fl = open(curr_file, 'a')
-			fl.write(header.encode('utf-8'))
+			fl.write(log_he.encode('utf-8'))
 			fl.write(log_body.encode('utf-8'))
 		else:
 			fl = open(curr_file, 'a')

@@ -582,7 +582,11 @@ def messageCB(sess,mess):
 
 	for tmp in gmessage:
 		try:
-			thread.start_new_thread(message_thread,(tmp,room,jid,nick,type,back_text))
+			subj=unicode(mess.getSubject())
+			if subj != 'None' and back_text == 'None':
+				thread.start_new_thread(message_thread,(tmp,room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj))
+			else:
+				thread.start_new_thread(message_thread,(tmp,room,jid,nick,type,back_text))
 		except:
 			sleep(0.1)
 					
