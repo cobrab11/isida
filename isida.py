@@ -832,10 +832,8 @@ def timer_thread(*param):
 		
 def now_schedule():
 	for tmr in gtimer:
-		try:
-			thread.start_new_thread(timer_thread,(tmr))
-		except:
-			sleep(0.01)
+		try: thread.start_new_thread(timer_thread,(tmr,))
+		except: sleep(0.01)
 
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:

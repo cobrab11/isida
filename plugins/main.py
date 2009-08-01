@@ -2194,6 +2194,10 @@ def bot_plugin(type, jid, nick, text):
 	if do == 'add':
 		if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
 			plugins.append(nnick)
+			presence_control = []
+			message_control = []
+			iq_control = []
+			timer = []
 			execfile('plugins/'+nnick)
 			msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
 			for cm in execute:
@@ -2210,6 +2214,10 @@ def bot_plugin(type, jid, nick, text):
 	elif do == 'del':
 		if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
 			plugins.remove(nnick)
+			presence_control = []
+			message_control = []
+			iq_control = []
+			timer = []
 			execfile('plugins/'+nnick)
 			msg = u'Удалён плагин: '+nnick[:-3]+u'\nУдалены комманды: '
 			for commmm in execute:
@@ -2241,7 +2249,6 @@ def bot_plugin(type, jid, nick, text):
 		for jjid in plugins:
 				msg += jjid[:-3]+', '
 		msg = msg[:-2]
-
 
 	writefile(plname,str(plugins))
 	send_msg(type, jid, nick, msg)
