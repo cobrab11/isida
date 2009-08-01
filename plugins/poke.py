@@ -15,8 +15,8 @@ def to_poke(type, jid, nick, text):
 			u'попрыгала с бубном вокруг NICK',
 			u'тыкает NICK со словами "купи мороженного, гадюка!"']
 	poke_file = 'plugins/poke.txt'
-        ta = get_access(jid,nick)
-        access_mode = ta[0]
+	ta = get_access(jid,nick)
+	access_mode = ta[0]
 	dpoke = getFile(poke_file,predef_poke)
 	if text == 'show' and access_mode == 2:
 		if type == 'groupchat':

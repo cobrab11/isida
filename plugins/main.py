@@ -67,7 +67,7 @@ def comm_on_off(type, jid, nick, text):
 		if len(msg): msg = u'Отключены команды: ' + msg[:-2]
 		else: msg = u'Для данной конференции нет отключенных команд' 
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def reduce_spaces(text):
 	while text[0] == ' ':
@@ -121,7 +121,7 @@ def iq_uptime(type, jid, nick, text):
 
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def censor_status(type, jid, nick, text):
 	tmode = 0
@@ -149,7 +149,7 @@ def censor_status(type, jid, nick, text):
 		ssta = 1
 	msg += onoff(ssta)
 	writefile(cns,str(gl_censor))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
 	if text == '':
@@ -185,7 +185,7 @@ def status(type, jid, nick, text):
 			msg = text + ' - '+msg
 	else:
 		msg = u'Не найдено!'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def get_tld(type, jid, nick, text):
 	if len(text) >= 2:
@@ -198,7 +198,7 @@ def get_tld(type, jid, nick, text):
 				break
 	else:
 		msg = u'Что искать то будем?'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
 
@@ -225,7 +225,7 @@ def get_dns(type, jid, nick, text):
 			msg = msg[:-2]
 		except:
 			msg = u'Не резолвится'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def ping(type, jid, nick, text):
 	global iq_answer
@@ -280,7 +280,7 @@ def ping(type, jid, nick, text):
 				msg = u'Пинг от '+text+' '+tpi+u' сек.'
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def replacer(msg):
 	msg = rss_replace(msg)
@@ -304,7 +304,7 @@ def google(type, jid, nick,text):
 		msg = replacer(noh_title)+replacer(content)+url
 	except:
 		msg = u'Выражение "' + text + u'" - не найдено!'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def translate(type, jid, nick,text):
 	trlang = ['sq','ar','bg','ca','zh-CN','zh-TW','hr','cs','da',
@@ -329,7 +329,7 @@ def translate(type, jid, nick,text):
 				msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
 		else:
 			msg = u'Формат команды: tr с_какого на_какой текст'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def sayto(type, jid, nick, text):
 	if text.count(' '):
@@ -359,7 +359,7 @@ def sayto(type, jid, nick, text):
 			sdb.commit()
 	else:
 		msg = u'Кому что передать?'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def getMucItems(jid,affil,ns):
 	global banbase,raw_iq
@@ -403,8 +403,8 @@ def conf_backup(type, jid, nick, text):
 				if nowname == '':
 					nowname = nickname
 			xtype = ''
-        	        for base in megabase:
-        	                if base[0].lower() == jid and base[1] == nowname:
+			for base in megabase:
+				if base[0].lower() == jid and base[1] == nowname:
 					xtype = base[3]
 					break
 			if xtype != 'owner':
@@ -449,8 +449,8 @@ def conf_backup(type, jid, nick, text):
 						if nowname == '':
 							nowname = nickname
 					xtype = ''
-        			        for base in megabase:
-        			                if base[0].lower() == jid and base[1] == nowname:
+					for base in megabase:
+						if base[0].lower() == jid and base[1] == nowname:
 							xtype = base[3]
 							break
 					if xtype != 'owner':
@@ -485,11 +485,11 @@ def conf_backup(type, jid, nick, text):
 				msg = u'Что будем восстанавливать?'
 	else:
 		msg = u'backup now|show|restore'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def disco(type, jid, nick, text):
-        text = text.lower().split(' ')
-        where = text[0]
+	text = text.lower().split(' ')
+	where = text[0]
 	try:
 		what = text[1]
 	except:
@@ -515,7 +515,7 @@ def disco(type, jid, nick, text):
 		sleep(0.5)
 		to -= 0.5
 
-        if not no_answ:
+	if not no_answ:
 		if where.count('conference') and not where.count('@'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
@@ -584,21 +584,21 @@ def disco(type, jid, nick, text):
 	else:
 		msg = u'Не получается...'
 	msg = rss_replace(msg)
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def whereis(type, jid, nick, text):
 	if len(text):
-	        text = text.split(' ')
-        	who = text[0]
+		text = text.split(' ')
+		who = text[0]
 	else:
 		who = nick
 	if len(text)<2:
 		where = getServer(jid)
 	else:
 		if text[1].count('conference'):
-		        where = text[1]
+			where = text[1]
 		else:
-		        where = 'conference.'+text[1]
+			where = 'conference.'+text[1]
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
 	cl.send(i)
@@ -615,7 +615,7 @@ def whereis(type, jid, nick, text):
 		sleep(0.5)
 		to -= 0.5
 
-        if not no_answ:
+	if not no_answ:
 		tmp = sqlite3.connect(':memory:')
 		cu = tmp.cursor()
 		cu.execute('''create table tempo (nick text, room text)''')
@@ -627,7 +627,7 @@ def whereis(type, jid, nick, text):
 			if dname[-5:] != '(n/a)' and dname[-3:] != '(0)':
 				djids.append(get_subtag(ii,'jid'))
 
-	        send_msg(type, jid, nick, u'Ожидайте, результат Вы получите в приват примерно через '+str(int(len(djids)/6))+u' сек.')
+		send_msg(type, jid, nick, u'Ожидайте, результат Вы получите в приват примерно через '+str(int(len(djids)/6))+u' сек.')
 
 		for ii in djids:
 			iqid = str(randint(1,100000))
@@ -646,7 +646,7 @@ def whereis(type, jid, nick, text):
 				sleep(0.01)
 				to -= 0.01
 
-		        if not no_answ:
+			if not no_answ:
 				isd = is_answ[0].split('<item ')
 				for iii in isd[1:]:
 					dname = get_subtag(iii,'name')
@@ -665,7 +665,7 @@ def whereis(type, jid, nick, text):
 		tmp.close()		
 	else:
 		msg = u'Не получается...'
-        send_msg('chat', jid, nick, msg)
+	send_msg('chat', jid, nick, msg)
 
 ul = 'update.log'
 def svn_info(type, jid, nick):
@@ -673,7 +673,7 @@ def svn_info(type, jid, nick):
 		msg = u'Последнее обновление:\n'+readfile(ul).decode('utf-8')
 	else:
 		msg = u'Файл '+ul+u' не доступен!'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def iq_time(type, jid, nick, text):
 	global iq_answer
@@ -718,7 +718,7 @@ def iq_time(type, jid, nick, text):
 				msg = iiq+' '
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def iq_version(type, jid, nick, text):
 	global iq_answer
@@ -763,7 +763,7 @@ def iq_version(type, jid, nick, text):
 				msg = iiq+' '
 	else:
 		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def unhtml(page):
 	for a in range(0,page.count('<style')):
@@ -816,7 +816,7 @@ def seen(type, jid, nick, text):
 				cnt += 1
 		else: msg = u'Не найдено!'
 	else: msg = u'Ась?'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def seenjid(type, jid, nick, text):
 	while text[-1:] == ' ': text = text[:-1]
@@ -927,7 +927,7 @@ def alias(type, jid, nick, text):
 				msg+=u' не найдено'
 	
 	writefile(alfile,str(aliases))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 ##########################
 
@@ -955,7 +955,7 @@ def inowner(type, jid, nick, text):
 		mmsg = mmsg[:-1]
 		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def inadmin(type, jid, nick, text):
 	global banbase
@@ -981,7 +981,7 @@ def inadmin(type, jid, nick, text):
 		mmsg = mmsg[:-1]
 		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def inmember(type, jid, nick, text):
 	global banbase
@@ -1008,7 +1008,7 @@ def inmember(type, jid, nick, text):
 		mmsg = mmsg[:-1]
 		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def fspace(mass):
 	bdd = []
@@ -1101,7 +1101,7 @@ def weather_gis(type, jid, nick, text):
 		beg = tuple(localtime())[3]/4
 		for tmp in ms[beg:beg+4]:
 			msg += tmp
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def autoflood(type, jid, nick, text):
 	tmode = 0
@@ -1129,38 +1129,38 @@ def autoflood(type, jid, nick, text):
 		ssta = 1
 	msg += onoff(ssta)
 	writefile(fld,str(floods))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def execute(type, jid, nick, text):
-        try:
-                text = str(eval(text))
-        except:
-                text = u'Я не могу это исполнить'
+	try:
+		text = str(eval(text))
+	except:
+		text = u'Я не могу это исполнить'
 	send_msg(type, jid, nick, text)
 
 
 def calc(type, jid, nick, text):
-        legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>','.']
-        ppc = 1
-        for tt in text:
-                all_ok = 0
-                for ll in legal:
-                        if tt==ll:
-                                all_ok = 1
-                                break
-                if not all_ok:
-                        ppc = 0
-                        break
+	legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>','.']
+	ppc = 1
+	for tt in text:
+		all_ok = 0
+		for ll in legal:
+			if tt==ll:
+				all_ok = 1
+				break
+		if not all_ok:
+			ppc = 0
+			break
 	if text.count('**'):
 		ppc = 0
 
-        if ppc:        
-                try:
-                        text = str(eval(text))
-                except:
-                        text = u'Я не могу это посчитать'
-        else:
-                text = u'Выражение недопустимо!'
+	if ppc:	
+		try:
+			text = str(eval(text))
+		except:
+			text = u'Я не могу это посчитать'
+	else:
+		text = u'Выражение недопустимо!'
 	send_msg(type, jid, nick, text)
 
 def wtfsearch(type, jid, nick, text):
@@ -1179,7 +1179,7 @@ def wtfsearch(type, jid, nick, text):
 		else:
 			msg = u'Хм. Ничего похожего я не знаю...'
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def wtfrand(type, jid, nick):
 	msg = u'Всё, что я знаю это: '
@@ -1193,7 +1193,7 @@ def wtfrand(type, jid, nick):
 
 	msg = u'Я знаю, что '+ww[4]+u' - '+ww[5]
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def wtfnames(type, jid, nick, text):
 	msg = u'Всё, что я знаю это: '
@@ -1212,7 +1212,7 @@ def wtfnames(type, jid, nick, text):
 	for ww in cu:
 		msg += ww[4]+', '
 	msg=msg[:-2]
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
 	mdb = sqlite3.connect(wtfbase)
@@ -1222,7 +1222,7 @@ def wtfcount(type, jid, nick):
 	glb = len(cu.execute('select * from wtf where room=?',('global',)).fetchall())
 	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())
 	msg = u'В этой конфе определений: '+str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(tlen)
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	mdb.close()
 
 def wtf(type, jid, nick, text):
@@ -1270,7 +1270,7 @@ def wtf_get(ff,type, jid, nick, text):
 				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
 		else:
 			msg = u'Хм. Мне про это никто не рассказывал...'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def del_space_begin(text):
 	if len(text):
@@ -1289,9 +1289,9 @@ def dfn(type, jid, nick, text):
 	msg = u'Чего запомнить то надо?'
 	if len(text) and text.count('='):
 
-	        ta = get_access(jid,nick)
+		ta = get_access(jid,nick)
 
-	        realjid =ta[1]
+		realjid =ta[1]
 
 		ti = text.index('=')
 		what = del_space_end(text[:ti])
@@ -1322,16 +1322,16 @@ def dfn(type, jid, nick, text):
 		if text != '':
 			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(tuple(localtime()))))
 		mdb.commit()
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def gdfn(type, jid, nick, text):
 	global wbase, wtfbase
 	msg = u'Чего запомнить то надо?'
 	if len(text) and text.count('='):
 
-	        ta = get_access(jid,nick)
+		ta = get_access(jid,nick)
 
-	        realjid =ta[1]
+		realjid =ta[1]
 
 		ti = text.index('=')
 		what = del_space_end(text[:ti])
@@ -1358,7 +1358,7 @@ def gdfn(type, jid, nick, text):
 		if text != '':
 			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(tuple(localtime()))))
 		mdb.commit()
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 #--------
 
@@ -1411,7 +1411,7 @@ def true_age(type, jid, nick, text):
 				cnt += 1
 		else: msg = u'Не найдено!'
 	else: msg = u'Ась?'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def close_age_null():
 	mdb = sqlite3.connect(agestatbase)
@@ -1472,7 +1472,7 @@ def weather_city(type, jid, nick, text):
 		if not_add:
 			msg = u'Такой город не найден!'
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def defcode(type, jid, nick, text):
 	dcnt = text[0]
@@ -1523,7 +1523,7 @@ def weather_raw(type, jid, nick, text):
 	f.close()
 	msg = msg[:-1]
 	if msg.count('Not Found'): msg = u'Город не найден!'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def sfind(mass,stri):
 	for a in mass:
@@ -1578,7 +1578,7 @@ def weather(type, jid, nick, text):
 		wzz3 = wzr[8].find('(',wzz2)
 		msg += ', '+ wzr[8][:wzz1-1]+': '+wzr[8][wzz3+1:-1]
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def weather_short(type, jid, nick, text):
 	text = text.upper()
@@ -1615,7 +1615,7 @@ def weather_short(type, jid, nick, text):
 		if len(wzr[4]): msg += ','+ wzr[4][wzr[4].find(':')+1:]
 		if len(wzr[5]): msg += ','+ wzr[5][wzr[5].find(':')+1:]
 		if not (len(wzr[4])+len(wzr[5])): msg += ', clear'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def get_local_prefix(jid):
 	lprefix = prefix
@@ -1631,19 +1631,19 @@ def get_prefix(prefix):
 	if prefix != u'': return prefix
 	else: return u'отсутствует'
 
-#  0     1            2     3      4
+#  0     1	    2     3      4
 # [1,prefix+cmd, exe_alias, 0, prefix+cbody])
 
 def set_prefix(type, jid, nick, text):
-        global preffile, prefix
+	global preffile, prefix
 	msg = u'Префикс команд: '
 
-        if text != '': lprefix = text
+	if text != '': lprefix = text
 	if text.lower() == 'none': lprefix = u''
 	if text.lower() == 'del': lprefix = prefix
 
 	if len(text):
-	        if os.path.isfile(preffile):
+		if os.path.isfile(preffile):
 			pref = eval(readfile(preffile))
 			for pp in pref:
 				if pp[0] == getRoom(jid):
@@ -1682,7 +1682,7 @@ def inban(type, jid, nick, text):
 		mmsg = mmsg[:-1]
 		if fnd: mmsg = u', совпадений нет!'
 		msg += mmsg
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def youtube(type, jid, nick, text):
 	text = text.lower()
@@ -1727,7 +1727,7 @@ def youtube(type, jid, nick, text):
 	for i in tmass:
 		msg += i + '\n'
 	msg = msg[:-1]
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def smile(type, jid, nick, text):
@@ -1755,83 +1755,83 @@ def smile(type, jid, nick, text):
 		ssta = 1
 	msg += onoff(ssta)
 	writefile(sml,str(smiles))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def uptime(type, jid, nick):
 	msg = u'Время работы: ' + get_uptime_str()+ u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def null_vars():
-        vars = {'none/visitor':0,
-                'none/participant':0,
-                'none/moderator':0,
-                'member/visitor':0,
-                'member/participant':0,
-                'member/moderator':0,
-                'admin/moderator':0,
-                'owner/moderator':0}
+	vars = {'none/visitor':0,
+		'none/participant':0,
+		'none/moderator':0,
+		'member/visitor':0,
+		'member/participant':0,
+		'member/moderator':0,
+		'admin/moderator':0,
+		'owner/moderator':0}
 	return vars
 
 def gstats(type, jid, nick):
-        msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела всего:'
+	msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела всего:'
 	vars = null_vars()
 
-        for mega in megabase2:
-                        ta = mega[3]+'/'+mega[2]
+	for mega in megabase2:
+			ta = mega[3]+'/'+mega[2]
 			for va in vars:
 				if va == ta:
-		                        vars[ta]+=1
-        for va in vars:
-                if vars[va]:
-                        msg += '\n'+str(va)+' '+str(vars[va])
+					vars[ta]+=1
+	for va in vars:
+		if vars[va]:
+			msg += '\n'+str(va)+' '+str(vars[va])
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def stats(type, jid, nick):
-        msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела здесь:'
+	msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела здесь:'
 	vars = null_vars()
 
-        for mega in megabase2:
-                if mega[0] == jid:
-                        ta = mega[3]+'/'+mega[2]
+	for mega in megabase2:
+		if mega[0] == jid:
+			ta = mega[3]+'/'+mega[2]
 			for va in vars:
 				if va == ta:
-		                        vars[ta]+=1
-        for va in vars:
-                if vars[va]:
-                        msg += '\n'+str(va)+' '+str(vars[va])
+					vars[ta]+=1
+	for va in vars:
+		if vars[va]:
+			msg += '\n'+str(va)+' '+str(vars[va])
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 	
 def show_error(type, jid, nick, text):
-        if text.lower() == 'clear':
-                writefile(LOG_FILENAME,'')
-        try:
+	if text.lower() == 'clear':
+		writefile(LOG_FILENAME,'')
+	try:
 		cmd = int(text)
-        except:
-                cmd = 1
+	except:
+		cmd = 1
 
 	if os.path.isfile(LOG_FILENAME) and text.lower() != 'clear':
 		log = str(readfile(LOG_FILENAME))
-                log = log.split('ERROR:')
+		log = log.split('ERROR:')
 
-                lll = len(log)
-                if cmd > lll:
-                        cmd = lll
-                
-        	msg = u'Total Error(s): '+str(lll-1)+'\n'
-        	if text != '':
-                        for aa in range(lll-cmd,lll):
-                                msg += log[aa]+'\n'
-                else:
-                        msg += ' '
-                msg = msg[:-2]
-        else:
-                msg = u'No Errors'
+		lll = len(log)
+		if cmd > lll:
+			cmd = lll
+		
+		msg = u'Total Error(s): '+str(lll-1)+'\n'
+		if text != '':
+			for aa in range(lll-cmd,lll):
+				msg += log[aa]+'\n'
+		else:
+			msg += ' '
+		msg = msg[:-2]
+	else:
+		msg = u'No Errors'
 	send_msg(type, jid, nick, msg)
 	
 
@@ -1912,7 +1912,7 @@ def get_access(cjid, cnick):
 	if jid == 'None' and ownerbase.count(getRoom(cjid)):
 		access_mode = 2
 
-        return (access_mode, jid)
+	return (access_mode, jid)
 
 def info_whois(type, jid, nick, text):
 	if text != '':
@@ -1926,18 +1926,18 @@ def info_access(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 
 def raw_who(room,nick):
-        ta = get_access(room,nick)
-        access_mode = ta[0]
+	ta = get_access(room,nick)
+	access_mode = ta[0]
 	if access_mode == -2:
 		msg = u'А был ли мальчег?'
 	else:
 		realjid = ta[1]
 		msg = u'Доступ: '+str(access_mode)
-        	tb = [u'Игнорируемый',u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
-        	msg += ', ' + tb[access_mode+1]
-        	if realjid != 'None':
-        	        msg += u', jid опознан'
-		msg += u', Префикс: ' + get_local_prefix(room)
+		tb = [u'Игнорируемый',u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
+		msg += ', ' + tb[access_mode+1]
+		if realjid != 'None':
+			msg += u', jid опознан'
+		msg += u', Префикс: ' + get_prefix(get_local_prefix(room))
 	return msg
 
 def info_comm(type, jid, nick):
@@ -1959,7 +1959,7 @@ def info_comm(type, jid, nick):
 		for i in cm:
 			msg += i[0] +', '
 		msg = msg[:-2]
-	msg = u'Всего команд: '+str(len(comms))+u' | Префикс: '+get_local_prefix(jid)+u' | Ваш доступ: '+str(access_mode)+u' | Доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
+	msg = u'Всего команд: '+str(len(comms))+u' | Префикс: '+get_prefix(get_local_prefix(jid))+u' | Ваш доступ: '+str(access_mode)+u' | Доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
 	tmp.close()
 	send_msg(type, jid, nick, msg)
 
@@ -1967,7 +1967,7 @@ def bot_exit(type, jid, nick, text):
 	global game_over
 	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
 	if text != '':
-                StatusMessage += ' ['+text+u']'
+		StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile(tmpf,str('exit'))
 	sleep(3)
@@ -1977,7 +1977,7 @@ def bot_restart(type, jid, nick, text):
 	global game_over
 	StatusMessage = u'Restart by \'restart\' command from bot owner ('+nick+u')'
 	if text != '':
-                StatusMessage += ' ['+text+u']'
+		StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile(tmpf,str('restart'))
 	game_over = 1
@@ -1986,7 +1986,7 @@ def bot_update(type, jid, nick, text):
 	global game_over
 	StatusMessage = u'Self update by \'update\' command from bot owner ('+nick+u')'
 	if text != '':
-                StatusMessage += ' ['+text+u']'
+		StatusMessage += ' ['+text+u']'
 	send_presence_all(StatusMessage)
 	writefile(tmpf,str('update'))
 	game_over = 1
@@ -1999,13 +1999,13 @@ def say(type, jid, nick, text):
 	send_msg(type, jid, nick, text)	
 
 def gsay(type, jid, nick, text):
-        global confbase
+	global confbase
 
 	type = 'groupchat'
-        msg = text
+	msg = text
 	nick = ''
-        for jjid in confbase:
-	        send_msg(type, getRoom(jjid), nick, msg)
+	for jjid in confbase:
+		send_msg(type, getRoom(jjid), nick, msg)
 	
 
 def helpme(type, jid, nick, text):
@@ -2016,7 +2016,7 @@ def helpme(type, jid, nick, text):
 	elif text == u'доступ':
 		msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
 	elif text != '':
-		msg = u'Префикс команд: '+get_local_prefix(jid)+u', Доступна справка по командам:\n'
+		msg = u'Префикс команд: '+get_prefix(get_local_prefix(jid))+u', Доступна справка по командам:\n'
 		tmpbase = sqlite3.connect(':memory:')
 		cu = tmpbase.cursor()
 		cu.execute('''create table tempo (level integer, name text, body text)''')
@@ -2029,8 +2029,8 @@ def helpme(type, jid, nick, text):
 			cm = cu.execute('select * from tempo order by name').fetchall()
 			tmpbase.close()
        			for i in range(0,3):
-        		        msg += '['+str(i)+'] '
-        			for tmp in cm:
+				msg += '['+str(i)+'] '
+				for tmp in cm:
 					if tmp[0] == i and tmp[2] != u'':
 						msg += tmp[1] + ', '
 				msg = msg[:-2]+'\n'
@@ -2047,34 +2047,30 @@ def hidden_clear(type, jid, nick, text):
 
 	if cntr < 1 or cntr > 100:
 		cntr = 20
-        pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-        send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.3))+u' сек.')
-        while (cntr>0):
-                cl.send(xmpp.Message(jid, '', "groupchat"))
-                time.sleep(1.3)
-                cntr=cntr-1
-        send_msg(type, jid, nick, u'стерильно!!!')
+	pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
+	send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.3))+u' сек.')
+	while (cntr>0):
+		cl.send(xmpp.Message(jid, '', "groupchat"))
+		time.sleep(1.3)
+		cntr=cntr-1
+	send_msg(type, jid, nick, u'стерильно!!!')
 	
 
 def bot_rejoin(type, jid, nick, text):
-        global lastserver, lastnick, confbase
-        text=unicode(text)
+	global lastserver, lastnick, confbase
+	text=unicode(text)
 
-	if len(text):
-		text=unicode(text)
-	else:
-		text=jid
+	if len(text): text=unicode(text)
+	else: text=jid
 
-	if toSymbolPosition(text,'@')<0:
-		text+='@'+lastserver
-	if toSymbolPosition(text,'/')<0:
-		text+='/'+lastnick
-                             
+	if not text.count('@'): text+='@'+lastserver
+	if not text.count('/'): text+='/'+lastnick
+
 	lastserver = getServer(text)
 	lastnick = getResourse(text)
 
 	lroom = text
-                                
+				
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 		pprint(u'rejoin '+text+' by '+nick)
 		sm = u'Перезахожу по команде от '+nick
@@ -2088,86 +2084,81 @@ def bot_rejoin(type, jid, nick, text):
 	
 
 def bot_join(type, jid, nick, text):
-        global lastserver, lastnick, confs, confbase
-        text=unicode(text)
-        if text=='' or text.count(' '):
-                send_msg(type, jid, nick, u'косяк с аргументами!')
-        else:
-                if toSymbolPosition(text,'@')<0:
-                        text+='@'+lastserver
-                if toSymbolPosition(text,'/')<0:
-                        text+='/'+lastnick
-                             
-                lastserver = getServer(text)
-                lastnick = getResourse(text)
-                                
-                lroom = text.index('/')
-                lroom = text[:lroom]
+	global lastserver, lastnick, confs, confbase
+	text=unicode(text)
+	if text=='' or text.count(' '):
+		send_msg(type, jid, nick, u'косяк с аргументами!')
+	else:
+		if not text.count('@'): text+='@'+lastserver
+		if not text.count('/'): text+='/'+lastnick
+			     
+		lastserver = getServer(text)
+		lastnick = getResourse(text)
+				
+		lroom = text.index('/')
+		lroom = text[:lroom]
 
-		if arr_semi_find(confbase, lroom) == -1:                                
+		if arr_semi_find(confbase, lroom) == -1:				
 			zz = joinconf(text, domain)
 			if zz != None:
 				send_msg(type, jid, nick, u'Ошибка! '+zz)
-	                        pprint(u'*** Error join to '+text+' '+zz)
+				pprint(u'*** Error join to '+text+' '+zz)
 			else:
-	                        confbase.append(text)
-	                        writefile(confs,str(confbase))
-        	                send_msg(type, jid, nick, u'зашла в '+text)
-	                        pprint(u'join to '+text)
+				confbase.append(text)
+				writefile(confs,str(confbase))
+				send_msg(type, jid, nick, u'зашла в '+text)
+				pprint(u'join to '+text)
 
-                elif confbase.count(text):
-                        send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom+u' с ником '+lastnick)
-                        pprint(u'already in '+text)
+		elif confbase.count(text):
+			send_msg(type, jid, nick, u'хватит бухать! Я уже в '+lroom+u' с ником '+lastnick)
+			pprint(u'already in '+text)
 		else:
-                        zz = joinconf(text, domain)
+			zz = joinconf(text, domain)
 			if zz != None:
 				send_msg(type, jid, nick, u'Ошибка! '+zz)
-	                        pprint(u'*** Error join to '+text+' '+zz)
+				pprint(u'*** Error join to '+text+' '+zz)
 			else:
 				confbase = arr_del_semi_find(confbase, lroom)
-	                        confbase.append(text)
+				confbase.append(text)
 				send_msg(type, jid, nick, u'смена ника в '+lroom+u' на '+lastnick)
-	                        writefile(confs,str(confbase))
-	                        pprint(u'change nick '+text)
-	
+				writefile(confs,str(confbase))
+				pprint(u'change nick '+text)
+
 
 def bot_leave(type, jid, nick, text):
-        global confs, confbase, lastserver, lastnick
-        if len(confbase) == 1:
-                send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
-        else:
+	global confs, confbase, lastserver, lastnick
+	if len(confbase) == 1:
+		send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
+	else:
 		if text == '':
 			text = jid
-                if toSymbolPosition(text,'@')<0:
-                        text+='@'+lastserver
-                if toSymbolPosition(text,'/')<0:
-                        text+='/'+lastnick
-                             
-                lastserver = getServer(text)
-                lastnick = getResourse(text)
+		if not text.count('@'): text+='@'+lastserver
+		if not text.count('/'): text+='/'+lastnick
 
-                if len(text):
-                        text=unicode(text)
-                else:
-                        text=jid
-                lroom = text
-                              
+		lastserver = getServer(text)
+		lastnick = getResourse(text)
+
+		if len(text):
+			text=unicode(text)
+		else:
+			text=jid
+		lroom = text
 
 		if ownerbase.count(getRoom(jid)):
 			nick = getName(jid)
   
 		if arr_semi_find(confbase, getRoom(lroom)) >= 0:
-#                if confbase.count(lroom):
-#                        confbase.remove(lroom)
+#		if confbase.count(lroom):
+#			confbase.remove(lroom)
 			confbase = arr_del_semi_find(confbase,getRoom(lroom))
-                        writefile(confs,str(confbase))
-                        send_msg(type, jid, nick, u'свалила из '+text)
+			writefile(confs,str(confbase))
+			send_msg(type, jid, nick, u'свалила из '+text)
 			sm = u'Меня выводит '+nick
-                        leaveconf(getRoom(text), domain, sm)
-                        pprint(u'leave '+text+' by '+nick)
-                else:
-                        send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
-                        pprint(u'never be in '+text)
+			leaveconf(getRoom(text), domain, sm)
+			pprint(u'leave '+text+' by '+nick)
+		else:
+			send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
+			pprint(u'never be in '+text)
 	
 
 def conf_pass(type, jid, nick, text):
@@ -2201,32 +2192,32 @@ def bot_plugin(type, jid, nick, text):
 	pprint('plugin '+do+' '+nnick)
 	msg = ''
 	if do == 'add':
-                if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
-                        plugins.append(nnick)
-                        execfile('plugins/'+nnick)
-                        msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
-	                for cm in execute:
+		if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
+			plugins.append(nnick)
+			execfile('plugins/'+nnick)
+			msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
+			for cm in execute:
 				msg += cm[1]+'['+str(cm[0])+'], '
-	                        comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
-                        msg = msg[:-2]
+				comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
+			msg = msg[:-2]
 			for tmr in timer:
 				gtimer.append(tmr)
 			for tmp in presence_control:
 				gpresence.append(tmp)
 			for tmp in message_control:
 				gmessage.append(tmp)
-                        
+
 	elif do == 'del':
-                if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
-                        plugins.remove(nnick)
-                        execfile('plugins/'+nnick)
-                        msg = u'Удалён плагин: '+nnick[:-3]+u'\nУдалены комманды: '
-                        for commmm in execute:
-                                msg += commmm[1]+'['+str(commmm[0])+'], '
-                                for i in comms:
-                                        if i[1] == commmm[1]:
-                                                comms.remove(i)
-                        msg = msg[:-2]
+		if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
+			plugins.remove(nnick)
+			execfile('plugins/'+nnick)
+			msg = u'Удалён плагин: '+nnick[:-3]+u'\nУдалены комманды: '
+			for commmm in execute:
+				msg += commmm[1]+'['+str(commmm[0])+'], '
+				for i in comms:
+					if i[1] == commmm[1]:
+						comms.remove(i)
+			msg = msg[:-2]
 			for tmr in timer:
 				gtimer.remove(tmr)
 			for tmp in presence_control:
@@ -2253,13 +2244,13 @@ def bot_plugin(type, jid, nick, text):
 
 
 	writefile(plname,str(plugins))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
-#                        elif text[:5] == u'/auth':
-#                                j = Presence(BaseJid, 'subscribed')
+#			elif text[:5] == u'/auth':
+#				j = Presence(BaseJid, 'subscribed')
 #				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-#                                clc[selcon].send(j)
-#                                nosend=0
+#				clc[selcon].send(j)
+#				nosend=0
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -2267,27 +2258,27 @@ def owner(type, jid, nick, text):
 	nnick = text[4:]
 	pprint('owner '+do+' '+nnick)
 	if do == 'add':
-                if not ownerbase.count(nnick):
-                        ownerbase.append(nnick)
-		        j = Presence(nnick, 'subscribe')
+		if not ownerbase.count(nnick):
+			ownerbase.append(nnick)
+			j = Presence(nnick, 'subscribe')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		        cl.send(j)
+			cl.send(j)
 
 	elif do == 'del':
-                if ownerbase.count(nnick) and nnick != god:
-                        ownerbase.remove(nnick)
-		        j = Presence(nnick, 'unsubscribed')
+		if ownerbase.count(nnick) and nnick != god:
+			ownerbase.remove(nnick)
+			j = Presence(nnick, 'unsubscribed')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		        cl.send(j)
-#        elif do == 'clr':
-#                ownerbase = [god]
+			cl.send(j)
+#	elif do == 'clr':
+#		ownerbase = [god]
 
 	msg = u'Я принимаю команды от: '
 	for jjid in ownerbase:
 			msg += jjid+', '
 	msg = msg[:-2]
 	writefile(owners,str(ownerbase))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def ignore(type, jid, nick, text):
@@ -2296,13 +2287,13 @@ def ignore(type, jid, nick, text):
 	nnick = text[4:].lower()
 	pprint('ignore '+do+' '+nnick)
 	if do == 'add':
-                if not ignorebase.count(nnick):
-                        ignorebase.append(nnick)
+		if not ignorebase.count(nnick):
+			ignorebase.append(nnick)
 	elif do == 'del':
-                if ignorebase.count(nnick) and nnick != god:
-                        ignorebase.remove(nnick)
-#        elif do == 'clr':
-#                ignorebase = []
+		if ignorebase.count(nnick) and nnick != god:
+			ignorebase.remove(nnick)
+#	elif do == 'clr':
+#		ignorebase = []
 
 	msg = u'Я не принимаю команды от: '
 	for jjid in ignorebase:
@@ -2312,14 +2303,14 @@ def ignore(type, jid, nick, text):
 				msg += '*'+jjid+'*, '
 	msg = msg[:-2]
 	writefile(ignores,str(ignorebase))
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def info_where(type, jid, nick):
-        global confbase
-        msg = u'Активных конференций: '+str(len(confbase))+'\n'
+	global confbase
+	msg = u'Активных конференций: '+str(len(confbase))+'\n'
 	wbase = []
-        for jjid in confbase:
+	for jjid in confbase:
 		cnt = 0
 		rjid = getRoom(jjid)
 		for mega in megabase:
@@ -2338,8 +2329,8 @@ def info_where(type, jid, nick):
 		msg += str(nmb)+'. '+i[0]+' ['+str(i[1])+']\n'
 		nmb += 1
 
-        msg = msg[:-1]
-        send_msg(type, jid, nick, msg)
+	msg = msg[:-1]
+	send_msg(type, jid, nick, msg)
 	
 
 def get_uptime_raw():
@@ -2381,18 +2372,18 @@ def get_uptime_str():
 	difftime = get_uptime_raw()
 	msg = u''
 	if difftime[0] >0:
-                msg += str(difftime[0])+'y '
+		msg += str(difftime[0])+'y '
 	if difftime[1] >0:
-                msg += str(difftime[1])+'m '
+		msg += str(difftime[1])+'m '
 	if difftime[2] >0:
-                msg += str(difftime[2])+'d '
-        msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
+		msg += str(difftime[2])+'d '
+	msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
 	return msg
 
 def info(type, jid, nick):
-        global confbase        
-        msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
-        msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
+	global confbase	
+	msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
+	msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
 	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
 	msg += u'Время запуска: '+timeadd(starttime)+'\n'
 	msg += u'Локальное время: '+timeadd(tuple(localtime()))+'\n'
@@ -2405,7 +2396,7 @@ def info(type, jid, nick):
 	msg += u' | Censor: ' + onoff(int((getRoom(jid),1) in gl_censor))
 	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def info_res(type, jid, nick, text):
@@ -2434,7 +2425,7 @@ def info_res(type, jid, nick, text):
 			cnt += 1
 		msg = msg[:-2]
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def info_serv(type, jid, nick, text):
@@ -2461,42 +2452,42 @@ def info_serv(type, jid, nick, text):
 			msg += jj[0]+':'+str(jj[1])+' | '
 		msg = msg[:-2]
 
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 	
 
 def info_base(type, jid, nick):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if nick != '':
-        	msg = u'Ты виден мне как '
-                fl = 1
-                for base in megabase:
-                        if base[1].count(nick):
+		msg = u'Ты виден мне как '
+		fl = 1
+		for base in megabase:
+			if base[1].count(nick):
 				if base[0].lower() == jid:
 # 0 - конфа
 # 1 - ник
 # 2 - роль
 # 3 - аффиляция
 # 4 - jid
-#	                        	msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] +' '+base[4]
-	                        	msg += base[2]+'/'+base[3]
-	                        	fl = 0
-                if fl:
-                        msg = '\''+nick+u'\' not found!'
-        send_msg(type, jid, nick, msg)
+#					msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] +' '+base[4]
+					msg += base[2]+'/'+base[3]
+					fl = 0
+		if fl:
+			msg = '\''+nick+u'\' not found!'
+	send_msg(type, jid, nick, msg)
 	
 
 def info_search(type, jid, nick, text):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if text != '':
 		mdb = sqlite3.connect(jid_base)
 		cu = mdb.cursor()
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
 		if len(tma):
-		        msg = u'Найдено:'
+			msg = u'Найдено:'
 			cnd = 1
 			for tt in tma:
-        		        msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
+				msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
 				cnd += 1
 		else:
 			msg = text +u' не найдено!'
@@ -2504,79 +2495,79 @@ def info_search(type, jid, nick, text):
 
 
 def gtmp_search(type, jid, nick, text):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if text != '':
-        	msg = u'Найдено:'
-                fl = 1
-                for mega1 in megabase2:
+		msg = u'Найдено:'
+		fl = 1
+		for mega1 in megabase2:
 			for mega2 in mega1:
-	                        if mega2.lower().count(text.lower()):
-        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+				if mega2.lower().count(text.lower()):
+					msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
 					if mega1[4] != 'None':
 						msg += u' ('+unicode(mega1[4])+u')'
 					msg += ' in '+unicode(mega1[0])
-        	                	fl = 0
+					fl = 0
 					break
-                if fl:
-                        msg = '\''+text+u'\' not found!'
-        send_msg(type, jid, nick, msg)
+		if fl:
+			msg = '\''+text+u'\' not found!'
+	send_msg(type, jid, nick, msg)
 	
 
 def tmp_search(type, jid, nick, text):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if text != '':
-        	msg = u'Найдено:'
-                fl = 1
-                for mega1 in megabase2:
+		msg = u'Найдено:'
+		fl = 1
+		for mega1 in megabase2:
 			if getRoom(mega1[0]) == getRoom(jid):
 				for mega2 in mega1:
-		                        if mega2.lower().count(text.lower()):
-        		                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+					if mega2.lower().count(text.lower()):
+						msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
 						if mega1[4] != 'None':
 							msg += u' ('+unicode(mega1[4])+u')'
 #						msg += ' in '+unicode(mega1[0])
-        		                	fl = 0
+						fl = 0
 						break
-                if fl:
-                        msg = '\''+text+u'\' not found!'
-        send_msg(type, jid, nick, msg)
+		if fl:
+			msg = '\''+text+u'\' not found!'
+	send_msg(type, jid, nick, msg)
 
 
 def real_search_owner(type, jid, nick, text):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if text != '':
-        	msg = u'Найдено:'
-                fl = 1
-                for mega1 in megabase:
+		msg = u'Найдено:'
+		fl = 1
+		for mega1 in megabase:
 			if mega1[2] != 'None' and mega1[3] != 'None':
 				for mega2 in mega1:
-		                        if mega2.lower().count(text.lower()):
-	        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+					if mega2.lower().count(text.lower()):
+						msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
 						if mega1[4] != 'None':
 							msg += u' ('+unicode(mega1[4])+u')'
 						msg += ' in '+unicode(mega1[0])
-	        	                	fl = 0
+						fl = 0
 						break
-                if fl:
-                        msg = '\''+text+u'\' not found!'
-        send_msg(type, jid, nick, msg)	
+		if fl:
+			msg = '\''+text+u'\' not found!'
+	send_msg(type, jid, nick, msg)	
 
 def real_search(type, jid, nick, text):
-        msg = u'Чего искать то будем?'
+	msg = u'Чего искать то будем?'
 	if text != '':
-        	msg = u'Найдено:'
-                fl = 1
-                for mega1 in megabase:
+		msg = u'Найдено:'
+		fl = 1
+		for mega1 in megabase:
 			if mega1[2] != 'None' and mega1[3] != 'None':
 				for mega2 in mega1:
-		                        if mega2.lower().count(text.lower()):
-	        	                	msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
+					if mega2.lower().count(text.lower()):
+						msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
 						msg += ' in '+unicode(mega1[0])
-	        	                	fl = 0
+						fl = 0
 						break
-                if fl:
-                        msg = '\''+text+u'\' not found!'
-        send_msg(type, jid, nick, msg)
+		if fl:
+			msg = '\''+text+u'\' not found!'
+	send_msg(type, jid, nick, msg)
 
 def isNumber(text):
 	try:
@@ -2683,32 +2674,32 @@ def html_encode(body):
 
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds, lafeeds
-        msg = u'rss show|add|del|clear|new|get'
+	msg = u'rss show|add|del|clear|new|get'
 	nosend = 0
-        text = text.split(' ')
-        tl = len(text)
+	text = text.split(' ')
+	tl = len(text)
 
-        if tl < 5:
-                text.append('!')
-                
+	if tl < 5:
+		text.append('!')
+		
 	mode = text[0].lower() # show | add | del | clear | new | get
 
 	if mode == 'add':
-                if tl < 4:
-                        msg = 'rss add [http://]url timeH|M [full|body|head]'
-                        mode = ''
-        elif mode == 'del':
-                if tl < 2:
-                        msg = 'rss del [http://]url'
-                        mode = ''
-        elif mode == 'new':
-                if tl < 4:
-                        msg = 'rss new [http://]url max_feed_humber [full|body|head]'
-                        mode = ''
-        elif mode == 'get':
-                if tl < 4:
-                        msg = 'rss get [http://]url max_feed_humber [full|body|head]'
-                        mode = ''
+		if tl < 4:
+			msg = 'rss add [http://]url timeH|M [full|body|head]'
+			mode = ''
+	elif mode == 'del':
+		if tl < 2:
+			msg = 'rss del [http://]url'
+			mode = ''
+	elif mode == 'new':
+		if tl < 4:
+			msg = 'rss new [http://]url max_feed_humber [full|body|head]'
+			mode = ''
+	elif mode == 'get':
+		if tl < 4:
+			msg = 'rss get [http://]url max_feed_humber [full|body|head]'
+			mode = ''
 
 	feedbase = getFile(feeds,[])
 	lastfeeds = getFile(lafeeds,[])
@@ -2758,14 +2749,14 @@ def rss(type, jid, nick, text):
 				msg+= u' not found!'
 
 	elif mode == 'add':
-                        
+			
 		lt=tuple(localtime())
 		link = text[1]
 		if link[:7] != 'http://':
-        	        link = 'http://'+link
-        	for dd in feedbase:
-                        if dd[0] == link and dd[4] == jid:
-                                feedbase.remove(dd)
+			link = 'http://'+link
+		for dd in feedbase:
+			if dd[0] == link and dd[4] == jid:
+				feedbase.remove(dd)
 				break
 		feedbase.append([link, text[2], text[3], lt[:6], getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
@@ -2790,9 +2781,9 @@ def rss(type, jid, nick, text):
 				feed = get_tag(feed,'items')
 
 			if is_rss_aton == 1:
-		        	feed = feed.split('<item')
+				feed = feed.split('<item')
 			else:
-		        	feed = feed.split('<entry>')
+				feed = feed.split('<entry>')
 
 			if len(text) > 3:
 				submode = text[3]
@@ -2808,7 +2799,7 @@ def rss(type, jid, nick, text):
 				urlmode = 0
 				msg += link+' '
 
-	                msg += get_tag(feed[0],'title') + '\n'
+			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1:
 				mmsg = get_tag(mmsg,'title') + '\n'
@@ -2816,8 +2807,8 @@ def rss(type, jid, nick, text):
 				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
 
 			for dd in lastfeeds:
-                                if dd[0] == link and dd[2] == jid:
-                                        lastfeeds.remove(dd)
+				if dd[0] == link and dd[2] == jid:
+					lastfeeds.remove(dd)
 					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
@@ -2861,7 +2852,7 @@ def rss(type, jid, nick, text):
 	elif mode == 'del':
 		link = text[1]
 		if link[:7] != 'http://':
-        	        link = 'http://'+link
+			link = 'http://'+link
 
 		bedel1 = 0
 		for rs in feedbase:
@@ -2885,11 +2876,11 @@ def rss(type, jid, nick, text):
 			msg = u'Can\'t find in schedule: '+link
 
 	elif mode == 'new' or mode == 'get':
-	        link = text[1]
-       		if link[:7] != 'http://':
-        	        link = 'http://'+link
-        	f = urllib.urlopen(link)
-        	feed = f.read()
+		link = text[1]
+		if link[:7] != 'http://':
+			link = 'http://'+link
+		f = urllib.urlopen(link)
+		feed = f.read()
 		f.close()
 
 		is_rss_aton = 0
@@ -2904,24 +2895,24 @@ def rss(type, jid, nick, text):
 				feed = get_tag(feed,'<items>')
 
 			if is_rss_aton == 1:
-		        	feed = feed.split('<item')
+				feed = feed.split('<item')
 			else:
-		        	feed = feed.split('<entry>')
+				feed = feed.split('<entry>')
 	
-	        	if len(text) > 2:
-	        	        lng = int(text[2])+1
-	        	else:
-	        	        lng = len(feed)
-	        	        
-	        	if len(feed) <= lng:
-	        	        lng = len(feed)
-	        	if lng>=11:
-	        	        lng = 11
+			if len(text) > 2:
+				lng = int(text[2])+1
+			else:
+				lng = len(feed)
+				
+			if len(feed) <= lng:
+				lng = len(feed)
+			if lng>=11:
+				lng = 11
 
-	        	if len(text) > 3:
-	        	        submode = text[3]
-	        	else:
-	        	        submode = 'full'
+			if len(text) > 3:
+				submode = text[3]
+			else:
+				submode = 'full'
 
 			msg = 'Feeds for '
 			if submode[-4:] == '-url':
@@ -2937,7 +2928,7 @@ def rss(type, jid, nick, text):
 					 tstop = ii[1]
 					 tstop = tstop[:-1]
 
-	                msg += get_tag(feed[0],'title') + '\n'
+			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1:
 				mmsg = get_tag(mmsg,'title') + '\n'
@@ -2945,13 +2936,13 @@ def rss(type, jid, nick, text):
 				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
 
 			for dd in lastfeeds:
-                                if dd[0] == link and dd[2] == jid:
-                                        lastfeeds.remove(dd)
+				if dd[0] == link and dd[2] == jid:
+					lastfeeds.remove(dd)
 					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
 
-	        	for mmsg in feed[1:lng]:
+			for mmsg in feed[1:lng]:
 				if is_rss_aton == 1:
 					ttitle = get_tag(mmsg,'title')
 					tbody = get_tag(mmsg,'description')
@@ -2964,25 +2955,25 @@ def rss(type, jid, nick, text):
 					tu3 = mmsg.find('\"',tu2)
 					turl = mmsg[tu2:tu3]
 
-                                if mode == 'new':
-        				if ttitle == tstop:
-        					break
-        			msg += u' • '
+				if mode == 'new':
+					if ttitle == tstop:
+						break
+				msg += u' • '
 				if submode == 'full':
-		        	        msg += ttitle + '\n'
+					msg += ttitle + '\n'
 					msg += tbody + '\n\n'
 				elif submode == 'body':
 					msg += tbody + '\n'
 				elif submode[:4] == 'head':
-		        	        msg += ttitle+ '\n'
+					msg += ttitle+ '\n'
 				if urlmode:
 					msg += turl+'\n'
 
-                        if mode == 'new':
-        		        if mmsg == feed[1] and text[4] == 'silent':
-                                        nosend = 1
-                                elif mmsg == feed[1] and text[4] != 'silent':
-                                        msg = 'New feeds not found! '
+			if mode == 'new':
+				if mmsg == feed[1] and text[4] == 'silent':
+					nosend = 1
+				elif mmsg == feed[1] and text[4] != 'silent':
+					msg = 'New feeds not found! '
 
 			if submode == 'body' or submode == 'head':
 				msg = msg[:-1]
@@ -2999,7 +2990,7 @@ def rss(type, jid, nick, text):
 				feed = html_encode(feed)
 				title = get_tag(feed,'title')
 				msg = u'bad url or rss/atom not found at '+link+' - '+title
-        if not nosend:
+	if not nosend:
 		send_msg(type, jid, nick, msg)
 	
 
@@ -3016,82 +3007,82 @@ def rss(type, jid, nick, text):
 
 comms = [(1, u'stats', stats, 1, u'Локальная статистика посещений конференции'),
 	 (1, u'gstats', gstats, 1, u'Глобальная статистика посещений конференций'),
-         (2, u'quit', bot_exit, 2, u'Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.'),
-         (2, u'restart', bot_restart, 2, u'Перезапуск бота. Можно указать параметр, который будет показан в статусе бота при перезапуске.'),
-         (2, u'update', bot_update, 2, u'Самообновление бота из SVN.'),
-         (1, u'say', say, 2, u'Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.'),
-         (0, u'calc', calc, 2, u'Калькулятор.'),
-         (0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
-         (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
-         (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
-         (2, u'exec', execute, 2, u'Исполнение внешнего кода.'),
-         (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.'),
-         (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы.'),
-         (2, u'join', bot_join, 2, u'Вход в конференцию:\njoin room@conference.server.ru/nick - вход в конференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.'),
-         (2, u'leave', bot_leave, 2, u'Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room'),
-         (2, u'rejoin', bot_rejoin, 2, u'Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room'),
-         (2, u'pass', conf_pass, 2, u'Временный пароль для входа в конференции.'),
-         (2, u'bot_owner', owner, 2, u'Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.'),
-         (2, u'bot_ignore', ignore, 2, u'Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.'),
-         (1, u'where', info_where, 1, u'Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.'),
-         (1, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
-         (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
-         (0, u'inbase', info_base, 1, u'Идентификация Вас в глобальной базе.'),
-         (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
-         (1, u'look', real_search, 2, u'Поиск участника по конференциям, где находится бот.'),
-         (2, u'glook', real_search_owner, 2, u'Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.'),
-         (1, u'tempo', tmp_search, 2, u'Локальный поиск во временной базе.'),
-         (2, u'gtempo', gtmp_search, 2, u'Глобальный поиск во временной базе.'),
-         (1, u'rss', rss, 2, u'Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. H - часы, M - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.'),
-         (0, u'wtfrand', wtfrand, 1, u'Показ случайного обределения из базы слов.'),
-         (0, u'wtfnames', wtfnames, 2, u'Показ списка определений в конференции.\nwtfnames [all|global|import]'),
-         (0, u'wtfcount', wtfcount, 1, u'Показ количества определений в конференции.'),
-         (0, u'wtfsearch', wtfsearch, 2, u'Поиск по базе определний.'),
-         (2, u'wwtf', wwtf, 2, u'Показ инфонмации о том, кто сделал определение.'),
-         (0, u'wtff', wtff, 2, u'Показ определения вместе с ником и датой.'),
-         (0, u'wtfp', wtfp, 2, u'Показ определения в приват, независимо от куда поступила команда.\nwtfp word - показать определение word себе в приват\nwtfp word\nnick - показать определение word в приват nick'),
-         (0, u'wtf', wtf, 2, u'Показ определения.'),
-         (1, u'dfn', dfn, 2, u'Установка определения.\ndfn word=definition - запоминает definition как определение word\ndfn word= - удаляет определение word'),
-         (2, u'gdfn', gdfn, 2, u'Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word'),
-         (1, u'alias', alias, 2, u'Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.'),
-         (0, u'youtube', youtube, 2, u'Поиск по YouTube'),
-         (0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity страна город, где страна - двухбуквенное сокращание, например ru или ua, город - фрагмент названия города.'),
-         (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
-         (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
-         (0, u'wz', weather, 2, u'Погода по коду аэропорта. Оптимизированный вариант.'),
-         (0, u'gis', weather_gis, 2, u'Погода с GisMeteo.\ngis город|код_города'),
-         (0, u'commands', info_comm, 1, u'Показывает список доступных комманд.'),
-         (1, u'comm', comm_on_off, 2, u'Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд'),
-         (0, u'bot_uptime', uptime, 1, u'Время работы бота.'),
-         (1, u'info', info, 1, u'Различная информация о боте.'),
-         (0, u'new', svn_info, 1, u'Показ svn-лога последнего обновления бота'),
-         (1, u'smile', smile, 2, u'Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [on|off]'),
-         (1, u'flood', autoflood, 2, u'Включение/выключение самообучающегося автоответчика.\nflood [on|off]'),
-         (1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),
-         (1, u'censor', censor_status, 2, u'Включение/выключение цензор-нотификатора.\ncensor [on|off]'),
-         (1, u'inmember', inmember, 2, u'Поиск по member списку конференции.'),
-         (1, u'inadmin', inadmin, 2, u'Поиск по admin списку конференции.'),
-         (1, u'inowner', inowner, 2, u'Поиск по owner списку конференции.'),
-         (0, u'ver', iq_version, 2, u'Версия клиента'),
-         (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
-         (0, u'time', iq_time, 2, u'Локальное время клиента'),
-         (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а'),
-         (2, u'log', get_log, 2, u'Показ лога работы бота:\nlog len [data] - размер лога за дату или текущий день\nlog show data from-to - показ записей лога с "from" по "to" за дату "date"'),
-         (2, u'limit', conf_limit, 2, u'Размер сообщения, свыше которого сообщения будут разбиавться на части кратные этому размеру.'),
-         (2, u'plugin', bot_plugin, 2, u'Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name.py - добавить плагин.\nplugin del name.py - удалить плагин.'),
-         (0, u'def', defcode, 2, u'Территориальная пренадлежность номера мобильного телефона. Внимание! Указывайте не менее 7 первых цифр номера во избежании большого количества сообщений!'),
-         (2, u'error', show_error, 2, u'Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]'),
-         (0, u'whoami', info_access, 1, u'Ваша идентификация перед ботом.'),
-         (0, u'whois', info_whois, 2, u'Идентификация перед ботом.'),
-         (0, u'disco', disco, 2, u'Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов'),
-         (0, u'tr', translate, 2, u'Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода'),
-         (0, u'google', google, 2, u'Поиск через google'),
-         (0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message"'),
-         (0, u'dns', get_dns, 2, u'dns резолвер'),
-         (0, u'tld', get_tld, 2, u'Поиск доменных зон TLD'),
-         (0, u'status', status, 2, u'Показ статуса.'),
-         (1, u'whereis', whereis, 2, u'Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld'),
+	 (2, u'quit', bot_exit, 2, u'Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.'),
+	 (2, u'restart', bot_restart, 2, u'Перезапуск бота. Можно указать параметр, который будет показан в статусе бота при перезапуске.'),
+	 (2, u'update', bot_update, 2, u'Самообновление бота из SVN.'),
+	 (1, u'say', say, 2, u'Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.'),
+	 (0, u'calc', calc, 2, u'Калькулятор.'),
+	 (0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
+	 (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
+	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
+	 (2, u'exec', execute, 2, u'Исполнение внешнего кода.'),
+	 (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.'),
+	 (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы.'),
+	 (2, u'join', bot_join, 2, u'Вход в конференцию:\njoin room@conference.server.ru/nick - вход в конференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.'),
+	 (2, u'leave', bot_leave, 2, u'Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room'),
+	 (2, u'rejoin', bot_rejoin, 2, u'Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room'),
+	 (2, u'pass', conf_pass, 2, u'Временный пароль для входа в конференции.'),
+	 (2, u'bot_owner', owner, 2, u'Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.'),
+	 (2, u'bot_ignore', ignore, 2, u'Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.'),
+	 (1, u'where', info_where, 1, u'Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.'),
+	 (1, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
+	 (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
+	 (0, u'inbase', info_base, 1, u'Идентификация Вас в глобальной базе.'),
+	 (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
+	 (1, u'look', real_search, 2, u'Поиск участника по конференциям, где находится бот.'),
+	 (2, u'glook', real_search_owner, 2, u'Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.'),
+	 (1, u'tempo', tmp_search, 2, u'Локальный поиск во временной базе.'),
+	 (2, u'gtempo', gtmp_search, 2, u'Глобальный поиск во временной базе.'),
+	 (1, u'rss', rss, 2, u'Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. H - часы, M - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.'),
+	 (0, u'wtfrand', wtfrand, 1, u'Показ случайного обределения из базы слов.'),
+	 (0, u'wtfnames', wtfnames, 2, u'Показ списка определений в конференции.\nwtfnames [all|global|import]'),
+	 (0, u'wtfcount', wtfcount, 1, u'Показ количества определений в конференции.'),
+	 (0, u'wtfsearch', wtfsearch, 2, u'Поиск по базе определний.'),
+	 (2, u'wwtf', wwtf, 2, u'Показ инфонмации о том, кто сделал определение.'),
+	 (0, u'wtff', wtff, 2, u'Показ определения вместе с ником и датой.'),
+	 (0, u'wtfp', wtfp, 2, u'Показ определения в приват, независимо от куда поступила команда.\nwtfp word - показать определение word себе в приват\nwtfp word\nnick - показать определение word в приват nick'),
+	 (0, u'wtf', wtf, 2, u'Показ определения.'),
+	 (1, u'dfn', dfn, 2, u'Установка определения.\ndfn word=definition - запоминает definition как определение word\ndfn word= - удаляет определение word'),
+	 (2, u'gdfn', gdfn, 2, u'Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word'),
+	 (1, u'alias', alias, 2, u'Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.'),
+	 (0, u'youtube', youtube, 2, u'Поиск по YouTube'),
+	 (0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity страна город, где страна - двухбуквенное сокращание, например ru или ua, город - фрагмент названия города.'),
+	 (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
+	 (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
+	 (0, u'wz', weather, 2, u'Погода по коду аэропорта. Оптимизированный вариант.'),
+	 (0, u'gis', weather_gis, 2, u'Погода с GisMeteo.\ngis город|код_города'),
+	 (0, u'commands', info_comm, 1, u'Показывает список доступных комманд.'),
+	 (1, u'comm', comm_on_off, 2, u'Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд'),
+	 (0, u'bot_uptime', uptime, 1, u'Время работы бота.'),
+	 (1, u'info', info, 1, u'Различная информация о боте.'),
+	 (0, u'new', svn_info, 1, u'Показ svn-лога последнего обновления бота'),
+	 (1, u'smile', smile, 2, u'Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [on|off]'),
+	 (1, u'flood', autoflood, 2, u'Включение/выключение самообучающегося автоответчика.\nflood [on|off]'),
+	 (1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),
+	 (1, u'censor', censor_status, 2, u'Включение/выключение цензор-нотификатора.\ncensor [on|off]'),
+	 (1, u'inmember', inmember, 2, u'Поиск по member списку конференции.'),
+	 (1, u'inadmin', inadmin, 2, u'Поиск по admin списку конференции.'),
+	 (1, u'inowner', inowner, 2, u'Поиск по owner списку конференции.'),
+	 (0, u'ver', iq_version, 2, u'Версия клиента'),
+	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
+	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
+	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а'),
+	 (2, u'log', get_log, 2, u'Показ лога работы бота:\nlog len [data] - размер лога за дату или текущий день\nlog show data from-to - показ записей лога с "from" по "to" за дату "date"'),
+	 (2, u'limit', conf_limit, 2, u'Размер сообщения, свыше которого сообщения будут разбиавться на части кратные этому размеру.'),
+	 (2, u'plugin', bot_plugin, 2, u'Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name.py - добавить плагин.\nplugin del name.py - удалить плагин.'),
+	 (0, u'def', defcode, 2, u'Территориальная пренадлежность номера мобильного телефона. Внимание! Указывайте не менее 7 первых цифр номера во избежании большого количества сообщений!'),
+	 (2, u'error', show_error, 2, u'Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]'),
+	 (0, u'whoami', info_access, 1, u'Ваша идентификация перед ботом.'),
+	 (0, u'whois', info_whois, 2, u'Идентификация перед ботом.'),
+	 (0, u'disco', disco, 2, u'Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов'),
+	 (0, u'tr', translate, 2, u'Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода'),
+	 (0, u'google', google, 2, u'Поиск через google'),
+	 (0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message"'),
+	 (0, u'dns', get_dns, 2, u'dns резолвер'),
+	 (0, u'tld', get_tld, 2, u'Поиск доменных зон TLD'),
+	 (0, u'status', status, 2, u'Показ статуса.'),
+	 (1, u'whereis', whereis, 2, u'Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld'),
 	 (1, u'prefix', set_prefix, 2, u'Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.'),
 	 (1, u'backup', conf_backup, 2, u'Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей'),
-         (1, u'clear', hidden_clear, 2, u'Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.')]
+	 (1, u'clear', hidden_clear, 2, u'Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.')]
 

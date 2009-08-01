@@ -11,15 +11,15 @@ def gtalkers(type, jid, nick, text):
 	else:
 		tma = cu.execute('select * from talkers order by -words').fetchmany(10)
 
-        wtext = text.split(' ')
-        wtext = len(wtext)
-        beadd = 1
+	wtext = text.split(' ')
+	wtext = len(wtext)
+	beadd = 1
 
 	if len(tma):
-	        msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.\tКонфа'
+		msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.\tКонфа'
 		cnd = 1
 		for tt in tma:
-        	        msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
 			cnd += 1
 	else:
 		msg = text +u' не найдено!'
@@ -36,15 +36,15 @@ def talkers(type, jid, nick, text):
 	else:
 		tma = cu.execute('select * from talkers where room=? order by -words',(jid,)).fetchmany(10)
 
-        wtext = text.split(' ')
-        wtext = len(wtext)
-        beadd = 1
+	wtext = text.split(' ')
+	wtext = len(wtext)
+	beadd = 1
 
 	if len(tma):
-	        msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.'
+		msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.'
 		cnd = 1
 		for tt in tma:
-        	        msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
 			cnd += 1
 	else:
 		msg = text +u' не найдено!'

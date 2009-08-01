@@ -19,7 +19,7 @@ writefile('settings/starttime',str(tuple(time.localtime())))
 
 while 1:
 	try: execfile('isida.py')
-	except: sleep(1)
+	except: time.sleep(1)
 	if os.path.isfile('settings/tmp'):
 		mode = str(readfile('settings/tmp'))
 	if mode == 'update':

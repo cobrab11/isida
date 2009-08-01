@@ -88,7 +88,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 		msg = u'Ась?'
 
 	if skip:
-	        send_msg(type, jid, nick, msg)
+		send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
@@ -158,7 +158,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 			whojid = who
 			skip = 0
 	if skip:
-	        send_msg(type, jid, nick, msg)
+		send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
@@ -206,7 +206,7 @@ def muc_role(type, jid, nick, text, role):
 		msg = u'Ась?'
 
 	if skip:
-	        send_msg(type, jid, nick, msg)
+		send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
@@ -251,11 +251,11 @@ def muc_arole(type, jid, nick, text, role):
 					msg = u'Не найдено!'
 
 		elif text.lower() == 'clear':
-                        alist_role = getFile(ro_alist,[])
-                        tmp_role = []
-                        for tmp in alist_role:
-                                if tmp[0] != jid:
-                                        tmp_role.append(tmp)
+			alist_role = getFile(ro_alist,[])
+			tmp_role = []
+			for tmp in alist_role:
+				if tmp[0] != jid:
+					tmp_role.append(tmp)
 			writefile(ro_alist,str(tmp_role))
 			msg = u'Очищено для '+str(jid)
 
@@ -294,16 +294,16 @@ def muc_arole(type, jid, nick, text, role):
 		msg = u'Ась?'
 	
 	if skip:
-	        send_msg(type, jid, nick, msg)
+		send_msg(type, jid, nick, msg)
 	else:
 		alist_role = getFile(ro_alist,[])
 		for tmp in alist_role:
 			if tmp[0] == jid and tmp[2] == whojid:
 				alist_role.remove(tmp)
 		if tttime:
-        		alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
-        	else:
-                        alist_role.append((jid,nick,whojid,role,reason,0))
+			alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
+		else:
+			alist_role.append((jid,nick,whojid,role,reason,0))
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
 		cl.send(i)

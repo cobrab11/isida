@@ -16,7 +16,7 @@ def lastonetrack(type, jid, nick, text):
 		msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+get_tag(ms[1],'date')+']'
 	else:
 		msg = u'Недоступно.'
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def lf_api(method, user, splitter):
 	user = user.lower()
@@ -47,7 +47,7 @@ def lasttracks(type, jid, nick, text):
 	msg = u'Последние дорожки '+text+':'
 	for a in ms[1:cnt]:
 		msg += '\n ['+get_tag(a,'date')+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
 	text = text.split(' ')
@@ -65,7 +65,7 @@ def lastfriends(type, jid, nick, text):
 	for a in ms[1:cnt]:
 		msg += get_tag(a,'name')+' ('+get_tag(a,'realname')+u'), '
 	msg = msg[:-2]
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def lastloved(type, jid, nick, text):
 	text = text.split(' ')
@@ -83,7 +83,7 @@ def lastloved(type, jid, nick, text):
 	for a in ms[1:cnt]:
 		b = a.split('<artist')
 		msg += '\n ['+get_tag(a,'date')+'] '+get_tag(b[1],'name')+u' – '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):
 	text = text.split(' ')
@@ -100,7 +100,7 @@ def lastneighbours(type, jid, nick, text):
 	msg = u'Соседи '+text+':'
 	for a in ms[1:cnt]:
 		msg += '\n'+get_tag(a,'match')+u' – '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def lastplaylist(type, jid, nick, text):
 	text = text.split(' ')
@@ -117,7 +117,7 @@ def lastplaylist(type, jid, nick, text):
 	msg = u'Плейлисты '+text+':'
 	for a in ms[2:cnt]:
 		msg += '\n['+get_tag(a,'id')+'] '+get_tag(a,'title')+' ('+get_tag(a,'description')+u') – '+get_tag(a,'size')+u' – '+get_tag(a,'duration')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def topalbums(type, jid, nick, text):
 	text = text.split(' ')
@@ -135,7 +135,7 @@ def topalbums(type, jid, nick, text):
 	for a in ms[1:cnt]:
 		b = a.split('<artist')
 		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(b[1],'name')+u' – '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def topartists(type, jid, nick, text):
 	text = text.split(' ')
@@ -152,7 +152,7 @@ def topartists(type, jid, nick, text):
 	msg = u'Топ исполнителей '+text+':'
 	for a in ms[1:cnt]:
 		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def toptags(type, jid, nick, text):
 	text = text.split(' ')
@@ -169,7 +169,7 @@ def toptags(type, jid, nick, text):
 	msg = u'Топ тегов '+text+':'
 	for a in ms[1:cnt]:
 		msg += '\n['+get_tag(a,'count')+'] '+get_tag(a,'name')+u' – '+get_tag(a,'url')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def toptracks(type, jid, nick, text):
 	text = text.split(' ')
@@ -187,7 +187,7 @@ def toptracks(type, jid, nick, text):
 	for a in ms[1:cnt]:
 		b = a.split('<artist')
 		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(b[1],'name')+u' – '+get_tag(a,'name')
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def tasteometer(type, jid, nick, text):
 	text = text.lower()
@@ -212,10 +212,10 @@ def tasteometer(type, jid, nick, text):
 		for a in lfxml[2:cnt]:
 			msg += get_tag(a,'name')+', '
 		msg = msg[:-2]
-        send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg)
 
 def no_api(type, jid, nick):
-        send_msg(type, jid, nick, u'Не найден файл LastFM.api')
+	send_msg(type, jid, nick, u'Не найден файл LastFM.api')
 
 apifile = 'plugins/LastFM.api'
 

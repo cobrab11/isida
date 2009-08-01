@@ -32,7 +32,7 @@ def call_body(type, jid, nick, text):
 		msg = u'Ась?'
 
 	if skip:
-	        send_msg(type, jid, nick, msg)
+		send_msg(type, jid, nick, msg)
 	else:
 		inv_msg = nick+u' просит Вас зайти в '+jid
 		if reason:
