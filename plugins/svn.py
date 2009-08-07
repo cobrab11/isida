@@ -13,20 +13,13 @@ def svn_get(type, jid, nick,text):
 		except:
 			try:
 				if text[1].lower().count('r'): revn = int(text[1][text[1].find('r')+1:])
-			except:
-				revn = 0
-	else:
-		url=text
+			except: revn = 0
+	else: url=text
 	if revn != 0: sh_exe = 'svn log '+url+' -r'+str(revn)
 	else:
 		if count > 10: count = 10
 		sh_exe = 'svn log '+url+' --limit '+str(count)
-	try:
-		cmd = "bash -c '%s' 2>&1"%(sh_exe.replace("'","'\\''"))
-		p = popen2.Popen3(cmd, True)
-		while p.poll() == -1: pass
-		msg = url+'\n'+concat(p.fromchild.readlines()).decode('utf-8')
-	except: msg = u'Произошла ошибка обработки команды'
+	msg = shell_execute(sh_exe)
 	send_msg(type, jid, nick, msg)
 	
 global execute

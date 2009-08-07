@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+def shell_execute(cmd):
+	bufsize = 1024
+	p = Popen(cmd, shell=True, bufsize=bufsize, stdout=PIPE, stderr=STDOUT, close_fds=True)
+	return ''.join(map(lambda x: x.decode('utf-8'), p.stdout.readlines()))
+
 def concat(list):
 	result = ''
 	for tmp in list:

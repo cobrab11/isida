@@ -250,6 +250,20 @@ def muc_arole(type, jid, nick, text, role):
 				else:
 					msg = u'Не найдено!'
 
+		elif text[:4].lower() == 'del ' and not text.count('\n'):
+			text = text[4:]
+			if not len(text):
+				msg = u'Кого удалить?'
+			else:
+				msg = u'Не найдено'
+				alist_role = getFile(ro_alist,[])
+				for tmp in alist_role:
+					if tmp[0] == jid and (tmp[1] == text or tmp[2] == text):
+						alist_role.remove(tmp)
+						writefile(ro_alist,str(alist_role))
+						msg = u'Удалено: '+tmp[1]
+						break
+
 		elif text.lower() == 'clear':
 			alist_role = getFile(ro_alist,[])
 			tmp_role = []

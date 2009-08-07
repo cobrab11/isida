@@ -1,25 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-def srv_shell(text):
-	try:
-		cmd = "bash -c '%s' 2>&1"%(text.replace("'","'\\''"))
-		p = popen2.Popen3(cmd, True)
-		while p.poll() == -1: pass
-		msg = concat(p.fromchild.readlines()).decode('utf-8')
-	except: msg = u'Произошла ошибка обработки команды'
-	return msg
-
 def srv_nslookup(type, jid, nick, text):
-	msg = srv_shell(u'nslookup '+text)
+	msg = shell_execute(u'nslookup '+text)
 	send_msg(type, jid, nick, msg)
 
 def srv_dig(type, jid, nick, text):
-	msg = srv_shell(u'dig '+text)
+	msg = shell_execute(u'dig '+text)
 	send_msg(type, jid, nick, msg)
 
 def srv_host(type, jid, nick, text):
-	msg = srv_shell(u'host '+text)
+	msg = shell_execute(u'host '+text)
 	send_msg(type, jid, nick, msg)
 
 global execute

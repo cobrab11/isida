@@ -6,6 +6,7 @@ from random import *
 from sys import maxint
 from time import *
 from pdb import *
+from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging
 import thread, operator, sqlite3, simplejson, chardet, socket, popen2, atexit
 
