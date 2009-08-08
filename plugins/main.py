@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 def shell_execute(cmd):
+	sys.exc_clear()
+	gc.collect()
 	bufsize = 1024
 	p = Popen(cmd, shell=True, bufsize=bufsize, stdout=PIPE, stderr=STDOUT, close_fds=True)
 	return ''.join(map(lambda x: x.decode('utf-8'), p.stdout.readlines()))
 
 def concat(list):
 	result = ''
-	for tmp in list:
-		result += tmp
+	for tmp in list: result += tmp
 	return result
 
 def get_affiliation(jid,nick):
@@ -70,81 +71,27 @@ def comm_on_off(type, jid, nick, text):
 		for tmp in cof:
 			if tmp[0] == jid: msg += tmp[1] + u', '
 		if len(msg): msg = u'Отключены команды: ' + msg[:-2]
-		else: msg = u'Для данной конференции нет отключенных команд' 
-
+		else: msg = u'Для данной конференции нет отключенных команд'
 	send_msg(type, jid, nick, msg)
 
 def reduce_spaces(text):
-	while text[0] == ' ':
-		text = text[1:]
-	while text[-1:] == ' ':
-		text = text[:-1]
+	while text[0] == ' ': text = text[1:]
+	while text[-1:] == ' ': text = text[:-1]
 	return text
-
-def iq_uptime(type, jid, nick, text):
-	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
-	else:
-		who = text
-		for mega1 in megabase:
-			if mega1[0] == jid and mega1[1] == text:
-				who = getRoom(jid)+'/'+text
-				break
-
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_LAST},[])])
-	cl.send(i)
-	to = timeout
-
-	no_answ = 1
-	is_answ = [None]
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.05)
-		to -= 0.05
-
-	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
-	if to > 0:
-		if iiqq == ['None']:
-			msg = u'Что-то не получается...'
-		else:
-			try:
-				msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
-			except:
-				msg = u'Что-то не получается...'
-
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-	send_msg(type, jid, nick, msg)
 
 def censor_status(type, jid, nick, text):
 	tmode = 0
 	if text:
-		if text.lower() == 'on':
-			tmode = 2
-		elif text.lower() == 'off':
-			tmode = 1
+		if text.lower() == 'on': tmode = 2
+		elif text.lower() == 'off': tmode = 1
 
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
 	msg = u'Censor is '
 	is_found = 1
 	for sm in gl_censor:
 		if sm[0] == getRoom(jid):
-			if tmode:
-				tsm = (sm[0],tmode-1)
-			else:
-				tsm = (sm[0],int(not sm[1]))
+			if tmode: tsm = (sm[0],tmode-1)
+			else: tsm = (sm[0],int(not sm[1]))
 			gl_censor.remove(sm)
 			gl_censor.append(tsm)
 			is_found = 0
@@ -157,134 +104,24 @@ def censor_status(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
-	if text == '':
-		text = nick
+	if text == '': text = nick
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
 	stat2 = cu.execute('select message,status from age where jid=? and room=?',('<temporary>'+text.lower()+'@',jid)).fetchone()
-
-	if stat2:
-		stat = stat2
+	if stat2: stat = stat2
 	if stat:
-		if stat[1]:
-			msg = u'покинул данную конференцию.'
+		if stat[1]: msg = u'покинул данную конференцию.'
 		else:
 			stat = stat[0].split('\n',4)
-	
-			if stat[3] != 'None':
-				msg = stat[3]
-			else:
-				msg = 'online'
-
-			if stat[4] != 'None':
-				msg += ' ('+stat[4]+')'
-			if stat[2] != 'None':
-				msg += ' ['+stat[2]+'] '
-			else:
-				msg += ' [0] '
-			if stat[0] != 'None' and stat[1] != 'None':
-				msg += stat[0]+'/'+stat[1]
-
-		if text != nick:
-			msg = text + ' - '+msg
-	else:
-		msg = u'Не найдено!'
-	send_msg(type, jid, nick, msg)
-
-def get_tld(type, jid, nick, text):
-	if len(text) >= 2:
-		tld = readfile('tld/tld.list').decode('utf-8')
-		tld = tld.split('\n')
-		msg = u'Не найдено!'
-		for tl in tld:
-			if tl.split('\t')[0]==text:
-				msg = '.'+tl.replace('\t',' - ',1).replace('\t','\n')
-				break
-	else:
-		msg = u'Что искать то будем?'
-	send_msg(type, jid, nick, msg)
-
-nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
-
-def get_dns(type, jid, nick, text):
-	is_ip = 0
-	if text.count('.') == 3:
-		is_ip = 1
-		for ii in text:
-			if not nmbrs.count(ii):
-				is_ip = 0
-				break
-	if is_ip:
-		try:
-			msg = socket.gethostbyaddr(text)[0]
-
-		except:
-			msg = u'Не резолвится'
-	else:
-		try:
-			ans = socket.gethostbyname_ex(text)[2]
-			msg = text+' - '
-			for an in ans:
-				msg += an + ' | '
-			msg = msg[:-2]
-		except:
-			msg = u'Не резолвится'
-	send_msg(type, jid, nick, msg)
-
-def ping(type, jid, nick, text):
-	global iq_answer
-	if text == '':
-		sping = 1
-		who = getRoom(jid)+'/'+nick
-	else:
-		sping = 0
-		who = text
-		for mega1 in megabase:
-			if mega1[0] == jid and mega1[1] == text:
-				who = getRoom(jid)+'/'+text
-				break
-
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
-	cl.send(i)
-	to = timeout
-
-	lt = time.time()
-
-	no_answ = 1
-	is_answ = [None]
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.001)
-		to -= 0.001
-
-	ct = time.time()
-
-	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
-	if to > 0:
-		if iiqq == ['None']:
-			msg = u'Что-то не получается...'
-		else:
-			tpi = ct-lt
-			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
-
-			if sping:
-				msg = u'Пинг от тебя '+tpi+u' сек.'
-			else:
-				msg = u'Пинг от '+text+' '+tpi+u' сек.'
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			if stat[3] != 'None': msg = stat[3]
+			else: msg = 'online'
+			if stat[4] != 'None': msg += ' ('+stat[4]+')'
+			if stat[2] != 'None': msg += ' ['+stat[2]+'] '
+			else: msg += ' [0] '
+			if stat[0] != 'None' and stat[1] != 'None': msg += stat[0]+'/'+stat[1]
+		if text != nick: msg = text + ' - '+msg
+	else: msg = u'Не найдено!'
 	send_msg(type, jid, nick, msg)
 
 def replacer(msg):
@@ -294,480 +131,9 @@ def replacer(msg):
 	msg = rss_del_nn(msg)
 	return msg
 
-def google(type, jid, nick,text):
-	query = urllib.urlencode({'q' : text.encode("utf-8")})
-	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
-	search_results = urllib.urlopen(url)
-	json = simplejson.loads(search_results.read())
-	try:
-		results = json['responseData']['results']
-		title = results[0]['title']
-		content = results[0]['content']
-		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
-		content = content.replace('<b>', u'«').replace('</b>', u'»')
-		url = results[0]['unescapedUrl']
-		msg = replacer(noh_title)+replacer(content)+url
-	except:
-		msg = u'Выражение "' + text + u'" - не найдено!'
-	send_msg(type, jid, nick, msg)
-
-def translate(type, jid, nick,text):
-	trlang = ['sq','ar','bg','ca','zh-CN','zh-TW','hr','cs','da',
-		  'nl','en','et','tl','fi','fr','gl','de','el','iw',
-		  'hi','hu','id','it','ja','ko','lv','lt','mt','no',
-		  'pl','pt','ro','ru','sr','sk','sl','es','sv','th','tr','uk','vi']
-	if text.lower() == 'list':
-		msg = u'Доступные языки для перевода: '
-		for tl in trlang:
-			msg += tl+', '
-		msg = msg[:-2]
-	else:
-		if text.count(' ') > 1:
-			text = text.split(' ',2)
-			if trlang.count(text[0]) and trlang.count(text[1]) and text[2] != '':
-				query = urllib.urlencode({'q' : text[2].encode("utf-8"),'langpair':text[0]+'|'+text[1]})
-				url = u'http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&%s'.encode("utf-8") % (query)
-				search_results = urllib.urlopen(url)
-				json = simplejson.loads(search_results.read())
-				msg = json['responseData']['translatedText']
-			else:
-				msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
-		else:
-			msg = u'Формат команды: tr с_какого на_какой текст'
-	send_msg(type, jid, nick, msg)
-
-def sayto(type, jid, nick, text):
-	if text.count(' '):
-		to = text[:text.find(' ')]
-		what = text[text.find(' ')+1:]
-		frm = nick + '\n' + str(int(time.time()))
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		fnd = cu.execute('select * from age where room=? and (nick=? or jid=?)',(jid,to,to)).fetchall()
-		if len(fnd) == 1:
-			fnd = fnd[0]
-			if fnd[5]:
-				msg = u'Передам'
-				sdb = sqlite3.connect(saytobase)
-				cu = sdb.cursor()
-				cu.execute('insert into st values (?,?,?,?)', (frm, jid, fnd[2], what))
-				sdb.commit()
-			else:
-				msg = u'Или я дура, или '+to+u' находится тут...'
-		elif len(fnd) > 1:
-			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-		else:
-			msg = u'Я не в курсе кто такой '+to+u'. Могу не правильно передать.'
-			sdb = sqlite3.connect(saytobase)
-			cu = sdb.cursor()
-			cu.execute('insert into st values (?,?,?,?)', (frm, jid, to, what))
-			sdb.commit()
-	else:
-		msg = u'Кому что передать?'
-	send_msg(type, jid, nick, msg)
-
-def getMucItems(jid,affil,ns):
-	global banbase,raw_iq
-	iqid = str(randint(1,100000))
-	raw_iq = []
-	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
-	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
-	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase: 
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	return (bb,raw_iq)
-
-def conf_backup(type, jid, nick, text):
-	if len(text):
-		text = text.split(' ')
-		mode = text[0]
-
-		if mode == u'show':
-			a = os.listdir(back_folder)
-			b = []
-			for c in a:
-				if c.count('conference'):
-					b.append((c,os.path.getmtime(back_folder+c)))
-			if len(b):
-				msg = u'Резервные копии: '
-				for c in b:
-					msg += c[0]+' ('+un_unix(time.time()-c[1])+')'+', '
-				msg = msg[:-2]
-			else:
-				msg = u'Резервных копий не найдено!'
-		if mode == u'now':
-			tmppos = arr_semi_find(confbase, jid)
-			if tmppos == -1:
-				nowname = nickname
-			else:
-				nowname = getResourse(confbase[tmppos])
-				if nowname == '':
-					nowname = nickname
-			xtype = ''
-			for base in megabase:
-				if base[0].lower() == jid and base[1] == nowname:
-					xtype = base[3]
-					break
-			if xtype != 'owner':
-				msg = u'Для резервного копирования мне нужны права владельца конференции!'
-
-			else:
-				ns = NS_MUC_ADMIN
-				banlist = getMucItems(jid,'outcast',ns)
-				memberlist = getMucItems(jid,'member',ns)
-				adminlist = getMucItems(jid,'admin',ns)
-				ownerlist = getMucItems(jid,'owner',ns)
-				configlist = getMucItems(jid,'',NS_MUC_OWNER)
-				iqid = str(randint(1,100000))
-				i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
-				cl.send(i)
-
-				msg = u'Копирование завершено!'
-				msg += u'\nВладельцев:\t'+str(len(ownerlist[0]))
-				msg += u'\nАдминов:\t'+str(len(adminlist[0]))
-				msg += u'\nУчастников:\t'+str(len(memberlist[0]))
-				msg += u'\nЗабаненных:\t'+str(len(banlist[0]))
-
-				raw_back = []
-				raw_back.append(ownerlist[1][1])
-				raw_back.append(adminlist[1][1])
-				raw_back.append(memberlist[1][1])
-				raw_back.append(banlist[1][1])
-				raw_back.append(configlist[1][1])
-				writefile(back_folder+unicode(jid),str(raw_back))
-
-		if mode == u'restore':
-			if len(text)>1:
-				a = os.listdir(back_folder)
-				a = a.count(text[1])
-
-				if a:
-					tmppos = arr_semi_find(confbase, jid)
-					if tmppos == -1:
-						nowname = nickname
-					else:
-						nowname = getResourse(confbase[tmppos])
-						if nowname == '':
-							nowname = nickname
-					xtype = ''
-					for base in megabase:
-						if base[0].lower() == jid and base[1] == nowname:
-							xtype = base[3]
-							break
-					if xtype != 'owner':
-						msg = u'Для восстановления резервной копии мне нужны права владельца конференции!'
-	
-					else:
-						raw_back=eval(readfile(back_folder+unicode(text[1])))
-
-						for zz in range(0,4):
-							iqid = str(randint(1,100000))
-							end = raw_back[zz][raw_back[zz].find('<query'):]
-							beg = '<iq xmlns="jabber:client" to="'+str(jid)+'" from="'+str(selfjid)+'" id="'+str(iqid)+'" type="set">'
-							cl.send(beg+end)
-						iqid = str(randint(1,100000))
-						end = raw_back[4][raw_back[4].find('<query'):]
-						beg = '<iq to="'+str(jid)+'" id="'+str(iqid)+'" type="set">'
-						i = beg+end
-						ci = i.count('label="')
-						for ii in range(0,ci):
-							i = i[:i.find('label="')-1]+i[i.find('"',i.find('label="')+8)+1:]
-						i = i[:i.find('<instructions>')]+i[i.find('</instructions>',i.find('<instructions>')+14)+15:]
-						i = i[:i.find('<title>')]+i[i.find('</title>',i.find('<title>')+7)+8:]
-						i = i.replace('form','submit')
-						cl.send(i)
-						iqid = str(randint(1,100000))
-						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
-					cl.send(i)
-					msg = u'Восстановление завершено!'
-				else:
-					msg = u'Резервная копия не найдена. Просмотрите список используя ключ show'
-			else:
-				msg = u'Что будем восстанавливать?'
-	else:
-		msg = u'backup now|show|restore'
-	send_msg(type, jid, nick, msg)
-
-def disco(type, jid, nick, text):
-	text = text.lower().split(' ')
-	where = text[0]
-	try:
-		what = text[1]
-	except:
-		what = ''
-	try:
-		hm = int(text[2])
-	except:
-		hm = 10
-
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-	cl.send(i)
-	to = timeout
-
-	no_answ = 1
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.5)
-		to -= 0.5
-
-	if not no_answ:
-		if where.count('conference') and not where.count('@'):
-			tmp = sqlite3.connect(':memory:')
-			cu = tmp.cursor()
-			cu.execute('''create table tempo (nick text, room text, size text)''')
-			isa = is_answ[0].split('<item ')
-			for ii in isa[1:]:
-				dname = get_subtag(ii,'name')
-				djid = get_subtag(ii,'jid')
-				dpos = 1
-				for zzz in range(0,dname.count('(')):
-					dpos = dname.find('(',dpos+1)
-				dsize = dname[dpos+1:dname.find(')',dpos+1)]
-				dname = dname[:-(len(dsize)+3)]
-				cu.execute('insert into tempo values (?,?,?)', (dname, djid, dsize))
-			if len(what):
-				cm = cu.execute('select * from tempo where (nick like ? or room like ?) order by -size',('%'+what+'%','%'+what+'%')).fetchmany(hm)
-			else:
-				cm = cu.execute('select * from tempo order by -size').fetchmany(hm)
-			if len(cm):
-				cnt = 1
-				msg = u'Всего: '+str(len(cm))
-				for i in cm:
-					msg += u'\n'+str(cnt)+u'. '+i[0]+u' ['+i[1]+u'] . '+i[2]
-					cnt += 1
-			else:
-				msg = u'\"'+what+u'\" не найдено!'
-			tmp.close()
-		elif where.count('conference') and where.count('@'):
-			tmp = sqlite3.connect(':memory:')
-			cu = tmp.cursor()
-			cu.execute('''create table tempo (nick text)''')
-			isa = is_answ[0].split('<item ')
-			for ii in isa[1:]:
-				dname = get_subtag(ii,'name')
-				cu.execute('insert into tempo values (?)', (dname,))
-			if len(what):
-				cm = cu.execute('select * from tempo where (nick like ?) order by nick',('%'+what+'%',)).fetchall()
-			else:
-				cm = cu.execute('select * from tempo order by nick').fetchall()
-			if len(cm):
-				msg = u'Всего: '+str(len(cm))+' - '
-				for i in cm:
-					msg += i[0]+u', '
-				msg = msg[:-2]
-			else:
-				msg = u'\"'+what+u'\" не найдено!'
-			tmp.close()
-		else:
-			tmp = sqlite3.connect(':memory:')
-			cu = tmp.cursor()
-			cu.execute('''create table tempo (jid text)''')
-			isa = is_answ[0].split('<item ')
-			for ii in isa[1:]:
-				djid = get_subtag(ii,'jid')
-				cu.execute('insert into tempo values (?)', (djid,))
-			cm = cu.execute('select * from tempo order by jid').fetchall()
-			if len(cm):
-				cnt = 1
-				msg = u'Всего: '+str(len(cm))
-				for i in cm:
-					msg += '\n'+str(cnt)+'. '+i[0]
-					cnt += 1
-			else:
-				msg = 'не найдено!'
-			tmp.close()
-	else:
-		msg = u'Не получается...'
-	msg = rss_replace(msg)
-	send_msg(type, jid, nick, msg)
-
-def whereis(type, jid, nick, text):
-	if len(text):
-		text = text.split(' ')
-		who = text[0]
-	else:
-		who = nick
-	if len(text)<2:
-		where = getServer(jid)
-	else:
-		if text[1].count('conference'):
-			where = text[1]
-		else:
-			where = 'conference.'+text[1]
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-	cl.send(i)
-	to = timeout
-
-	no_answ = 1
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.5)
-		to -= 0.5
-
-	if not no_answ:
-		tmp = sqlite3.connect(':memory:')
-		cu = tmp.cursor()
-		cu.execute('''create table tempo (nick text, room text)''')
-
-		isa = is_answ[0].split('<item ')
-		djids = []
-		for ii in isa[1:]:
-			dname = get_subtag(ii,'name')
-			if dname[-5:] != '(n/a)' and dname[-3:] != '(0)':
-				djids.append(get_subtag(ii,'jid'))
-
-		send_msg(type, jid, nick, u'Ожидайте, результат Вы получите в приват примерно через '+str(int(len(djids)/6))+u' сек.')
-
-		for ii in djids:
-			iqid = str(randint(1,100000))
-			i = Node('iq', {'id': iqid, 'type': 'get', 'to':ii}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-			cl.send(i)
-			to = 500
-
-			no_answ = 1
-			while to >= 0 and no_answ:
-				for aa in iq_answer:
-					if aa[0]==iqid:
-						is_answ = aa[1:]
-						iq_answer.remove(aa)
-						no_answ = 0
-						break
-				sleep(0.01)
-				to -= 0.01
-
-			if not no_answ:
-				isd = is_answ[0].split('<item ')
-				for iii in isd[1:]:
-					dname = get_subtag(iii,'name')
-					if dname.lower().count(who.lower()):
-						cu.execute('insert into tempo values (?,?)', (dname, getRoom(get_subtag(iii,'jid'))))
-
-		cm = cu.execute('select * from tempo order by nick,room').fetchall()
-		if len(cm):
-			msgg = u', Совпадений с ником \"'+who+u'\": '+str(len(cm))
-			for i in cm:
-				msgg += '\n'+i[0]+'\t'+i[1]
-		else:
-			msgg = u', ник \"'+who+u'\" не найден!'
-
-		msg = u'Всего конференций: '+str(len(isa)-1)+u', доступно: '+str(len(djids))+msgg
-		tmp.close()		
-	else:
-		msg = u'Не получается...'
-	send_msg('chat', jid, nick, msg)
-
-ul = 'update.log'
 def svn_info(type, jid, nick):
-	if os.path.isfile(ul):
-		msg = u'Последнее обновление:\n'+readfile(ul).decode('utf-8')
-	else:
-		msg = u'Файл '+ul+u' не доступен!'
-	send_msg(type, jid, nick, msg)
-
-def iq_time(type, jid, nick, text):
-	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
-	else:
-		who = text
-		for mega1 in megabase:
-			if mega1[0] == jid and mega1[1] == text:
-				who = getRoom(jid)+'/'+text
-				break
-
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
-	cl.send(i)
-	to = timeout
-
-	no_answ = 1
-	is_answ = [None]
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.5)
-		to -= 0.5
-
-	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
-	if to > 0:
-		if len(iiqq) == 3:
-			msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
-		else:
-			msg = ''
-			for iiq in iiqq:
-				msg = iiq+' '
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
-	send_msg(type, jid, nick, msg)
-
-def iq_version(type, jid, nick, text):
-	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
-	else:
-		who = text
-		for mega1 in megabase:
-			if mega1[0] == jid and mega1[1] == text:
-				who = getRoom(jid)+'/'+text
-				break
-
-	iqid = str(randint(1,100000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
-	cl.send(i)
-	to = timeout
-
-	no_answ = 1
-	is_answ = [None]
-	while to >= 0 and no_answ:
-		for aa in iq_answer:
-			if aa[0]==iqid:
-				is_answ = aa[1:]
-				iq_answer.remove(aa)
-				no_answ = 0
-				break
-		sleep(0.5)
-		to -= 0.5
-
-	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
-	if to > 0:
-		if len(iiqq) == 3:
-			msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
-		else:
-			msg = ''
-			for iiq in iiqq:
-				msg = iiq+' '
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	if os.path.isfile(ul): msg = u'Последнее обновление:\n'+readfile(ul).decode('utf-8')
+	else: msg = u'Файл '+ul+u' не доступен!'
 	send_msg(type, jid, nick, msg)
 
 def unhtml(page):
@@ -785,88 +151,6 @@ def unhtml(page):
 	page = rss_del_nn(page)
 	page = page.replace('\n ','')
 	return page
-
-def seen(type, jid, nick, text):
-	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
-	llim = 10
-	if len(text)>=2:
-		try: llim = int(text[0])
-		except: llim = 10
-		text = text[1]
-	else: text = text[0]
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				msg += '\n'+str(cnt)+'. '+tmp[1]
-
-				if tmp[5]:
-					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
-	send_msg(type, jid, nick, msg)
-
-def seenjid(type, jid, nick, text):
-	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
-	llim = 10
-	if len(text)>=2:
-		try: llim = int(text[0])
-		except: llim = 10
-		text = text[1]
-	else: text = text[0]
-	xtype = None
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			xtype = True
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				msg += '\n'+str(cnt)+'. '+tmp[1]+' ('+tmp[2]+')'
-
-				if tmp[5]:
-					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
-
-	if type == 'groupchat' and xtype:
-		send_msg(type,jid,nick,u'Результат отправлен Вам в приват.')
-		send_msg('chat', jid, nick, msg)
-	else:
-		send_msg(type, jid, nick, msg)
-		
 
 def alias(type, jid, nick, text):
 	global aliases
@@ -886,9 +170,7 @@ def alias(type, jid, nick, text):
 		mode = text
 		cmd = ''
 		cbody = ''
-
 	msg = u'Режим '+mode+u' не опознан!'
-
 	if mode=='add':
 		fl = 0
 		for i in aliases:
@@ -896,19 +178,15 @@ def alias(type, jid, nick, text):
 				aliases.remove(i)
 				fl = 1	
 		aliases.append([jid, cmd, cbody])
-		if fl:
-			msg = u'Обновлено:'
-		else:
-			msg = u'Добавлено:'
+		if fl: msg = u'Обновлено:'
+		else: msg = u'Добавлено:'
 		msg += u' '+cmd+u' == '+cbody
-
 	if mode=='del':
 		msg = u'Не возможно удалить '+cmd
 		for i in aliases:
 			if i[1] == cmd and i[0] == jid:
 				aliases.remove(i)
 				msg = u'Удалено: '+cmd
-
 	if mode=='show':
 		if cmd == '':
 			msg = u'Сокращения: '
@@ -917,10 +195,8 @@ def alias(type, jid, nick, text):
 				if i[0] == jid:
 					msg += i[1] + ', '
 					isf = 0
-			if isf:
-				msg+=u'не найдены'
-			else:
-				msg = msg[:-2]
+			if isf: msg+=u'не найдены'
+			else: msg = msg[:-2]
 		else:
 			msg = cmd
 			isf = 1
@@ -928,203 +204,31 @@ def alias(type, jid, nick, text):
 				if i[1].lower().count(cmd.lower()) and i[0] == jid:
 					msg += '\n'+i[1]+' = '+i[2]
 					isf = 0
-			if isf:
-				msg+=u' не найдено'
-	
+			if isf: msg+=u' не найдено'
 	writefile(alfile,str(aliases))
-	send_msg(type, jid, nick, msg)
-
-##########################
-
-def inowner(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'owner'})])])
-	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего владельцев: '+str(len(bb))
-	if text != '':
-		mmsg = u', найдено:\n'
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
-		msg += mmsg
-	send_msg(type, jid, nick, msg)
-
-def inadmin(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin'})])])
-	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего администраторов: '+str(len(bb))
-	if text != '':
-		mmsg = u', найдено:\n'
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
-		msg += mmsg
-	send_msg(type, jid, nick, msg)
-
-def inmember(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'member'})])])
-	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-
-	msg = u'Всего постоянных участников: '+str(len(bb))
-	if text != '':
-		mmsg = u', найдено:\n'
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
-		msg += mmsg
 	send_msg(type, jid, nick, msg)
 
 def fspace(mass):
 	bdd = []
 	for b in mass:
 		if len(b) and len(b) != b.count(' '):
-			while b[0] == ' ':
-				b = b[1:]
+			while b[0] == ' ': b = b[1:]
 		bdd.append(b)
 	return bdd
-
-def weather_gis(type, jid, nick, text):
-	city_code = None
-	if text == '':
-		msg = u'gis город|код города'
-	else:
-		try:
-			city_code = str(int(text))
-		except:
-			ft = ''
-			for tex in text:
-				if ord(tex) == 32:
-					ft += '%20'
-				elif ord(tex)<127:
-					ft += tex
-				else:
-					ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
-			link = 'http://wap.gismeteo.ru/gm/normal/node/search_result/6/?like_field_sname='+ft
-			f = urllib.urlopen(link)
-			body = f.read()
-			f.close()
-			try:
-				body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
-				giss = []
-				for tmp in body:
-					giss.append((tmp.split('&')[0],tmp.split('gen_past_date_0">')[1].split('</a>')[0]))
-				if len(giss) == 1:
-					city_code = giss[0][0]
-				elif len(giss) == 0:
-					msg = u'Город '+text+u' не найден!'
-				else:
-					msg = u'Найдено больше одного города! Воспользуйтесь командой gis код_города'
-					for tmp in giss:
-						msg += u'\n'+tmp[0]+u' — '+tmp[1]
-			except:
-				if body.lower().count(u'forbidden'):
-					msg = u'Доступ к серверу погоды запрещён на стороне сервера.'
-				else:
-					msg = u'К сожалению сервер не отвечает.'
-	if city_code:
-		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_type/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_0&ed_field_date=gen_past_date_0'
-		f = urllib.urlopen(link)
-		body = f.read()
-		f.close()
-		body = html_encode(body)
-		body = replacer(body)
-		body = body.split('#006cb7')[3]
-		body = body.replace(u',  м/с',u' ')
-		body = body.replace(u'безветрие',u'штиль')
-		b = body.split('\n')
-		if b[7] == u'На неделю':
-			b.insert(5,'')
-		if len(b[5]):
-			msg = b[6]+', '+b[5]+', '+b[4]+' ('+b[1]+')'
-		else:
-			msg = b[6]+', '+b[4]+' ('+b[1]+')'
-		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
-		ms = ['']
-		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
-		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
-		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
-		ms.append(u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41])
-
-		link = 'http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1'
-		f = urllib.urlopen(link)
-		body = f.read()
-		f.close()
-		body = html_encode(body)
-		body = replacer(body)
-		body = body.split('#006cb7')[3]
-		body = body.replace(u',  м/с',u' ')
-		body = body.replace(u'безветрие',u'штиль')
-		b = body.split('\n')
-		if b[7] == u'На неделю':
-			b.insert(5,'')
-		ms.append(u'\nНочь:\t'+b[12]+'\t'+b[14]+'\t'+b[16]+'\t'+b[18]+b[19]+'\t'+b[10]+', '+b[11])
-		ms.append(u'\nУтро:\t'+b[22]+'\t'+b[24]+'\t'+b[26]+'\t'+b[28]+b[29]+'\t'+b[20]+', '+b[21])
-		ms.append(u'\nДень:\t'+b[32]+'\t'+b[34]+'\t'+b[36]+'\t'+b[38]+b[39]+'\t'+b[30]+', '+b[31])
-		ms.append(u'\nВечер:\t'+b[42]+'\t'+b[44]+'\t'+b[46]+'\t'+b[48]+b[49]+'\t'+b[40]+', '+b[41])
-		
-		beg = tuple(localtime())[3]/4
-		for tmp in ms[beg:beg+4]:
-			msg += tmp
-	send_msg(type, jid, nick, msg)
 
 def autoflood(type, jid, nick, text):
 	tmode = 0
 	if text:
-		if text.lower() == 'on':
-			tmode = 2
-		elif text.lower() == 'off':
-			tmode = 1
+		if text.lower() == 'on': tmode = 2
+		elif text.lower() == 'off': tmode = 1
 
 	floods = getFile(fld,[(getRoom(jid),0)])
 	msg = u'Flood is '
 	is_found = 1
 	for sm in floods:
 		if sm[0] == getRoom(jid):
-			if tmode:
-				tsm = (sm[0],tmode-1)
-			else:
-				tsm = (sm[0],int(not sm[1]))
+			if tmode: tsm = (sm[0],tmode-1)
+			else: tsm = (sm[0],int(not sm[1]))
 			floods.remove(sm)
 			floods.append(tsm)
 			is_found = 0
@@ -1136,236 +240,15 @@ def autoflood(type, jid, nick, text):
 	writefile(fld,str(floods))
 	send_msg(type, jid, nick, msg)
 
-def execute(type, jid, nick, text):
-	try:
-		text = str(eval(text))
-	except:
-		text = u'Я не могу это исполнить'
-	send_msg(type, jid, nick, text)
-
-
-def calc(type, jid, nick, text):
-	legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>','.']
-	ppc = 1
-	for tt in text:
-		all_ok = 0
-		for ll in legal:
-			if tt==ll:
-				all_ok = 1
-				break
-		if not all_ok:
-			ppc = 0
-			break
-	if text.count('**'):
-		ppc = 0
-
-	if ppc:	
-		try:
-			text = str(eval(text))
-		except:
-			text = u'Я не могу это посчитать'
-	else:
-		text = u'Выражение недопустимо!'
-	send_msg(type, jid, nick, text)
-
-def wtfsearch(type, jid, nick, text):
-	msg = u'Чего искать то будем?'
-	if len(text):
-		mdb = sqlite3.connect(wtfbase)
-		cu = mdb.cursor()
-		text = '%'+text+'%'
-		ww = cu.execute('select * from wtf where (room=? or room=? or room=?) and (room like ? or jid like ? or nick like ? or wtfword like ? or wtftext like ? or time like ?)',(jid,'global','import',text,text,text,text,text,text)).fetchall()
-		msg = ''
-		for www in ww:
-			msg += www[4]+', '
-
-		if len(msg):
-			msg = u'Нечто похожее я видела в: '+msg[:-2]
-		else:
-			msg = u'Хм. Ничего похожего я не знаю...'
-
-	send_msg(type, jid, nick, msg)
-
-def wtfrand(type, jid, nick):
-	msg = u'Всё, что я знаю это: '
-	mdb = sqlite3.connect(wtfbase)
-	cu = mdb.cursor()
-
-	ww = cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import')).fetchall()
-	tlen = len(ww)
-
-	ww = ww[randint(0,tlen-1)]
-
-	msg = u'Я знаю, что '+ww[4]+u' - '+ww[5]
-
-	send_msg(type, jid, nick, msg)
-
-def wtfnames(type, jid, nick, text):
-	msg = u'Всё, что я знаю это: '
-	mdb = sqlite3.connect(wtfbase)
-	cu = mdb.cursor()
-
-	if text == 'all':
-		cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import'))
-	elif text == 'global':
-		cu.execute('select * from wtf where room=?',('global',))
-	elif text == 'import':
-		cu.execute('select * from wtf where room=?',('import',))
-	else:
-		cu.execute('select * from wtf where room=?',(jid,))
-
-	for ww in cu:
-		msg += ww[4]+', '
-	msg=msg[:-2]
-	send_msg(type, jid, nick, msg)
-
-def wtfcount(type, jid, nick):
-	mdb = sqlite3.connect(wtfbase)
-	cu = mdb.cursor()
-	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
-	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
-	glb = len(cu.execute('select * from wtf where room=?',('global',)).fetchall())
-	imp = len(cu.execute('select * from wtf where room=?',('import',)).fetchall())
-	msg = u'В этой конфе определений: '+str(cnt)+u'\nГлобальных: '+str(glb)+u'\nИмпортировано: '+str(imp)+u'\nВсего: '+str(tlen)
-	send_msg(type, jid, nick, msg)
-	mdb.close()
-
-def wtf(type, jid, nick, text):
-	wtf_get(0,type, jid, nick, text)
-
-def wtff(type, jid, nick, text):
-	wtf_get(1,type, jid, nick, text)
-
-def wwtf(type, jid, nick, text):
-	wtf_get(2,type, jid, nick, text)
-
-def wtfp(type, jid, nick, text):
-	if text.count('\n'):
-		text = text.split('\n')
-		tnick = text[1]
-		ttext = text[0]
-		is_found = 0
-		for mmb in megabase:
-			if mmb[0]==jid and mmb[1]==tnick:
-				is_found = 1
-				break
-		if is_found:
-			wtf_get(0,'chat', jid, tnick, ttext)
-			send_msg(type, jid, nick, u'Отправлено в приват '+tnick)
-		else:
-			send_msg(type, jid, nick, u'Ник '+tnick+u' не найден!')
-	else:
-		wtf_get(0,'chat', jid, nick, text)
-
-def wtf_get(ff,type, jid, nick, text):
-	msg = u'Чего искать то будем?'
-	if len(text):
-		mdb = sqlite3.connect(wtfbase)
-		cu = mdb.cursor()
-		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text)).fetchall())
-		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text))
-
-		if tlen:
-			for aa in cu:
-				ww=aa[1:]
-			msg = u'Я знаю, что '+text+u' - '+ww[4]
-			if ff == 1:
-				msg += u'\nот: '+ww[2]+' ['+ww[5]+']'
-			elif ff == 2:
-				msg = u'Я знаю, что '+text+u' было определено: '+ww[2]+' ('+ww[1]+')'+' ['+ww[5]+']'
-		else:
-			msg = u'Хм. Мне про это никто не рассказывал...'
-	send_msg(type, jid, nick, msg)
-
 def del_space_begin(text):
 	if len(text):
-		while text[:1] == ' ':
-			text = text[1:]
+		while text[:1] == ' ': text = text[1:]
 	return text
 
 def del_space_end(text):
 	if len(text):
-		while text[-1:] == ' ':
-			text = text[:-1]
+		while text[-1:] == ' ': text = text[:-1]
 	return text
-
-def dfn(type, jid, nick, text):
-	global wbase, wtfbase
-	msg = u'Чего запомнить то надо?'
-	if len(text) and text.count('='):
-
-		ta = get_access(jid,nick)
-
-		realjid =ta[1]
-
-		ti = text.index('=')
-		what = del_space_end(text[:ti])
-		text = del_space_begin(text[ti+1:])
-
-		mdb = sqlite3.connect(wtfbase)
-		cu = mdb.cursor()
-		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
-		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
-		
-		if tlen:
-			for aa in cu:
-				ww=aa
-			if ww[1] == 'global':
-				msg = u'Это глобальное определение и его нельзя изменить!'
-				text = ''
-			else:
-				if text == '':
-					msg = u'Жаль, что такую полезную хренотень надо забыть...'
-				else:
-					msg = u'Боян, но я запомню!'
-				cu.execute('delete from wtf where wtfword=?',(what,))
-			idx = ww[0]
-		else:
-			msg = u'Ммм.. Что-то новенькое, ща запомню!'
-			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
-
-		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(tuple(localtime()))))
-		mdb.commit()
-	send_msg(type, jid, nick, msg)
-
-def gdfn(type, jid, nick, text):
-	global wbase, wtfbase
-	msg = u'Чего запомнить то надо?'
-	if len(text) and text.count('='):
-
-		ta = get_access(jid,nick)
-
-		realjid =ta[1]
-
-		ti = text.index('=')
-		what = del_space_end(text[:ti])
-		text = del_space_begin(text[ti+1:])
-
-		mdb = sqlite3.connect(wtfbase)
-		cu = mdb.cursor()
-		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
-		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
-		
-		if tlen:
-			for aa in cu:
-				ww=aa
-			if text == '':
-				msg = u'Жаль, что такую полезную хренотень надо забыть...'
-			else:
-				msg = u'Боян, но я запомню!'
-			cu.execute('delete from wtf where wtfword=?',(what,))
-			idx = ww[0]
-		else:
-			msg = u'Ммм.. Что-то новенькое, ща запомню!'
-			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
-
-		if text != '':
-			cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(tuple(localtime()))))
-		mdb.commit()
-	send_msg(type, jid, nick, msg)
-
-#--------
 
 def un_unix(val):
 	tsec = int(val)-int(val/60)*60
@@ -1375,57 +258,16 @@ def un_unix(val):
 	thour = int(val)-int(val/24)*24
 	tday = int(val/24)
 	ret = tZ(thour)+':'+tZ(tmin)+':'+tZ(tsec)
-	if tday:
-		ret = str(tday)+' day(s) '+ret
+	if tday: ret = str(tday)+' day(s) '+ret
 	return ret
-
-def true_age(type, jid, nick, text):
-	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
-	llim = 10
-	if len(text)>=2:
-		try: llim = int(text[0])
-		except: llim = 10
-		text = text[1]
-	else: text = text[0]
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				if tmp[5]: r_age = tmp[4]
-				else: r_age = int(time.time())-tmp[3]+tmp[4]
-				msg += '\n'+str(cnt)+'. '+tmp[1]+u'\t'+un_unix(r_age)+u', '
-
-				if tmp[5]:
-					if tmp[6] != '': msg += tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'Вышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'находится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
-	send_msg(type, jid, nick, msg)
 
 def close_age_null():
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
-	for ab in ccu:
-		cu.execute('delete from age where room=? and jid=? and status=?', (ab[0],ab[2],0))
-		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
+	cu.execute('delete from age where status=?', (0,)).fetchall()
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
 	mdb.commit()
 
 def close_age():
@@ -1433,194 +275,25 @@ def close_age():
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
+	cu.execute('delete from age where status=?', (0,)).fetchall()
 	tt = int(time.time())
-	for ab in ccu:
-		if not ab[5]:
-			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
 	mdb.commit()
 
 def close_age_room(room):
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
+	ccu = cu.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
+	cu.execute('delete from age where status=? and room=?',(0,room)).fetchall()
 	tt = int(time.time())
-	for ab in ccu:
-		if getRoom(ab[0]) == getRoom(room) and not ab[5]:
-			cu.execute('delete from age where room=? and jid=?',(ab[0],ab[2]))
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
 	mdb.commit()
-
-def weather_city(type, jid, nick, text):
-	text = text.upper()
-	text = text.split(' ')
-
-	link = 'http://weather.noaa.gov/weather/'+text[0]+'_cc.html'
-	f = urllib.urlopen(link)
-	wzz = f.read()
-	f.close()
-
-	if wzz.count('Not Found'):
-		msg = u'Я не знаю такой страны!'
-	else:
-		wzpos = wzz.find('<select name=\"cccc\">')
-		wzz = wzz[wzpos:wzz.find('</select>',wzpos)]
-
-		wzz = wzz.split('<OPTION VALUE=\"')
-		msg = u'Города по запросу: '
-		not_add = 1
-		for wzzz in wzz:
-			if wzzz.lower().count(text[1].lower()):
-				msg += '\n'+wzzz.replace('\">',' -')[:-1]
-				not_add = 0
-		if not_add:
-			msg = u'Такой город не найден!'
-
-	send_msg(type, jid, nick, msg)
-
-def defcode(type, jid, nick, text):
-	dcnt = text[0]
-	ddef = text[1:4]
-	dnumber = text[4:]
-	if text[:2] != '79':
-		msg = u'Поиск только по мобильным телефонам России!'
-	else:
-		link = 'http://www.mtt.ru/info/def/index.wbp?def='+ddef+'&number='+dnumber+'&region=&standard=&date=&operator='
-		f = urllib.urlopen(link)
-		msg = f.read()
-		f.close()
-
-		encidx = msg.find('charset=')
-		if encidx >= 0:
-			enc = msg[encidx+8:encidx+30]
-			enc = enc[:enc.index('\">')]
-			enc = enc.upper()
-		else:
-			enc = 'UTF-8'
-
-		msg = unicode(msg, enc)
-
-		mbeg = msg.find('<INPUT TYPE=\"submit\" CLASS=\"submit\"')
-		msg = msg[mbeg:msg.find('</table>',mbeg)]
-		msg = msg.split('<tr')
-		
-		if msg[0].count(u'не найдено'):
-			msg = u'Не найдено!'
-		else:
-			msg.remove(msg[0])
-			mmsg = u'Найдено:\n'
-			for mm in msg:
-				tmm = mm
-				tmm = replacer(tmm)
-				tmm = tmm[tmm.find('>')+1:]
-				tmm = tmm.replace('\n','\t')
-				mmsg += tmm[1:-2] + '\n'
-			msg = mmsg[:-1]
-	
-       	send_msg(type, jid, nick, msg)
-	
-def weather_raw(type, jid, nick, text):
-	text = text.upper()
-	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
-	f = urllib.urlopen(link)
-	msg = f.read()
-	f.close()
-	msg = msg[:-1]
-	if msg.count('Not Found'): msg = u'Город не найден!'
-	send_msg(type, jid, nick, msg)
 
 def sfind(mass,stri):
 	for a in mass:
 		if a.count(stri): return a
 	return ''
-
-def weather(type, jid, nick, text):
-	text = text.upper()
-	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
-	f = urllib.urlopen(link)
-	wzz = f.read()
-	f.close()
-
-	if wzz.count('Not Found'): msg = u'Город не найден!'
-	else:
-		wzz = wzz.split('\n')
-
-		wzr = []
-		wzr.append(wzz[0])			# 0
-		wzr.append(wzz[1])			# 1
-		wzr.append(sfind(wzz,'Temperature'))	# 2
-		wzr.append(sfind(wzz,'Wind'))		# 3
-		wzr.append(sfind(wzz,'Relative'))	# 4
-		wzr.append(sfind(wzz,'Sky'))		# 5
-		wzr.append(sfind(wzz,'Weather'))	# 6
-		wzr.append(sfind(wzz,'Visibility'))	# 7
-		wzr.append(sfind(wzz,'Pressure'))	# 8
-
-		if wzr[0].count(')'): msg = wzr[0][:wzr[0].find(')')+1]
-		else: msg = wzr[0]
-		msg += '\n'+ wzr[1]
-
-		wzz1 = wzr[2].find(':')+1 # Temperature
-		wzz2 = wzr[2].find('(',wzz1)
-		wzz3 = wzr[2].find(')',wzz2)
-		msg += '\n'+ wzr[2][:wzz1] + ' ' + wzr[2][wzz2+1:wzz3]
-
-		wzz1 = wzr[3].find('(')
-		wzz2 = wzr[3].find(')',wzz1)
-		wzz3 = wzr[3].find(':',wzz2)
-		msg += '\n'+ wzr[3][:wzz1-1] + wzr[3][wzz2+1:wzz3]
-
-		msg += '\n'+ wzr[4]
-		if len(wzr[5]): msg += ','+ wzr[5][wzr[5].find(':')+1:]
-		if len(wzr[6]): msg += ','+ wzr[6][wzr[6].find(':')+1:]
-		if not (len(wzr[5])+len(wzr[6])): msg += ', clear'
-
-		msg += '\n'+ wzr[7][:-2]
-		
-		wzz1 = wzr[8].find('(')
-		wzz2 = wzr[8].find(':',wzz1)
-		wzz3 = wzr[8].find('(',wzz2)
-		msg += ', '+ wzr[8][:wzz1-1]+': '+wzr[8][wzz3+1:-1]
-
-	send_msg(type, jid, nick, msg)
-
-def weather_short(type, jid, nick, text):
-	text = text.upper()
-	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
-	f = urllib.urlopen(link)
-	wzz = f.read()
-	f.close()
-
-	if wzz.count('Not Found'): msg = u'Город не найден!'
-	else:
-		wzz = wzz.split('\n')
-
-		wzr = []
-		wzr.append(wzz[0])			# 0
-		wzr.append(sfind(wzz,'Temperature'))	# 2
-		wzr.append(sfind(wzz,'Wind'))		# 3
-		wzr.append(sfind(wzz,'Relative'))	# 4
-		wzr.append(sfind(wzz,'Sky'))		# 5
-		wzr.append(sfind(wzz,'Weather'))	# 6
-
-		if wzr[0].count(')'): msg = wzr[0][:wzr[0].find(')')+1]
-		else: msg = wzr[0]
-
-		wzz1 = wzr[1].find(':')+1 # Temperature
-		wzz2 = wzr[1].find('(',wzz1)
-		wzz3 = wzr[1].find(')',wzz2)
-		msg += ' | '+ wzr[1][:wzz1] + ' ' + wzr[1][wzz2+1:wzz3]
-
-		wzz1 = wzr[2].find('(')
-		wzz2 = wzr[2].find(')',wzz1)
-		wzz3 = wzr[2].find(':',wzz2)
-		msg += ' | '+ wzr[2][:wzz1-1] + wzr[2][wzz2+1:wzz3]
-		msg += ' | '+ wzr[3]
-		if len(wzr[4]): msg += ','+ wzr[4][wzr[4].find(':')+1:]
-		if len(wzr[5]): msg += ','+ wzr[5][wzr[5].find(':')+1:]
-		if not (len(wzr[4])+len(wzr[5])): msg += ', clear'
-	send_msg(type, jid, nick, msg)
 
 def get_local_prefix(jid):
 	lprefix = prefix
@@ -1635,9 +308,6 @@ def get_local_prefix(jid):
 def get_prefix(prefix):
 	if prefix != u'': return prefix
 	else: return u'отсутствует'
-
-#  0     1	    2     3      4
-# [1,prefix+cmd, exe_alias, 0, prefix+cbody])
 
 def set_prefix(type, jid, nick, text):
 	global preffile, prefix
@@ -1662,95 +332,19 @@ def set_prefix(type, jid, nick, text):
 	else: lprefix = get_local_prefix(jid)
 	msg += get_prefix(lprefix)
 	send_msg(type, jid, nick, msg)
-	
-def inban(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
-	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего в бане: '+str(len(bb))
-	if text != '':
-		mmsg = u', найдено:\n'
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
-		msg += mmsg
-	send_msg(type, jid, nick, msg)
-
-def youtube(type, jid, nick, text):
-	text = text.lower()
-	text = text.encode('utf-8')
-	text = text.replace('\\x','%')
-	text = text.replace(' ','%20')
-	link = 'http://www.youtube.com/results?search_type=&search_query='+text+'&aq=f'
-	f = urllib.urlopen(link)
-	tube = f.read()
-	f.close()
-#	tube = tube.split('video-title video-title-results')
-	tube = tube.split('video-run-time')
-
-	tmass = []
-	ltube = len(tube)
-	smsg = u'Всего найдено: '+str(ltube-1)
-	if ltube > 4:
-		ltube=4
-	for i in range(1,ltube):
-
-		msg = tube[i].decode('utf')
-		idx = msg.index('>')
-		imsg = msg[idx+1:]
-		idx = imsg.index('<')
-		mtime = imsg[:idx]
-
-		idx = msg.index('/watch?v=')
-		imsg = msg[idx:]
-		idx = imsg.index('\"')
-		imsg = imsg[:idx]
-		murl = 'http://www.youtube.com'+imsg
-
-		idx = msg.index('title=\"')
-		imsg = msg[idx+7:]
-		idx = imsg.index('\"')
-		imsg = imsg[:idx]
-		imsg = rss_replace(imsg)
-		msg = murl +'\t'+ imsg +' ('+ mtime +')'
-		tmass.append(msg)
-	
-	msg = smsg + '\n'
-	for i in tmass:
-		msg += i + '\n'
-	msg = msg[:-1]
-	send_msg(type, jid, nick, msg)
-	
 
 def smile(type, jid, nick, text):
 	tmode = 0
 	if text:
-		if text.lower() == 'on':
-			tmode = 2
-		elif text.lower() == 'off':
-			tmode = 1
+		if text.lower() == 'on': tmode = 2
+		elif text.lower() == 'off': tmode = 1
 	smiles = getFile(sml,[(getRoom(jid),0)])
 	msg = u'Smiles is '
 	is_found = 1
 	for sm in smiles:
 		if sm[0] == getRoom(jid):
-			if tmode:
-				tsm = (sm[0],tmode-1)
-			else:
-				tsm = (sm[0],int(not sm[1]))
+			if tmode: tsm = (sm[0],tmode-1)
+			else: tsm = (sm[0],int(not sm[1]))
 			smiles.remove(sm)
 			smiles.append(tsm)
 			is_found = 0
@@ -1764,130 +358,27 @@ def smile(type, jid, nick, text):
 
 def uptime(type, jid, nick):
 	msg = u'Время работы: ' + get_uptime_str()+ u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
-
-	send_msg(type, jid, nick, msg)
-	
-
-def null_vars():
-	vars = {'none/visitor':0,
-		'none/participant':0,
-		'none/moderator':0,
-		'member/visitor':0,
-		'member/participant':0,
-		'member/moderator':0,
-		'admin/moderator':0,
-		'owner/moderator':0}
-	return vars
-
-def gstats(type, jid, nick):
-	msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела всего:'
-	vars = null_vars()
-
-	for mega in megabase2:
-			ta = mega[3]+'/'+mega[2]
-			for va in vars:
-				if va == ta:
-					vars[ta]+=1
-	for va in vars:
-		if vars[va]:
-			msg += '\n'+str(va)+' '+str(vars[va])
-
-	send_msg(type, jid, nick, msg)
-	
-
-def stats(type, jid, nick):
-	msg = u'За последнюю сессию ('+un_unix(int(time.time())-sesstime)+u') я видела здесь:'
-	vars = null_vars()
-
-	for mega in megabase2:
-		if mega[0] == jid:
-			ta = mega[3]+'/'+mega[2]
-			for va in vars:
-				if va == ta:
-					vars[ta]+=1
-	for va in vars:
-		if vars[va]:
-			msg += '\n'+str(va)+' '+str(vars[va])
-
 	send_msg(type, jid, nick, msg)
 
-	
 def show_error(type, jid, nick, text):
-	if text.lower() == 'clear':
-		writefile(LOG_FILENAME,'')
-	try:
-		cmd = int(text)
-	except:
-		cmd = 1
+	if text.lower() == 'clear': writefile(LOG_FILENAME,'')
+	try: cmd = int(text)
+	except: cmd = 1
 
 	if os.path.isfile(LOG_FILENAME) and text.lower() != 'clear':
 		log = str(readfile(LOG_FILENAME))
 		log = log.split('ERROR:')
 
 		lll = len(log)
-		if cmd > lll:
-			cmd = lll
+		if cmd > lll: cmd = lll
 		
 		msg = u'Total Error(s): '+str(lll-1)+'\n'
 		if text != '':
-			for aa in range(lll-cmd,lll):
-				msg += log[aa]+'\n'
-		else:
-			msg += ' '
+			for aa in range(lll-cmd,lll): msg += log[aa]+'\n'
+		else: msg += ' '
 		msg = msg[:-2]
-	else:
-		msg = u'No Errors'
+	else: msg = u'No Errors'
 	send_msg(type, jid, nick, msg)
-	
-
-def get_log(type, jid, nick, text):
-	text = text.split(' ')
-	if len(text)>0:
-		cmd = text[0]
-	else:
-		cmd = ''
-	if len(text)>1:
-		arg = text[1]
-	else:
-		arg = ''
-	logt=tuple(localtime())
-
-	if cmd == 'len':
-		if arg == '':
-			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
-		else:
-			logfile = 'log/'+arg
-		log = getFile(logfile,[])
-		log_lm = len(str(log))/msg_limit
-		msg = u'Log length for '+logfile+' is '+str(len(log))+' record(s) / '+str(log_lm)+' Messages with limit: '+str(msg_limit)
-		send_msg(type, jid, nick, msg)
-	
-	if cmd == 'show':
-		if arg == '':
-			logfile = 'log/'+tZ(logt[0])+tZ(logt[1])+tZ(logt[2])
-		else:
-			logfile = 'log/'+arg
-		log = getFile(logfile,[])
-		if len(text)>2:
-			arg1 = text[2]
-		else:
-			arg1 = '0-'+str(len(log)-1)
-		if arg == '':
-			llog = len(log)
-			if llog >= 5:
-				lllim = 5
-			else:
-				lllim = llog
-			arg1 = str(len(log)-lllim)+'-'+str(len(log))
-
-		arg1 = arg1.split('-')
-		log_from = int(arg1[0])
-		log_to = int(arg1[1])
-		msg = u'Log:'
-		for clog in range(log_from, log_to):
-			msg += '\n'+log[clog]
-		send_msg(type, jid, nick, msg)
-	
 
 def get_access(cjid, cnick):
 	access_mode = -2
@@ -1896,12 +387,11 @@ def get_access(cjid, cnick):
 		if base[1].count(cnick) and base[0].lower()==cjid:
 			jid = base[4]
 			if base[3]==u'admin' or base[3]==u'owner':
-       				access_mode = 1
+				access_mode = 1
 				break
 			if base[3]==u'member' or base[3]==u'none':
-       				access_mode = 0
+				access_mode = 0
 				break
-
 	for iib in ignorebase:
 		grj = getRoom(jid.lower())
 		if iib.lower() == grj:
@@ -1910,20 +400,13 @@ def get_access(cjid, cnick):
 		if not (iib.count('.')+iib.count('@')) and grj.count(iib.lower()):
 			access_mode = -1
 			break
-
-	if ownerbase.count(getRoom(jid)):
-		access_mode = 2
-
-	if jid == 'None' and ownerbase.count(getRoom(cjid)):
-		access_mode = 2
-
+	if ownerbase.count(getRoom(jid)): access_mode = 2
+	if jid == 'None' and ownerbase.count(getRoom(cjid)): access_mode = 2
 	return (access_mode, jid)
 
 def info_whois(type, jid, nick, text):
-	if text != '':
-		msg = raw_who(jid, text)
-	else:
-		msg = u'Кто нужен?'
+	if text != '': msg = raw_who(jid, text)
+	else: msg = u'Кто нужен?'
 	send_msg(type, jid, nick, msg)
 		
 def info_access(type, jid, nick):
@@ -1933,15 +416,13 @@ def info_access(type, jid, nick):
 def raw_who(room,nick):
 	ta = get_access(room,nick)
 	access_mode = ta[0]
-	if access_mode == -2:
-		msg = u'А был ли мальчег?'
+	if access_mode == -2: msg = u'А был ли мальчег?'
 	else:
 		realjid = ta[1]
 		msg = u'Доступ: '+str(access_mode)
 		tb = [u'Игнорируемый',u'Минимальный',u'Админ/Владелец конфы',u'Владелец бота']
 		msg += ', ' + tb[access_mode+1]
-		if realjid != 'None':
-			msg += u', jid опознан'
+		if realjid != 'None': msg += u', jid опознан'
 		msg += u', Префикс: ' + get_prefix(get_local_prefix(room))
 	return msg
 
@@ -1953,156 +434,71 @@ def info_comm(type, jid, nick):
 	tmp = sqlite3.connect(':memory:')
 	cu = tmp.cursor()
 	cu.execute('''create table tempo (comm text, am integer)''')
-
 	for i in comms:
-		if access_mode >= i[0]:
-			cu.execute('insert into tempo values (?,?)', (unicode(i[1]),i[0]))
-
+		if access_mode >= i[0]: cu.execute('insert into tempo values (?,?)', (unicode(i[1]),i[0]))
 	for j in range(0,access_mode+1):
 		cm = cu.execute('select * from tempo where am=? order by comm',(j,)).fetchall()
 		msg += u'\n• '+str(j)+' ... '
-		for i in cm:
-			msg += i[0] +', '
+		for i in cm: msg += i[0] +', '
 		msg = msg[:-2]
 	msg = u'Всего команд: '+str(len(comms))+u' | Префикс: '+get_prefix(get_local_prefix(jid))+u' | Ваш доступ: '+str(access_mode)+u' | Доступно команд: '+str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall()))+msg
 	tmp.close()
 	send_msg(type, jid, nick, msg)
-
-def bot_exit(type, jid, nick, text):
-	global game_over
-	StatusMessage = u'Exit by \'quit\' command from bot owner ('+nick+u')'
-	if text != '':
-		StatusMessage += ' ['+text+u']'
-	send_presence_all(StatusMessage)
-	writefile(tmpf,str('exit'))
-	sleep(3)
-	game_over = 1
-
-def bot_restart(type, jid, nick, text):
-	global game_over
-	StatusMessage = u'Restart by \'restart\' command from bot owner ('+nick+u')'
-	if text != '':
-		StatusMessage += ' ['+text+u']'
-	send_presence_all(StatusMessage)
-	writefile(tmpf,str('restart'))
-	game_over = 1
-
-def bot_update(type, jid, nick, text):
-	global game_over
-	StatusMessage = u'Self update by \'update\' command from bot owner ('+nick+u')'
-	if text != '':
-		StatusMessage += ' ['+text+u']'
-	send_presence_all(StatusMessage)
-	writefile(tmpf,str('update'))
-	game_over = 1
-
-def say(type, jid, nick, text):
-	nick = ''
-	type = 'groupchat'
-	text = to_censore(text)
-#	text = rss_replace(text) #!!!!!
-	send_msg(type, jid, nick, text)	
-
-def gsay(type, jid, nick, text):
-	global confbase
-
-	type = 'groupchat'
-	msg = text
-	nick = ''
-	for jjid in confbase:
-		send_msg(type, getRoom(jjid), nick, msg)
 	
-
 def helpme(type, jid, nick, text):
-	if text == u'about':
-		msg = u'Isida Jabber-bot | © 2oo9 Disabler Production Lab. | http://isida.googlecode.com'
-	elif text == u'donation':
-		msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
-	elif text == u'доступ':
-		msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
+	if text == u'about': msg = u'Isida Jabber-bot | © 2oo9 Disabler Production Lab. | http://isida.googlecode.com'
+	elif text == u'donation': msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
+	elif text == u'доступ': msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
 	elif text != '':
 		msg = u'Префикс команд: '+get_prefix(get_local_prefix(jid))+u', Доступна справка по командам:\n'
 		tmpbase = sqlite3.connect(':memory:')
 		cu = tmpbase.cursor()
 		cu.execute('''create table tempo (level integer, name text, body text)''')
-		for tmp in comms:
-			cu.execute('insert into tempo values (?,?,?)', (tmp[0], tmp[1], tmp[4]))
+		for tmp in comms: cu.execute('insert into tempo values (?,?,?)', (tmp[0], tmp[1], tmp[4]))
 		cm = cu.execute('select body from tempo where name=?',(text,)).fetchone()
-		if cm:
-			msg = cm[0]
+		if cm: msg = cm[0]
 		else:
 			cm = cu.execute('select * from tempo order by name').fetchall()
 			tmpbase.close()
        			for i in range(0,3):
 				msg += '['+str(i)+'] '
 				for tmp in cm:
-					if tmp[0] == i and tmp[2] != u'':
-						msg += tmp[1] + ', '
+					if tmp[0] == i and tmp[2] != u'': msg += tmp[1] + ', '
 				msg = msg[:-2]+'\n'
-	else:
-		msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida.googlecode.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
+	else: msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida.googlecode.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
 	send_msg(type, jid, nick, msg)
-	
-
-def hidden_clear(type, jid, nick, text):
-	try:
-		cntr = int(text)
-	except:
-		cntr = 20
-
-	if cntr < 1 or cntr > 100:
-		cntr = 20
-	pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-	send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*1.3))+u' сек.')
-	while (cntr>0):
-		cl.send(xmpp.Message(jid, '', "groupchat"))
-		time.sleep(1.3)
-		cntr=cntr-1
-	send_msg(type, jid, nick, u'стерильно!!!')
-	
 
 def bot_rejoin(type, jid, nick, text):
 	global lastserver, lastnick, confbase
 	text=unicode(text)
-
 	if len(text): text=unicode(text)
 	else: text=jid
-
 	if not text.count('@'): text+='@'+lastserver
 	if not text.count('/'): text+='/'+lastnick
-
 	lastserver = getServer(text)
 	lastnick = getResourse(text)
-
 	lroom = text
-				
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
 		pprint(u'rejoin '+text+' by '+nick)
 		sm = u'Перезахожу по команде от '+nick
 		leaveconf(text, domain, sm)
 		zz = joinconf(text, domain)
-		if zz != None:
-			send_msg(type, jid, nick, u'Ошибка! '+zz)
+		if zz != None: send_msg(type, jid, nick, u'Ошибка! '+zz)
 	else:
 		send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+getRoom(lroom))
 		pprint(u'never be in '+text)
-	
 
 def bot_join(type, jid, nick, text):
 	global lastserver, lastnick, confs, confbase
 	text=unicode(text)
-	if text=='' or text.count(' '):
-		send_msg(type, jid, nick, u'косяк с аргументами!')
+	if text=='' or text.count(' '): send_msg(type, jid, nick, u'косяк с аргументами!')
 	else:
 		if not text.count('@'): text+='@'+lastserver
 		if not text.count('/'): text+='/'+lastnick
-			     
 		lastserver = getServer(text)
 		lastnick = getResourse(text)
-				
 		lroom = text.index('/')
 		lroom = text[:lroom]
-
 		if arr_semi_find(confbase, lroom) == -1:				
 			zz = joinconf(text, domain)
 			if zz != None:
@@ -2129,32 +525,20 @@ def bot_join(type, jid, nick, text):
 				writefile(confs,str(confbase))
 				pprint(u'change nick '+text)
 
-
 def bot_leave(type, jid, nick, text):
 	global confs, confbase, lastserver, lastnick
-	if len(confbase) == 1:
-		send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
+	if len(confbase) == 1: send_msg(type, jid, nick, u'не могу выйти из последней конфы!')
 	else:
-		if text == '':
-			text = jid
+		if text == '': text = jid
 		if not text.count('@'): text+='@'+lastserver
 		if not text.count('/'): text+='/'+lastnick
-
 		lastserver = getServer(text)
 		lastnick = getResourse(text)
-
-		if len(text):
-			text=unicode(text)
-		else:
-			text=jid
+		if len(text): text=unicode(text)
+		else: text=jid
 		lroom = text
-
-		if ownerbase.count(getRoom(jid)):
-			nick = getName(jid)
-  
+		if ownerbase.count(getRoom(jid)): nick = getName(jid)
 		if arr_semi_find(confbase, getRoom(lroom)) >= 0:
-#		if confbase.count(lroom):
-#			confbase.remove(lroom)
 			confbase = arr_del_semi_find(confbase,getRoom(lroom))
 			writefile(confs,str(confbase))
 			send_msg(type, jid, nick, u'свалила из '+text)
@@ -2164,36 +548,28 @@ def bot_leave(type, jid, nick, text):
 		else:
 			send_msg(type, jid, nick, u'хватит бухать! Меня нету в '+lroom)
 			pprint(u'never be in '+text)
-	
 
 def conf_pass(type, jid, nick, text):
 	global psw
 	text=unicode(text)
-	if text!='':
-		psw = text
-	send_msg(type, jid, nick, u'пароль \''+psw+'\'')
-	
+	if text!='': psw = text
+	send_msg(type, jid, nick, u'Временный пароль \''+psw+'\'')
 
 def conf_limit(type, jid, nick, text):
 	global msg_limit
 	text=unicode(text)
 	if text!='':
-		try:
-			msg_limit = int(text)
-		except:
-			msg_limit = 1000
-	send_msg(type, jid, nick, u'Message limit is '+str(msg_limit))
-	
+		try: msg_limit = int(text)
+		except: msg_limit = 1000
+	send_msg(type, jid, nick, u'Временный лимит размера сообщений '+str(msg_limit))
 
 def bot_plugin(type, jid, nick, text):
 	global plname, plugins, execute, gtimer, gpresence, gmassage
 	text = text.split(' ')
 	do = ''
 	nnick = ''
-	if len(text)>0:
-		do = text[0]
-	if len(text)>1:
-		nnick = text[1]+'.py'
+	if len(text)>0: do = text[0]
+	if len(text)>1: nnick = text[1]+'.py'
 	pprint('plugin '+do+' '+nnick)
 	msg = ''
 	if do == 'add':
@@ -2207,15 +583,11 @@ def bot_plugin(type, jid, nick, text):
 			msg = u'Загружен плагин: '+nnick[:-3]+u'\nДоступны комманды: '
 			for cm in execute:
 				msg += cm[1]+'['+str(cm[0])+'], '
-				comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
+				comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+nnick[:-3]+'. '+cm[4]))
 			msg = msg[:-2]
-			for tmr in timer:
-				gtimer.append(tmr)
-			for tmp in presence_control:
-				gpresence.append(tmp)
-			for tmp in message_control:
-				gmessage.append(tmp)
-
+			for tmr in timer: gtimer.append(tmr)
+			for tmp in presence_control: gpresence.append(tmp)
+			for tmp in message_control: gmessage.append(tmp)
 	elif do == 'del':
 		if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
 			plugins.remove(nnick)
@@ -2228,41 +600,26 @@ def bot_plugin(type, jid, nick, text):
 			for commmm in execute:
 				msg += commmm[1]+'['+str(commmm[0])+'], '
 				for i in comms:
-					if i[1] == commmm[1]:
-						comms.remove(i)
+					if i[1] == commmm[1]: comms.remove(i)
 			msg = msg[:-2]
-			for tmr in timer:
-				gtimer.remove(tmr)
-			for tmp in presence_control:
-				gpresence.remove(tmp)
-			for tmp in message_control:
-				gmessage.remove(tmp)
-
+			for tmr in timer: gtimer.remove(tmr)
+			for tmp in presence_control: gpresence.remove(tmp)
+			for tmp in message_control: gmessage.remove(tmp)
 	elif do == 'local':
 		a = os.listdir('plugins/')
 		b = []
 		for c in a:
-			if c[-3:] == u'.py' and c != 'main.py':
-				b.append(c[:-3].decode('utf-8'))
+			if c[-3:] == u'.py' and c != 'main.py': b.append(c[:-3].decode('utf-8'))
 		msg = u'Доступные плагины: '
-		for c in b:
-				msg += c+', '
+		for c in b: msg += c+', '
 		msg = msg[:-2]
-		
-	else:
+	elif do == 'show':
 		msg = u'Активные плагины: '
-		for jjid in plugins:
-				msg += jjid[:-3]+', '
+		for jjid in plugins: msg += jjid[:-3]+', '
 		msg = msg[:-2]
-
+	else: msg = u'Косяк с параметрами!'
 	writefile(plname,str(plugins))
 	send_msg(type, jid, nick, msg)
-	
-#			elif text[:5] == u'/auth':
-#				j = Presence(BaseJid, 'subscribed')
-#				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-#				clc[selcon].send(j)
-#				nosend=0
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
@@ -2275,23 +632,17 @@ def owner(type, jid, nick, text):
 			j = Presence(nnick, 'subscribe')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 			cl.send(j)
-
 	elif do == 'del':
 		if ownerbase.count(nnick) and nnick != god:
 			ownerbase.remove(nnick)
 			j = Presence(nnick, 'unsubscribed')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 			cl.send(j)
-#	elif do == 'clr':
-#		ownerbase = [god]
-
 	msg = u'Я принимаю команды от: '
-	for jjid in ownerbase:
-			msg += jjid+', '
+	for jjid in ownerbase: msg += jjid+', '
 	msg = msg[:-2]
 	writefile(owners,str(ownerbase))
 	send_msg(type, jid, nick, msg)
-	
 
 def ignore(type, jid, nick, text):
 	global ignorebase, ignores, god
@@ -2299,24 +650,16 @@ def ignore(type, jid, nick, text):
 	nnick = text[4:].lower()
 	pprint('ignore '+do+' '+nnick)
 	if do == 'add':
-		if not ignorebase.count(nnick):
-			ignorebase.append(nnick)
+		if not ignorebase.count(nnick): ignorebase.append(nnick)
 	elif do == 'del':
-		if ignorebase.count(nnick) and nnick != god:
-			ignorebase.remove(nnick)
-#	elif do == 'clr':
-#		ignorebase = []
-
+		if ignorebase.count(nnick) and nnick != god: ignorebase.remove(nnick)
 	msg = u'Я не принимаю команды от: '
 	for jjid in ignorebase:
-			if jjid.count('@') and jjid.count('.'):
-				msg += jjid+', '
-			else:
-				msg += '*'+jjid+'*, '
+		if jjid.count('@') and jjid.count('.'): msg += jjid+', '
+		else: msg += '*'+jjid+'*, '
 	msg = msg[:-2]
 	writefile(ignores,str(ignorebase))
 	send_msg(type, jid, nick, msg)
-	
 
 def info_where(type, jid, nick):
 	global confbase
@@ -2326,10 +669,8 @@ def info_where(type, jid, nick):
 		cnt = 0
 		rjid = getRoom(jjid)
 		for mega in megabase:
-			if mega[0] == rjid:
-				cnt += 1
+			if mega[0] == rjid: cnt += 1
 		wbase.append((jjid, cnt))
-
 	for i in range(0,len(wbase)-1):
 		for j in range(i,len(wbase)):
 			if wbase[i][1] < wbase[j][1]:
@@ -2340,55 +681,42 @@ def info_where(type, jid, nick):
 	for i in wbase:
 		msg += str(nmb)+'. '+i[0]+' ['+str(i[1])+']\n'
 		nmb += 1
-
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
-	
 
 def get_uptime_raw():
 	nowtime = tuple(localtime())
-
 	difftime = [0,0,0,0,0,0]
-
 	difftime[5] = nowtime[5]-starttime[5]
 	if difftime[5] < 0:
 		difftime[5] += 60
 		difftime[4] -= 1
-
 	difftime[4] += nowtime[4]-starttime[4]
 	if difftime[4] < 0:
 		difftime[4] += 60
 		difftime[3] -= 1
-
 	difftime[3] += nowtime[3]-starttime[3]
 	if difftime[3] < 0:
 		difftime[3] += 24
 		difftime[2] -= 1
-
 	timemonth = [31,28,31,30,31,30,31,31,30,31,30,31]
-
 	difftime[2] += nowtime[2]-starttime[2]
 	if difftime[2] < 0:
 		difftime[2] += timemonth(nowtime[2])
 		difftime[1] -= 1
-
 	difftime[1] += nowtime[1]-starttime[1]
 	if difftime[1] < 0:
 		difftime[1] += 12
 		difftime[0] -= 1
-
 	difftime[0] += nowtime[0]-starttime[0]
 	return difftime
 
 def get_uptime_str():
 	difftime = get_uptime_raw()
 	msg = u''
-	if difftime[0] >0:
-		msg += str(difftime[0])+'y '
-	if difftime[1] >0:
-		msg += str(difftime[1])+'m '
-	if difftime[2] >0:
-		msg += str(difftime[2])+'d '
+	if difftime[0] >0: msg += str(difftime[0])+'y '
+	if difftime[1] >0: msg += str(difftime[1])+'m '
+	if difftime[2] >0: msg += str(difftime[2])+'d '
 	msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
 	return msg
 
@@ -2407,9 +735,7 @@ def info(type, jid, nick):
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
 	msg += u' | Censor: ' + onoff(int((getRoom(jid),1) in gl_censor))
 	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
-
 	send_msg(type, jid, nick, msg)
-	
 
 def info_res(type, jid, nick, text):
 	mdb = sqlite3.connect(jid_base)
@@ -2424,21 +750,16 @@ def info_res(type, jid, nick, text):
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchall())
 		jidbase = cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchmany(10)
-	if not tlen:
-		msg = u'Не найдено: '+text
+	if not tlen: msg = u'Не найдено: '+text
 	else:
-		if text == '':
-			msg = u'Всего ресурсов: '+str(tlen)+' \n'
-		else:
-			msg = u'Найдено ресурсов: '+str(tlen)+' \n'
+		if text == '': msg = u'Всего ресурсов: '+str(tlen)+' \n'
+		else: msg = u'Найдено ресурсов: '+str(tlen)+' \n'
 		cnt = 1
 		for jj in jidbase:
 			msg += str(cnt)+'. '+jj[0]+'\t'+str(jj[1])+' \n'
 			cnt += 1
 		msg = msg[:-2]
-
 	send_msg(type, jid, nick, msg)
-	
 
 def info_serv(type, jid, nick, text):
 	mdb = sqlite3.connect(jid_base)
@@ -2453,19 +774,13 @@ def info_serv(type, jid, nick, text):
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall())
 		jidbase = cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall()
-	if not tlen:
-		msg = u'Не найдено: '+text
+	if not tlen: msg = u'Не найдено: '+text
 	else:
-		if text == '':
-			msg = u'Всего серверов: '+str(tlen)+' \n'
-		else:
-			msg = u'Найдено серверов: '+str(tlen)+' \n'
-		for jj in jidbase:
-			msg += jj[0]+':'+str(jj[1])+' | '
+		if text == '': msg = u'Всего серверов: '+str(tlen)+' \n'
+		else: msg = u'Найдено серверов: '+str(tlen)+' \n'
+		for jj in jidbase: msg += jj[0]+':'+str(jj[1])+' | '
 		msg = msg[:-2]
-
 	send_msg(type, jid, nick, msg)
-	
 
 def info_base(type, jid, nick):
 	msg = u'Чего искать то будем?'
@@ -2483,8 +798,7 @@ def info_base(type, jid, nick):
 #					msg += '\n'+base[0]+' '+base[1]+' '+base[2]+' '+base[3] +' '+base[4]
 					msg += base[2]+'/'+base[3]
 					fl = 0
-		if fl:
-			msg = '\''+nick+u'\' not found!'
+		if fl: msg = '\''+nick+u'\' not found!'
 	send_msg(type, jid, nick, msg)
 	
 
@@ -2501,10 +815,8 @@ def info_search(type, jid, nick, text):
 			for tt in tma:
 				msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
 				cnd += 1
-		else:
-			msg = text +u' не найдено!'
+		else: msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
-
 
 def gtmp_search(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
@@ -2520,10 +832,8 @@ def gtmp_search(type, jid, nick, text):
 					msg += ' in '+unicode(mega1[0])
 					fl = 0
 					break
-		if fl:
-			msg = '\''+text+u'\' not found!'
+		if fl: msg = '\''+text+u'\' not found!'
 	send_msg(type, jid, nick, msg)
-	
 
 def tmp_search(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
@@ -2535,13 +845,11 @@ def tmp_search(type, jid, nick, text):
 				for mega2 in mega1:
 					if mega2.lower().count(text.lower()):
 						msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
-						if mega1[4] != 'None':
-							msg += u' ('+unicode(mega1[4])+u')'
+						if mega1[4] != 'None': msg += u' ('+unicode(mega1[4])+u')'
 #						msg += ' in '+unicode(mega1[0])
 						fl = 0
 						break
-		if fl:
-			msg = '\''+text+u'\' not found!'
+		if fl: msg = '\''+text+u'\' not found!'
 	send_msg(type, jid, nick, msg)
 
 
@@ -2555,13 +863,11 @@ def real_search_owner(type, jid, nick, text):
 				for mega2 in mega1:
 					if mega2.lower().count(text.lower()):
 						msg += u'\n'+unicode(mega1[1])+u' is '+unicode(mega1[2])+u'/'+unicode(mega1[3])
-						if mega1[4] != 'None':
-							msg += u' ('+unicode(mega1[4])+u')'
+						if mega1[4] != 'None': msg += u' ('+unicode(mega1[4])+u')'
 						msg += ' in '+unicode(mega1[0])
 						fl = 0
 						break
-		if fl:
-			msg = '\''+text+u'\' not found!'
+		if fl: msg = '\''+text+u'\' not found!'
 	send_msg(type, jid, nick, msg)	
 
 def real_search(type, jid, nick, text):
@@ -2577,38 +883,19 @@ def real_search(type, jid, nick, text):
 						msg += ' in '+unicode(mega1[0])
 						fl = 0
 						break
-		if fl:
-			msg = '\''+text+u'\' not found!'
+		if fl: msg = '\''+text+u'\' not found!'
 	send_msg(type, jid, nick, msg)
 
 def isNumber(text):
 	try:
 		it = int(text,16)
-		if it >= 32 and it <= 127:
-			return chr(int(text,16))
-		else:
-#			zz =  '\u'+text
-#			zz = zz.decode('utf-16')
-			return '?'
-	except:
-		return 'None'
+		if it >= 32 and it <= 127: return chr(int(text,16))
+		else: return '?'
+	except: return 'None'
 
 def rss_replace(ms):
-	ms = ms.replace('<br>','\n')
-	ms = ms.replace('<br />','\n')
-	ms = ms.replace('<br/>','\n')
-	ms = ms.replace('\n\r','\n')
-	ms = ms.replace('<![CDATA[','')
-	ms = ms.replace(']]>','')
-	ms = ms.replace('&lt;','<')
-	ms = ms.replace('&gt;','>')
-	ms = ms.replace('&quot;','\"')
-	ms = ms.replace('&apos;','\'')
-	ms = ms.replace('&amp;','&')
-	ms = ms.replace('&middot;',u'·')
-	ms = ms.replace('&nbsp;','')
-	ms = ms.replace('&raquo;',u'▼')
-	ms = ms.replace('&copy;',u'©')
+	rmass = (('<br>','\n'),('<br />','\n'),('<br/>','\n'),('\n\r','\n'),('<![CDATA[',''),(']]>',''),('&lt;','<'),('&gt;','>'),('&quot;','\"'),('&apos;','\''),('&amp;','&'),('&middot;',u'·'),('&nbsp;',''),('&raquo;',u'▼'),('&copy;',u'©'))
+	for tmp in rmass: ms = ms.replace(tmp[0],tmp[1])
 	mm = ''
 	m = 0
 	while m<len(ms):
@@ -2616,10 +903,8 @@ def rss_replace(ms):
 			if ms[m:m+2] == u'&#' and ms[m+6] == ';':
 					mm += u'—'
 					m += 6
-			else:
-				mm += ms[m]
-		except:
-			mm += ms[m]
+			else: mm += ms[m]
+		except: mm += ms[m]
 		m += 1
 # &#x2212;
 	return mm
@@ -2673,13 +958,10 @@ def html_encode(body):
 		if encidx >= 0:
 			enc = body[encidx+8:encidx+30]
 			enc = enc[:enc.find('"')]
-		else:
-			enc = chardet.detect(body)['encoding']
+		else: enc = chardet.detect(body)['encoding']
 
-	if body == None:
-		body = ''
-	if enc == None or enc == '':
-		enc = 'utf-8'
+	if body == None: body = ''
+	if enc == None or enc == '': enc = 'utf-8'
 	return unicode(body,enc)
 
 #[room, nick, role, affiliation, jid]
@@ -2691,8 +973,7 @@ def rss(type, jid, nick, text):
 	text = text.split(' ')
 	tl = len(text)
 
-	if tl < 5:
-		text.append('!')
+	if tl < 5: text.append('!')
 		
 	mode = text[0].lower() # show | add | del | clear | new | get
 
@@ -2720,18 +1001,15 @@ def rss(type, jid, nick, text):
 		msg = u'All RSS was cleared!'
 		tf = []
 		for taa in feedbase:
-			if taa[4] != jid:
-				tf.append(taa)
+			if taa[4] != jid: tf.append(taa)
 		feedbase = tf
 		writefile(feeds,str(feedbase))
 
 		tf = []
 		for taa in lastfeeds:
-			if taa[2] == jid:
-				tf.append(taa)
+			if taa[2] == jid: tf.append(taa)
 		lastfeeds = tf
 		writefile(lafeeds,str(lastfeeds))
-
 
 	if mode == 'all':
 		msg = u'No RSS found!'
@@ -2743,8 +1021,7 @@ def rss(type, jid, nick, text):
 				lt = rs[3]
 				msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
 				stt = 0
-			if stt:
-				msg+= u' not found!'
+			if stt: msg+= u' not found!'
 
 	if mode == 'show':
 		msg = u'No RSS found!'
@@ -2757,15 +1034,13 @@ def rss(type, jid, nick, text):
 					lt = rs[3]
 					msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
 					stt = 0
-			if stt:
-				msg+= u' not found!'
+			if stt: msg+= u' not found!'
 
 	elif mode == 'add':
 			
 		lt=tuple(localtime())
 		link = text[1]
-		if link[:7] != 'http://':
-			link = 'http://'+link
+		if link[:7] != 'http://': link = 'http://'+link
 		for dd in feedbase:
 			if dd[0] == link and dd[4] == jid:
 				feedbase.remove(dd)
@@ -2781,26 +1056,19 @@ def rss(type, jid, nick, text):
 		f.close()
 
 		is_rss_aton = 0
-		if feed[:256].count('rss') and feed[:256].count('xml'):
-			is_rss_aton = 1
-		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
-			is_rss_aton = 2
+		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
+		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 
 		if is_rss_aton:
 			feed = html_encode(feed)
 
-			if feed.count('<items>'):
-				feed = get_tag(feed,'items')
+			if feed.count('<items>'): feed = get_tag(feed,'items')
 
-			if is_rss_aton == 1:
-				feed = feed.split('<item')
-			else:
-				feed = feed.split('<entry>')
+			if is_rss_aton == 1: feed = feed.split('<item')
+			else: feed = feed.split('<entry>')
 
-			if len(text) > 3:
-				submode = text[3]
-			else:
-				submode = 'full'
+			if len(text) > 3: submode = text[3]
+			else: submode = 'full'
 
 			msg = 'Feeds for '
 			if submode[-4:] == '-url':
@@ -2813,10 +1081,8 @@ def rss(type, jid, nick, text):
 
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
-			if is_rss_aton==1:
-				mmsg = get_tag(mmsg,'title') + '\n'
-			else:
-				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
+			else: mmsg = ttitle = get_tag(mmsg,'content') + '\n'
 
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
@@ -2842,18 +1108,14 @@ def rss(type, jid, nick, text):
 			if submode == 'full':
 				msg += ttitle+ '\n'
 				msg += tbody + '\n\n'
-			elif submode == 'body':
-				msg += tbody + '\n'
-			elif submode[:4] == 'head':
-				msg += ttitle + '\n'
-			if urlmode:
-				msg += turl+'\n'
+			elif submode == 'body': msg += tbody + '\n'
+			elif submode[:4] == 'head': msg += ttitle + '\n'
+			if urlmode: msg += turl+'\n'
 
 			msg = replacer(msg)
 
 			msg = msg[:-1]
-			if submode == 'full':
-				msg = msg[:-1]
+			if submode == 'full': msg = msg[:-1]
 		else:
 			feed = html_encode(feed)
 			title = get_tag(feed,'title')
@@ -2863,8 +1125,7 @@ def rss(type, jid, nick, text):
 
 	elif mode == 'del':
 		link = text[1]
-		if link[:7] != 'http://':
-			link = 'http://'+link
+		if link[:7] != 'http://': link = 'http://'+link
 
 		bedel1 = 0
 		for rs in feedbase:
@@ -2878,53 +1139,37 @@ def rss(type, jid, nick, text):
 				lastfeeds.remove(rs)
 				bedel2 = 1
 
-		if bedel1 or bedel2:
-			msg = u'Delete feed from schedule: '+link
-		if bedel1:
-			writefile(feeds,str(feedbase))
-		if bedel2:
-			writefile(lafeeds,str(lastfeeds))
-		else:
-			msg = u'Can\'t find in schedule: '+link
+		if bedel1 or bedel2: msg = u'Delete feed from schedule: '+link
+		if bedel1: writefile(feeds,str(feedbase))
+		if bedel2: writefile(lafeeds,str(lastfeeds))
+		else: msg = u'Can\'t find in schedule: '+link
 
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
-		if link[:7] != 'http://':
-			link = 'http://'+link
+		if link[:7] != 'http://': link = 'http://'+link
 		f = urllib.urlopen(link)
 		feed = f.read()
 		f.close()
 
 		is_rss_aton = 0
-		if feed[:256].count('rss') and feed[:256].count('xml'):
-			is_rss_aton = 1
-		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'):
-			is_rss_aton = 2
+		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
+		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 
 		if is_rss_aton:
 			feed = html_encode(feed)
-			if feed.count('<items>'):
-				feed = get_tag(feed,'<items>')
+			if feed.count('<items>'): feed = get_tag(feed,'<items>')
 
-			if is_rss_aton == 1:
-				feed = feed.split('<item')
-			else:
-				feed = feed.split('<entry>')
+			if is_rss_aton == 1: feed = feed.split('<item')
+			else: feed = feed.split('<entry>')
 	
-			if len(text) > 2:
-				lng = int(text[2])+1
-			else:
-				lng = len(feed)
+			if len(text) > 2: lng = int(text[2])+1
+			else: lng = len(feed)
 				
-			if len(feed) <= lng:
-				lng = len(feed)
-			if lng>=11:
-				lng = 11
+			if len(feed) <= lng: lng = len(feed)
+			if lng>=11: lng = 11
 
-			if len(text) > 3:
-				submode = text[3]
-			else:
-				submode = 'full'
+			if len(text) > 3: submode = text[3]
+			else: submode = 'full'
 
 			msg = 'Feeds for '
 			if submode[-4:] == '-url':
@@ -2942,10 +1187,8 @@ def rss(type, jid, nick, text):
 
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
-			if is_rss_aton==1:
-				mmsg = get_tag(mmsg,'title') + '\n'
-			else:
-				mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
+			else: mmsg = ttitle = get_tag(mmsg,'content') + '\n'
 
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
@@ -2968,43 +1211,32 @@ def rss(type, jid, nick, text):
 					turl = mmsg[tu2:tu3]
 
 				if mode == 'new':
-					if ttitle == tstop:
-						break
+					if ttitle == tstop: break
 				msg += u' • '
 				if submode == 'full':
 					msg += ttitle + '\n'
 					msg += tbody + '\n\n'
-				elif submode == 'body':
-					msg += tbody + '\n'
-				elif submode[:4] == 'head':
-					msg += ttitle+ '\n'
-				if urlmode:
-					msg += turl+'\n'
+				elif submode == 'body': msg += tbody + '\n'
+				elif submode[:4] == 'head': msg += ttitle+ '\n'
+				if urlmode: msg += turl+'\n'
 
 			if mode == 'new':
-				if mmsg == feed[1] and text[4] == 'silent':
-					nosend = 1
-				elif mmsg == feed[1] and text[4] != 'silent':
-					msg = 'New feeds not found! '
+				if mmsg == feed[1] and text[4] == 'silent': nosend = 1
+				elif mmsg == feed[1] and text[4] != 'silent': msg = 'New feeds not found! '
 
-			if submode == 'body' or submode == 'head':
-				msg = msg[:-1]
+			if submode == 'body' or submode == 'head': msg = msg[:-1]
 
 			msg = replacer(msg)
 			msg = msg[:-1]
 
-			if lng > 1 and submode == 'full':
-				msg = msg[:-1]
+			if lng > 1 and submode == 'full': msg = msg[:-1]
 		else:
-			if text[4] == 'silent':
-				nosend = 1
+			if text[4] == 'silent': nosend = 1
 			else:
 				feed = html_encode(feed)
 				title = get_tag(feed,'title')
 				msg = u'bad url or rss/atom not found at '+link+' - '+title
-	if not nosend:
-		send_msg(type, jid, nick, msg)
-	
+	if not nosend: send_msg(type, jid, nick, msg)
 
 #------------------------------------------------
 
@@ -3017,18 +1249,7 @@ def rss(type, jid, nick, text):
 # 1 - ничего не передавать
 # 2 - передавать остаток текста
 
-comms = [(1, u'stats', stats, 1, u'Локальная статистика посещений конференции'),
-	 (1, u'gstats', gstats, 1, u'Глобальная статистика посещений конференций'),
-	 (2, u'quit', bot_exit, 2, u'Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.'),
-	 (2, u'restart', bot_restart, 2, u'Перезапуск бота. Можно указать параметр, который будет показан в статусе бота при перезапуске.'),
-	 (2, u'update', bot_update, 2, u'Самообновление бота из SVN.'),
-	 (1, u'say', say, 2, u'Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.'),
-	 (0, u'calc', calc, 2, u'Калькулятор.'),
-	 (0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
-	 (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
-	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
-	 (2, u'exec', execute, 2, u'Исполнение внешнего кода.'),
-	 (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.'),
+comms = [
 	 (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы.'),
 	 (2, u'join', bot_join, 2, u'Вход в конференцию:\njoin room@conference.server.ru/nick - вход в конференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.'),
 	 (2, u'leave', bot_leave, 2, u'Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room'),
@@ -3046,23 +1267,7 @@ comms = [(1, u'stats', stats, 1, u'Локальная статистика по�
 	 (1, u'tempo', tmp_search, 2, u'Локальный поиск во временной базе.'),
 	 (2, u'gtempo', gtmp_search, 2, u'Глобальный поиск во временной базе.'),
 	 (1, u'rss', rss, 2, u'Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. H - часы, M - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.'),
-	 (0, u'wtfrand', wtfrand, 1, u'Показ случайного обределения из базы слов.'),
-	 (0, u'wtfnames', wtfnames, 2, u'Показ списка определений в конференции.\nwtfnames [all|global|import]'),
-	 (0, u'wtfcount', wtfcount, 1, u'Показ количества определений в конференции.'),
-	 (0, u'wtfsearch', wtfsearch, 2, u'Поиск по базе определний.'),
-	 (2, u'wwtf', wwtf, 2, u'Показ инфонмации о том, кто сделал определение.'),
-	 (0, u'wtff', wtff, 2, u'Показ определения вместе с ником и датой.'),
-	 (0, u'wtfp', wtfp, 2, u'Показ определения в приват, независимо от куда поступила команда.\nwtfp word - показать определение word себе в приват\nwtfp word\nnick - показать определение word в приват nick'),
-	 (0, u'wtf', wtf, 2, u'Показ определения.'),
-	 (1, u'dfn', dfn, 2, u'Установка определения.\ndfn word=definition - запоминает definition как определение word\ndfn word= - удаляет определение word'),
-	 (2, u'gdfn', gdfn, 2, u'Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word'),
 	 (1, u'alias', alias, 2, u'Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.'),
-	 (0, u'youtube', youtube, 2, u'Поиск по YouTube'),
-	 (0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity страна город, где страна - двухбуквенное сокращание, например ru или ua, город - фрагмент названия города.'),
-	 (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
-	 (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
-	 (0, u'wz', weather, 2, u'Погода по коду аэропорта. Оптимизированный вариант.'),
-	 (0, u'gis', weather_gis, 2, u'Погода с GisMeteo.\ngis город|код_города'),
 	 (0, u'commands', info_comm, 1, u'Показывает список доступных комманд.'),
 	 (1, u'comm', comm_on_off, 2, u'Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд'),
 	 (0, u'bot_uptime', uptime, 1, u'Время работы бота.'),
@@ -3070,31 +1275,11 @@ comms = [(1, u'stats', stats, 1, u'Локальная статистика по�
 	 (0, u'new', svn_info, 1, u'Показ svn-лога последнего обновления бота'),
 	 (1, u'smile', smile, 2, u'Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [on|off]'),
 	 (1, u'flood', autoflood, 2, u'Включение/выключение самообучающегося автоответчика.\nflood [on|off]'),
-	 (1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),
 	 (1, u'censor', censor_status, 2, u'Включение/выключение цензор-нотификатора.\ncensor [on|off]'),
-	 (1, u'inmember', inmember, 2, u'Поиск по member списку конференции.'),
-	 (1, u'inadmin', inadmin, 2, u'Поиск по admin списку конференции.'),
-	 (1, u'inowner', inowner, 2, u'Поиск по owner списку конференции.'),
-	 (0, u'ver', iq_version, 2, u'Версия клиента'),
-	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
-	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
-	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а'),
-	 (2, u'log', get_log, 2, u'Показ лога работы бота:\nlog len [data] - размер лога за дату или текущий день\nlog show data from-to - показ записей лога с "from" по "to" за дату "date"'),
 	 (2, u'limit', conf_limit, 2, u'Размер сообщения, свыше которого сообщения будут разбиавться на части кратные этому размеру.'),
 	 (2, u'plugin', bot_plugin, 2, u'Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name.py - добавить плагин.\nplugin del name.py - удалить плагин.'),
-	 (0, u'def', defcode, 2, u'Территориальная пренадлежность номера мобильного телефона. Внимание! Указывайте не менее 7 первых цифр номера во избежании большого количества сообщений!'),
 	 (2, u'error', show_error, 2, u'Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]'),
 	 (0, u'whoami', info_access, 1, u'Ваша идентификация перед ботом.'),
 	 (0, u'whois', info_whois, 2, u'Идентификация перед ботом.'),
-	 (0, u'disco', disco, 2, u'Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов'),
-	 (0, u'tr', translate, 2, u'Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода'),
-	 (0, u'google', google, 2, u'Поиск через google'),
-	 (0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message"'),
-	 (0, u'dns', get_dns, 2, u'dns резолвер'),
-	 (0, u'tld', get_tld, 2, u'Поиск доменных зон TLD'),
 	 (0, u'status', status, 2, u'Показ статуса.'),
-	 (1, u'whereis', whereis, 2, u'Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld'),
-	 (1, u'prefix', set_prefix, 2, u'Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.'),
-	 (1, u'backup', conf_backup, 2, u'Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей'),
-	 (1, u'clear', hidden_clear, 2, u'Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.')]
-
+	 (1, u'prefix', set_prefix, 2, u'Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.')]

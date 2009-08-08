@@ -7,9 +7,7 @@ def test(type, jid, nick):
 def test_rus(type, jid, nick):
 	send_msg(type, jid, nick, u'две полоски!')
 
-global execute, timer
-
-timer = []
+global execute
 
 execute = [(0, u'test', test, 1, u'Проверка на "живость" бота.'),
 	   (0, u'тест', test_rus, 1, u'Проверка на "живость" бота.')]
