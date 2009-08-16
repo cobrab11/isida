@@ -566,7 +566,7 @@ def schedule():
 		now_schedule()
 
 def now_schedule():
-	for tmr in gtimer: threading.Thread(None,tmr,thread_name(str(tmr))).start()
+	for tmr in gtimer: threading.Thread(None,tmr,thread_name('tmr_'+str(tmr))).start()
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]

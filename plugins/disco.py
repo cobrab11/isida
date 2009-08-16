@@ -2,16 +2,15 @@
 # -*- coding: utf -*-
 
 def disco(type, jid, nick, text):
+	if text == '':
+		send_msg(type, jid, nick, u'Ась?')
+		return
 	text = text.lower().split(' ')
 	where = text[0]
-	try:
-		what = text[1]
-	except:
-		what = ''
-	try:
-		hm = int(text[2])
-	except:
-		hm = 10
+	try: what = text[1]
+	except: what = ''
+	try: hm = int(text[2])
+	except: hm = 10
 
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
