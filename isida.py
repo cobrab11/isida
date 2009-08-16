@@ -372,8 +372,8 @@ def messageCB(sess,mess):
 			
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('msg_topic'),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-		else: threading.Thread(None,tmp,thread_name('msg_message'),(room,jid,nick,type,back_text)).start()
+		if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+		else: threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -535,7 +535,7 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		threading.Thread(None,tmp,thread_name('presence'),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
+		threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
 def onoff(msg):
 	if msg: return 'ON'
