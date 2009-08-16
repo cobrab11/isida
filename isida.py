@@ -589,7 +589,7 @@ def now_schedule():
 				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					threading.Thread(None,rss,thread_name('check_rss'+fd[0]+u' in '+fd[4]),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
+					threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
