@@ -419,7 +419,7 @@ def presenceCB(sess,mess):
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
 	mss = unicode(mess)
-	if mss.strip().count('<x xmlns=\"http') > 1: bad_presence = True
+	if mss.strip().count('<x xmlns=\"http://jabber') > 1 and mss.strip().count(' affiliation=\"') > 1 and mss.strip().count(' role=\"') > 1 : bad_presence = True
 	else: bad_presence = None
 	while mss.count('<x ') > 1 and mss.count('</x>') > 1:
 		mss = mss[:mss.find('<x ')]+mss[mss.find('</x>')+4:]
@@ -658,6 +658,7 @@ capsVersion = botVersion[1:]	# версия для капса
 banbase = []
 iq_answer = []
 timeout = 300					# таймаут в секундах на iq запросы
+thread_timeout = 5			# таймаут работы треда 
 gt=gmtime()
 lt=tuple(localtime())
 if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])
