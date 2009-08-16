@@ -287,7 +287,7 @@ def iqCB(sess,iq):
 
 def thread_name(body):
 	lt = tuple(localtime())
-	return body+'_'+str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+'_'+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'_'+str(randint(0,1000))
+	return str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+'_'+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'_'+body+'_'+str(randint(0,1000))
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
