@@ -71,7 +71,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
 				msg = u'done'
-				whojid = getRoom(str(fnd[0][0]))
+				whojid = getRoom(unicode(fnd[0][0]))
 				skip = 0
 			elif len(fnd) > 1:
 				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
@@ -149,7 +149,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
 			msg = u'done'
-			whojid = getRoom(str(fnd[0][0]))
+			whojid = getRoom(unicode(fnd[0][0]))
 			skip = 0
 		elif len(fnd) > 1:
 			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
@@ -193,7 +193,7 @@ def muc_role(type, jid, nick, text, role):
 		cu = mdb.cursor()
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
-			whonick = fnd[0][0]
+			whonick = unicode(fnd[0][0])
 			msg = u'done'
 			skip = 0
 		elif len(fnd) > 1:
@@ -297,8 +297,8 @@ def muc_arole(type, jid, nick, text, role):
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
-				whonick = fnd[0][0]
-				whojid = fnd[0][1]
+				whonick = unicode(fnd[0][0])
+				whojid = unicode(fnd[0][1])
 				skip = 0
 			elif len(fnd) > 1:
 				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
@@ -360,8 +360,8 @@ def muc_afind(type, jid, nick, text):
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
-				whonick = fnd[0][0]
-				whojid = fnd[0][1]
+				whonick = unicode(fnd[0][0])
+				whojid = unicode(fnd[0][1])
 				skip = 0
 			elif len(fnd) > 1:
 				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
