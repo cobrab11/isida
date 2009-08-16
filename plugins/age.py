@@ -73,8 +73,10 @@ def seen_raw(type, jid, nick, text, xtype):
 	if not real_jid:
 		textt = '%'+text.lower()+'%'
 		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,textt,textt)).fetchone()		
-	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	if real_jid:
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = None
 	if sbody:
 		msg = u'Я видела:'
 		cnt = 1
@@ -120,10 +122,12 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
-		text = '%'+text.lower()+'%'
-		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
-	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		txt = '%'+text.lower()+'%'
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,txt,txt)).fetchone()		
+	if real_jid:
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = None
 	if sbody:
 		ztype = True
 		msg = u'Я видела:'
