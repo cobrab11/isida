@@ -1,7 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+def true_age_split(type, jid, nick, text):
+	true_age_raw(type, jid, nick, text, True)
+
 def true_age(type, jid, nick, text):
+	true_age_raw(type, jid, nick, text, None)
+	
+def true_age_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -10,37 +16,47 @@ def true_age(type, jid, nick, text):
 		except: llim = 10
 		text = text[1]
 	else: text = text[0]
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
+	if text == '': text = nick
+	if llim > 100: llim = 100
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	if not real_jid:
 		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				if tmp[5]: r_age = tmp[4]
-				else: r_age = int(time.time())-tmp[3]+tmp[4]
-				msg += '\n'+str(cnt)+'. '+tmp[1]+u'\t'+un_unix(r_age)+u', '
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
+	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	if sbody:
+		msg = u'Я видела:'
+		cnt = 1
+		for tmp in sbody:
+			if tmp[5]: r_age = tmp[4]
+			else: r_age = int(time.time())-tmp[3]+tmp[4]
+			if xtype: msg += '\n'+str(cnt)+'. '+tmp[1]
+			else: msg += ' '+tmp[1]
+			msg += u'\t'+un_unix(r_age)+u', '
 
-				if tmp[5]:
-					if tmp[6] != '': msg += tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'Вышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'находится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
+			if tmp[5]:
+				if tmp[6] != '': msg += tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				else: msg += u'Вышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[7] != '':
+					if tmp[7].count('\n') >= 4:
+						stat = tmp[7].split('\n',4)[4]
+						if stat != '': msg += ' ('+stat+')'
+					else: msg += ' ('+tmp[7]+')'
+			else: msg += u'находится тут: '+un_unix(int(time.time()-tmp[3]))
+			cnt += 1
+			if not xtype: msg = msg.replace('\t',' - ')
+	else: msg = u'Не найдено!'
 	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
+	seen_raw(type, jid, nick, text, None)
+	
+def seen_split(type, jid, nick, text):
+	seen_raw(type, jid, nick, text, True)
+
+def seen_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -49,35 +65,46 @@ def seen(type, jid, nick, text):
 		except: llim = 10
 		text = text[1]
 	else: text = text[0]
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				msg += '\n'+str(cnt)+'. '+tmp[1]
-
-				if tmp[5]:
-					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
+	if text == '': text = nick
+	if llim > 100: llim = 100
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	if not real_jid:
+		textt = '%'+text.lower()+'%'
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,textt,textt)).fetchone()		
+	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	if sbody:
+		msg = u'Я видела:'
+		cnt = 1
+		for tmp in sbody:
+			if xtype: msg += '\n'+str(cnt)+'. '
+			else: msg += ' '
+			if text != tmp[1]: msg += text+u' (с ником: '+tmp[1]+')'
+			else: msg += tmp[1] 
+			if tmp[5]:
+				if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[7] != '':
+					if tmp[7].count('\n') >= 4:
+						stat = tmp[7].split('\n',4)[4]
+						if stat != '': msg += ' ('+stat+')'
+					else: msg += ' ('+tmp[7]+')'
+			else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
+			cnt += 1
+			if not xtype: msg = msg.replace('\t',' - ')
+	else: msg = u'Не найдено!'
 	send_msg(type, jid, nick, msg)
 
 def seenjid(type, jid, nick, text):
+	seenjid_raw(type, jid, nick, text, None)
+	
+def seenjid_split(type, jid, nick, text):
+	seenjid_raw(type, jid, nick, text, True)
+	
+def seenjid_raw(type, jid, nick, text, xtype):
+	print xtype
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -86,43 +113,49 @@ def seenjid(type, jid, nick, text):
 		except: llim = 10
 		text = text[1]
 	else: text = text[0]
-	xtype = None
-	if text != '':
-		if llim > 100: llim = 100
-		is_found = 0
-		ms = []
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
+	ztype = None
+	if text == '': text = nick
+	if llim > 100: llim = 100
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	if not real_jid:
 		text = '%'+text.lower()+'%'
-		sbody = cu.execute('select * from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchmany(llim)
-		if sbody:
-			xtype = True
-			msg = u'Я видела:'
-			cnt = 1
-			for tmp in sbody:
-				msg += '\n'+str(cnt)+'. '+tmp[1]+' ('+tmp[2]+')'
-
-				if tmp[5]:
-					if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
-					if tmp[7] != '':
-						if tmp[7].count('\n') >= 4:
-							stat = tmp[7].split('\n',4)[4]
-							if stat != '': msg += ' ('+stat+')'
-						else: msg += ' ('+tmp[7]+')'
-				else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
-				cnt += 1
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
-
-	if type == 'groupchat' and xtype:
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
+	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	if sbody:
+		ztype = True
+		msg = u'Я видела:'
+		cnt = 1
+		for tmp in sbody:
+			if xtype: msg += '\n'+str(cnt)+'. '
+			else: msg += ' '
+			if text != tmp[1]: msg += text+u' (с ником: '+tmp[1]+')'
+			else: msg += tmp[1] 
+			msg += ' ('+tmp[2]+')'
+			if tmp[5]:
+				if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[7] != '':
+					if tmp[7].count('\n') >= 4:
+						stat = tmp[7].split('\n',4)[4]
+						if stat != '': msg += ' ('+stat+')'
+					else: msg += ' ('+tmp[7]+')'
+			else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
+			cnt += 1
+			if not xtype: msg = msg.replace('\t',' - ')
+	else: msg = u'Не найдено!'
+	if type == 'groupchat' and ztype:
 		send_msg(type,jid,nick,u'Результат отправлен Вам в приват.')
 		send_msg('chat', jid, nick, msg)
-	else:
-		send_msg(type, jid, nick, msg)
+	else: send_msg(type, jid, nick, msg)
 
 global execute
 
 execute = [(0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
+	 (0, u'age_split', true_age_split, 2, u'Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
 	 (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
-	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.')]
+	 (0, u'seen_split', seen_split, 2, u'Показывает время входа/выхода с разбивкой по никам.'),
+	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
+	 (1, u'seenjid_split', seenjid_split, 2, u'Показывает время входа/выхода + jid с разбивкой по никам. Результат работы команды всегда направляется в приват.')]

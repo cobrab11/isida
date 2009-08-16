@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-watch_size = 120			# период запросов в секундах
+watch_size = 360			# период запросов в секундах
 watch_timeout = 60		# таймаут соединения в секундах
 watch_time = time.time()
 watch_count = 0

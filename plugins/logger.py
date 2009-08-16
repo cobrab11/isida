@@ -39,9 +39,13 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_path = curr_path+'/'+str(lt[0])
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
-	curr_path += '/'+str(lt[1])
+	if lt[1]<10: dig = '0'
+	else: dig = ''
+	curr_path += '/'+dig+str(lt[1])
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
-	curr_file = curr_path + '/'+str(lt[2])+'.html'
+	if lt[2]<10: dig = '0'
+	else: dig = ''
+	curr_file = curr_path + '/'+dig+str(lt[2])+'.html'
 
 	text = html_repl(text)
 	text = text.replace('\n','<br>')
@@ -87,10 +91,13 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
 		curr_path = curr_path+'/'+str(lt[0])
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
-		curr_path += '/'+str(lt[1])
+		if lt[1]<10: dig = '0'
+		else: dig = ''
+		curr_path += '/'+dig+str(lt[1])
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
-		curr_file = curr_path + '/'+str(lt[2])+'.html'
-
+		if lt[2]<10: dig = '0'
+		else: dig = ''
+		curr_file = curr_path + '/'+dig+str(lt[2])+'.html'
 		text = html_repl(text)
 		text = text.replace('\n','<br>')
 

@@ -4,7 +4,7 @@
 def bot_shutdown(type, jid, nick, text, reason, xtype):
 	global game_over
 	StatusMessage = reason + u' по команде от '+nick
-	if text != '': StatusMessage += u', по причине'+text
+	if text != '': StatusMessage += u', причина: '+text
 	send_presence_all(StatusMessage)
 	writefile(tmpf,str(xtype))
 	game_over = 1

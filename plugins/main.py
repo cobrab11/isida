@@ -475,7 +475,7 @@ def bot_rejoin(type, jid, nick, text):
 	else: text=jid
 	if not text.count('@'): text+='@'+lastserver
 	if not text.count('/'): text+='/'+lastnick
-	lastserver = getServer(text)
+	lastserver = getServer(text.lower())
 	lastnick = getResourse(text)
 	lroom = text
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
@@ -491,21 +491,20 @@ def bot_rejoin(type, jid, nick, text):
 def bot_join(type, jid, nick, text):
 	global lastserver, lastnick, confs, confbase
 	text=unicode(text)
-	if text=='' or text.count(' '): send_msg(type, jid, nick, u'косяк с аргументами!')
+	if text=='' or getRoom(text).count(' '): send_msg(type, jid, nick, u'косяк с аргументами!')
 	else:
 		if not text.count('@'): text+='@'+lastserver
 		if not text.count('/'): text+='/'+lastnick
-		lastserver = getServer(text)
+		lastserver = getServer(text.lower())
 		lastnick = getResourse(text)
-		lroom = text.index('/')
-		lroom = text[:lroom]
+		lroom = text.lower()[:text.index('/')]
 		if arr_semi_find(confbase, lroom) == -1:				
 			zz = joinconf(text, domain)
 			if zz != None:
 				send_msg(type, jid, nick, u'Ошибка! '+zz)
 				pprint(u'*** Error join to '+text+' '+zz)
 			else:
-				confbase.append(text)
+				confbase.append(getRoom(text)+'/'+getResourse(text))
 				writefile(confs,str(confbase))
 				send_msg(type, jid, nick, u'зашла в '+text)
 				pprint(u'join to '+text)
@@ -520,7 +519,7 @@ def bot_join(type, jid, nick, text):
 				pprint(u'*** Error join to '+text+' '+zz)
 			else:
 				confbase = arr_del_semi_find(confbase, lroom)
-				confbase.append(text)
+				confbase.append(getRoom(text)+'/'+getResourse(text))
 				send_msg(type, jid, nick, u'смена ника в '+lroom+u' на '+lastnick)
 				writefile(confs,str(confbase))
 				pprint(u'change nick '+text)
@@ -940,13 +939,15 @@ def rss_del_html(ms):
 def rss_del_nn(ms):
 	while ms.count('  '):
 		ms = ms.replace('  ',' ')
+	while ms.count('\n '):
+		ms = ms.replace('\n ','')
 	ms = ms.replace('\r','')
 	ms = ms.replace('\t','')
 	ms = ms.replace('\n \n','\n')
 	while ms.count('\n\n'):
 		ms = ms.replace('\n\n','\n')
 	ms += '\n'
-	return ms
+	return ms #.replace('\n','!n').replace('\t','!t').replace(' ','!s')
 
 def html_encode(body):
 	encidx = body.find('encoding=')
@@ -1104,7 +1105,7 @@ def rss(type, jid, nick, text):
 				tu3 = mmsg.find('\"',tu2)
 				turl = mmsg[tu2:tu3]
 
-			msg += u' • '
+			msg += u'• '
 			if submode == 'full':
 				msg += ttitle+ '\n'
 				msg += tbody + '\n\n'
@@ -1212,7 +1213,7 @@ def rss(type, jid, nick, text):
 
 				if mode == 'new':
 					if ttitle == tstop: break
-				msg += u' • '
+				msg += u'• '
 				if submode == 'full':
 					msg += ttitle + '\n'
 					msg += tbody + '\n\n'

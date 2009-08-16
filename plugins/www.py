@@ -14,9 +14,11 @@ def netwww(type, jid, nick, text):
 	f.close()
 
 	page = html_encode(page)
-	page = rss_replace(page)
+#	page = rss_replace(page)
 	if regex:
 		mt = re.findall(r''+regex, page, re.S)
+		for a in mt:
+			print a[:50]
 		if mt != []:
 			mt = tuple(mt[0])
 			msg = ''

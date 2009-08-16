@@ -2,8 +2,7 @@
 # -*- coding: utf -*-
 
 def to_poke(type, jid, nick, text):
-	if len(text):
-		text = reduce_spaces(text)
+	if len(text): text = reduce_spaces(text)
 	predef_poke = [u'дала NICK... просто дала... :-"',
 			u'потыкала палочкой NICK в глаз...',
 			u'предложила NICK козявку :-[',
@@ -29,12 +28,9 @@ def to_poke(type, jid, nick, text):
 			cnt += 1
 	elif text[:4] == 'del ' and access_mode == 2:
 		text = text[4:]
-		try:
-			pos = int(text)-1
-		except:
-			pos = len(dpoke)+1
-		if pos < 0 or pos > len(dpoke):
-			msg = u'Такой записи нет!'
+		try: pos = int(text)-1
+		except: pos = len(dpoke)+1
+		if pos < 0 or pos > len(dpoke): msg = u'Такой записи нет!'
 		else:
 			remove_body = dpoke[pos]
 			dpoke.remove(remove_body)
@@ -47,12 +43,9 @@ def to_poke(type, jid, nick, text):
 			dpoke.append(text)
 			writefile(poke_file, str(dpoke))
 			msg = u'Добавила.'
-		else:
-			msg = u'Не могу добавить! Нет ключевого слова "NICK"!'
-	elif text == '' or text == nick:
-		msg = u'Самотык? 8-D'
-	elif get_access(jid,text)[1] == selfjid:
-		msg = u'Ща зобаню по ip за такие шутки!'
+		else: msg = u'Не могу добавить! Нет ключевого слова "NICK"!'
+	elif text == '' or text == nick: msg = u'Самотык? 8-D'
+	elif get_access(jid,text)[1] == selfjid: msg = u'Ща зобаню по ip за такие шутки!'
 	else:
 		is_found = 0
 		for tmp in megabase:
@@ -63,8 +56,8 @@ def to_poke(type, jid, nick, text):
 			msg = '/me '+dpoke[randint(0,len(dpoke)-1)]
 			msg = msg.replace('NICK',text)
 			nick = ''
-		else:
-			msg = u'Или я дура, или '+text+u' тут нету...'
+			type = 'groupchat'
+		else: msg = u'Я могу ошибаться, но '+text+u' тут нету...'
 	send_msg(type, jid, nick, msg)
 
 global execute

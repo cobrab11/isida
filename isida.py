@@ -15,8 +15,8 @@ from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
-import thread, operator, sqlite3, simplejson, chardet, socket, popen2, atexit
-global execute, prefix, comms, prev_time
+import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
+global execute, prefix, comms, prev_time, hashlib
 
 def readfile(filename):
 	fp = file(filename)
@@ -38,7 +38,7 @@ def getFile(filename,default):
 			except: sleep(0.02)
 	else:
 		filebody = default
-		writefile(filename,str(filebody))
+		writefile(filename,str(default))
 	return filebody
 
 def get_subtag(body,tag):
@@ -64,8 +64,7 @@ def parser(text):
 
 def tZ(val):
 	rval = str(val)
-	if val<10:
-		rval = '0'+rval
+	if val<10: rval = '0'+rval
 	return rval
 
 def timeadd(lt):
@@ -95,11 +94,13 @@ def errorHandler(text):
 	exit (0)
 
 def arr_semi_find(array, string):
-	astring = [unicode(string)]
-	position = -1
+	astring = [unicode(string.lower())]
+	pos = 0
 	for arr in array:
-		if re.findall(string, arr) == astring: position = array.index(arr)
-	return position
+		if re.findall(string, arr.lower()) == astring: break
+		pos += 1
+	if pos != len(array): return pos
+	else: return -1
 
 def arr_del_by_pos(array, position):
 	return array[:position] + array[position+1:]
@@ -173,10 +174,8 @@ def os_version():
 	return japytOs
 
 def joinconf(conference, server):
-	global mainRes, dm
-	node = unicode(JID(conference).getResource())
-	domain = server
-	jid = JID(node=node, domain=server, resource=mainRes)
+	node = unicode(JID(conference.lower()).getResource())
+	jid = JID(node=node, domain=server.lower(), resource=mainRes)
 	if dm: cl = Client(jid.getDomain(), debug=[])
 	else: cl = Client(jid.getDomain())
 	conf = unicode(JID(conference))
@@ -185,9 +184,7 @@ def joinconf(conference, server):
 	return zz
 
 def leaveconf(conference, server, sm):
-	global dm
 	node = unicode(JID(conference).getResource())
-	domain = server
 	jid = JID(node=node, domain=server)
 	if dm: cl = Client(jid.getDomain(), debug=[])
 	else: cl = Client(jid.getDomain())
@@ -288,6 +285,10 @@ def iqCB(sess,iq):
 			cl.send(i)
 			raise xmpp.NodeProcessed
 
+def thread_name(body):
+	lt = tuple(localtime())
+	return body+'_'+str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+'_'+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'_'+str(randint(0,1000))
+
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
 	cof = getFile(conoff,[])
@@ -302,9 +303,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
-				if not parse[3]: thread.start_new_thread(thread_log,(parse[2], type, room, nick, par))
-				elif parse[3] == 1: thread.start_new_thread(thread_log,(parse[2], type, room, nick))
-				elif parse[3] == 2: thread.start_new_thread(thread_log,(parse[2], type, room, nick, text[len(parse[1])+1:]))
+				if not parse[3]: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, par)).start()
+				elif parse[3] == 1: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick)).start()
+				elif parse[3] == 2: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
 				break
 	return no_comm
 
@@ -364,35 +365,30 @@ def messageCB(sess,mess):
 	else: is_flood = 0
 
 	if no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
-		if len(text)>100:
-			text = u'Слишком многа букаф!'
-			send_msg(type, room, nick, text)
+		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			thread.start_new_thread(send_msg_human,(type, room, nick, text))
-
+			threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
+			
 	for tmp in gmessage:
 		try:
 			subj=unicode(mess.getSubject())
-			if subj != 'None' and back_text == 'None': thread.start_new_thread(message_thread,(tmp,room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj))
-			else: thread.start_new_thread(message_thread,(tmp,room,jid,nick,type,back_text))
+			if subj != 'None' and back_text == 'None': threading.Thread(None,message_thread,thread_name('msg_topic'),(tmp,room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+			else: threading.Thread(None,message_thread,thread_name('msg_message'),(tmp,room,jid,nick,type,back_text)).start()
 		except: sleep(0.02)
 					
 def message_thread(*param):
 	param[0](param[1],param[2],param[3],param[4],param[5])
-	sys.exit(0)
 
 def send_msg_human(type, room, nick, text):
-	sleep(len(text)/4)
+	sleep(len(text)/4+randint(0,10))
 	send_msg(type, room, nick, text)
-	sys.exit(0)	
 
 def thread_log(proc, *params):
 	try:
 		if len(params) == 3: proc(params[0], params[1], params[2])
 		else: proc(params[0], params[1], params[2], params[3])
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
-	sys.exit(0)
 
 def getAnswer(tx,type):
 	mdb = sqlite3.connect(answersbase)
@@ -426,6 +422,8 @@ def presenceCB(sess,mess):
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
 	mss = unicode(mess)
+	if mss.strip().count('<x xmlns=\"http') > 1: bad_presence = True
+	else: bad_presence = None
 	while mss.count('<x ') > 1 and mss.count('</x>') > 1:
 		mss = mss[:mss.find('<x ')]+mss[mss.find('</x>')+4:]
 	mss = get_tag_full(mss,'x')
@@ -447,7 +445,9 @@ def presenceCB(sess,mess):
 		ta = get_access(room,nick)
 		jid =ta[1]
 
-	tmppos = arr_semi_find(confbase, room)
+	if bad_presence: send_msg('groupchat', room, '', u'/me смотрит на '+nick+u' и думает: "Факин умник детектед!"')
+
+	tmppos = arr_semi_find(confbase, room.lower())
 	if tmppos == -1: nowname = nickname
 	else:
 		nowname = getResourse(confbase[tmppos])
@@ -512,9 +512,9 @@ def presenceCB(sess,mess):
 	else: jid = getRoom(jid.lower())
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
-	abc = cu.execute('select * from age where room=? and jid=?',(room, jid)).fetchall()
+	abc = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
 	tt = int(time.time())
-	cu.execute('delete from age where room=? and jid=?',(room, jid))
+	cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
@@ -540,12 +540,11 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		try: thread.start_new_thread(presence_thread,(tmp,room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+		try: threading.Thread(None,presence_thread,thread_name('presence'),(tmp,room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		except: sleep(0.02)
 
 def presence_thread(*param):
 	param[0](param[1],param[2],param[3],param[4],param[5])
-	sys.exit(0)
 	
 def onoff(msg):
 	if msg: return 'ON'
@@ -553,12 +552,12 @@ def onoff(msg):
 
 def getName(jid):
 	jid = unicode(jid)
-	return jid[:jid.find('@')]
+	return jid[:jid.find('@')].lower()
 
 def getServer(jid):
 	jid = unicode(jid)
 	if not jid.count('/'): jid += '/'
-	return jid[jid.find('@')+1:jid.find('/')]
+	return jid[jid.find('@')+1:jid.find('/')].lower()
 
 def getResourse(jid):
 	jid = unicode(jid)
@@ -577,11 +576,10 @@ def schedule():
 
 def timer_thread(*param):
 	param[0]()
-	sys.exit(0)
 		
 def now_schedule():
 	for tmr in gtimer:
-		try: thread.start_new_thread(timer_thread,(tmr,))
+		try: threading.Thread(None,timer_thread,thread_name('timer'),(tmr,)).start()
 		except: sleep(0.02)
 
 	lt=tuple(localtime())
@@ -601,7 +599,7 @@ def now_schedule():
 				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					thread.start_new_thread(thread_log,(rss, 'groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
+					threading.Thread(None,rss,thread_name('check_rss'+fd[0]+u' in '+fd[4]),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
@@ -665,7 +663,7 @@ dm2 = 1							# отладка действий бота
 prefix = u'_'					# префикс комманд
 msg_limit = 1000				# лимит размера сообщений
 botName = 'Isida-Bot'			# название бота
-botVersion = 'v1.9'				# версия бота
+botVersion = 'v1.91'			# версия бота
 capsVersion = botVersion[1:]	# версия для капса
 banbase = []
 iq_answer = []
@@ -678,7 +676,8 @@ else: timeofset = int(gt[3])-int(lt[3]) + 24
 
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
-	if len(bvers[:-1]) > 1: botVersion += '.' + bvers[:-1]
+	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
+botVersion += '.Alpha'
 
 # --- load config.txt
 
@@ -730,7 +729,7 @@ sesstime = int(time.time())
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
 close_age_null()
-confbase = getFile(confs,[defaultConf+u'/'+nickname])
+confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF')
 	censor = censor.split('\n')
@@ -798,7 +797,7 @@ for tocon in confbase:
 	cl.send(j)
 	sleep(0.02)
 
-lastserver = getServer(confbase[0])
+lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
