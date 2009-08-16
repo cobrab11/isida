@@ -564,14 +564,13 @@ def getRoom(jid):
 def schedule():
 	global prev_time
 	tmp_time = int(time.time())
-	if tmp_time > prev_time:
+	if tmp_time-prev_time > 5:
 		prev_time = tmp_time
 		now_schedule()
 
 def now_schedule():
 	for tmr in gtimer:
-		try: threading.Thread(None,tmr,thread_name('timer'),()).start()
-		except: pass
+		threading.Thread(None,tmr,thread_name(str(tmp))).start()
 
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
