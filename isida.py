@@ -17,6 +17,7 @@ from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
 import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib
+sema = threading.BoundedSemaphore(value=30)
 
 def readfile(filename):
 	fp = file(filename)
@@ -303,9 +304,15 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
-				if not parse[3]: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, par)).start()
-				elif parse[3] == 1: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick)).start()
-				elif parse[3] == 2: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
+				if not parse[3]:
+					with sema:
+						threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, par)).start()
+				elif parse[3] == 1: 
+					with sema:
+						threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick)).start()
+				elif parse[3] == 2:
+					with sema:
+						threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
 				break
 	return no_comm
 
@@ -368,12 +375,17 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
+			with sema:
+				threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
 			
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-		else: threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
+		if subj != 'None' and back_text == 'None': 
+			with sema:
+				threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+		else: 
+			with sema:
+				threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -535,7 +547,8 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
+		with sema:
+			threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -566,7 +579,9 @@ def schedule():
 		now_schedule()
 
 def now_schedule():
-	for tmr in gtimer: threading.Thread(None,tmr,thread_name('tmr_'+str(tmr))).start()
+	for tmr in gtimer:
+		with sema:
+			threading.Thread(None,tmr,thread_name('tmr_'+str(tmr))).start()
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
@@ -584,7 +599,8 @@ def now_schedule():
 				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
+					with sema:
+						threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
@@ -785,6 +801,7 @@ for tocon in confbase:
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
+sema = threading.BoundedSemaphore(value=30)
 
 while 1:
 	try:
