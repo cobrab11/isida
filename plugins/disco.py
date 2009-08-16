@@ -92,7 +92,7 @@ def disco(type, jid, nick, text):
 					msg += '\n'+str(cnt)+'. '+i[0]
 					cnt += 1
 			else:
-				msg = 'не найдено!'
+				msg = u'не найдено!'
 			tmp.close()
 	else:
 		msg = u'Не получается...'
