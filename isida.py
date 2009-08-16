@@ -371,11 +371,9 @@ def messageCB(sess,mess):
 			threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
 			
 	for tmp in gmessage:
-		try:
-			subj=unicode(mess.getSubject())
-			if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('msg_topic'),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-			else: threading.Thread(None,tmp,thread_name('msg_message'),(room,jid,nick,type,back_text)).start()
-		except: sleep(0.02)
+		subj=unicode(mess.getSubject())
+		if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('msg_topic'),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+		else: threading.Thread(None,tmp,thread_name('msg_message'),(room,jid,nick,type,back_text)).start()
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -537,8 +535,7 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		try: threading.Thread(None,tmp,thread_name('presence'),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
-		except: pass
+		threading.Thread(None,tmp,thread_name('presence'),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -564,14 +561,12 @@ def getRoom(jid):
 def schedule():
 	global prev_time
 	tmp_time = int(time.time())
-	if tmp_time-prev_time > 5:
+	if tmp_time-prev_time > 10:
 		prev_time = tmp_time
 		now_schedule()
 
 def now_schedule():
-	for tmr in gtimer:
-		threading.Thread(None,tmr,thread_name(str(tmp))).start()
-
+	for tmr in gtimer: threading.Thread(None,tmr,thread_name(str(tmr))).start()
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
@@ -658,7 +653,6 @@ capsVersion = botVersion[1:]	# версия для капса
 banbase = []
 iq_answer = []
 timeout = 300					# таймаут в секундах на iq запросы
-thread_timeout = 5			# таймаут работы треда 
 gt=gmtime()
 lt=tuple(localtime())
 if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])

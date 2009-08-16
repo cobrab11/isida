@@ -3,9 +3,7 @@
 
 def thread_info(type, jid, nick):
 	msg = u'Активно тредов: '+str(threading.activeCount())
-	for tmp in threading.enumerate():
-		stmp = str(tmp)
-		msg += '\n'+stmp[stmp.find('(')+1:stmp.find(')')]
+	for tmp in threading.enumerate(): msg += '\n'+str(tmp)
 	msg = msg[:-2]
 	send_msg(type, jid, nick, msg)
 
