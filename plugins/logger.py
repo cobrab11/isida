@@ -31,7 +31,6 @@ def append_message_to_log(room,jid,nick,type,text):
 		msg_logger(room,jid,nick,type,text,public_log)
 	if type == 'chat' and text != 'None': nick = u'chat | '+nick
 	msg_logger(room,jid,nick,type,text,system_log)
-	sys.exit(0)
 
 def msg_logger(room,jid,nick,type,text,logfile):
 	lt = tuple(time.localtime())
@@ -74,7 +73,6 @@ def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
 	presence_logger(room,jid,nick,type,mass,0,public_log)
 	presence_logger(room,jid,nick,type,mass,1,system_log)
-	sys.exit(0)
 
 def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	role = mass[1]

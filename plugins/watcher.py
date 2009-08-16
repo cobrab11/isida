@@ -29,7 +29,6 @@ def connect_watch():
 			writefile(tmpf,str('restart'))
 			sleep(2)
 			game_over = 1
-	sys.exit(0)	
 
 def c_watcher(type, jid, nick):
 	msg = u'Таймаут запросов: '+str(watch_size)

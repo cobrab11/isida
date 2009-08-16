@@ -340,7 +340,6 @@ def check_unban():
 				cl.send(i)
 		if unban_log != ubl:
 			writefile(tban,str(ubl))
-	sys.exit(0)
 
 def decrease_alist_role():
 	alist_role = getFile(ro_alist,[])
@@ -351,7 +350,6 @@ def decrease_alist_role():
 				tmp_role.append(tmp)
 		if alist_role != tmp_role:
 			writefile(ro_alist,str(tmp_role))
-	sys.exit(0)
 
 # ----------------------------------------------
 def muc_afind(type, jid, nick, text):
@@ -385,7 +383,7 @@ def muc_afind(type, jid, nick, text):
 		if not_found:
 			msg = text + u' в alist не найдено.'
 	send_msg(type, jid, nick, msg)
-	sys.exit(0)
+
 # ----------------------------------------------
 #room,jid,nick,type,text
 
@@ -398,19 +396,17 @@ def alist_role_presence(room,jid,nick,type,text):
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':tmp[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':tmp[3], 'nick':unicode(nick)},[Node('reason',{},tmp[4])])])])
 				cl.send(i)
-	sys.exit(0)
 
-def alist_message(room,jid,nick,type,text):
+#def alist_message(room,jid,nick,type,text):
 #	print 'message:',room,jid,nick,type,text
-	sys.exit(0)
 
 # ----------------------------------------------
 
-global execute, timer, presence_control, message_control
+global execute, timer, presence_control#, message_control
 
 timer = [check_unban,decrease_alist_role]
 presence_control = [alist_role_presence]
-message_control = [alist_message]
+#message_control = [alist_message]
 
 execute = [(1, u'ban', muc_ban, 2, u'Забанить участника'),
 	   (1, u'tban', muc_tempo_ban, 2, u'Временный бан.\ntban show|del [jid] - показать/удалить временные баны\ntban nick\ntimeD|H|M|S\nreason - бан ника nick на срок time по причине reason'),

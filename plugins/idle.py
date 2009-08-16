@@ -24,7 +24,6 @@ def append_to_idle(room,jid,nick,type,text):
 			idle_base.remove(tmp)
 			break
 	idle_base.append((room,nick,'m',int(time.time())))
-	sys.exit(0)
 
 def remove_from_idle(room,jid,nick,type,text):
 	global idle_base
@@ -34,7 +33,6 @@ def remove_from_idle(room,jid,nick,type,text):
 			break
 	if type!='unavailable':
 		idle_base.append((room,nick,'p',int(time.time())))
-	sys.exit(0)
 
 global execute
 

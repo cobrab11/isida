@@ -36,7 +36,6 @@ def append_to_turner(room,jid,nick,type,text):
 			turn_base.remove(tmp)
 			break
 	turn_base.append((room,nick,text))
-	sys.exit(0)
 
 def remove_from_turner(room,jid,nick,type,text):
 	global turn_base
@@ -45,7 +44,6 @@ def remove_from_turner(room,jid,nick,type,text):
 			if tmp[0] == room and tmp[1] == nick:
 				turn_base.remove(tmp)
 				break
-	sys.exit(0)
 
 global execute
 
