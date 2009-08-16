@@ -373,12 +373,9 @@ def messageCB(sess,mess):
 	for tmp in gmessage:
 		try:
 			subj=unicode(mess.getSubject())
-			if subj != 'None' and back_text == 'None': threading.Thread(None,message_thread,thread_name('msg_topic'),(tmp,room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-			else: threading.Thread(None,message_thread,thread_name('msg_message'),(tmp,room,jid,nick,type,back_text)).start()
+			if subj != 'None' and back_text == 'None': threading.Thread(None,tmp,thread_name('msg_topic'),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+			else: threading.Thread(None,tmp,thread_name('msg_message'),(room,jid,nick,type,back_text)).start()
 		except: sleep(0.02)
-					
-def message_thread(*param):
-	param[0](param[1],param[2],param[3],param[4],param[5])
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -540,12 +537,9 @@ def presenceCB(sess,mess):
 	mdb.commit()
 
 	for tmp in gpresence:
-		try: threading.Thread(None,presence_thread,thread_name('presence'),(tmp,room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
-		except: sleep(0.02)
-
-def presence_thread(*param):
-	param[0](param[1],param[2],param[3],param[4],param[5])
-	
+		try: threading.Thread(None,tmp,thread_name('presence'),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
+		except: pass
+		
 def onoff(msg):
 	if msg: return 'ON'
 	else: return 'OFF'
@@ -574,13 +568,10 @@ def schedule():
 		prev_time = tmp_time
 		now_schedule()
 
-def timer_thread(*param):
-	param[0]()
-		
 def now_schedule():
 	for tmr in gtimer:
-		try: threading.Thread(None,timer_thread,thread_name('timer'),(tmr,)).start()
-		except: sleep(0.02)
+		try: threading.Thread(None,tmr,thread_name('timer'),()).start()
+		except: pass
 
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
