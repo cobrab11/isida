@@ -93,7 +93,7 @@ def send_presence_all(sm):
 def errorHandler(text):
 	pprint(u'\n*** Error ***')
 	pprint(text)
-	pprint(u'more info at http://isida.googlecode.com\n')
+	pprint(u'more info at http://isida-bot.com\n')
 	exit (0)
 
 def arr_semi_find(array, string):
@@ -673,13 +673,13 @@ else: timeofset = int(gt[3])-int(lt[3]) + 24
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
-botVersion += '.Alpha'
+botVersion += '.beta'
 
 # --- load config.txt
 
 if os.path.isfile(configname): execfile(configname)
 else: errorHandler(configname+u' is missed.')
-capsNode = 'http://isida.googlecode.com'
+capsNode = 'http://isida-bot.com'
 # --- check parameters
 baseParameters = [nickname ,name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 baseErrors = [u'nickname', u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']

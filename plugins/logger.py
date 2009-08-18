@@ -30,7 +30,7 @@ def append_message_to_log(room,jid,nick,type,text):
 	if type == 'groupchat' and text != 'None':
 		msg_logger(room,jid,nick,type,text,public_log)
 	if type == 'chat' and text != 'None': nick = u'chat | '+nick
-	msg_logger(room,jid,nick,type,text,system_log)
+	if text != 'None': msg_logger(room,jid,nick,type,text,system_log)
 
 def msg_logger(room,jid,nick,type,text,logfile):
 	lt = tuple(time.localtime())
