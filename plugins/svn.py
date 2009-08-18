@@ -2,7 +2,6 @@
 # -*- coding: utf -*-
 
 def svn_get(type, jid, nick,text):
-	tlog = 'tempo.log'
 	if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://': text = 'http://'+text
 	count = 1
 	revn = 0
@@ -19,7 +18,7 @@ def svn_get(type, jid, nick,text):
 	else:
 		if count > 10: count = 10
 		sh_exe = 'svn log '+url+' --limit '+str(count)
-	msg = shell_execute(sh_exe)
+	msg = u'SVN from '+url+'\n'+shell_execute(sh_exe)
 	send_msg(type, jid, nick, msg)
 	
 global execute
