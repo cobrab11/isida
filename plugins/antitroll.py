@@ -27,4 +27,4 @@ global execute, timer
 
 timer = []
 
-execute = [(2, u'troll', troll, 2, u'')]
+execute = [(2, u'troll', troll, 2, u'Повтор сообщения несколько раз в приват. Формат:\ntroll nick\n[текст]\n[количество]')]
