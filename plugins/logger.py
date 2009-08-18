@@ -14,14 +14,8 @@ if not os.path.exists(system_log): os.mkdir(system_log)
 log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'
 
 def html_repl(ms):
-	ms = ms.replace('&','&amp;')
-	ms = ms.replace('<','&lt;')
-	ms = ms.replace('>','&gt;')
-	ms = ms.replace('\"','&quot;')
-	ms = ms.replace('\'','&apos;')
-	ms = ms.replace(u'·','&middot;')
-	ms = ms.replace(u'▼','&raquo;')
-	ms = ms.replace(u'©','&copy;')
+	rmass = (('&','&amp;'),('<','&lt;'),('>','&gt;'),('\"','&quot;'),('\'','&apos;'),(u'·','&middot;'),(u'▼','&raquo;'),(u'©','&copy;'))
+	for tmp in rmass: ms = ms.replace(tmp[0],tmp[1])
 	return ms
 
 def append_message_to_log(room,jid,nick,type,text):
@@ -38,14 +32,9 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_path = curr_path+'/'+str(lt[0])
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
-	if lt[1]<10: dig = '0'
-	else: dig = ''
-	curr_path += '/'+dig+str(lt[1])
+	curr_path += '/'+tZ(lt[1])
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
-	if lt[2]<10: dig = '0'
-	else: dig = ''
-	curr_file = curr_path + '/'+dig+str(lt[2])+'.html'
-
+	curr_file = curr_path + '/'+tZ(lt[2])+'.html'
 	text = html_repl(text)
 	text = text.replace('\n','<br>')
 
@@ -56,7 +45,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	else:
 		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>'
 		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
-	lht = room+' - '+str(lt[0])+'/'+str(lt[1])+'/'+str(lt[2])
+	lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
 	log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
 	if not os.path.isfile(curr_file):
 		fl = open(curr_file, 'a')
@@ -89,13 +78,9 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
 		curr_path = curr_path+'/'+str(lt[0])
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
-		if lt[1]<10: dig = '0'
-		else: dig = ''
-		curr_path += '/'+dig+str(lt[1])
+		curr_path += '/'+tZ(lt[1])
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
-		if lt[2]<10: dig = '0'
-		else: dig = ''
-		curr_file = curr_path + '/'+dig+str(lt[2])+'.html'
+		curr_file = curr_path + '/'+tZ(lt[2])+'.html'
 		text = html_repl(text)
 		text = text.replace('\n','<br>')
 
@@ -128,7 +113,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 				if text != 'None':  log_body += ' ('+text+')'
 
 			log_body += '</font></i></a><br>'
-		lht = room+' - '+str(lt[0])+'/'+str(lt[1])+'/'+str(lt[2])
+		lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
 		log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
 		if not os.path.isfile(curr_file):
 			fl = open(curr_file, 'a')
