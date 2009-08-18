@@ -306,12 +306,14 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
+				try: tn = thread_name(str(parse[1]))
+				except: tn = thread_name('utf_command')
 				if not parse[3]:
-					with sema: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, par)).start()
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, par)).start()
 				elif parse[3] == 1: 
-					with sema: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick)).start()
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick)).start()
 				elif parse[3] == 2:
-					with sema: threading.Thread(None,thread_log,thread_name(parse[1]),(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
 				break
 	return no_comm
 
