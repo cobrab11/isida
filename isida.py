@@ -721,6 +721,8 @@ else: starttime = tuple(localtime())
 sesstime = int(time.time())
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
+mdb_age = sqlite3.connect(agestatbase)
+cu_age = mdb_age.cursor()
 close_age_null()
 confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
 if os.path.isfile(cens):
@@ -778,9 +780,6 @@ cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
 
-mdb_age = sqlite3.connect(agestatbase)
-cu_age = mdb_age.cursor()
-
 pprint(u'Wait conference')
 for tocon in confbase:
 	baseArg = unicode(tocon)
@@ -803,12 +802,10 @@ while 1:
 		while not game_over:
 			cl.Process(1)
 			schedule()
-		mdb_age.commit()
 		close_age()
 		break
 
 	except KeyboardInterrupt:
-		mdb_age.commit()
 		close_age()
 		StatusMessage = u'Какой-то умник нажал CTRL+C в консоле...'
 		pprint(StatusMessage)

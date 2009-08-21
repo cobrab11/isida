@@ -262,33 +262,30 @@ def un_unix(val):
 	return ret
 
 def close_age_null():
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
-	cu.execute('delete from age where status=?', (0,)).fetchall()
-	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
-	mdb.commit()
+	global cu_age, mdb_age
+	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu_age.execute('select * from age where status=? order by room',(0,)).fetchall()
+	cu_age.execute('delete from age where status=?', (0,)).fetchall()
+	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
+	mdb_age.commit()
 
 def close_age():
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
-	cu.execute('delete from age where status=?', (0,)).fetchall()
+	global cu_age, mdb_age
+	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu_age.execute('select * from age where status=? order by room',(0,)).fetchall()
+	cu_age.execute('delete from age where status=?', (0,)).fetchall()
 	tt = int(time.time())
-	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
-	mdb.commit()
+	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb_age.commit()
 
 def close_age_room(room):
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
-	cu.execute('delete from age where status=? and room=?',(0,room)).fetchall()
+	global cu_age, mdb_age
+	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu_age.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
+	cu_age.execute('delete from age where status=? and room=?',(0,room)).fetchall()
 	tt = int(time.time())
-	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
-	mdb.commit()
+	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb_age.commit()
 
 def sfind(mass,stri):
 	for a in mass:
