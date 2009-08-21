@@ -20,23 +20,16 @@ writefile('settings/starttime',str(tuple(time.localtime())))
 while 1:
 	try: execfile('isida.py')
 	except: time.sleep(1)
-	if os.path.isfile('settings/tmp'):
-		mode = str(readfile('settings/tmp'))
+	if os.path.isfile('settings/tmp'): mode = str(readfile('settings/tmp'))
 	if mode == 'update':
 		os.system('echo `svnversion` > settings/ver')
 		os.system('rm plugins/list.txt')
 		os.system('svn up')
 		os.system('echo `svnversion` > settings/version')
-		try:
-			ver = int(readfile('settings/version')[:3]) - int(readfile('settings/ver')[:3])
-		except:
-			ver = -1
+		try: ver = int(readfile('settings/version')[:3]) - int(readfile('settings/ver')[:3])
+		except: ver = -1
 		os.system('rm -r settings/ver')
-		if ver > 0:		
-			os.system('svn log --limit '+str(ver)+' > update.log')
-		elif ver < 0:
-			os.system('echo Failed to detect version! > update.log')
-		else:
-			os.system('echo No Updates! > update.log')
-	elif mode == 'exit':
-		break
+		if ver > 0:	 os.system('svn log --limit '+str(ver)+' > update.log')
+		elif ver < 0: os.system('echo Failed to detect version! > update.log')
+		else: os.system('echo No Updates! > update.log')
+	elif mode == 'exit': break
