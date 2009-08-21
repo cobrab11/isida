@@ -420,8 +420,11 @@ def to_censore(text):
 def get_valid_tag(body,tag):
 	if body.count(tag): return get_subtag(body,tag)
 	else: return 'None'
-	
+
 def presenceCB(sess,mess):
+	with sema: threading.Thread(None,presenceCBT,thread_name('presence'),(sess,mess)).start()
+	
+def presenceCBT(sess,mess):
 	global megabase, megabase2, ownerbase, iq_answer, confs, confbase
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
@@ -519,7 +522,12 @@ def presenceCB(sess,mess):
 	cu = mdb.cursor()
 	abc = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
 	tt = int(time.time())
-	cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
+	cm = True
+	while cm:
+		try:
+			cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
+			cm = None
+		except: pass
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
@@ -542,8 +550,12 @@ def presenceCB(sess,mess):
 			if ab[5]: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	if not len(abc): cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-	mdb.commit()
-
+	cm = True
+	while cm:
+		try:
+			mdb.commit()
+			cm = None
+		except: pass
 	for tmp in gpresence:
 		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
@@ -791,7 +803,7 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(3)
+	sleep(1)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
