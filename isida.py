@@ -420,12 +420,9 @@ def to_censore(text):
 def get_valid_tag(body,tag):
 	if body.count(tag): return get_subtag(body,tag)
 	else: return 'None'
-
-def presenceCB(sess,mess):
-	with sema: threading.Thread(None,presenceCBT,thread_name('presence'),(sess,mess)).start()
 	
-def presenceCBT(sess,mess):
-	global megabase, megabase2, ownerbase, iq_answer, confs, confbase
+def presenceCB(sess,mess):
+	global megabase, megabase2, ownerbase, iq_answer, confs, confbase, cu_age, mdb_age
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
@@ -518,16 +515,10 @@ def presenceCBT(sess,mess):
 			mdb.commit()
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	abc = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
+
+	abc = cu_age.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
 	tt = int(time.time())
-	cm = True
-	while cm:
-		try:
-			cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
-			cm = None
-		except: pass
+	cu_age.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
@@ -545,17 +536,11 @@ def presenceCBT(sess,mess):
 			if exit_message == 'None':
 				exit_message = ''
 #				print exit_type, exit_message
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 		else:
-			if ab[5]: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-	if not len(abc): cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-	cm = True
-	while cm:
-		try:
-			mdb.commit()
-			cm = None
-		except: pass
+			if ab[5]: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
+			else: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
+	if not len(abc): cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	for tmp in gpresence:
 		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
@@ -793,6 +778,9 @@ cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
 
+mdb_age = sqlite3.connect(agestatbase)
+cu_age = mdb_age.cursor()
+
 pprint(u'Wait conference')
 for tocon in confbase:
 	baseArg = unicode(tocon)
@@ -815,10 +803,12 @@ while 1:
 		while not game_over:
 			cl.Process(1)
 			schedule()
+		mdb_age.commit()
 		close_age()
 		break
 
 	except KeyboardInterrupt:
+		mdb_age.commit()
 		close_age()
 		StatusMessage = u'Какой-то умник нажал CTRL+C в консоле...'
 		pprint(StatusMessage)
