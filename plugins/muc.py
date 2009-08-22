@@ -66,6 +66,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 				reason = u'No reason!'
 
 			reason = u'бан сроком '+un_unix(tttime)+u', начиная с '+timeadd(tuple(localtime()))+u', по причине: '+reason
+			merge_age()
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
@@ -143,7 +144,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 		else:
 			who = text
 			reason = u'by Isida!'
-
+		merge_age()
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
@@ -188,7 +189,7 @@ def muc_role(type, jid, nick, text, role):
 		else:
 			who = text
 			reason = u'by Isida!'
-
+		merge_age()
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
@@ -292,7 +293,7 @@ def muc_arole(type, jid, nick, text, role):
 					reason = text.split('\n',2)[2]
 				except:
 					reason = u'No reason!'
-
+			merge_age()
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
@@ -356,6 +357,7 @@ def muc_afind(type, jid, nick, text):
 	skip = 1
 	if len(text):
 			who = text
+			merge_age()
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()

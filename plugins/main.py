@@ -1,5 +1,21 @@
 # -*- coding: utf-8 -*-
 
+def merge_age():
+	global age_tmp
+	tt = int(time.time())
+	tmp, age_tmp = age_tmp, []
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	for t in tmp:
+		abc = cu.execute('select * from age where room=? and jid=? and nick=?',(t[0], t[2], t[1])).fetchone()
+		tm = t[4]
+		if abc:
+			cu.execute('delete from age where room=? and jid=? and nick=?',(t[0], t[2], t[1]))
+			tm += abc[4]
+		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (t[0],t[1],t[2],tt,tm,t[5],t[6],t[7]))
+	mdb.commit()
+#   room nick jid time_integer age_integer status_integer type message
+
 def shell_execute(cmd):
 	sys.exc_clear()
 	gc.collect()
@@ -104,6 +120,7 @@ def censor_status(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
+	merge_age()
 	if text == '': text = nick
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
@@ -262,30 +279,36 @@ def un_unix(val):
 	return ret
 
 def close_age_null():
-	global cu_age, mdb_age
-	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu_age.execute('select * from age where status=? order by room',(0,)).fetchall()
-	cu_age.execute('delete from age where status=?', (0,)).fetchall()
-	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
-	mdb_age.commit()
+	merge_age()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
+	cu.execute('delete from age where status=?', (0,)).fetchall()
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],ab[3],ab[4],1,ab[6],ab[7]))
+	mdb.commit()
 
 def close_age():
-	global cu_age, mdb_age
-	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu_age.execute('select * from age where status=? order by room',(0,)).fetchall()
-	cu_age.execute('delete from age where status=?', (0,)).fetchall()
+	merge_age()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
+	cu.execute('delete from age where status=?', (0,)).fetchall()
 	tt = int(time.time())
-	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
-	mdb_age.commit()
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb.commit()
 
 def close_age_room(room):
-	global cu_age, mdb_age
-	cu_age.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
-	ccu = cu_age.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
-	cu_age.execute('delete from age where status=? and room=?',(0,room)).fetchall()
+	merge_age()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
+	ccu = cu.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
+	cu.execute('delete from age where status=? and room=?',(0,room)).fetchall()
 	tt = int(time.time())
-	for ab in ccu: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
-	mdb_age.commit()
+	for ab in ccu: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (ab[0],ab[1],ab[2],tt,ab[4]+(tt-ab[3]),1,ab[6],ab[7]))
+	mdb.commit()
 
 def sfind(mass,stri):
 	for a in mass:
@@ -1050,7 +1073,8 @@ def rss(type, jid, nick, text):
 		send_msg(type, jid, nick, msg)
 
 		f = urllib.urlopen(link)
-		feed = f.read()
+		try: feed = f.read()
+		except: return
 		f.close()
 
 		is_rss_aton = 0
@@ -1146,7 +1170,8 @@ def rss(type, jid, nick, text):
 		link = text[1]
 		if link[:7] != 'http://': link = 'http://'+link
 		f = urllib.urlopen(link)
-		feed = f.read()
+		try: feed = f.read()
+		except: return
 		f.close()
 
 		is_rss_aton = 0

@@ -422,7 +422,7 @@ def get_valid_tag(body,tag):
 	else: return 'None'
 	
 def presenceCB(sess,mess):
-	global megabase, megabase2, ownerbase, iq_answer, confs, confbase, cu_age, mdb_age
+	global megabase, megabase2, ownerbase, iq_answer, confs, confbase, age_tmp
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
@@ -516,13 +516,19 @@ def presenceCB(sess,mess):
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
 
-	abc = cu_age.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
+	ab = None
+	for t in age_tmp:
+		if t[0] == room and t[1] == jid and t[2] == nick:
+			ab = t
+			age_tmp.remove(t)
+			break
+
 	tt = int(time.time())
-	cu_age.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
-	for ab in abc:
+	
+	if ab:
 		if type=='unavailable':
 			if status=='307': #Kick
 				exit_type = u'Выгнали'
@@ -535,12 +541,12 @@ def presenceCB(sess,mess):
 				exit_message = text
 			if exit_message == 'None':
 				exit_message = ''
-#				print exit_type, exit_message
-			cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+	#			print exit_type, exit_message
+			age_tmp.append((room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 		else:
-			if ab[5]: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-			else: cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-	if not len(abc): cu_age.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+			if ab[5]: age_tmp.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
+			else: age_tmp.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
+	else: age_tmp.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	for tmp in gpresence:
 		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
@@ -662,6 +668,7 @@ banbase = []
 iq_answer = []
 timeout = 300					# таймаут в секундах на iq запросы
 gt=gmtime()
+age_tmp = []
 lt=tuple(localtime())
 if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])
 elif lt[0:3] > gt[0:3]: timeofset = int(lt[3])-int(gt[3]) + 24
@@ -721,8 +728,7 @@ else: starttime = tuple(localtime())
 sesstime = int(time.time())
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
-mdb_age = sqlite3.connect(agestatbase)
-cu_age = mdb_age.cursor()
+
 close_age_null()
 confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
 if os.path.isfile(cens):

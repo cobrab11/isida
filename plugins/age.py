@@ -8,7 +8,8 @@ def true_age(type, jid, nick, text):
 	true_age_raw(type, jid, nick, text, None)
 	
 def true_age_raw(type, jid, nick, text, xtype):
-	global cu_age
+	global age_cu
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -19,12 +20,14 @@ def true_age_raw(type, jid, nick, text, xtype):
 	else: text = text[0]
 	if text == '': text = nick
 	if llim > 100: llim = 100
-	real_jid = cu_age.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
 		text = '%'+text.lower()+'%'
-		real_jid = cu_age.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
-	if xtype: sbody = cu_age.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-	else: sbody = cu_age.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
+	if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+	else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
 	if sbody:
 		msg = u'Я видела:'
 		cnt = 1
@@ -56,7 +59,8 @@ def seen_split(type, jid, nick, text):
 	seen_raw(type, jid, nick, text, True)
 
 def seen_raw(type, jid, nick, text, xtype):
-	global cu_age
+	global age_cu
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -67,13 +71,15 @@ def seen_raw(type, jid, nick, text, xtype):
 	else: text = text[0]
 	if text == '': text = nick
 	if llim > 100: llim = 100
-	real_jid = cu_age.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
 		textt = '%'+text.lower()+'%'
-		real_jid = cu_age.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,textt,textt)).fetchone()		
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,textt,textt)).fetchone()		
 	if real_jid:
-		if xtype: sbody = cu_age.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu_age.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
 	else: sbody = None
 	if sbody:
 		msg = u'Я видела:'
@@ -104,7 +110,8 @@ def seenjid_split(type, jid, nick, text):
 	seenjid_raw(type, jid, nick, text, True)
 	
 def seenjid_raw(type, jid, nick, text, xtype):
-	global cu_age
+	global age_cu
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -116,13 +123,15 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	ztype = None
 	if text == '': text = nick
 	if llim > 100: llim = 100
-	real_jid = cu_age.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
 		txt = '%'+text.lower()+'%'
-		real_jid = cu_age.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,txt,txt)).fetchone()		
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,txt,txt)).fetchone()		
 	if real_jid:
-		if xtype: sbody = cu_age.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu_age.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
 	else: sbody = None
 	if sbody:
 		ztype = True
