@@ -6,7 +6,6 @@ def sayto(type, jid, nick, text):
 		to = text[:text.find(' ')]
 		what = text[text.find(' ')+1:]
 		frm = nick + '\n' + str(int(time.time()))
-		merge_age()
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select * from age where room=? and (nick=? or jid=?)',(jid,to,to)).fetchall()

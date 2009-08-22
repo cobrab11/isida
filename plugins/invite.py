@@ -9,7 +9,6 @@ def call_body(type, jid, nick, text):
 			text = text.split('\n')[0]
 		except:
 			reason = None
-		merge_age()
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,text,text)).fetchall()
