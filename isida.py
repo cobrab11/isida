@@ -56,16 +56,16 @@ def thread_with_timeout(p1,p2,p3):
 		except: pass
 
 def thread_wt(func,name,param):
-	thr = KThread(group=None,target=func,name=name,args=param)
-	thr.start()
 	try:
+		with sema: thr = KThread(group=None,target=func,name=name,args=param)
+		with sema: thr.start()
 		ltm = thread_timeout
 		while thr.isAlive():
 			sleep(1)
 			ltm -= 1
 	except: logging.exception(' in '+name)
-	thr.kill()
-	thr = None
+	try: thr.kill()
+	except: pass
 '''
 def thread_with_timeout(func,name,param):
 	try:
