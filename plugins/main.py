@@ -622,41 +622,71 @@ def bot_plugin(type, jid, nick, text):
 
 def owner(type, jid, nick, text):
 	global ownerbase, owners, god
-	do = text[:3]
-	nnick = text[4:]
-	pprint('owner '+do+' '+nnick)
+	text = text.lower().strip()
+	do = text.split(' ',1)[0]
+	try: nnick = text.split(' ',1)[1].lower()
+	except:
+		if do != 'show':
+			send_msg(type, jid, nick, u'Ошибка формата команды!')
+			return
+	pprint('owner '+text)
 	if do == 'add':
 		if not ownerbase.count(nnick):
-			ownerbase.append(nnick)
-			j = Presence(nnick, 'subscribe')
-			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-			cl.send(j)
+			if nnick.count('@') and nnick.count('.'):
+				ownerbase.append(nnick)
+				j = Presence(nnick, 'subscribe')
+				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+				cl.send(j)
+				msg = u'Добавлено: '+nnick
+			else: msg = u'Не правильный jid!'
+		else: msg = nnick+u' уже есть в списке!'
 	elif do == 'del':
 		if ownerbase.count(nnick) and nnick != god:
 			ownerbase.remove(nnick)
 			j = Presence(nnick, 'unsubscribed')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 			cl.send(j)
-	msg = u'Я принимаю команды от: '
-	for jjid in ownerbase: msg += jjid+', '
-	msg = msg[:-2]
+			msg = u'Удалено: '+nnick
+		else: msg = u'Не найдено!'
+	elif do == 'show':
+		msg = u'Я принимаю команды от: '		
+		for jjid in ownerbase: msg += jjid+', '
+		msg = msg[:-2]
+	else: msg = u'Ошибка формата команды!'
 	writefile(owners,str(ownerbase))
 	send_msg(type, jid, nick, msg)
 
 def ignore(type, jid, nick, text):
 	global ignorebase, ignores, god
-	do = text[:3]
-	nnick = text[4:].lower()
-	pprint('ignore '+do+' '+nnick)
+	text = text.lower().strip()
+	do = text.split(' ',1)[0]
+	try: nnick = text.split(' ',1)[1].lower()
+	except:
+		if do != 'show':
+			send_msg(type, jid, nick, u'Ошибка формата команды!')
+			return
+	pprint('ignore '+text)
 	if do == 'add':
-		if not ignorebase.count(nnick): ignorebase.append(nnick)
+		if not ignorebase.count(nnick):
+			ignorebase.append(nnick)
+			msg = u'Добавлено: '
+			if nnick.count('@') and nnick.count('.'): msg += nnick
+			else: msg += '*'+nnick+'*'
+		else: msg = nnick+u' уже есть в списке!'
 	elif do == 'del':
-		if ignorebase.count(nnick) and nnick != god: ignorebase.remove(nnick)
-	msg = u'Я не принимаю команды от: '
-	for jjid in ignorebase:
-		if jjid.count('@') and jjid.count('.'): msg += jjid+', '
-		else: msg += '*'+jjid+'*, '
-	msg = msg[:-2]
+		if ignorebase.count(nnick) and nnick != god:
+			ignorebase.remove(nnick)
+			msg = u'Удалено: '
+			if nnick.count('@') and nnick.count('.'): msg += nnick
+			else: msg += '*'+nnick+'*'
+		else: msg = u'Не найдено!'
+	elif do == 'show':
+		msg = u'Я не принимаю команды от: '
+		for jjid in ignorebase:
+			if jjid.count('@') and jjid.count('.'): msg += jjid+', '
+			else: msg += '*'+jjid+'*, '
+		msg = msg[:-2]
+	else: msg = u'Ошибка формата команды!'
 	writefile(ignores,str(ignorebase))
 	send_msg(type, jid, nick, msg)
 
