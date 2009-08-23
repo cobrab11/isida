@@ -3,14 +3,9 @@
 
 def thread_info(type, jid, nick):
 	msg = u'Активно: '
-	te = []
 	for tmp in threading.enumerate():
-		te.append(str(tmp)[1:-2])
-	
-	for i in range(0,len(te)-1):
-		for j in range(i+1,len(te)):
-			if te[i] == te[j][1:]:
-				msg += '\n'+ te[i].split('(')[1].replace(', ',' - ').replace('|',' ')
+		te = str(tmp)[1:-2]
+		msg += '\n'+ te.split('(')[1].replace(', ',' - ').replace('|',' ')
 	send_msg(type, jid, nick, msg)
 
 def thread_raw(type, jid, nick):
