@@ -18,6 +18,7 @@ from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
 import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
+
 '''
 sema = threading.BoundedSemaphore(value=30)
 
@@ -72,8 +73,7 @@ def thread_wt(func,name,param):
 	except: pass
 '''
 def thread_with_timeout(func,name,param):
-	try:
-		with sema: thread.start_new_thread(func,param)
+	try: thread.start_new_thread(func,param)
 	except: logging.exception(' in '+name)
 		
 def readfile(filename):
