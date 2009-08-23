@@ -48,9 +48,13 @@ class KThread(threading.Thread):
 	def kill(self): self.killed = True
 
 def thread_with_timeout(p1,p2,p3):
-#	with sema: threading.Thread(group=None,target=p1,name=p2,args=p3).start()
-	with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
-	
+	fl = True
+	while fl:
+		try:
+			threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+			fl = None
+		except: pass
+
 def thread_wt(func,name,param):
 	thr = KThread(group=None,target=func,name=name,args=param)
 	thr.start()
@@ -59,15 +63,15 @@ def thread_wt(func,name,param):
 		while thr.isAlive():
 			sleep(1)
 			ltm -= 1
-	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+	except: logging.exception(' in '+name)
 	thr.kill()
 	thr = None
-
+'''
 def thread_with_timeout(func,name,param):
 	try:
 		with sema: thread.start_new_thread(func,param)
-	except: logging.exception(' in '+name+' ['+timeadd(tuple(localtime()))+'] ')
-		
+	except: logging.exception(' in '+name)
+'''		
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -613,7 +617,7 @@ def getRoom(jid):
 def schedule():
 	global prev_time
 	tmp_time = int(time.time())
-	if tmp_time-prev_time > 10:
+	if tmp_time-prev_time > 600:
 		prev_time = tmp_time
 		now_schedule()
 
