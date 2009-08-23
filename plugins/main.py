@@ -455,8 +455,8 @@ def helpme(type, jid, nick, text):
 		cu = tmpbase.cursor()
 		cu.execute('''create table tempo (level integer, name text, body text)''')
 		for tmp in comms: cu.execute('insert into tempo values (?,?,?)', (tmp[0], tmp[1], tmp[4]))
-		cm = cu.execute('select body from tempo where name=?',(text,)).fetchone()
-		if cm: msg = cm[0]
+		cm = cu.execute('select level, body from tempo where name=?',(text,)).fetchone()
+		if cm: msg = u'Уровень доступа: '+str(cm[0])+u'. '+cm[1]
 		else:
 			cm = cu.execute('select * from tempo order by name').fetchall()
 			tmpbase.close()
