@@ -26,7 +26,7 @@ print 'After remove duplicates:',len(fnd)
 print 'Let\'s start!'
 for i in fnd:
 	if i[0] != '':
-		answer += i[0] +'\n'
+		answer += i[0].strip() +'\n'
 print 'Write text file'
 writefile('answers.txt',answer.encode('utf-8'))
 print 'Finished!'

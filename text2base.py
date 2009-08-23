@@ -30,7 +30,7 @@ print 'Let\'s start!'
 idx = 1
 for i in answer:
 	if i != '':
-		cu.execute('insert into answer values (?,?)', (idx,unicode(i)))
+		cu.execute('insert into answer values (?,?)', (idx,unicode(i.strip())))
 		idx += 1
 print 'Write base file'
 mdb.commit()
