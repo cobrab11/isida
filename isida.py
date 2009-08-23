@@ -16,9 +16,11 @@ from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
-import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
+import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
+sema = thread.allocate_lock()
+'''
 sema = threading.BoundedSemaphore(value=30)
 
 class KThread(threading.Thread):
@@ -62,7 +64,12 @@ def thread_wt(func,name,param):
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 	thr.kill()
 	thr = None
-	
+'''
+def thread_with_timeout(func,name,param):
+	try:
+		with sema: thread.start_new_thread(func,param)
+	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+		
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
