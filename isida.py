@@ -51,13 +51,15 @@ def thread_with_timeout(p1,p2,p3):
 	with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
 	
 def thread_wt(func,name,param):
-	thr = KThread(group=None,target=func,name=name,args=param)
-	with sema: thr.start()
-	ltm = thread_timeout
-	while thr.isAlive():
-		sleep(1)
-		ltm -= 1
-	if thr.isAlive(): thr.kill()
+	try:
+		with sema: thr = KThread(group=None,target=func,name=name,args=param)
+		thr.start()
+		ltm = thread_timeout
+		while thr.isAlive():
+			sleep(1)
+			ltm -= 1
+		if thr.isAlive(): thr.kill()
+	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 	
 def readfile(filename):
 	fp = file(filename)
@@ -827,7 +829,7 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(1)
+	sleep(0.05)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
