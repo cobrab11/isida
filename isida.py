@@ -19,7 +19,7 @@ import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
 import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
-sema = threading.BoundedSemaphore(value=60)
+sema = threading.BoundedSemaphore(value=30)
 
 class KThread(threading.Thread):
 	def __init__(self, *args, **keywords):
@@ -53,7 +53,7 @@ def thread_with_timeout(p1,p2,p3):
 def thread_wt(func,name,param):
 	try:
 		with sema: thr = KThread(group=None,target=func,name=name,args=param)
-		thr.start()
+		with sema: thr.start()
 		ltm = thread_timeout
 		while thr.isAlive():
 			sleep(1)
