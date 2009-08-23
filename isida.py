@@ -829,7 +829,7 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(5)
+	sleep(0.05)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
