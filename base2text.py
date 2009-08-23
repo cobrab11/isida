@@ -15,7 +15,6 @@ def writefile(filename, data):
 	fp.close()
 
 print 'Read database'
-mtb = os.path.isfile(mainbase)
 mdb = sqlite3.connect(mainbase)
 cu = mdb.cursor()
 base_size = len(cu.execute('select * from answer').fetchall())

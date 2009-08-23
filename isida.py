@@ -15,7 +15,7 @@ from random import *
 from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
-import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
+import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
 import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
@@ -713,6 +713,8 @@ capsNode = 'http://isida-bot.com'
 # --- check parameters
 baseParameters = [nickname ,name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 baseErrors = [u'nickname', u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
+md1 = '794d9ff1476324506da4812e2ee947ad'
+md2 = '65253e8b3ae2ba7734cefe0082eb66b0'
 megabase = []
 megabase2 = []
 for baseCheck in range(0, len(baseParameters)):
