@@ -3,20 +3,17 @@
 
 def iq_uptime(type, jid, nick, text):
 	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
+	if text == '': who = getRoom(jid)+'/'+nick
 	else:
 		who = text
 		for mega1 in megabase:
 			if mega1[0] == jid and mega1[1] == text:
 				who = getRoom(jid)+'/'+text
 				break
-
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_LAST},[])])
 	cl.send(i)
 	to = timeout
-
 	no_answ = 1
 	is_answ = [None]
 	while to >= 0 and no_answ:
@@ -28,24 +25,15 @@ def iq_uptime(type, jid, nick, text):
 				break
 		sleep(0.05)
 		to -= 0.05
-
 	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
+	for iiq in is_answ: iiqq.append(str(iiq))
 	if to > 0:
-		if iiqq == ['None']:
-			msg = u'Что-то не получается...'
+		if iiqq == ['None']: msg = u'Что-то не получается...'
 		else:
-			try:
-				msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
-			except:
-				msg = u'Что-то не получается...'
+			try: msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
+			except: msg = u'Что-то не получается...'
 
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
 def ping(type, jid, nick, text):
@@ -60,14 +48,11 @@ def ping(type, jid, nick, text):
 			if mega1[0] == jid and mega1[1] == text:
 				who = getRoom(jid)+'/'+text
 				break
-
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 	cl.send(i)
 	to = timeout
-
 	lt = time.time()
-
 	no_answ = 1
 	is_answ = [None]
 	while to >= 0 and no_answ:
@@ -79,46 +64,34 @@ def ping(type, jid, nick, text):
 				break
 		sleep(0.001)
 		to -= 0.001
-
 	ct = time.time()
-
 	iiqq = []
 	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
+		if iiq != None: iiqq.append(iiq)
+		else: iiqq.append('None')
 	if to > 0:
-		if iiqq == ['None']:
-			msg = u'Что-то не получается...'
+		if iiqq == ['None']: msg = u'Что-то не получается...'
 		else:
 			tpi = ct-lt
 			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
-
-			if sping:
-				msg = u'Пинг от тебя '+tpi+u' сек.'
-			else:
-				msg = u'Пинг от '+text+' '+tpi+u' сек.'
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			if sping: msg = u'Пинг от тебя '+tpi+u' сек.'
+			else: msg = u'Пинг от '+text+' '+tpi+u' сек.'
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
 def iq_time(type, jid, nick, text):
 	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
+	if text == '': who = getRoom(jid)+'/'+nick
 	else:
 		who = text
 		for mega1 in megabase:
 			if mega1[0] == jid and mega1[1] == text:
 				who = getRoom(jid)+'/'+text
 				break
-
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
 	cl.send(i)
 	to = timeout
-
 	no_answ = 1
 	is_answ = [None]
 	while to >= 0 and no_answ:
@@ -130,40 +103,29 @@ def iq_time(type, jid, nick, text):
 				break
 		sleep(0.5)
 		to -= 0.5
-
 	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
+	for iiq in is_answ: iiqq.append(str(iiq))
 	if to > 0:
-		if len(iiqq) == 3:
-			msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
+		if len(iiqq) == 3: msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
 		else:
 			msg = ''
-			for iiq in iiqq:
-				msg = iiq+' '
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			for iiq in iiqq: msg += iiq+' '
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
 def iq_version(type, jid, nick, text):
 	global iq_answer
-	if text == '':
-		who = getRoom(jid)+'/'+nick
+	if text == '': who = getRoom(jid)+'/'+nick
 	else:
 		who = text
 		for mega1 in megabase:
 			if mega1[0] == jid and mega1[1] == text:
 				who = getRoom(jid)+'/'+text
 				break
-
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 	cl.send(i)
 	to = timeout
-
 	no_answ = 1
 	is_answ = [None]
 	while to >= 0 and no_answ:
@@ -175,22 +137,14 @@ def iq_version(type, jid, nick, text):
 				break
 		sleep(0.5)
 		to -= 0.5
-
 	iiqq = []
-	for iiq in is_answ:
-		if iiq != None:
-			iiqq.append(iiq)
-		else:
-			iiqq.append('None')
+	for iiq in is_answ: iiqq.append(str(iiq))
 	if to > 0:
-		if len(iiqq) == 3:
-			msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
+		if len(iiqq) == 3: msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
 		else:
 			msg = ''
-			for iiq in iiqq:
-				msg = iiq+' '
-	else:
-		msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			for iiq in iiqq: msg += iiq+' '
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
 global execute

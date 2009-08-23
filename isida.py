@@ -17,10 +17,48 @@ from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
 import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
-global execute, prefix, comms, prev_time, hashlib
+global execute, prefix, comms, prev_time, hashlib, trace
 
 sema = threading.BoundedSemaphore(value=30)
 
+class KThread(threading.Thread):
+	def __init__(self, *args, **keywords):
+		threading.Thread.__init__(self, *args, **keywords)
+		self.killed = False
+		
+	def start(self):
+		self.__run_backup = self.run
+		self.run = self.__run
+		threading.Thread.start(self)
+		
+	def __run(self):
+		sys.settrace(self.globaltrace)
+		self.__run_backup()
+		self.run = self.__run_backup
+
+	def globaltrace(self, frame, why, arg):
+		if why == 'call': return self.localtrace
+		else: return None
+
+	def localtrace(self, frame, why, arg):
+		if self.killed:
+			if why == 'line': raise SystemExit()
+		return self.localtrace
+
+	def kill(self): self.killed = True
+
+def thread_with_timeout(p1,p2,p3):
+	with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+	
+def thread_wt(func,name,param):
+	thr = KThread(group=None,target=func,name=name,args=param)
+	with sema: thr.start()
+	ltm = thread_timeout
+	while thr.isAlive():
+		sleep(1)
+		ltm -= 1
+	if thr.isAlive(): thr.kill()
+	
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -289,9 +327,11 @@ def iqCB(sess,iq):
 			raise xmpp.NodeProcessed
 
 def thread_name(body):
+	global th_cnt
+	th_cnt += 1
 	lt = tuple(localtime())
-	return str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+'_'+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'_'+body+'_'+str(randint(0,1000))
-
+	return str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+' '+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'|'+body+'|'+str(th_cnt)
+	
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
 	cof = getFile(conoff,[])
@@ -308,12 +348,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				no_comm = 0
 				try: tn = thread_name(str(parse[1]))
 				except: tn = thread_name('utf_command')
-				if not parse[3]:
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, par)).start()
-				elif parse[3] == 1: 
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick)).start()
-				elif parse[3] == 2:
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
+				if not parse[3]: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick, par))
+				elif parse[3] == 1: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick))
+				elif parse[3] == 2: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:]))
 				break
 	return no_comm
 
@@ -376,14 +413,12 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			with sema: threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
+			thread_with_timeout(send_msg_human,thread_name('answer_human'),(type, room, nick, text))
 			
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': 
-			with sema: threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-		else: 
-			with sema: threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
+		if subj != 'None' and back_text == 'None': thread_with_timeout(tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj))
+		else: thread_with_timeout(tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text))
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -543,8 +578,7 @@ def presenceCB(sess,mess):
 			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	if not len(abc): cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	mdb.commit()
-	for tmp in gpresence:
-		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
+	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -575,8 +609,7 @@ def schedule():
 		now_schedule()
 
 def now_schedule():
-	for tmr in gtimer:
-		with sema: threading.Thread(None,tmr,thread_name('tmr_'+str(tmr))).start()
+	for tmr in gtimer: thread_with_timeout(tmr,thread_name('tmr_'+str(tmr)),())
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
@@ -594,7 +627,7 @@ def now_schedule():
 				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					with sema: threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
+					thread_with_timeout(rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
@@ -662,7 +695,10 @@ botVersion = 'v1.91'			# версия бота
 capsVersion = botVersion[1:]	# версия для капса
 banbase = []
 iq_answer = []
+th_cnt = 0						# счётчик тредов
+thread_timeout = 600			# таймаут в секундах на исполнение тредов
 timeout = 300					# таймаут в секундах на iq запросы
+
 gt=gmtime()
 lt=tuple(localtime())
 if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])
