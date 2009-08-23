@@ -16,7 +16,7 @@ from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
-import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
+import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
 '''
