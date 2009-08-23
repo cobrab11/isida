@@ -19,7 +19,7 @@ import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
 import threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
-sema = threading.BoundedSemaphore(value=30)
+sema = threading.BoundedSemaphore(value=60)
 
 class KThread(threading.Thread):
 	def __init__(self, *args, **keywords):
@@ -829,12 +829,11 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(0.05)
+	sleep(5)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
-sema = threading.BoundedSemaphore(value=100)
 
 while 1:
 	try:
