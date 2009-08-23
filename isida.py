@@ -16,10 +16,9 @@ from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc
-import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
+import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, prev_time, hashlib, trace
 
-'''
 sema = threading.BoundedSemaphore(value=30)
 
 class KThread(threading.Thread):
@@ -47,35 +46,7 @@ class KThread(threading.Thread):
 		return self.localtrace
 
 	def kill(self): self.killed = True
-
-def thread_with_timeout(p1,p2,p3):
-	fl = True
-	while fl:
-		try:
-			with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
-			fl = None
-		except: pass
-
-def thread_wt(func,name,param):
-	fl = True
-	while fl:
-		try:
-			with sema: thr = KThread(group=None,target=func,name=name,args=param)
-			with sema: thr.start()
-		except: pass
-	try:
-		ltm = thread_timeout
-		while thr.isAlive():
-			sleep(1)
-			ltm -= 1
-	except: logging.exception(' in '+name)
-	try: thr.kill()
-	except: pass
-'''
-def thread_with_timeout(func,name,param):
-	try: thread.start_new_thread(func,param)
-	except: logging.exception(' in '+name)
-		
+	
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -365,9 +336,12 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				no_comm = 0
 				try: tn = thread_name(str(parse[1]))
 				except: tn = thread_name('utf_command')
-				if not parse[3]: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick, par))
-				elif parse[3] == 1: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick))
-				elif parse[3] == 2: thread_with_timeout(thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:]))
+				if not parse[3]: 
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, par)).start()
+				elif parse[3] == 1: 
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick)).start()
+				elif parse[3] == 2:
+					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
 				break
 	return no_comm
 
@@ -430,12 +404,14 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			thread_with_timeout(send_msg_human,thread_name('answer_human'),(type, room, nick, text))
+			with sema: threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
 			
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': thread_with_timeout(tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj))
-		else: thread_with_timeout(tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text))
+		if subj != 'None' and back_text == 'None':
+			with sema: threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
+		else:
+			with sema: threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
@@ -595,7 +571,8 @@ def presenceCB(sess,mess):
 			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	if not len(abc): cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	mdb.commit()
-	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+	for tmp in gpresence:
+		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -626,7 +603,8 @@ def schedule():
 		now_schedule()
 
 def now_schedule():
-	for tmr in gtimer: thread_with_timeout(tmr,thread_name('tmr_'+str(tmr)),())
+	for tmr in gtimer:
+		with sema: threading.Thread(None,tmr,thread_name('tmr_'+str(tmr)),()).start()
 	lt=tuple(localtime())
 	if lt[5]/20 == lt[5]/20.0:
 		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
@@ -644,7 +622,7 @@ def now_schedule():
 				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
 				if ll_hl + ofset <= l_hl:
 					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					thread_with_timeout(rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent'))
+					with sema: threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
 					feedbase.remove(fd)
 					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
