@@ -7,7 +7,7 @@ def exec_ute(type, jid, nick, text):
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
-	legal = ['0','1','2','3','4','5','6','7','8','9','*','/','+','-','(',')','=','^','!',' ','<','>','.']
+	legal = nmbrs+['*','/','+','-','(',')','=','^','!',' ','<','>']
 	ppc = 1
 	for tt in text:
 		all_ok = 0
