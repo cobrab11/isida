@@ -48,9 +48,8 @@ class KThread(threading.Thread):
 	def kill(self): self.killed = True
 
 def thread_with_timeout(p1,p2,p3):
-	with sema: threading.Thread(group=None,target=p1,name=p2,args=p3).start()
-
-#	with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+#	with sema: threading.Thread(group=None,target=p1,name=p2,args=p3).start()
+	with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
 	
 def thread_wt(func,name,param):
 	try:
@@ -831,7 +830,7 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(0.05)
+	sleep(0.1)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
