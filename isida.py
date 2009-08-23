@@ -829,12 +829,12 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(0.05)
+	sleep(5)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
-sema = threading.BoundedSemaphore(value=30)
+sema = threading.BoundedSemaphore(value=100)
 
 while 1:
 	try:
