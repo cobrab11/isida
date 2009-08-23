@@ -51,14 +51,18 @@ def thread_with_timeout(p1,p2,p3):
 	fl = True
 	while fl:
 		try:
-			threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+			with sema: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
 			fl = None
 		except: pass
 
 def thread_wt(func,name,param):
+	fl = True
+	while fl:
+		try:
+			with sema: thr = KThread(group=None,target=func,name=name,args=param)
+			with sema: thr.start()
+		except: pass
 	try:
-		with sema: thr = KThread(group=None,target=func,name=name,args=param)
-		with sema: thr.start()
 		ltm = thread_timeout
 		while thr.isAlive():
 			sleep(1)
