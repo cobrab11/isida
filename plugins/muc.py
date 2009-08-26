@@ -10,23 +10,18 @@ ro_alist = set_folder+u'alist.rol'		# alist ролей
 def muc_tempo_ban(type, jid, nick,text):
 	if text[:4].lower() == 'show' and not text.count('\n'):
 		text = text[5:]
-		if not len(text):
-			text = '.'
+		if not len(text): text = '.'
 		ubl = getFile(tban,[])
 		msg = u''
 		for ub in ubl:
-			if ub[0] == jid and ub[1].count(text.lower()):
-				msg += u'\n'+ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
-		if len(msg):
-			msg = u'Найдено:'+msg
-		else:
-			msg = u'Не найдено!'
+			if ub[0] == jid and ub[1].count(text.lower()): msg += u'\n'+ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
+		if len(msg): msg = u'Найдено:'+msg
+		else: msg = u'Не найдено!'
 		send_msg(type, jid, nick, msg)
 
 	elif text[:3].lower() == 'del' and not text.count('\n'):
 		text = text[4:]
-		if not len(text):
-			text = '@@'
+		if not len(text): text = '@@'
 		ubl = getFile(tban,[])
 		msg = u''
 		for ub in ubl:
@@ -39,14 +34,12 @@ def muc_tempo_ban(type, jid, nick,text):
 		if len(msg):
 			msg = u'Удалено: '+msg
 			writefile(tban,str(ubl))
-		else:
-			msg = u'Не найдено!'
+		else: msg = u'Не найдено!'
 		send_msg(type, jid, nick, msg)
-
-	else:
-		muc_tempo_ban2(type, jid, nick,text)
+	else: muc_tempo_ban2(type, jid, nick,text)
 
 def muc_tempo_ban2(type, jid, nick,text):
+	merge_age()
 	skip = 1
 	if len(text):
 		who = text.split('\n',2)[0]
@@ -56,14 +49,11 @@ def muc_tempo_ban2(type, jid, nick,text):
 			tmode = ttime[-1:].lower()
 			tkpd = {'s':1, 'm':60, 'h':3600, 'd':86400}
 			tttime = tttime*tkpd[tmode]
-		except:
-			tttime = 0
+		except: tttime = 0
 
 		if tttime:
-			try:
-				reason = text.split('\n',2)[2]
-			except:
-				reason = u'No reason!'
+			try: reason = text.split('\n',2)[2]
+			except: reason = u'No reason!'
 
 			reason = u'бан сроком '+un_unix(tttime)+u', начиная с '+timeadd(tuple(localtime()))+u', по причине: '+reason
 			mdb = sqlite3.connect(agestatbase)
@@ -73,22 +63,17 @@ def muc_tempo_ban2(type, jid, nick,text):
 				msg = u'done'
 				whojid = getRoom(unicode(fnd[0][0]))
 				skip = 0
-			elif len(fnd) > 1:
-				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 			else:
 				if who.count('.'):
 					msg = u'Я не в курсе кто такой '+who+u' и баню как есть!'
 					whojid = who
 					skip = 0
-				else:
-					msg = u'Я не в курсе кто такой '+who
-		else:
-			msg = u'Ошибка формата времени!'
-	else:
-		msg = u'Ась?'
+				else: msg = u'Я не в курсе кто такой '+who
+		else: msg = u'Ошибка формата времени!'
+	else: msg = u'Ась?'
 
-	if skip:
-		send_msg(type, jid, nick, msg)
+	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
@@ -96,8 +81,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 
 		ubl = getFile(tban,[])
 		for ub in ubl:
-			if ub[0] == jid and ub[1] == whojid:
-				ubl.remove(ub)
+			if ub[0] == jid and ub[1] == whojid: ubl.remove(ub)
 		ubl.append((jid,whojid,tttime+int(time.time())))
 		writefile(tban,str(ubl))
 		send_msg(type, jid, nick, msg)
@@ -118,13 +102,12 @@ def muc_owner(type, jid, nick,text):
 	muc_affiliation(type, jid, nick, text, 'owner')
 
 def muc_affiliation(type, jid, nick, text, aff):
+	merge_age()
 	tmppos = arr_semi_find(confbase, jid)
-	if tmppos == -1:
-		nowname = nickname
+	if tmppos == -1: nowname = nickname
 	else:
 		nowname = getResourse(confbase[tmppos])
-		if nowname == '':
-			nowname = nickname
+		if nowname == '': nowname = nickname
 	xtype = ''
 	for base in megabase:
 		if base[0].lower() == jid and base[1] == nowname:
@@ -133,8 +116,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 	if xtype == 'owner':
 		msg = u'Команда блокирована!'
 		text = ''
-	else:
-		msg = u'Ась?'
+	else: msg = u'Ась?'
 	skip = 1
 	if len(text):
 		if text.count('\n'):
@@ -150,14 +132,12 @@ def muc_affiliation(type, jid, nick, text, aff):
 			msg = u'done'
 			whojid = getRoom(unicode(fnd[0][0]))
 			skip = 0
-		elif len(fnd) > 1:
-			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+		elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 		else:
 			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
 			whojid = who
 			skip = 0
-	if skip:
-		send_msg(type, jid, nick, msg)
+	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
@@ -179,6 +159,7 @@ def muc_moderator(type, jid, nick,text):
 	muc_role(type, jid, nick, text, 'moderator')
 
 def muc_role(type, jid, nick, text, role):
+	merge_age()
 	skip = 1
 	if len(text):
 		if text.count('\n'):
@@ -194,17 +175,13 @@ def muc_role(type, jid, nick, text, role):
 			whonick = unicode(fnd[0][0])
 			msg = u'done'
 			skip = 0
-		elif len(fnd) > 1:
-			msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+		elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 		else:
 			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
 			whonick = who
 			skip = 0
-	else:
-		msg = u'Ась?'
-
-	if skip:
-		send_msg(type, jid, nick, msg)
+	else: msg = u'Ась?'
+	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
@@ -228,30 +205,26 @@ def muc_amoderator(type, jid, nick,text):
 	muc_arole(type, jid, nick, text, 'moderator')
 
 def muc_arole(type, jid, nick, text, role):
+	merge_age()
 	skip = 1
 	if len(text):
 		if text[:4].lower() == 'show' and not text.count('\n'):
 			text = text[5:]
-			if not len(text):
-				text = '.'
+			if not len(text): text = '.'
 			alist_role = getFile(ro_alist,[])
 			msg = u''
 			if alist_role != '[]':
 				for tmp in alist_role:
 					if tmp[0] == jid and tmp[3] == role and tmp[2].count(text.lower()):
 						msg += u'\n'+tmp[2]+'\t'+tmp[4]+' (by '+tmp[1]+')'
-						if tmp[5]:
-							msg += '\t'+un_unix(tmp[5]-int(time.time()))
+						if tmp[5]: msg += '\t'+un_unix(tmp[5]-int(time.time()))
 			if not len(msg):
-				if text == '.':
-					msg = u'Список пуст!'
-				else:
-					msg = u'Не найдено!'
+				if text == '.': msg = u'Список пуст!'
+				else: msg = u'Не найдено!'
 
 		elif text[:4].lower() == 'del ' and not text.count('\n'):
 			text = text[4:]
-			if not len(text):
-				msg = u'Кого удалить?'
+			if not len(text): msg = u'Кого удалить?'
 			else:
 				msg = u'Не найдено'
 				alist_role = getFile(ro_alist,[])
@@ -266,8 +239,7 @@ def muc_arole(type, jid, nick, text, role):
 			alist_role = getFile(ro_alist,[])
 			tmp_role = []
 			for tmp in alist_role:
-				if tmp[0] != jid:
-					tmp_role.append(tmp)
+				if tmp[0] != jid: tmp_role.append(tmp)
 			writefile(ro_alist,str(tmp_role))
 			msg = u'Очищено для '+str(jid)
 
@@ -281,15 +253,11 @@ def muc_arole(type, jid, nick, text, role):
 				tttime = tttime*tkpd[tmode]
 			except:
 				tttime = 0
-				try:
-					reason = text.split('\n',2)[1]
-				except:
-					reason = u'No reason!'
+				try: reason = text.split('\n',2)[1]
+				except: reason = u'No reason!'
 			if tttime:
-				try:
-					reason = text.split('\n',2)[2]
-				except:
-					reason = u'No reason!'
+				try: reason = text.split('\n',2)[2]
+				except: reason = u'No reason!'
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
@@ -297,24 +265,17 @@ def muc_arole(type, jid, nick, text, role):
 				whonick = unicode(fnd[0][0])
 				whojid = unicode(fnd[0][1])
 				skip = 0
-			elif len(fnd) > 1:
-				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-			else:
-				msg = u'Я не в курсе кто такой '+who
-	else:
-		msg = u'Ась?'
+			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			else: msg = u'Я не в курсе кто такой '+who
+	else: msg = u'Ась?'
 	
-	if skip:
-		send_msg(type, jid, nick, msg)
+	if skip: send_msg(type, jid, nick, msg)
 	else:
 		alist_role = getFile(ro_alist,[])
 		for tmp in alist_role:
-			if tmp[0] == jid and tmp[2] == whojid:
-				alist_role.remove(tmp)
-		if tttime:
-			alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
-		else:
-			alist_role.append((jid,nick,whojid,role,reason,0))
+			if tmp[0] == jid and tmp[2] == whojid: alist_role.remove(tmp)
+		if tttime: alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
+		else: alist_role.append((jid,nick,whojid,role,reason,0))
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
 		cl.send(i)
@@ -329,27 +290,24 @@ def check_unban():
 	if unban_log != '[]':
 		ubl = []
 		for ub in unban_log:
-			if ub[2] > int(time.time()):
-				ubl.append(ub)
+			if ub[2] > int(time.time()): ubl.append(ub)
 			else:
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(unicode(ub[1]))},[])])])
 				cl.send(i)
-		if unban_log != ubl:
-			writefile(tban,str(ubl))
+		if unban_log != ubl: writefile(tban,str(ubl))
 
 def decrease_alist_role():
 	alist_role = getFile(ro_alist,[])
 	if alist_role != []:
 		tmp_role = []
 		for tmp in alist_role:
-			if tmp[5] == 0 or tmp[5] > int(time.time()):
-				tmp_role.append(tmp)
-		if alist_role != tmp_role:
-			writefile(ro_alist,str(tmp_role))
+			if tmp[5] == 0 or tmp[5] > int(time.time()): tmp_role.append(tmp)
+		if alist_role != tmp_role: writefile(ro_alist,str(tmp_role))
 
 # ----------------------------------------------
 def muc_afind(type, jid, nick, text):
+	merge_age()
 	skip = 1
 	if len(text):
 			who = text
@@ -360,12 +318,9 @@ def muc_afind(type, jid, nick, text):
 				whonick = unicode(fnd[0][0])
 				whojid = unicode(fnd[0][1])
 				skip = 0
-			elif len(fnd) > 1:
-				msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-			else:
-				msg = u'Я не в курсе кто такой '+who
-	else:
-		msg = u'Ась?'
+			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			else: msg = u'Я не в курсе кто такой '+who
+	else: msg = u'Ась?'
 	
 	if not skip:
 		alist_role = getFile(ro_alist,[])
@@ -373,12 +328,10 @@ def muc_afind(type, jid, nick, text):
 		for tmp in alist_role:
 			if tmp[0] == jid and tmp[2] == whojid:
 				msg = u'Найдено в списке: '+tmp[3]+' ('+tmp[2]+u'), причина: '+tmp[4]+' (by '+tmp[1]+')'
-				if tmp[5]:
-					msg += ' '+un_unix(tmp[5]-int(time.time()))
+				if tmp[5]: msg += ' '+un_unix(tmp[5]-int(time.time()))
 				not_found = 0
 				break
-		if not_found:
-			msg = text + u' в alist не найдено.'
+		if not_found: msg = text + u' в alist не найдено.'
 	send_msg(type, jid, nick, msg)
 
 # ----------------------------------------------

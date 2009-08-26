@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
-#                               version 1.9
+#                               version 1.91
 #
 # --------------------------------------------------------------------
 #                    (c) 2009 Disabler Production Lab.
@@ -17,9 +17,12 @@ from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
 import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
-global execute, prefix, comms, prev_time, hashlib, trace
+global execute, prefix, comms, hashlib, trace
 
-sema = threading.BoundedSemaphore(value=30)
+nsmph = threading.BoundedSemaphore(value=25)
+smph = threading.BoundedSemaphore(value=15)
+ksmph = threading.BoundedSemaphore(value=15)
+thlock = threading.Lock()
 
 class KThread(threading.Thread):
 	def __init__(self, *args, **keywords):
@@ -46,7 +49,32 @@ class KThread(threading.Thread):
 		return self.localtrace
 
 	def kill(self): self.killed = True
-	
+
+def thread_with_timeout(p1,p2,p3):
+	with smph: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+
+def thread_wt(func,name,param):
+	with ksmph: thr = KThread(group=None,target=thread_log,name=name,args=(func,param))
+	thr.start()
+	ltm = thread_timeout
+	while thr.isAlive():
+		sleep(1)
+		ltm -= 1
+	if not ltm: thr.kill()
+
+def thread_log(proc, params):
+	try: proc(params)
+	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
+
+def messageCBt(sess,mess):
+	with nsmph: threading.Thread(group=None,target=messageCB,name=thread_name('msg'),args=(sess,mess)).start()
+
+def presenceCBt(sess,mess):
+	with nsmph: threading.Thread(group=None,target=presenceCB,name=thread_name('prs'),args=(sess,mess)).start()
+
+def iqCBt(sess,mess):
+	with nsmph: threading.Thread(group=None,target=iqCB,name=thread_name('iq'),args=(sess,mess)).start()
+
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -336,12 +364,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				no_comm = 0
 				try: tn = thread_name(str(parse[1]))
 				except: tn = thread_name('utf_command')
-				if not parse[3]: 
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, par)).start()
-				elif parse[3] == 1: 
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick)).start()
-				elif parse[3] == 2:
-					with sema: threading.Thread(None,thread_log,tn,(parse[2], type, room, nick, text[len(parse[1])+1:])).start()
+				if not parse[3]: parse[2](type, room, nick, par)
+				elif parse[3] == 1: parse[2](type, room, nick)
+				elif parse[3] == 2: parse[2](type, room, nick, text[len(parse[1])+1:])
 				break
 	return no_comm
 
@@ -404,24 +429,16 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			with sema: threading.Thread(None,send_msg_human,thread_name('answer_human'),(type, room, nick, text)).start()
+			send_msg_human(type, room, nick, text)
 			
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None':
-			with sema: threading.Thread(None,tmp,thread_name('tpc_'+str(tmp)),(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)).start()
-		else:
-			with sema: threading.Thread(None,tmp,thread_name('msg_'+str(tmp)),(room,jid,nick,type,back_text)).start()
+		if subj != 'None' and back_text == 'None': tmp(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)
+		else: tmp(room,jid,nick,type,back_text)
 
 def send_msg_human(type, room, nick, text):
 	sleep(len(text)/4+randint(0,10))
 	send_msg(type, room, nick, text)
-
-def thread_log(proc, *params):
-	try:
-		if len(params) == 3: proc(params[0], params[1], params[2])
-		else: proc(params[0], params[1], params[2], params[3])
-	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 
 def getAnswer(tx,type):
 	mdb = sqlite3.connect(answersbase)
@@ -450,7 +467,7 @@ def get_valid_tag(body,tag):
 	else: return 'None'
 	
 def presenceCB(sess,mess):
-	global megabase, megabase2, ownerbase, iq_answer, confs, confbase
+	global megabase, megabase2, ownerbase, iq_answer, confs, confbase, cu_age
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
@@ -543,15 +560,19 @@ def presenceCB(sess,mess):
 			mdb.commit()
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	abc = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchall()
+
+	ab = None
+	for tmp in cu_age:
+#		room text, nick text, jid text
+		if tmp[0] == room and tmp[1] == nick and tmp[2] == jid:
+			ab = tmp
+			cu_age.remove(tmp)
+			break
 	tt = int(time.time())
-	cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
-	for ab in abc:
+	if ab:
 		if type=='unavailable':
 			if status=='307': #Kick
 				exit_type = u'Выгнали'
@@ -565,14 +586,12 @@ def presenceCB(sess,mess):
 			if exit_message == 'None':
 				exit_message = ''
 #				print exit_type, exit_message
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			cu_age.append((room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 		else:
-			if ab[5]: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-	if not len(abc): cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-	mdb.commit()
-	for tmp in gpresence:
-		with sema: threading.Thread(None,tmp,thread_name('prs_'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))).start()
+			if ab[5]: cu_age.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
+			else: cu_age.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
+	else: cu_age.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+	for tmp in gpresence: tmp(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -596,37 +615,32 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
-	global prev_time
-	tmp_time = int(time.time())
-	if tmp_time-prev_time > 600:
-		prev_time = tmp_time
-		now_schedule()
+	with nsmph: threading.Timer(15,schedule).start()
+	with nsmph: threading.Thread(group=None,target=now_schedule,name=thread_name('schedule')).start()
 
 def now_schedule():
-	for tmr in gtimer:
-		with sema: threading.Thread(None,tmr,thread_name('tmr_'+str(tmr)),()).start()
+	for tmp in gtimer: tmp()
 	lt=tuple(localtime())
-	if lt[5]/20 == lt[5]/20.0:
-		l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
-		try:
-			feedbase = getFile(feeds,[])
-			for fd in feedbase:
-				ltime = fd[1]
-				timetype = ltime[-1:].lower()
-				if not (timetype == 'h' or timetype == 'm'): timetype = 'h'
-				try: ofset = int(ltime[:-1])
-				except: ofset = 4
-				if timetype == 'h': ofset *= 3600
-				elif timetype == 'm': ofset *= 60
-				lttime = fd[3]
-				ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
-				if ll_hl + ofset <= l_hl:
-					pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-					with sema: threading.Thread(None,rss,thread_name('check_rss_'+fd[0]+u'_'+getName(fd[4])),('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')).start()
-					feedbase.remove(fd)
-					feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
+	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
+	try:
+		feedbase = getFile(feeds,[])
+		for fd in feedbase:
+			ltime = fd[1]
+			timetype = ltime[-1:].lower()
+			if not (timetype == 'h' or timetype == 'm'): timetype = 'h'
+			try: ofset = int(ltime[:-1])
+			except: ofset = 4
+			if timetype == 'h': ofset *= 3600
+			elif timetype == 'm': ofset *= 60
+			lttime = fd[3]
+			ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
+			if ll_hl + ofset <= l_hl:
+				pprint(u'check rss: '+fd[0]+u' in '+fd[4])
+				rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
+				feedbase.remove(fd)
+				feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
-		except: sleep(0.02)
+	except: pass
 
 def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
@@ -679,7 +693,6 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)		# включе�
 
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
 ul = 'update.log'				# лог последнего обновление
-prev_time = int(time.time())
 debugmode = 0					# остановка на ошибках
 dm = 1							# отладка xmpppy
 dm2 = 1							# отладка действий бота
@@ -756,7 +769,7 @@ else: starttime = tuple(localtime())
 sesstime = int(time.time())
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
-
+cu_age = []
 close_age_null()
 confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
 if os.path.isfile(cens):
@@ -807,9 +820,9 @@ except:
 	sleep(reboot_time)
 	while 1: sys.exit(0)
 pprint(u'Registeration Handlers')
-cl.RegisterHandler('message',messageCB)
-cl.RegisterHandler('iq',iqCB)
-cl.RegisterHandler('presence',presenceCB)
+cl.RegisterHandler('message',messageCBt)
+cl.RegisterHandler('iq',iqCBt)
+cl.RegisterHandler('presence',presenceCBt)
 cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
@@ -830,11 +843,13 @@ lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
+with nsmph: threading.Timer(60,schedule).start()
+with nsmph: threading.Timer(1800,merge_schedule).start()
+
 while 1:
 	try:
 		while not game_over:
 			cl.Process(1)
-			schedule()
 		close_age()
 		break
 

@@ -8,6 +8,7 @@ def true_age(type, jid, nick, text):
 	true_age_raw(type, jid, nick, text, None)
 	
 def true_age_raw(type, jid, nick, text, xtype):
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -57,6 +58,7 @@ def seen_split(type, jid, nick, text):
 	seen_raw(type, jid, nick, text, True)
 
 def seen_raw(type, jid, nick, text, xtype):
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10
@@ -106,6 +108,7 @@ def seenjid_split(type, jid, nick, text):
 	seenjid_raw(type, jid, nick, text, True)
 	
 def seenjid_raw(type, jid, nick, text, xtype):
+	merge_age()
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split(' ')
 	llim = 10

@@ -14,8 +14,7 @@ def answers_ie(type, jid, nick, text):
 		answer = ''
 		msg = u'Экспорт в файл: '+fname+u' | Всего записей: '+str(base_size)+u' | После удаления дубликатов: '+str(len(fnd))
 		for i in fnd:
-			if i[0] != '':
-				answer += i[0].strip() +'\n'
+			if i[0] != '': answer += i[0].strip() +'\n'
 		writefile(fname,answer.encode('utf-8'))
 	elif text.lower().strip().split(' ',1)[0] == 'import':
 		try: fname = text.lower().split(' ',1)[1]

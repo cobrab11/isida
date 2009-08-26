@@ -2,6 +2,7 @@
 # -*- coding: utf -*-
 
 def sayto(type, jid, nick, text):
+	merge_age()
 	if text.count(' '):
 		to = text[:text.find(' ')]
 		what = text[text.find(' ')+1:]

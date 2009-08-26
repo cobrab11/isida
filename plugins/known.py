@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def known(type, jid, nick, text):
+	merge_age()
 	text = text.strip()
 	if text == '': text = nick
 	mdb = sqlite3.connect(agestatbase)

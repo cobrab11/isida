@@ -8,8 +8,7 @@ def gtalkers(type, jid, nick, text):
 	if len(text):
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from talkers where (jid like ? or nick like ? or room like ?) order by -words',(ttext,ttext,ttext)).fetchmany(10)
-	else:
-		tma = cu.execute('select * from talkers order by -words').fetchmany(10)
+	else: tma = cu.execute('select * from talkers order by -words').fetchmany(10)
 
 	wtext = text.split(' ')
 	wtext = len(wtext)
@@ -21,8 +20,7 @@ def gtalkers(type, jid, nick, text):
 		for tt in tma:
 			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
 			cnd += 1
-	else:
-		msg = text +u' не найдено!'
+	else: msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
 	
 
@@ -33,8 +31,7 @@ def talkers(type, jid, nick, text):
 	if len(text):
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from talkers where room=? and (jid like ? or nick like ?) order by -words',(jid,ttext,ttext)).fetchmany(10)
-	else:
-		tma = cu.execute('select * from talkers where room=? order by -words',(jid,)).fetchmany(10)
+	else: tma = cu.execute('select * from talkers where room=? order by -words',(jid,)).fetchmany(10)
 
 	wtext = text.split(' ')
 	wtext = len(wtext)
@@ -46,8 +43,7 @@ def talkers(type, jid, nick, text):
 		for tt in tma:
 			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
 			cnd += 1
-	else:
-		msg = text +u' не найдено!'
+	else: msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
 
 #------------------------------------------------
