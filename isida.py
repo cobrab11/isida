@@ -560,9 +560,11 @@ def presenceCB(sess,mess):
 		aa1 = getName(jid)
 		aa2 = getServer(jid)
 		aa3 = getResourse(jid)
-		if not cu.execute('select * from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchall():
-			cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
-			mdb.commit()
+		try:
+			if not cu.execute('select * from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchall():
+				cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
+				mdb.commit()
+		except: pass	
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
 
