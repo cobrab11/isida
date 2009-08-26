@@ -19,7 +19,12 @@ import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
 import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, hashlib, trace
 
-nsmph = threading.BoundedSemaphore(value=25)
+pr_sm = threading.BoundedSemaphore(value=10)
+ms_sm = threading.BoundedSemaphore(value=10)
+iq_sm = threading.BoundedSemaphore(value=10)
+tm_sm = threading.BoundedSemaphore(value=5)
+sh_sm = threading.BoundedSemaphore(value=5)
+
 smph = threading.BoundedSemaphore(value=15)
 ksmph = threading.BoundedSemaphore(value=15)
 thlock = threading.Lock()
@@ -67,13 +72,13 @@ def thread_log(proc, params):
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
 def messageCBt(sess,mess):
-	with nsmph: threading.Thread(group=None,target=messageCB,name=thread_name('msg'),args=(sess,mess)).start()
+	with ms_sm: threading.Thread(group=None,target=messageCB,name=thread_name('msg'),args=(sess,mess)).start()
 
 def presenceCBt(sess,mess):
-	with nsmph: threading.Thread(group=None,target=presenceCB,name=thread_name('prs'),args=(sess,mess)).start()
+	with pr_sm: threading.Thread(group=None,target=presenceCB,name=thread_name('prs'),args=(sess,mess)).start()
 
 def iqCBt(sess,mess):
-	with nsmph: threading.Thread(group=None,target=iqCB,name=thread_name('iq'),args=(sess,mess)).start()
+	with iq_sm: threading.Thread(group=None,target=iqCB,name=thread_name('iq'),args=(sess,mess)).start()
 
 def readfile(filename):
 	fp = file(filename)
@@ -320,7 +325,7 @@ def iqCB(sess,iq):
 			cl.send(i)
 			raise xmpp.NodeProcessed
 
-		if iq.getTag(name='query', namespace=xmpp.NS_TIME):
+		elif iq.getTag(name='query', namespace=xmpp.NS_TIME):
 			pprint(u'*** iq:time from '+unicode(nick))
 			gt=timeZero(gmtime())
 			t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
@@ -615,8 +620,8 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
-	with nsmph: threading.Timer(15,schedule).start()
-	with nsmph: threading.Thread(group=None,target=now_schedule,name=thread_name('schedule')).start()
+	with sh_sm: threading.Timer(15,schedule).start()
+	with sh_sm: threading.Thread(group=None,target=now_schedule,name=thread_name('schedule')).start()
 
 def now_schedule():
 	for tmp in gtimer: tmp()
@@ -821,7 +826,7 @@ except:
 	while 1: sys.exit(0)
 pprint(u'Registeration Handlers')
 cl.RegisterHandler('message',messageCBt)
-cl.RegisterHandler('iq',iqCBt)
+cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCBt)
 cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
@@ -843,8 +848,8 @@ lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
-with nsmph: threading.Timer(60,schedule).start()
-with nsmph: threading.Timer(1800,merge_schedule).start()
+with tm_sm: threading.Timer(60,schedule).start()
+with tm_sm: threading.Timer(1800,merge_schedule).start()
 
 while 1:
 	try:
