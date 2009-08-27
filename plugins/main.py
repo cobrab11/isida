@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-def merge_schedule():
-	with nsmph: threading.Timer(1800,merge_schedule).start()
-	with nsmph: threading.Thread(group=None,target=merge_age,name=thread_name('merge_age')).start()
-
 def merge_age():
 	global cu_age	
 	tmp, cu_age = cu_age, []		
@@ -292,6 +288,14 @@ def close_age_null():
 	mdb.commit()
 
 def close_age():
+	try: thr_timer1.cancel()
+	except: pass
+	try: thr_timer2.cancel()
+	except: pass
+	try: thr_timer3.cancel()
+	except: pass
+	try: thr_timer4.cancel()
+	except: pass
 	merge_age()
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()

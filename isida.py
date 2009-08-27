@@ -19,14 +19,7 @@ import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
 import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, hashlib, trace
 
-pr_sm = threading.BoundedSemaphore(value=10)
-ms_sm = threading.BoundedSemaphore(value=10)
-iq_sm = threading.BoundedSemaphore(value=10)
-tm_sm = threading.BoundedSemaphore(value=5)
-sh_sm = threading.BoundedSemaphore(value=5)
-
 smph = threading.BoundedSemaphore(value=15)
-ksmph = threading.BoundedSemaphore(value=15)
 thlock = threading.Lock()
 
 class KThread(threading.Thread):
@@ -55,12 +48,15 @@ class KThread(threading.Thread):
 
 	def kill(self): self.killed = True
 
-def thread_with_timeout(p1,p2,p3):
-	with smph: threading.Thread(group=None,target=thread_wt,name=p2,args=(p1,p2,p3)).start()
+def thread_with_timeout(func,name,param):
+	with smph: threading.Thread(group=None,target=thread_wt,name=name,args=(func,name,param)).start()
 
 def thread_wt(func,name,param):
-	with ksmph: thr = KThread(group=None,target=thread_log,name=name,args=(func,param))
-	thr.start()
+	with smph:
+#		thr = KThread(group=None,target=thread_log,name=name,args=(func,param))
+		thr = KThread(group=None,target=func,name=name,args=param)
+
+		thr.start()
 	ltm = thread_timeout
 	while thr.isAlive():
 		sleep(1)
@@ -68,17 +64,9 @@ def thread_wt(func,name,param):
 	if not ltm: thr.kill()
 
 def thread_log(proc, params):
-	try: proc(params)
+	print params[0]
+	try: proc(params[0])
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
-
-def messageCBt(sess,mess):
-	with ms_sm: threading.Thread(group=None,target=messageCB,name=thread_name('msg'),args=(sess,mess)).start()
-
-def presenceCBt(sess,mess):
-	with pr_sm: threading.Thread(group=None,target=presenceCB,name=thread_name('prs'),args=(sess,mess)).start()
-
-def iqCBt(sess,mess):
-	with iq_sm: threading.Thread(group=None,target=iqCB,name=thread_name('iq'),args=(sess,mess)).start()
 
 def readfile(filename):
 	fp = file(filename)
@@ -369,9 +357,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				no_comm = 0
 				try: tn = thread_name(str(parse[1]))
 				except: tn = thread_name('utf_command')
-				if not parse[3]: parse[2](type, room, nick, par)
-				elif parse[3] == 1: parse[2](type, room, nick)
-				elif parse[3] == 2: parse[2](type, room, nick, text[len(parse[1])+1:])
+				if not parse[3]: thread_with_timeout(parse[2],tn,(type, room, nick, par))
+				elif parse[3] == 1: thread_with_timeout(parse[2],tn,(type, room, nick))
+				elif parse[3] == 2: thread_with_timeout(parse[2],tn,(type, room, nick, text[len(parse[1])+1:]))
 				break
 	return no_comm
 
@@ -434,8 +422,10 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			send_msg_human(type, room, nick, text)
+			thread_with_timeout(send_msg_human,thread_name('hmn'),(type, room, nick, text))
+	thread_with_timeout(msg_afterwork,thread_name('msg'),(mess,room,jid,nick,type,back_text))
 			
+def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
 		if subj != 'None' and back_text == 'None': tmp(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)
@@ -598,7 +588,7 @@ def presenceCB(sess,mess):
 			if ab[5]: cu_age.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 			else: cu_age.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	else: cu_age.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-	for tmp in gpresence: tmp(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))
+	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 		
 def onoff(msg):
 	if msg: return 'ON'
@@ -621,9 +611,21 @@ def getRoom(jid):
 	jid = unicode(jid)
 	return getName(jid)+'@'+getServer(jid)
 
+def merge_schedule():
+	with smph: 
+		thr_timer2 = threading.Timer(1800,merge_schedule)
+		thr_timer2.start()
+	with smph:
+		thr_timer4 = threading.Thread(group=None,target=merge_age,name=thread_name('merge_age'))
+		thr_timer4.start()
+	
 def schedule():
-	with sh_sm: threading.Timer(15,schedule).start()
-	with sh_sm: threading.Thread(group=None,target=now_schedule,name=thread_name('schedule')).start()
+	with smph:
+		thr_timer1 = threading.Timer(15,schedule)
+		thr_timer1.start()
+	with smph:
+		thr_timer3 = threading.Thread(group=None,target=now_schedule,name=thread_name('schedule'))
+		thr_timer3.start()
 
 def now_schedule():
 	for tmp in gtimer: tmp()
@@ -827,9 +829,9 @@ except:
 	sleep(reboot_time)
 	while 1: sys.exit(0)
 pprint(u'Registeration Handlers')
-cl.RegisterHandler('message',messageCBt)
+cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
-cl.RegisterHandler('presence',presenceCBt)
+cl.RegisterHandler('presence',presenceCB)
 cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
@@ -850,8 +852,12 @@ lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
-with tm_sm: threading.Timer(60,schedule).start()
-with tm_sm: threading.Timer(1800,merge_schedule).start()
+with smph:
+	thr_timer1 = threading.Timer(60,schedule)
+	thr_timer1.start()
+with smph: 
+	thr_timer2 =threading.Timer(1800,merge_schedule)
+	thr_timer2.start()
 
 while 1:
 	try:
