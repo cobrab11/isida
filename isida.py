@@ -19,7 +19,7 @@ import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
 import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, hashlib, trace
 
-smph = threading.BoundedSemaphore(value=15)
+smph = threading.BoundedSemaphore(value=30)
 thlock = threading.Lock()
 
 class KThread(threading.Thread):
