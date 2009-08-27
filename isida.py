@@ -20,6 +20,7 @@ import thread, threading, operator, sqlite3, simplejson, chardet, socket, subpro
 global execute, prefix, comms, hashlib, trace
 
 smph = threading.BoundedSemaphore(value=30)
+smph_write = threading.BoundedSemaphore(value=1)
 thlock = threading.Lock()
 
 class KThread(threading.Thread):
@@ -76,9 +77,10 @@ def readfile(filename):
 	return data
 
 def writefile(filename, data):
-	fp = file(filename, 'w')
-	fp.write(data)
-	fp.close()
+	with smph_write:
+		fp = file(filename, 'w')
+		fp.write(data)
+		fp.close()
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
@@ -589,8 +591,9 @@ def presenceCB(sess,mess):
 			if ab[5]: cu_age.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 			else: cu_age.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	else: cu_age.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
-		
+#	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+	for tmp in gpresence: tmp(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))
+	
 def onoff(msg):
 	if msg: return 'ON'
 	else: return 'OFF'
@@ -654,7 +657,7 @@ def now_schedule():
 			writefile(feeds,str(feedbase))
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(tmp))
 	with smph:
-		thr_timer1 = threading.Timer(15,schedule)
+		thr_timer1 = threading.Timer(schedule_time,schedule)
 		thr_timer1.start()
 
 def talk_count(room,jid,nick,text):
@@ -722,6 +725,8 @@ th_cnt = 0						# счётчик тредов
 thread_timeout = 600			# таймаут в секундах на исполнение тредов
 timeout = 300					# таймаут в секундах на iq запросы
 backdoor = None					# отладочный бакдор
+merge_time = 600				# время слива временной базы в основную
+schedule_time = 15				# время проверки расписания
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -860,10 +865,11 @@ pprint(u'Joined')
 game_over = 0
 
 with smph:
-	thr_timer1 = threading.Timer(120,schedule)
+	thr_timer1 = threading.Timer(schedule_time,schedule)
 	thr_timer1.start()
+	
 with smph: 
-	thr_timer2 =threading.Timer(1800,merge_schedule)
+	thr_timer2 =threading.Timer(merge_time,merge_schedule)
 	thr_timer2.start()
 
 while 1:
