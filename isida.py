@@ -16,58 +16,16 @@ from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
-import thread, threading, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
+import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit
 global execute, prefix, comms, hashlib, trace
 
-smph = threading.BoundedSemaphore(value=30)
-thlock = threading.Lock()
-
-class KThread(threading.Thread):
-	def __init__(self, *args, **keywords):
-		threading.Thread.__init__(self, *args, **keywords)
-		self.killed = False
-		
-	def start(self):
-		self.__run_backup = self.run
-		self.run = self.__run
-		threading.Thread.start(self)
-		
-	def __run(self):
-		sys.settrace(self.globaltrace)
-		self.__run_backup()
-		self.run = self.__run_backup
-
-	def globaltrace(self, frame, why, arg):
-		if why == 'call': return self.localtrace
-		else: return None
-
-	def localtrace(self, frame, why, arg):
-		if self.killed:
-			if why == 'line': raise SystemExit()
-		return self.localtrace
-
-	def kill(self): self.killed = True
-
-def thread_with_timeout(func,name,param):
-	thread.start_new_thread(func,param)
-#	with smph: threading.Thread(group=None,target=thread_wt,name=name,args=(func,name,param)).start()
-#	with smph: threading.Thread(group=None,target=func,name=name,args=param).start()
-
-def thread_wt(func,name,param):
-	with smph:
-#		thr = KThread(group=None,target=thread_log,name=name,args=(func,param))
-		thr = KThread(group=None,target=func,name=name,args=param)
-
-		thr.start()
-	ltm = thread_timeout
-	while thr.isAlive():
-		sleep(1)
-		ltm -= 1
-	if not ltm: thr.kill()
-
-def thread_log(proc, params):
-	print params[0]
-	try: proc(params[0])
+def thr(func,param):
+	global th_cnt
+	th_cnt += 1
+	thread.start_new_thread(log_execute,(func,param))
+	
+def log_execute(proc, params):
+	try: proc(*params)
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
 def readfile(filename):
@@ -128,10 +86,8 @@ def onlytimeadd(lt):
 	return st
 
 def pprint(text):
-	global dm2
-	text = text
 	zz = parser('['+timeadd(tuple(localtime()))+'] '+text)
-	if not dm2: print zz
+	if dm2: print zz
 
 def send_presence_all(sm):
 	pr=xmpp.Presence(typ='unavailable')
@@ -228,8 +184,8 @@ def os_version():
 def joinconf(conference, server):
 	node = unicode(JID(conference.lower()).getResource())
 	jid = JID(node=node, domain=server.lower(), resource=mainRes)
-	if dm: cl = Client(jid.getDomain(), debug=[])
-	else: cl = Client(jid.getDomain())
+	if dm: cl = Client(jid.getDomain())
+	else: cl = Client(jid.getDomain(), debug=[])
 	conf = unicode(JID(conference))
 	zz = join(conf)
 	if zz != None: pprint(' *** Error *** '+zz)
@@ -238,8 +194,8 @@ def joinconf(conference, server):
 def leaveconf(conference, server, sm):
 	node = unicode(JID(conference).getResource())
 	jid = JID(node=node, domain=server)
-	if dm: cl = Client(jid.getDomain(), debug=[])
-	else: cl = Client(jid.getDomain())
+	if dm: cl = Client(jid.getDomain())
+	else: cl = Client(jid.getDomain(), debug=[])
 	conf = unicode(JID(conference))
 	leave(conf, sm)
 	sleep(0.1)
@@ -337,12 +293,6 @@ def iqCB(sess,iq):
 			cl.send(i)
 			raise xmpp.NodeProcessed
 
-def thread_name(body):
-	global th_cnt
-	th_cnt += 1
-	lt = tuple(localtime())
-	return str(lt[0])+'.'+tZ(lt[1])+'.'+tZ(lt[2])+' '+tZ(lt[3])+':'+tZ(lt[4])+':'+tZ(lt[5])+'|'+body+'|'+str(th_cnt)
-	
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
 	cof = getFile(conoff,[])
@@ -357,11 +307,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = 0
-				try: tn = thread_name(str(parse[1]))
-				except: tn = thread_name('utf_command')
-				if not parse[3]: thread_with_timeout(parse[2],tn,(type, room, nick, par))
-				elif parse[3] == 1: thread_with_timeout(parse[2],tn,(type, room, nick))
-				elif parse[3] == 2: thread_with_timeout(parse[2],tn,(type, room, nick, text[len(parse[1])+1:]))
+				if not parse[3]: thr(parse[2],(type, room, nick, par))
+				elif parse[3] == 1: thr(parse[2],(type, room, nick))
+				elif parse[3] == 2: thr(parse[2],(type, room, nick, text[len(parse[1])+1:]))
 				break
 	return no_comm
 
@@ -424,8 +372,8 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
-			thread_with_timeout(send_msg_human,thread_name('hmn'),(type, room, nick, text))
-	thread_with_timeout(msg_afterwork,thread_name('msg'),(mess,room,jid,nick,type,back_text))
+			thr(send_msg_human,(type, room, nick, text))
+	thr(msg_afterwork,(mess,room,jid,nick,type,back_text))
 			
 def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
@@ -590,8 +538,7 @@ def presenceCB(sess,mess):
 			if ab[5]: cu_age.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
 			else: cu_age.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	else: cu_age.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
-#	for tmp in gpresence: thread_with_timeout(tmp,thread_name('prs'+str(tmp)),(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
-	for tmp in gpresence: tmp(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found))
+	for tmp in gpresence: thr(tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 	
 def onoff(msg):
 	if msg: return 'ON'
@@ -615,49 +562,43 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def merge_schedule():
-	with smph:
-		thr_timer4 = threading.Thread(group=None,target=merge_age_th,name=thread_name('merge_age'))
-		thr_timer4.start()
+	thr(merge_age_th,())
 		
 def merge_age_th():
-	merge_age()
-	with smph: 
-		thr_timer2 = threading.Timer(merge_timer,merge_schedule)
-		thr_timer2.start()
+	while 1:
+		sleep(merge_time)
+		log_execute(merge_age,())
+		print time.time(),'merge'
 
 def schedule():
-	with smph:
-		thr_timer3 = threading.Thread(group=None,target=now_schedule,name=thread_name('schedule'))
-		thr_timer3.start()
+	thr(now_schedule,())
 
 def now_schedule():
-	for tmp in gtimer:
-		try: tmp()
-		except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(tmp))
+	while 1:
+		sleep(schedule_time)
+		for tmp in gtimer: log_execute(tmp,())
+		print time.time(),'sch'
+
+def check_rss():
 	lt=tuple(localtime())
 	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
-	try:
-		feedbase = getFile(feeds,[])
-		for fd in feedbase:
-			ltime = fd[1]
-			timetype = ltime[-1:].lower()
-			if not (timetype == 'h' or timetype == 'm'): timetype = 'h'
-			try: ofset = int(ltime[:-1])
-			except: ofset = 4
-			if timetype == 'h': ofset *= 3600
-			elif timetype == 'm': ofset *= 60
-			lttime = fd[3]
-			ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
-			if ll_hl + ofset <= l_hl:
-				pprint(u'check rss: '+fd[0]+u' in '+fd[4])
-				rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
-				feedbase.remove(fd)
-				feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
-			writefile(feeds,str(feedbase))
-	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(tmp))
-	with smph:
-		thr_timer1 = threading.Timer(schedule_time,schedule)
-		thr_timer1.start()
+	feedbase = getFile(feeds,[])
+	for fd in feedbase:
+		ltime = fd[1]
+		timetype = ltime[-1:].lower()
+		if not (timetype == 'h' or timetype == 'm'): timetype = 'h'
+		try: ofset = int(ltime[:-1])
+		except: ofset = 4
+		if timetype == 'h': ofset *= 3600
+		elif timetype == 'm': ofset *= 60
+		lttime = fd[3]
+		ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
+		if ll_hl + ofset <= l_hl:
+			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
+			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
+			feedbase.remove(fd)
+			feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
+		writefile(feeds,str(feedbase))
 
 def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
@@ -710,9 +651,9 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)		# включе�
 
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
 ul = 'update.log'				# лог последнего обновление
-debugmode = 0					# остановка на ошибках
-dm = 1							# отладка xmpppy
-dm2 = 1							# отладка действий бота
+debugmode = None				# остановка на ошибках
+dm = None						# отладка xmpppy
+dm2 = None						# отладка действий бота
 prefix = u'_'					# префикс комманд
 msg_limit = 1000				# лимит размера сообщений
 botName = 'Isida-Bot'			# название бота
@@ -721,11 +662,10 @@ capsVersion = botVersion[1:]	# версия для капса
 banbase = []
 iq_answer = []
 th_cnt = 0						# счётчик тредов
-thread_timeout = 600			# таймаут в секундах на исполнение тредов
 timeout = 300					# таймаут в секундах на iq запросы
 backdoor = None					# отладочный бакдор
 merge_time = 600				# время слива временной базы в основную
-schedule_time = 15				# время проверки расписания
+schedule_time = 10				# время проверки расписания
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -744,8 +684,8 @@ if os.path.isfile(configname): execfile(configname)
 else: errorHandler(configname+u' is missed.')
 capsNode = 'http://isida-bot.com'
 # --- check parameters
-baseParameters = [nickname ,name, domain, password, newBotJid, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
-baseErrors = [u'nickname', u'name', u'domain', u'password', u'newBotJid', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
+baseParameters = [nickname ,name, domain, password, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
+baseErrors = [u'nickname', u'name', u'domain', u'password', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 md1 = '794d9ff1476324506da4812e2ee947ad'
 md2 = '65253e8b3ae2ba7734cefe0082eb66b0'
 megabase = []
@@ -757,7 +697,7 @@ botOs = os_version()
 
 execfile('plugins/main.py')
 plname = u'plugins/list.txt'
-gtimer = []
+gtimer = [check_rss]
 gpresence = []
 gmessage = []
 
@@ -820,16 +760,10 @@ psw = u''
 raw_iq = []
 
 try:
-	if dm: cl = Client(jid.getDomain(), debug=[])
-	else: cl = Client(jid.getDomain())
+	if dm: cl = Client(jid.getDomain())
+	else: cl = Client(jid.getDomain(), debug=[])
 	cl.connect()
 	pprint(u'Connected')
-
-	if newBotJid:
-		pprint(u'New jid: '+unicode(jid.getNode())+'@'+unicode(domain))
-		features.register(cl, domain, {'username':node, 'password':password})
-		pprint(u'Registered')
-
 	cl.auth(jid.getNode(), password, jid.getResource())
 	pprint(u'Autheticated')
 except:
@@ -863,13 +797,8 @@ lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
-with smph:
-	thr_timer1 = threading.Timer(schedule_time,schedule)
-	thr_timer1.start()
-	
-with smph: 
-	thr_timer2 =threading.Timer(merge_time,merge_schedule)
-	thr_timer2.start()
+schedule()
+merge_schedule()
 
 while 1:
 	try:

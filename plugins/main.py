@@ -16,12 +16,18 @@ def merge_age():
 #   room nick jid time_integer age_integer status_integer type message
 
 def shell_execute(cmd):
-	sys.exc_clear()
-	gc.collect()
-	bufsize = 1024
-	p = Popen(cmd, shell=True, bufsize=bufsize, stdout=PIPE, stderr=STDOUT, close_fds=True)
-	return ''.join(map(lambda x: x.decode('utf-8'), p.stdout.readlines()))
-
+	tmp_file = 'tmp'
+	try: os.remove(tmp_file)
+	except: pass
+	try:
+		os.system(cmd+' > '+tmp_file)
+		body = readfile(tmp_file)
+		enc = chardet.detect(body)['encoding']
+		return unicode(body,enc)
+	except:
+		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+		return u'Ошибка выполнения. Подробности в логе.'
+	
 def concat(list):
 	result = ''
 	for tmp in list: result += tmp
@@ -288,14 +294,6 @@ def close_age_null():
 	mdb.commit()
 
 def close_age():
-	try: thr_timer1.cancel()
-	except: pass
-	try: thr_timer2.cancel()
-	except: pass
-	try: thr_timer3.cancel()
-	except: pass
-	try: thr_timer4.cancel()
-	except: pass
 	merge_age()
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
