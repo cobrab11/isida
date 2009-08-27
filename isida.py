@@ -49,7 +49,8 @@ class KThread(threading.Thread):
 	def kill(self): self.killed = True
 
 def thread_with_timeout(func,name,param):
-	with smph: threading.Thread(group=None,target=thread_wt,name=name,args=(func,name,param)).start()
+#	with smph: threading.Thread(group=None,target=thread_wt,name=name,args=(func,name,param)).start()
+	with smph: threading.Thread(group=None,target=func,name=name,args=param).start()
 
 def thread_wt(func,name,param):
 	with smph:
