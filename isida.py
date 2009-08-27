@@ -20,7 +20,6 @@ import thread, threading, operator, sqlite3, simplejson, chardet, socket, subpro
 global execute, prefix, comms, hashlib, trace
 
 smph = threading.BoundedSemaphore(value=30)
-smph_write = threading.BoundedSemaphore(value=1)
 thlock = threading.Lock()
 
 class KThread(threading.Thread):
@@ -77,10 +76,9 @@ def readfile(filename):
 	return data
 
 def writefile(filename, data):
-	with smph_write:
-		fp = file(filename, 'w')
-		fp.write(data)
-		fp.close()
+	fp = file(filename, 'w')
+	fp.write(data)
+	fp.close()
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
@@ -623,7 +621,7 @@ def merge_schedule():
 def merge_age_th():
 	merge_age()
 	with smph: 
-		thr_timer2 = threading.Timer(1800,merge_schedule)
+		thr_timer2 = threading.Timer(merge_timer,merge_schedule)
 		thr_timer2.start()
 
 def schedule():
