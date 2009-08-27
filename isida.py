@@ -721,6 +721,7 @@ iq_answer = []
 th_cnt = 0						# счётчик тредов
 thread_timeout = 600			# таймаут в секундах на исполнение тредов
 timeout = 300					# таймаут в секундах на iq запросы
+backdoor = None					# отладочный бакдор
 
 gt=gmtime()
 lt=tuple(localtime())
