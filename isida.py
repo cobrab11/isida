@@ -853,7 +853,7 @@ pprint(u'Joined')
 game_over = 0
 
 with smph:
-	thr_timer1 = threading.Timer(60,schedule)
+	thr_timer1 = threading.Timer(120,schedule)
 	thr_timer1.start()
 with smph: 
 	thr_timer2 =threading.Timer(1800,merge_schedule)
