@@ -568,7 +568,6 @@ def merge_age_th():
 	while 1:
 		sleep(merge_time)
 		log_execute(merge_age,())
-		print time.time(),'merge'
 
 def schedule():
 	thr(now_schedule,())
@@ -577,7 +576,6 @@ def now_schedule():
 	while 1:
 		sleep(schedule_time)
 		for tmp in gtimer: log_execute(tmp,())
-		print time.time(),'sch'
 
 def check_rss():
 	lt=tuple(localtime())
