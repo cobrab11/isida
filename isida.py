@@ -613,23 +613,25 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def merge_schedule():
+	with smph:
+		thr_timer4 = threading.Thread(group=None,target=merge_age_th,name=thread_name('merge_age'))
+		thr_timer4.start()
+		
+def merge_age_th():
+	merge_age()
 	with smph: 
 		thr_timer2 = threading.Timer(1800,merge_schedule)
 		thr_timer2.start()
-	with smph:
-		thr_timer4 = threading.Thread(group=None,target=merge_age,name=thread_name('merge_age'))
-		thr_timer4.start()
-	
+
 def schedule():
-	with smph:
-		thr_timer1 = threading.Timer(15,schedule)
-		thr_timer1.start()
 	with smph:
 		thr_timer3 = threading.Thread(group=None,target=now_schedule,name=thread_name('schedule'))
 		thr_timer3.start()
 
 def now_schedule():
-	for tmp in gtimer: tmp()
+	for tmp in gtimer:
+		try: tmp()
+		except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(tmp))
 	lt=tuple(localtime())
 	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
 	try:
@@ -650,7 +652,10 @@ def now_schedule():
 				feedbase.remove(fd)
 				feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
 			writefile(feeds,str(feedbase))
-	except: pass
+	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(tmp))
+	with smph:
+		thr_timer1 = threading.Timer(15,schedule)
+		thr_timer1.start()
 
 def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
