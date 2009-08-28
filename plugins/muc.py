@@ -39,7 +39,6 @@ def muc_tempo_ban(type, jid, nick,text):
 	else: muc_tempo_ban2(type, jid, nick,text)
 
 def muc_tempo_ban2(type, jid, nick,text):
-	merge_age()
 	skip = 1
 	if len(text):
 		who = text.split('\n',2)[0]
@@ -102,7 +101,6 @@ def muc_owner(type, jid, nick,text):
 	muc_affiliation(type, jid, nick, text, 'owner')
 
 def muc_affiliation(type, jid, nick, text, aff):
-	merge_age()
 	tmppos = arr_semi_find(confbase, jid)
 	if tmppos == -1: nowname = nickname
 	else:
@@ -159,7 +157,6 @@ def muc_moderator(type, jid, nick,text):
 	muc_role(type, jid, nick, text, 'moderator')
 
 def muc_role(type, jid, nick, text, role):
-	merge_age()
 	skip = 1
 	if len(text):
 		if text.count('\n'):
@@ -205,7 +202,7 @@ def muc_amoderator(type, jid, nick,text):
 	muc_arole(type, jid, nick, text, 'moderator')
 
 def muc_arole(type, jid, nick, text, role):
-	merge_age()
+
 	skip = 1
 	if len(text):
 		if text[:4].lower() == 'show' and not text.count('\n'):
@@ -307,7 +304,6 @@ def decrease_alist_role():
 
 # ----------------------------------------------
 def muc_afind(type, jid, nick, text):
-	merge_age()
 	skip = 1
 	if len(text):
 			who = text

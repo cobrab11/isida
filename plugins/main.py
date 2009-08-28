@@ -1,20 +1,5 @@
 # -*- coding: utf-8 -*-
 
-def merge_age():
-	global cu_age	
-	tmp, cu_age = cu_age, []		
-	mdb = sqlite3.connect(agestatbase)		
-	cu = mdb.cursor()		
-	for t in tmp:		
-		abc = cu.execute('select * from age where room=? and jid=? and nick=?',(t[0], t[2], t[1])).fetchone()		
-		tm = t[4]		
-		if abc:		
-			cu.execute('delete from age where room=? and jid=? and nick=?',(t[0], t[2], t[1]))		
-			tm += abc[4]		
-		cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (t[0],t[1],t[2],t[3],tm,t[5],t[6],t[7]))		
-	mdb.commit()		
-#   room nick jid time_integer age_integer status_integer type message
-
 def shell_execute(cmd):
 	tmp_file = 'tmp'
 	try: os.remove(tmp_file)
@@ -125,7 +110,6 @@ def censor_status(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
-	merge_age()
 	if text == '': text = nick
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
@@ -284,7 +268,6 @@ def un_unix(val):
 	return ret
 
 def close_age_null():
-	merge_age()
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
@@ -294,7 +277,6 @@ def close_age_null():
 	mdb.commit()
 
 def close_age():
-	merge_age()
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
@@ -305,7 +287,6 @@ def close_age():
 	mdb.commit()
 
 def close_age_room(room):
-	merge_age()
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()

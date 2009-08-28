@@ -2,7 +2,6 @@
 # -*- coding: utf -*-
 
 def call_body(type, jid, nick, text):
-	merge_age()
 	skip = 1
 	if len(text):
 		try:

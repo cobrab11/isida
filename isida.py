@@ -508,14 +508,11 @@ def presenceCB(sess,mess):
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
 
-	ab = None
-	for tmp in cu_age:
-#		room text, nick text, jid text
-		if tmp[0] == room and tmp[1] == nick and tmp[2] == jid:
-			ab = tmp
-			cu_age.remove(tmp)
-			break
+	mdb = sqlite3.connect(agestatbase)
+	cu = mdb.cursor()
+	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
 	tt = int(time.time())
+	cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
@@ -533,11 +530,12 @@ def presenceCB(sess,mess):
 			if exit_message == 'None':
 				exit_message = ''
 #				print exit_type, exit_message
-			cu_age.append((room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
 		else:
-			if ab[5]: cu_age.append((room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-			else: cu_age.append((room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-	else: cu_age.append((room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+			if ab[5]: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
+			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
+	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+	mdb.commit()
 	for tmp in gpresence: thr(tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 	
 def onoff(msg):
@@ -560,14 +558,6 @@ def getResourse(jid):
 def getRoom(jid):
 	jid = unicode(jid)
 	return getName(jid)+'@'+getServer(jid)
-
-def merge_schedule():
-	thr(merge_age_th,())
-		
-def merge_age_th():
-	while 1:
-		sleep(merge_time)
-		log_execute(merge_age,())
 
 def schedule():
 	thr(now_schedule,())
@@ -662,7 +652,6 @@ iq_answer = []
 th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
 backdoor = None					# отладочный бакдор
-merge_time = 600				# время слива временной базы в основную
 schedule_time = 10				# время проверки расписания
 
 gt=gmtime()
@@ -796,7 +785,6 @@ pprint(u'Joined')
 game_over = 0
 
 schedule()
-merge_schedule()
 
 while 1:
 	try:
