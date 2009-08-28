@@ -26,7 +26,7 @@ def iq_uptime(type, jid, nick, text):
 		sleep(0.05)
 		to -= 0.05
 	iiqq = []
-	for iiq in is_answ: iiqq.append(str(iiq))
+	for iiq in is_answ: iiqq.append(unicode(iiq))
 	if to > 0:
 		if iiqq == ['None']: msg = u'Что-то не получается...'
 		else:
@@ -104,7 +104,7 @@ def iq_time(type, jid, nick, text):
 		sleep(0.5)
 		to -= 0.5
 	iiqq = []
-	for iiq in is_answ: iiqq.append(str(iiq))
+	for iiq in is_answ: iiqq.append(unicode(iiq))
 	if to > 0:
 		if len(iiqq) == 3: msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
 		else:
@@ -138,7 +138,7 @@ def iq_version(type, jid, nick, text):
 		sleep(0.5)
 		to -= 0.5
 	iiqq = []
-	for iiq in is_answ: iiqq.append(str(iiq))
+	for iiq in is_answ: iiqq.append(unicode(iiq))
 	if to > 0:
 		if len(iiqq) == 3: msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
 		else:
