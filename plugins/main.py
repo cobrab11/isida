@@ -454,7 +454,7 @@ def info_comm(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 	
 def helpme(type, jid, nick, text):
-	if text == u'about': msg = u'Isida Jabber-bot | © 2oo9 Disabler Production Lab. | http://isida.googlecode.com'
+	if text == u'about': msg = u'Isida Jabber Bot | © 2oo9 Disabler Production Lab. | http://isida-bot.com'
 	elif text == u'donation': msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
 	elif text == u'доступ': msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
 	elif text != '':
@@ -473,7 +473,7 @@ def helpme(type, jid, nick, text):
 				for tmp in cm:
 					if tmp[0] == i and tmp[2] != u'': msg += tmp[1] + ', '
 				msg = msg[:-2]+'\n'
-	else: msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida.googlecode.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
+	else: msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida-bot.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
 	send_msg(type, jid, nick, msg)
 
 def bot_rejoin(type, jid, nick, text):
@@ -1293,7 +1293,7 @@ def rss(type, jid, nick, text):
 # 2 - передавать остаток текста
 
 comms = [
-	 (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы.'),
+	 (0, u'help', helpme, 2, u'Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ'),
 	 (2, u'join', bot_join, 2, u'Вход в конференцию:\njoin room@conference.server.ru/nick - вход в конференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.'),
 	 (2, u'leave', bot_leave, 2, u'Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room'),
 	 (2, u'rejoin', bot_rejoin, 2, u'Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room'),
