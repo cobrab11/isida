@@ -1097,6 +1097,7 @@ def rss(type, jid, nick, text):
 
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
+		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 
 		if is_rss_aton:
@@ -1194,6 +1195,7 @@ def rss(type, jid, nick, text):
 
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
+		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 
 		if is_rss_aton:

@@ -17,15 +17,13 @@ def netwww(type, jid, nick, text):
 #	page = rss_replace(page)
 	if regex:
 		mt = re.findall(r''+regex, page, re.S)
-		for a in mt:
-			print a[:50]
+#		for a in mt:
+#			print a[:50]
 		if mt != []:
 			mt = tuple(mt[0])
 			msg = ''
-			for tmp in mt:
-				msg += tmp
-		else:
-			msg = u'RegExp не найден!'
+			for tmp in mt: msg += tmp
+		else: msg = u'RegExp не найден!'
 	else:
 		msg = get_tag(page,'title')+'\n'
 		msg += unhtml(page)
