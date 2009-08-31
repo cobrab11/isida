@@ -7,8 +7,10 @@ def shell_execute(cmd):
 	try:
 		os.system(cmd+' > '+tmp_file)
 		body = readfile(tmp_file)
-		enc = chardet.detect(body)['encoding']
-		return unicode(body,enc)
+		if len(body):
+			enc = chardet.detect(body)['encoding']
+			return unicode(body,enc)
+		else: return 'ok'
 	except:
 		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 		return u'Ошибка выполнения. Подробности в логе.'
