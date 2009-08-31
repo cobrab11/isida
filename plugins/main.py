@@ -1090,10 +1090,11 @@ def rss(type, jid, nick, text):
 		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
 
-		f = urllib.urlopen(link)
-		try: feed = f.read()
+		try:
+			f = urllib.urlopen(link)
+			feed = f.read()
+			f.close()
 		except: return
-		f.close()
 
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
@@ -1188,10 +1189,11 @@ def rss(type, jid, nick, text):
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
 		if link[:7] != 'http://': link = 'http://'+link
-		f = urllib.urlopen(link)
-		try: feed = f.read()
+		try:
+			f = urllib.urlopen(link)
+			feed = f.read()
+			f.close()
 		except: return
-		f.close()
 
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1

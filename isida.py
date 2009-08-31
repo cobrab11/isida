@@ -25,8 +25,11 @@ def thr(func,param):
 	thread.start_new_thread(log_execute,(func,param))
 	
 def log_execute(proc, params):
+	global thread_error_count
 	try: proc(*params)
-	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
+	except Exception, SM:
+		if SM.lower().count('thread'): thread_error_count += 1
+		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
 def readfile(filename):
 	fp = file(filename)
@@ -651,8 +654,9 @@ banbase = []
 iq_answer = []
 th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
-backdoor = None					# отладочный бакдор
+backdoor = True					# отладочный бакдор
 schedule_time = 10				# время проверки расписания
+thread_error_count = 0			# счётчик ошибок тредов
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -805,6 +809,11 @@ while 1:
 	except Exception, SM:
 		pprint('*** Error *** '+str(SM)+' ***')
 		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+		if SM.lower().count('parsing finished'):
+			close_age()
+			writefile(tmpf,str('restart'))
+			sleep(300)
+			sys.exit(0)
 		if debugmode:
 			writefile(tmpf,str('exit'))
 			raise
