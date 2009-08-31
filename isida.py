@@ -28,6 +28,7 @@ def log_execute(proc, params):
 	global thread_error_count
 	try: proc(*params)
 	except Exception, SM:
+		print 'sm',SM
 		if str(SM).lower().count('thread'): thread_error_count += 1
 		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
