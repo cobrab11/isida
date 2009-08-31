@@ -20,7 +20,7 @@ import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexi
 global execute, prefix, comms, hashlib, trace
 
 def thr(func,param):
-	global th_cnt
+	global th_cnt, thread_error_count
 	th_cnt += 1
 	try: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
@@ -28,7 +28,6 @@ def thr(func,param):
 		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
 def log_execute(proc, params):
-	global thread_error_count
 	try: proc(*params)
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
