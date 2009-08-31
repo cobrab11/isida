@@ -28,7 +28,7 @@ def log_execute(proc, params):
 	global thread_error_count
 	try: proc(*params)
 	except Exception, SM:
-		if SM.lower().count('thread'): thread_error_count += 1
+		if str(SM).lower().count('thread'): thread_error_count += 1
 		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
 def readfile(filename):
@@ -809,7 +809,7 @@ while 1:
 	except Exception, SM:
 		pprint('*** Error *** '+str(SM)+' ***')
 		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
-		if SM.lower().count('parsing finished'):
+		if str(SM).lower().count('parsing finished'):
 			close_age()
 			writefile(tmpf,str('restart'))
 			sleep(300)
