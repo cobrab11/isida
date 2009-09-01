@@ -15,7 +15,7 @@ def writefile(filename, data):
 	fp.write(data)
 	fp.close()
 
-writefile('settings/starttime',str(tuple(time.localtime())))
+writefile('settings/starttime',str(int(time.time())))
 
 while 1:
 	try: execfile('isida.py')

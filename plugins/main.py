@@ -723,48 +723,14 @@ def info_where(type, jid, nick):
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
 
-def get_uptime_raw():
-	nowtime = tuple(localtime())
-	difftime = [0,0,0,0,0,0]
-	difftime[5] = nowtime[5]-starttime[5]
-	if difftime[5] < 0:
-		difftime[5] += 60
-		difftime[4] -= 1
-	difftime[4] += nowtime[4]-starttime[4]
-	if difftime[4] < 0:
-		difftime[4] += 60
-		difftime[3] -= 1
-	difftime[3] += nowtime[3]-starttime[3]
-	if difftime[3] < 0:
-		difftime[3] += 24
-		difftime[2] -= 1
-	timemonth = [31,28,31,30,31,30,31,31,30,31,30,31]
-	difftime[2] += nowtime[2]-starttime[2]
-	if difftime[2] < 0:
-		difftime[2] += timemonth(nowtime[2])
-		difftime[1] -= 1
-	difftime[1] += nowtime[1]-starttime[1]
-	if difftime[1] < 0:
-		difftime[1] += 12
-		difftime[0] -= 1
-	difftime[0] += nowtime[0]-starttime[0]
-	return difftime
-
 def get_uptime_str():
-	difftime = get_uptime_raw()
-	msg = u''
-	if difftime[0] >0: msg += str(difftime[0])+'y '
-	if difftime[1] >0: msg += str(difftime[1])+'m '
-	if difftime[2] >0: msg += str(difftime[2])+'d '
-	msg += tZ(difftime[3])+':'+tZ(difftime[4])+':'+tZ(difftime[5])
-	return msg
+	return un_unix(int(time.time()-starttime))
 
 def info(type, jid, nick):
 	global confbase	
 	msg = u'Конференций: '+str(len(confbase))+u' (подробнее where)\n'
 	msg += u'Сервер: '+lastserver+u' | Ник: '+lastnick+'\n'
 	msg += u'Лимит размера сообщений: '+str(msg_limit)+'\n'
-	msg += u'Время запуска: '+timeadd(starttime)+'\n'
 	msg += u'Локальное время: '+timeadd(tuple(localtime()))+'\n'
 	msg += u'Время работы: ' + get_uptime_str()+u', Последняя сессия: '+un_unix(int(time.time())-sesstime)
 	smiles = getFile(sml,[(getRoom(jid),0)])

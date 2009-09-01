@@ -713,10 +713,8 @@ aliases = getFile(alfile,[])
 
 if os.path.isfile('settings/starttime'):
 	try: starttime = eval(readfile('settings/starttime'))
-	except:
-		starttime = readfile('settings/starttime')
-		starttime = tuple(starttime)
-else: starttime = tuple(localtime())
+	except: starttime = readfile('settings/starttime')
+else: starttime = int(time.time())
 sesstime = int(time.time())
 ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
