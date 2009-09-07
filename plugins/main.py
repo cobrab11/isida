@@ -984,7 +984,8 @@ def html_encode(body):
 		encidx = body.find('charset=')
 		if encidx >= 0:
 			enc = body[encidx+8:encidx+30]
-			enc = enc[:enc.find('"')]
+			if enc.count('"'): enc = enc[:enc.find('"')]
+			elif enc.count('\''): enc = enc[:enc.find('\'')]
 		else: enc = chardet.detect(body)['encoding']
 
 	if body == None: body = ''
