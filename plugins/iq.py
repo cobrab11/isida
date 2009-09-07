@@ -147,9 +147,40 @@ def iq_version(type, jid, nick, text):
 	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
+def iq_stats(type, jid, nick, text):
+	global iq_answer
+	if text == '':
+			send_msg(type, jid, nick, u'Ась?')
+			return
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':text}, payload = [Node('query', {'xmlns': NS_STATS},[Node('stat', {'name':'users/total'},[]),Node('stat', {'name':'users/online'},[])])])
+	cl.send(i)
+	to = timeout
+	no_answ = 1
+	is_answ = [None]
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.25)
+		to -= 0.25
+	iiqq = unicode(is_answ)
+	if to > 0: 
+		if iiqq == 'None': ans = [0,0]
+		else:
+			try: ans = [get_subtag(iiqq.split('stat ')[1],'value'),get_subtag(iiqq.split('stat ')[2],'value')]
+			except: ans = [0,0]
+		msg = u'Статистика сервера: '+text+u' | Всего: '+str(ans[1])+u' | Онлайн: '+str(ans[0])
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	send_msg(type, jid, nick, msg)
+	
 global execute
 
 execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
 	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
 	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
+	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
 	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]

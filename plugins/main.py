@@ -264,9 +264,29 @@ def un_unix(val):
 	tmin = int(val)-int(val/60)*60
 	val = int(val/60)
 	thour = int(val)-int(val/24)*24
-	tday = int(val/24)
+	val = int(val/24)
+	tday = int(val)-int(val/30)*30
+	val = int(val/30)
+	tmonth = int(val)-int(val/12)*12
+	tyear = int(val/12)
 	ret = tZ(thour)+':'+tZ(tmin)+':'+tZ(tsec)
-	if tday: ret = str(tday)+' day(s) '+ret
+	if tday or tmonth or tyear:
+		ttday = int(str(tday)[-1:])
+		try: tttday = int(str(tday)[-2:-1])
+		except: tttday = 0
+		if tttday == 1: ret = str(tday)+u' дней '+ret
+		else:
+			if ttday in [0,5,6,7,8,9]: ret = str(tday)+u' дней '+ret
+			elif ttday in [2,3,4]: ret = str(tday)+u' дня '+ret
+			else: ret = str(tday)+u' день '+ret
+	if tmonth or tyear:
+		if tmonth in [0,5,6,7,8,9,10,11,12]: ret = str(tmonth)+u' месяцев '+ret
+		elif tmonth in [2,3,4]: ret = str(tmonth)+u' месяца '+ret
+		else: ret = str(tmonth)+u' месяц '+ret
+	if tyear:
+		if tyear in [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]: ret = str(tyear)+u' лет '+ret
+		elif tyear in [2,3,4]: ret = str(tyear)+u' года '+ret
+		else: ret = str(tyear)+u' год '+ret
 	return ret
 
 def close_age_null():

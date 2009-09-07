@@ -76,9 +76,9 @@ def parser(text):
 	return ttext
 
 def tZ(val):
-	rval = str(val)
-	if val<10: rval = '0'+rval
-	return rval
+	val = str(val)
+	if len(val) == 1: val = '0'+val
+	return val
 
 def timeadd(lt):
 	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
@@ -163,6 +163,7 @@ def os_version():
 			else: japytOs = 'iPhone Unknown (platform: '+osInfo[4]+')'
 			if osInfo[3].count('1228.7.37'): japytOs += ' FW.2.2.1'
 			elif osInfo[3].count('1228.7.36'): japytOs += ' FW.2.2'
+			elif osInfo[3].count('1357.2.89'): japytOs += ' FW.3.0.1'
 			else: japytOs += ' FW.Unknown ('+osInfo[3]+')'
 			japytOs += ' ('+osInfo[1]+') / Python v'+japytPyVer
 		else: japytOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+japytPyVer
@@ -261,6 +262,7 @@ def iqCB(sess,iq):
 		if nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
 		if nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
 		if nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
+		if nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
 
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -657,6 +659,7 @@ timeout = 300					# таймаут в секундах на iq запросы
 backdoor = True					# отладочный бакдор
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
+NS_STATS = 'http://jabber.org/protocol/stats'
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -762,7 +765,7 @@ except:
 	writefile(tmpf,str('restart'))
 	sleep(reboot_time)
 	while 1: sys.exit(0)
-pprint(u'Registeration Handlers')
+pprint(u'Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
