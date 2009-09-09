@@ -80,7 +80,7 @@ def disco(type, jid, nick, text):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (jid text)''')
-			isa = is_answ[0].split('<item ')
+			isa = str(is_answ[0]).split('<item ')
 			for ii in isa[1:]:
 				djid = get_subtag(ii,'jid')
 				cu.execute('insert into tempo values (?)', (djid,))
