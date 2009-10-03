@@ -6,7 +6,6 @@
 
 time_limit_base = set_folder+u'saytoowner.db'
 amsg_limit = [86400,3600,60] # лимит размера сообщения
-amsg_time_limit = 30 # таймаут отправки в секундах
 
 def adminmail(type, jid, nick, text):
 	if len(text):

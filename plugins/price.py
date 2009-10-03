@@ -28,8 +28,25 @@ def price(type, jid, nick, parameters):
 	except:
 		send_msg(type, jid, nick, u'Не получилось обработать запрос')
     
+# by dissy@isida-bot.com
+
+def bizinfo(type, jid, nick, parameters):
+	try:
+		if parameters.count('http://'):
+			send_msg(type, jid, nick, u'формат ввода сайта domain.tld')
+			return
+		if len(parameters):
+			parameters = parameters.split('.')[-2].lower()+'.'+parameters.split('.')[-1].lower()
+			req = 'http://bizinformation.org/ru/www.'+parameters
+			r = urllib2.urlopen(req)
+			message = get_tag(unicode(r.read().strip(),'utf-8'),'span')
+			send_msg(type, jid, nick, u'Оценочная стоимость домена '+parameters.strip()+u' составляет - '+message)
+		else: send_msg(type, jid, nick, u'какой сайт оценивать?')
+	except: send_msg(type, jid, nick, u'Не получилось обработать запрос')
+    
     
 global execute
 
 
-execute = [(0, u'price', price, 2, u'Показывает ориентировочную оценочную стоимость домена | Author: ferym')]
+execute = [(0, u'price', price, 2, u'Показывает ориентировочную оценочную стоимость домена | Author: ferym'),
+           (0, u'bizinfo', bizinfo, 2, u'Показывает ориентировочную оценочную стоимость домена | Author: Disabler')]
