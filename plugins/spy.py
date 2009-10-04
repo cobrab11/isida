@@ -3,8 +3,8 @@
 
 spy_base = set_folder+u'spy.db'		# база слежения
 spy_stat_time = int(time.time())	# время последнего сканирования
-scan_time = 1800					# интервал сканирования
-spy_action_time = 86400				# интервал реакции на сканирование
+scan_time = 10#1800					# интервал сканирования
+spy_action_time = 60#86400				# интервал реакции на сканирование
 
 #conf hrs usrs msgs action
 def spy_add(text):
@@ -100,17 +100,18 @@ def spy_action():
 			act = tmp[4].split(' ')
 			mist = None
 			for tmp2 in act:
-				if tmp2[0] == u'u' and int(tmp2[1:]) > tmp[2]: mist = True
-				elif tmp2[0] == u'm' and int(tmp2[1:]) > tmp[3]: mist = True
+				if tmp2[0] == u'u' and int(tmp2[1:]) > tmp[2]: mist = tmp2
+				elif tmp2[0] == u'm' and int(tmp2[1:]) > tmp[3]: mist = tmp2
 				sb.remove(tmp)
 				if mist:
 					if arr_semi_find(confbase, tmp[0]) >= 0:
 						confbase = arr_del_semi_find(confbase,tmp[0])
 						writefile(confs,str(confbase))
 						leaveconf(tmp[0], domain, u'Выхожу в связи с низкой активностью конференции')
+						for tmpo in ownerbase: send_msg('chat', getRoom(tmpo), '', u'Конференция '+tmp[0]+u' покинута по условию spy плагина: '+mist)
 				else: sb.append((tmp[0],int(time.time()),tmp[2], 0,tmp[4]))
 				writefile(spy_base,str(sb))
-					
+
 global execute, timer, message_control
 
 timer = [get_spy_stat, spy_action]
