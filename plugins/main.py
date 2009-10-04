@@ -1142,7 +1142,6 @@ def rss(type, jid, nick, text):
 
 			msg = replacer(msg)
 
-			if submode == 'full': msg = msg[:-1]
 		else:
 			feed = html_encode(feed)
 			title = get_tag(feed,'title')
@@ -1258,7 +1257,6 @@ def rss(type, jid, nick, text):
 
 			msg = replacer(msg)
 
-			if lng > 1 and submode == 'full': msg = msg[:-1]
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
