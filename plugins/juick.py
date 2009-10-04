@@ -19,50 +19,42 @@ def juick_user_info(type, jid, nick, text):
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/friends'
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<title>404 Not Found</title>'):
-			msg = u'Пользователь '+text+u' не найден'
+
+		if body.count('<title>404 Not Found</title>'): msg = u'Пользователь '+text+u' не найден'
 		else:
+			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/readers'
+			rbody = urllib.urlopen(link).read()
+			rbody = rss_replace(html_encode(rbody))
+			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/tags'
+			tbody = urllib.urlopen(link).read()
+			tbody = rss_replace(html_encode(tbody))
 			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
-			tb = body.split('<div id="content">')[1].split('</div>')[0]
+			tb = body.split('<div id="content">')[1].split('</p>')[0]
 			try:
 				if len(tb)>=20 and tb.count('I read'):
 					msg += '\n'+get_tag(tb,'h2')+' - '
-					for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
-						msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+					for tmp in tb.split('<p>')[1].split('<a href="')[1:]: msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
 					msg = msg[:-2]
 				else: msg += '\nNo readers'
-			except:
-				msg += '\nNo readers'
-			try:
-				if len(tb)>=20 and tb.count('My read'):			
-					tb = body.split('</p>')[1]
-					msg += '\n'+get_tag(tb,'h2')+' - '
-					for tmp in tb.split('<p>')[1].split('<a href="')[1:]:
-						msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
-					msg = msg[:-2]
-				else: msg += '\nNo readers'
-			except:
-				msg += '\nNo readers'
-			try:
-				tb = body.split('<div id="lcol">')[1].split('<div>')[0]
-				if len(tb)>=20 and tb.count('</a></p>'):
-					tb.split('</a></p>')[0]
-#					msg += '\n'+get_tag(tb,'h2')+':'
-					for ttb in tb.split('<br/>')[1:]:
-						msg += '\n'+get_tag(ttb,'a')+' - '+get_subtag(ttb,'href')
-				else: msg += '\nNo info'
-			except:
-				msg += '\nNo info'
-			try:
-				if body.count('<h2>Tags</h2>'):
-					tb = body.split('<h2>Tags</h2>')[1].split('</p>')[0]
+			except: msg += '\nNo readers'
+
+			if not rbody.count('<title>404 Not Found</title>'):
+				try:
+					tb = rbody.split('<div id="content">')[1].split('</div>')[0]
+					if len(tb)>=20 and tb.count('My read'):
+						msg += '\n'+get_tag(tb,'h2')+' - '
+						for tmp in tb.split('<p>')[1].split('<a href="')[1:]: msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
+						msg = msg[:-2]
+					else: msg += '\nNo readers'
+				except: msg += '\nNo readers'
+
+			if not tbody.count('<title>404 Not Found</title>'):
+				try:
+					tb = tbody.split('<div id="content">')[1].split('</div>')[0]
 					msg += u'\nTags: '
-					for ttb in tb.split('<a href')[1:]:
-						msg += ttb[ttb.find('>')+1:ttb.find('<',ttb.find('>'))]+', '
+					for ttb in tb.split('<span')[1:]: msg += get_tag(ttb,'a')+', '
 					msg = msg[:-2]
-				else: msg += '\nNo tags'
-			except:
-				msg += '\nNo tags'
+				except: msg += '\nNo tags'
 	else: msg = u'Кто нужен то?'
 	send_msg(type, jid, nick, msg)
 
@@ -141,11 +133,12 @@ def juick_tag_user(type, jid, nick, text):
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
 		except: mlen = 5
+		text = text.split(' ')[0]
 		if mlen > 20: mlen = 20
-		link = 'http://juick.com/last?tag='+text.split(' ')[0].encode('utf-8').replace('\\x','%').replace(' ','%20')
+		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<p>Tag not found</p>'):
+		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
 			msg = u'Тег '+text+u' не найден'
 		else:
 			usr = body.split('<h2>Users</h2>')[1].split('<h2>Messages</h2>')[0].split('<a href')
@@ -167,10 +160,10 @@ def juick_tag_msg(type, jid, nick, text):
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<p>Tag not found</p>'):
+		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
 			msg = u'Тег '+text+u' не найден'
 		else:
-			mes = body.split('<h2>Messages</h2>')[1].split('<h2>Tags</h2>')[0].split('<li id="')
+			mes = body.split('<h2>Messages</h2>')[1].split('</div><div id="lcol"><h2>')[0].split('<li class="liav"')
 			mesg = ''
 			for us in mes[1:mlen+1]:
 				mesg += '\nhttp://juick.com/'+get_tag(us.split('<big>')[1],'a')[1:]+'/'+get_tag(us.split('</div>')[1],'a')[1:]+' - '
