@@ -2,15 +2,17 @@
 # -*- coding: utf -*-
 
 def srv_nslookup(type, jid, nick, text):
-	msg = shell_execute(u'nslookup '+text)
-	send_msg(type, jid, nick, msg)
+	srv_raw_check(type, jid, nick, u'nslookup '+text)
 
 def srv_dig(type, jid, nick, text):
-	msg = shell_execute(u'dig '+text)
-	send_msg(type, jid, nick, msg)
+	srv_raw_check(type, jid, nick, u'dig '+text)
 
 def srv_host(type, jid, nick, text):
-	msg = shell_execute(u'host '+text)
+	srv_raw_check(type, jid, nick, u'host '+text)
+
+def srv_raw_check(type, jid, nick, text):
+	if text.count('&') or text.count(';'): msg = u'Недоступно!'
+	else: msg = shell_execute(text)
 	send_msg(type, jid, nick, msg)
 
 global execute
