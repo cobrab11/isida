@@ -963,17 +963,14 @@ def rss_del_html(ms):
 	return ms
 
 def rss_del_nn(ms):
-	while ms.count('  '):
-		ms = ms.replace('  ',' ')
-	while ms.count('\n '):
-		ms = ms.replace('\n ','')
-	ms = ms.replace('\r','')
-	ms = ms.replace('\t','')
-	ms = ms.replace('\n \n','\n')
-	while ms.count('\n\n'):
-		ms = ms.replace('\n\n','\n')
-	ms += '\n'
-	return ms #.replace('\n','!n').replace('\t','!t').replace(' ','!s')
+	ms = ms.replace('\r',' ').replace('\t',' ')
+	while ms.count('\n '): ms = ms.replace('\n ','\n')
+	while ms[0] == '\n' or ms[0] == ' ': ms = ms[1:]
+	while ms.count('\n\n'): ms = ms.replace('\n\n','\n')
+	while ms.count('  '): ms = ms.replace('  ',' ')
+	while ms.count(u'\n\n•'): ms = ms.replace(u'\n\n•',u'\n•')
+	while ms.count(u'• \n'): ms = ms.replace(u'• \n',u'• ')
+	return ms.strip()
 
 def html_encode(body):
 	encidx = body.find('encoding=')
@@ -1113,7 +1110,7 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
 
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
@@ -1128,12 +1125,12 @@ def rss(type, jid, nick, text):
 				tbody = get_tag(mmsg,'description')
 				turl = get_tag(mmsg,'link')
 			else:
-				ttitle = get_tag(mmsg,'content')
-				tbody = get_tag(mmsg,'title')
+				ttitle = get_tag(mmsg,'content').replace('\n',' ')
+				tbody = get_tag(mmsg,'title').replace('\n',' ')
 				tu1 = mmsg.index('<link')
 				tu2 = mmsg.find('href=\"',tu1)+6
 				tu3 = mmsg.find('\"',tu2)
-				turl = mmsg[tu2:tu3]
+				turl = mmsg[tu2:tu3].replace('\n',' ')
 
 			msg += u'• '
 			if submode == 'full':
@@ -1145,7 +1142,6 @@ def rss(type, jid, nick, text):
 
 			msg = replacer(msg)
 
-			msg = msg[:-1]
 			if submode == 'full': msg = msg[:-1]
 		else:
 			feed = html_encode(feed)
@@ -1222,7 +1218,7 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = ttitle = get_tag(mmsg,'content') + '\n'
+			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
 
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
@@ -1237,12 +1233,12 @@ def rss(type, jid, nick, text):
 					tbody = get_tag(mmsg,'description')
 					turl = get_tag(mmsg,'link')
 				else:
-					ttitle = get_tag(mmsg,'content')
-					tbody = get_tag(mmsg,'title')
+					ttitle = get_tag(mmsg,'content').replace('\n',' ')
+					tbody = get_tag(mmsg,'title').replace('\n',' ')
 					tu1 = mmsg.index('<link')
 					tu2 = mmsg.find('href=\"',tu1)+6
 					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3]
+					turl = mmsg[tu2:tu3].replace('\n',' ')
 
 				if mode == 'new':
 					if ttitle == tstop: break
@@ -1261,7 +1257,6 @@ def rss(type, jid, nick, text):
 			if submode == 'body' or submode == 'head': msg = msg[:-1]
 
 			msg = replacer(msg)
-			msg = msg[:-1]
 
 			if lng > 1 and submode == 'full': msg = msg[:-1]
 		else:
