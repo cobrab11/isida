@@ -20,7 +20,7 @@ def juick_user_info(type, jid, nick, text):
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
 
-		if body.count('<title>404 Not Found</title>'): msg = u'Пользователь '+text+u' не найден'
+		if body.count('<h1>Page Not Found</h1>'): msg = u'Пользователь '+text+u' не найден'
 		else:
 			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/readers'
 			rbody = urllib.urlopen(link).read()
@@ -38,7 +38,7 @@ def juick_user_info(type, jid, nick, text):
 				else: msg += '\nNo readers'
 			except: msg += '\nNo readers'
 
-			if not rbody.count('<title>404 Not Found</title>'):
+			if not rbody.count('<h1>Page Not Found</h1>'):
 				try:
 					tb = rbody.split('<div id="content">')[1].split('</div>')[0]
 					if len(tb)>=20 and tb.count('My read'):
@@ -48,7 +48,7 @@ def juick_user_info(type, jid, nick, text):
 					else: msg += '\nNo readers'
 				except: msg += '\nNo readers'
 
-			if not tbody.count('<title>404 Not Found</title>'):
+			if not tbody.count('<h1>Page Not Found</h1>'):
 				try:
 					tb = tbody.split('<div id="content">')[1].split('</div>')[0]
 					msg += u'\nTags: '
@@ -68,7 +68,7 @@ def juick_user(type, jid, nick, text):
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<title>404 Not Found</title>'):
+		if body.count('<h1>Page Not Found</h1>'):
 			msg = u'Пользователь '+text+u' не найден'
 		else:
 			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
@@ -99,7 +99,7 @@ def juick_msg(type, jid, nick, text):
 			except: repl_limit = 3
 			body = urllib.urlopen(link).read()
 			body = rss_replace(html_encode(body.replace('<div><a href','<div><a ')))
-			if body.count('<title>404 Not Found</title>'):
+			if body.count('<h1>Page Not Found</h1>'):
 				msg = u'Пост #'+text+u' не найден'
 			else:
 				nname = get_tag(body,'h1')
