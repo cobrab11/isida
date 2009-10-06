@@ -34,7 +34,7 @@ def defcode(type, jid, nick, text):
 				tmm = replacer(tmm)
 				tmm = tmm[tmm.find('>')+1:]
 				tmm = tmm.replace('\n','\t')
-				mmsg += tmm[1:-2] + '\n'
+				mmsg += tmm[2:] + '\n'
 			msg = mmsg[:-1]
 	
        	send_msg(type, jid, nick, msg)
