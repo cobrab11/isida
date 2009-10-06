@@ -965,7 +965,7 @@ def rss_del_html(ms):
 def rss_del_nn(ms):
 	ms = ms.replace('\r',' ').replace('\t',' ')
 	while ms.count('\n '): ms = ms.replace('\n ','\n')
-	while ms[0] == '\n' or ms[0] == ' ': ms = ms[1:]
+	while len(ms) and (ms[0] == '\n' or ms[0] == ' '): ms = ms[1:]
 	while ms.count('\n\n'): ms = ms.replace('\n\n','\n')
 	while ms.count('  '): ms = ms.replace('  ',' ')
 	while ms.count(u'\n\n•'): ms = ms.replace(u'\n\n•',u'\n•')
