@@ -737,8 +737,11 @@ def info_where(type, jid, nick):
 				wbase[i] = wbase[j]
 				wbase[j] = jj
 	nmb = 1
+	hr = getFile(hide_conf,[])
 	for i in wbase:
-		msg += str(nmb)+'. '+i[0]+' ['+str(i[1])+']\n'
+		if hr.count(getRoom(i[0])): rname = u'Скрыто'
+		else: rname = i[0]
+		msg += str(nmb)+'. '+rname+' ['+str(i[1])+']\n'
 		nmb += 1
 	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
