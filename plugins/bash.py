@@ -5,7 +5,7 @@ def bash_org_ru(type, jid, nick, text):
 	try: url = u'http://bash.org.ru/quote/'+str(int(text))
 	except: url = u'http://bash.org.ru/random'
 	body = html_encode(urllib.urlopen(url).read())
-	if body.count('<div class="vote">') > 1: msg = u'Цитата не найдена!'
+	if body.count('<div class="vote">') > 1 and url.count('quote'): msg = u'Цитата не найдена!'
 	else:
 		body = body.split('<div class="vote">')[1].split('<div class="q">')[0]
 		msg = u'http://bash.org.ru/quote/'+str(get_tag(body, 'a'))+u' '+replacer(body[body.find('[:||||:]'):].replace('</div>', '\n').replace('[:||||:]', '::: ').replace('</a>\n', ''))
