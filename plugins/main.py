@@ -722,7 +722,7 @@ def ignore(type, jid, nick, text):
 
 def info_where(type, jid, nick):
 	global confbase
-	msg = u'Активных конференций: '+str(len(confbase))+'\n'
+	msg = u'Активных конференций: '+str(len(confbase))
 	wbase = []
 	for jjid in confbase:
 		cnt = 0
@@ -738,12 +738,13 @@ def info_where(type, jid, nick):
 				wbase[j] = jj
 	nmb = 1
 	hr = getFile(hide_conf,[])
+	hr_count = 0
 	for i in wbase:
-		if hr.count(getRoom(i[0])): rname = u'Скрыто'
-		else: rname = i[0]
-		msg += str(nmb)+'. '+rname+' ['+str(i[1])+']\n'
-		nmb += 1
-	msg = msg[:-1]
+		if hr.count(getRoom(i[0])): hr_count += 1
+		else:
+			msg += '\n'+str(nmb)+'. '+i[0]+' ['+str(i[1])+']'
+			nmb += 1
+	if hr_count: msg += u'\nСкрыто конференций: '+str(hr_count)
 	send_msg(type, jid, nick, msg)
 
 def get_uptime_str():
