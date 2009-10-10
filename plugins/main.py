@@ -765,51 +765,6 @@ def info(type, jid, nick):
 	msg += u' | Префикс команд: '+get_prefix(get_local_prefix(jid))
 	send_msg(type, jid, nick, msg)
 
-def info_res(type, jid, nick, text):
-	mdb = sqlite3.connect(jid_base)
-	cu = mdb.cursor()
-	if text == 'count':
-		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
-		jidbase = []
-	elif text == '':
-		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
-		jidbase = cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchmany(10)
-	else:
-		text1 = '%'+text+'%'
-		tlen = len(cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchall())
-		jidbase = cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchmany(10)
-	if not tlen: msg = u'Не найдено: '+text
-	else:
-		if text == '': msg = u'Всего ресурсов: '+str(tlen)+' \n'
-		else: msg = u'Найдено ресурсов: '+str(tlen)+' \n'
-		cnt = 1
-		for jj in jidbase:
-			msg += str(cnt)+'. '+jj[0]+'\t'+str(jj[1])+' \n'
-			cnt += 1
-		msg = msg[:-2]
-	send_msg(type, jid, nick, msg)
-
-def info_serv(type, jid, nick, text):
-	mdb = sqlite3.connect(jid_base)
-	cu = mdb.cursor()
-	if text == 'count':
-		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
-		jidbase = []
-	elif text == '':
-		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
-		jidbase = cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall()
-	else:
-		text1 = '%'+text+'%'
-		tlen = len(cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall())
-		jidbase = cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall()
-	if not tlen: msg = u'Не найдено: '+text
-	else:
-		if text == '': msg = u'Всего серверов: '+str(tlen)+' \n'
-		else: msg = u'Найдено серверов: '+str(tlen)+' \n'
-		for jj in jidbase: msg += jj[0]+':'+str(jj[1])+' | '
-		msg = msg[:-2]
-	send_msg(type, jid, nick, msg)
-
 def info_base(type, jid, nick):
 	msg = u'Чего искать то будем?'
 	if nick != '':
@@ -827,23 +782,6 @@ def info_base(type, jid, nick):
 					msg += base[2]+'/'+base[3]
 					fl = 0
 		if fl: msg = '\''+nick+u'\' not found!'
-	send_msg(type, jid, nick, msg)
-	
-
-def info_search(type, jid, nick, text):
-	msg = u'Чего искать то будем?'
-	if text != '':
-		mdb = sqlite3.connect(jid_base)
-		cu = mdb.cursor()
-		ttext = '%'+text+'%'
-		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
-		if len(tma):
-			msg = u'Найдено:'
-			cnd = 1
-			for tt in tma:
-				msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
-				cnd += 1
-		else: msg = text +u' не найдено!'
 	send_msg(type, jid, nick, msg)
 
 def gtmp_search(type, jid, nick, text):
@@ -1288,10 +1226,7 @@ comms = [
 	 (2, u'bot_owner', owner, 2, u'Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.'),
 	 (2, u'bot_ignore', ignore, 2, u'Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.'),
 	 (1, u'where', info_where, 1, u'Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.'),
-	 (1, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
-	 (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
 	 (0, u'inbase', info_base, 1, u'Идентификация Вас в глобальной базе.'),
-	 (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
 	 (2, u'look', real_search, 2, u'Поиск участника по конференциям, где находится бот.'),
 	 (2, u'glook', real_search_owner, 2, u'Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.'),
 	 (1, u'tempo', tmp_search, 2, u'Локальный поиск во временной базе.'),

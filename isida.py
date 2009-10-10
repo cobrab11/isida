@@ -498,21 +498,9 @@ def presenceCB(sess,mess):
 				if role != mmb[2] or affiliation != mmb[3]: not_found = 1
 				else: not_found = 2
 		if not not_found: megabase.append([room, nick, role, affiliation, jid])
-	if not megabase2.count([room, nick, role, affiliation, jid]): megabase2.append([room, nick, role, affiliation, jid])
-	if jid != 'None':
-		mdb = sqlite3.connect(jid_base)
-		cu = mdb.cursor()
-		aa1 = getName(jid)
-		aa2 = getServer(jid)
-		aa3 = getResourse(jid)
-		try:
-			if not cu.execute('select * from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchall():
-				cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
-				mdb.commit()
-		except: pass	
+	if not megabase2.count([room, nick, role, affiliation, jid]): megabase2.append([room, nick, role, affiliation, jid])	
 	if jid == 'None': jid = '<temporary>'+nick
 	else: jid = getRoom(jid.lower())
-
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
@@ -635,7 +623,6 @@ cens = set_folder+u'censor.txt'			# список "запрещенных" сло
 conoff = set_folder+u'commonoff'		# список "запрещенных" команд для бота
 saytobase = set_folder+u'sayto.db'		# база команды "передать"
 agestatbase = set_folder+u'agestat.db'	# статистика возрастов
-jid_base = set_folder+u'jidbase.db'		# статистика jid'ов
 talkersbase = set_folder+u'talkers.db'	# статистика болтунов
 wtfbase = set_folder+u'wtfbase.db'		# определения
 answersbase = set_folder+u'answers.db'	# ответы бота
