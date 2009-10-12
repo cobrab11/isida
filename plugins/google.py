@@ -13,9 +13,8 @@ def google(type, jid, nick,text):
 		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
 		content = content.replace('<b>', u'«').replace('</b>', u'»')
 		url = results[0]['unescapedUrl']
-		msg = replacer(noh_title)+replacer(content)+url
-	except:
-		msg = u'Выражение "' + text + u'" - не найдено!'
+		msg = replacer(noh_title)+u'\n'+replacer(content)+u'\n'+url
+	except: msg = u'Выражение \"' + text + u'\" - не найдено!'
 	send_msg(type, jid, nick, msg)
 
 def translate(type, jid, nick,text):
@@ -25,8 +24,7 @@ def translate(type, jid, nick,text):
 		  'pl','pt','ro','ru','sr','sk','sl','es','sv','th','tr','uk','vi']
 	if text.lower() == 'list':
 		msg = u'Доступные языки для перевода: '
-		for tl in trlang:
-			msg += tl+', '
+		for tl in trlang: msg += tl+', '
 		msg = msg[:-2]
 	else:
 		if text.count(' ') > 1:
@@ -37,10 +35,8 @@ def translate(type, jid, nick,text):
 				search_results = urllib.urlopen(url)
 				json = simplejson.loads(search_results.read())
 				msg = json['responseData']['translatedText']
-			else:
-				msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
-		else:
-			msg = u'Формат команды: tr с_какого на_какой текст'
+			else: msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
+		else: msg = u'Формат команды: tr с_какого на_какой текст'
 	send_msg(type, jid, nick, msg)
 
 global execute
