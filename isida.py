@@ -44,14 +44,12 @@ def writefile(filename, data):
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
-		while 1:
-			try:
-				filebody = eval(readfile(filename))
-				break
-			except: sleep(0.02)
+		try: filebody = eval(readfile(filename))
+		except: filebody = eval(readfile(filename+'.back'))
 	else:
 		filebody = default
 		writefile(filename,str(default))
+	writefile(filename+'.back',str(filebody))
 	return filebody
 
 def get_subtag(body,tag):
