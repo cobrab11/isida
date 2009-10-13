@@ -247,22 +247,25 @@ def iqCB(sess,iq):
 	if iq.getType()=='result':
 		cparse = unicode(iq)
 		raw_iq = [id,cparse]
-		nspace = query.getNamespace()
-		if nspace == NS_MUC_ADMIN:
-			cparse = cparse.split('<item')
-			for banm in cparse[1:]:
-				st_index = banm.find('jid=\"')+5
-				cjid=banm[st_index:banm.find('\"',st_index)]
-				if banm.count('<reason />') or banm.count('<reason/>'): creason = u'No reason'
-				else: creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
-				banbase.append((cjid, creason, str(id)))
-			banbase.append((u'TheEnd', u'None',str(id)))
-		if nspace == NS_MUC_OWNER: banbase.append((u'TheEnd', u'None',str(id)))
-		if nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
-		if nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
-		if nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
-		if nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
-		if nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
+		is_vcard = iq.getTag('vCard')
+		if is_vcard: iq_answer.append((id, unicode(is_vcard)))
+		else:
+			nspace = query.getNamespace()
+			if nspace == NS_MUC_ADMIN:
+				cparse = cparse.split('<item')
+				for banm in cparse[1:]:
+					st_index = banm.find('jid=\"')+5
+					cjid=banm[st_index:banm.find('\"',st_index)]
+					if banm.count('<reason />') or banm.count('<reason/>'): creason = u'No reason'
+					else: creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
+					banbase.append((cjid, creason, str(id)))
+				banbase.append((u'TheEnd', u'None',str(id)))
+			if nspace == NS_MUC_OWNER: banbase.append((u'TheEnd', u'None',str(id)))
+			if nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
+			if nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
+			if nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
+			if nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
+			if nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
 
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):

@@ -1,6 +1,57 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+def iq_vcard(type, jid, nick, text):
+	global iq_answer
+	if text.count('\n'):
+		args = text.split('\n')[1]
+		text = text.split('\n')[0]
+	else: args = ''
+	if text == '': who = getRoom(jid)+'/'+nick
+	else:
+		who = text
+		for mega1 in megabase:
+			if mega1[0] == jid and mega1[1] == text:
+				who = getRoom(jid)+'/'+text
+				break
+	iqid = str(randint(1,100000))
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VCARD},[])])
+	cl.send(i)
+	to = timeout
+	no_answ = 1
+	is_answ = [None]
+	while to >= 0 and no_answ:
+		for aa in iq_answer:
+			if aa[0]==iqid:
+				is_answ = aa[1:]
+				iq_answer.remove(aa)
+				no_answ = 0
+				break
+		sleep(0.05)
+		to -= 0.05
+	if to > 0:
+		isa = is_answ[0]
+		if isa == 'None': msg = u'Что-то не получается...'
+		else:
+			if args.lower() == u'show':
+				if isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
+				msg = u'vCard tags: '
+				for i in range(0,len(isa)):
+					if isa[i] == '<':
+						tag = isa[i+1:isa.find('>',i)]
+						if isa[i:].count('</'+tag+'>'): msg += tag+', '
+				msg = msg[:-2]
+			elif args != '':
+				msg = u'vCard: '
+				for tmp in args.split('|'):
+					if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
+					else: tname,ttag = tmp,tmp
+					tt = get_tag(isa,ttag.upper())
+					if tt != '': msg += '\n'+tname+': '+tt
+			else: msg = u'Ник: '+get_tag(isa,'NICKNAME')+u'\nИмя: '+get_tag(isa,'FN')+u'\nО себе: '+get_tag(isa,'DESC')+u'\nURL: '+get_tag(isa,'URL')
+	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	send_msg(type, jid, nick, msg)
+
 def iq_uptime(type, jid, nick, text):
 	global iq_answer
 	if text == '': who = getRoom(jid)+'/'+nick
@@ -32,7 +83,6 @@ def iq_uptime(type, jid, nick, text):
 		else:
 			try: msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
 			except: msg = u'Что-то не получается...'
-
 	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
@@ -183,4 +233,5 @@ execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
 	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
 	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
 	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
+	 (0, u'vcard', iq_vcard, 2, u'Запрос vcard\nvcard [ник] - показ основной информации из vcard\nvcard nick\nshow - показ доступных полей vcard\nvcard nick\nполе:название|поле:название - показ запрощенных полей из vcard'),
 	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]
