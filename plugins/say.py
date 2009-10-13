@@ -7,7 +7,11 @@ def say(type, jid, nick, text):
 def gsay(type, jid, nick, text):
 	for jjid in confbase: send_msg('groupchat', getRoom(jjid), '', text)
 
+def set_topic(type, jid, nick, text):
+	cl.send(Message(jid, subject=text, typ='groupchat'))
+	
 global execute
 
 execute = [(1, u'say', say, 2, u'Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.'),
-	 (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.')]
+	 (2, u'gsay', gsay, 2, u'Глобальное объявление во всех конференциях, где находится бот.'),
+	 (1, u'topic', set_topic, 2, u'Установка топика конференции')]

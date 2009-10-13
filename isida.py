@@ -298,6 +298,14 @@ def iqCB(sess,iq):
 			cl.send(i)
 			raise xmpp.NodeProcessed
 
+		elif iq.getTag(name='query', namespace=xmpp.NS_LAST):
+			pprint(u'*** iq:uptime from '+unicode(nick))
+			i=xmpp.Iq(to=nick, typ='result')
+			i.setAttr(key='id', val=id)
+			i.setTag('query',namespace=xmpp.NS_LAST,attrs={'seconds':str(int(time.time())-starttime)})
+			cl.send(i)
+			raise xmpp.NodeProcessed
+
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	no_comm = 1
 	cof = getFile(conoff,[])
