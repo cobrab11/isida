@@ -113,12 +113,18 @@ def censor_status(type, jid, nick, text):
 
 def status(type, jid, nick, text):
 	if text == '': text = nick
-	mdb = sqlite3.connect(agestatbase)
-	cu = mdb.cursor()
-	stat = cu.execute('select message,status from age where nick=? and room=?',(text,jid)).fetchone()
-	stat2 = cu.execute('select message,status from age where jid=? and room=?',('<temporary>'+text.lower()+'@',jid)).fetchone()
-	if stat2: stat = stat2
-	if stat:
+	is_found = None
+	for tmp in megabase:
+		if tmp[0] == jid and tmp[1] == text:
+			is_found = True
+			break
+	if is_found:
+		realjid = getRoom(get_access(jid,text)[1])
+		mdb = sqlite3.connect(agestatbase)
+		cu = mdb.cursor()
+		stat = cu.execute('select message,status from age where jid=? and room=? and nick=?',(realjid,jid,text)).fetchone()
+		print realjid,jid,text
+		print stat
 		if stat[1]: msg = u'покинул данную конференцию.'
 		else:
 			stat = stat[0].split('\n',4)
@@ -129,7 +135,7 @@ def status(type, jid, nick, text):
 			else: msg += ' [0] '
 			if stat[0] != 'None' and stat[1] != 'None': msg += stat[0]+'/'+stat[1]
 		if text != nick: msg = text + ' - '+msg
-	else: msg = u'Не найдено!'
+	else: msg = u'Я могу ошибаться, но '+text+u' тут нету...'
 	send_msg(type, jid, nick, msg)
 
 def replacer(msg):
