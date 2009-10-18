@@ -233,5 +233,5 @@ execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
 	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
 	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
 	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
-	 (0, u'vcard', iq_vcard, 2, u'Запрос vcard\nvcard [ник] - показ основной информации из vcard\nvcard nick\nshow - показ доступных полей vcard\nvcard nick\nполе:название|поле:название - показ запрощенных полей из vcard'),
+	 (0, u'vcard', iq_vcard, 2, u'Запрос vcard\nvcard [nick] - показ основной информации из vcard\nvcard nick\nshow - показ доступных полей vcard\nvcard nick\nполе:название|поле:название - показ запрошенных полей из vcard'),
 	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]
