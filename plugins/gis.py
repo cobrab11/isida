@@ -14,8 +14,11 @@ def gis_append(ms,b):
 def gis_get_day(url):
 	req = urllib2.Request(url)
 	req.add_header('User-Agent',user_agent)
-	body = urllib2.urlopen(req).read()
-	return replacer(html_encode(body)).split('#006cb7')[3].replace(u',  м/с',u' ').replace(u'безветрие',u'штиль').split('\n')
+	try:
+		body = urllib2.urlopen(req).read()
+		b = replacer(html_encode(body)).split('#006cb7')[3].replace(u',  м/с',u' ').replace(u'безветрие',u'штиль').split('\n')
+	except: b = u'forbidden'
+	return b
 	
 def weather_gis(type, jid, nick, text):
 	city_code = None
@@ -31,7 +34,8 @@ def weather_gis(type, jid, nick, text):
 			url = 'http://wap.gismeteo.ru/gm/normal/node/search_result/6/?like_field_sname='+ft
 			req = urllib2.Request(url)
 			req.add_header('User-Agent',user_agent)
-			body = urllib2.urlopen(req).read()
+			try: body = urllib2.urlopen(req).read()
+			except: body = u'forbidden'
 			try:
 				body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
 				giss = []
@@ -46,18 +50,19 @@ def weather_gis(type, jid, nick, text):
 				else: msg = u'К сожалению сервер не отвечает.'
 	if city_code:
 		b = gis_get_day('http://wap.gismeteo.ru/gm/normal/node/prognoz_type/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_0&ed_field_date=gen_past_date_0')
-		if b[5].lower().count(u'завтра'):
-			msg = b[4]+', '+b[3]+' ('+b[1]+')'
-			b.insert(0,'')
-		else: msg = b[5]+', '+b[4]+', '+b[3]+' ('+b[1]+')'
-		msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
-		ms = gis_append([''],b)
-		b = gis_get_day('http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1')
-		if b[5].lower().count(u'завтра'): b.insert(0,'')
-		ms = gis_append(ms,b)
-		beg = tuple(localtime())[3]/4+1
-		for tmp in ms[beg:beg+4]: msg += tmp
-		print len(ms)
+		if b == u'forbidden': msg = u'Доступ к серверу погоды запрещён на стороне сервера.'
+		else:
+			if b[5].lower().count(u'завтра'):
+				msg = b[4]+', '+b[3]+' ('+b[1]+')'
+				b.insert(0,'')
+			else: msg = b[5]+', '+b[4]+', '+b[3]+' ('+b[1]+')'
+			msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
+			ms = gis_append([''],b)
+			b = gis_get_day('http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1')
+			if b[5].lower().count(u'завтра'): b.insert(0,'')
+			ms = gis_append(ms,b)
+			beg = tuple(localtime())[3]/4+1
+			for tmp in ms[beg:beg+4]: msg += tmp
 	send_msg(type, jid, nick, msg)
 
 global execute
