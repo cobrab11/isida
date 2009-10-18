@@ -45,7 +45,12 @@ def writefile(filename, data):
 def getFile(filename,default):
 	if os.path.isfile(filename):
 		try: filebody = eval(readfile(filename))
-		except: filebody = eval(readfile(filename+'.back'))
+		except:
+			while True:
+				try:
+					filebody = eval(readfile(filename+'.back'))
+					break
+				except: pass
 	else:
 		filebody = default
 		writefile(filename,str(default))
