@@ -31,12 +31,22 @@ def sayto(type, jid, nick, text):
 			else: msg = u'Все, кого я видела с таким ником, находятся в конфе!'
 		else:
 			if to.count('@') and to.count('.'):
-				msg = u'Я не видела человека с jid\'ом '+to+u', но если зайдёт - я передам.'
+				fnd = cu.execute('select status, jid from age where room=? and jid=? group by jid ',(jid,to)).fetchall()
 				sdb = sqlite3.connect(saytobase)
 				cu = sdb.cursor()
-				cu.execute('insert into st values (?,?,?,?)', (frm, jid, to, what))
+				if fnd:
+					off_count = 0
+					for tmp in fnd:
+						if tmp[0]:
+							cu.execute('insert into st values (?,?,?,?)', (frm, jid, tmp[1], what))
+							off_count += 1
+					if off_count: msg = u'Передам'
+					else: msg = u'Данный jid находится в конфе!'
+				else:
+					msg = u'Я не видела человека с jid\'ом '+to+u', но если зайдёт - я передам.'
+					cu.execute('insert into st values (?,?,?,?)', (frm, jid, to, what))
 				sdb.commit()
-			else: msg = u'Необходимо указать jid!'
+			else: msg = u'Я не видела '+to+u'в конференции. Вы можете указать jid.'
 	else: msg = u'Кому что передать?'
 	send_msg(type, jid, nick, msg)
 
