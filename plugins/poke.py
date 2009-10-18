@@ -3,7 +3,10 @@
 
 def to_poke(type, jid, nick, text):
 	if len(text): text = reduce_spaces(text)
-	predef_poke = [u'дала NICK... просто дала... :-"',
+	if type == 'chat' and get_access(jid,nick)[0] < 1:
+		send_msg(type, jid, nick, u'Участникам данная команда не доступна в привате!')
+		return
+	predef_poke = [u'дала NICK... просто дала... :-\"',
 			u'потыкала палочкой NICK в глаз...',
 			u'предложила NICK козявку :-[',
 			u'накормила NICK пургеном с толчёным стеклом!',
@@ -62,4 +65,4 @@ def to_poke(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'poke', to_poke, 2, u'Команда "тык"\npoke nick - сказать случайную фразу nick\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу')]
+execute = [(0, u'poke', to_poke, 2, u'Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу')]
