@@ -33,8 +33,8 @@ def iq_vcard(type, jid, nick, text):
 		isa = is_answ[0]
 		if isa == 'None': msg = u'Что-то не получается...'
 		else:
+			if isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 			if args.lower() == u'show':
-				if isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
 				msg = u'vCard tags: '
 				for i in range(0,len(isa)):
 					if isa[i] == '<':

@@ -922,7 +922,8 @@ def html_encode(body):
 	encidx = body.find('encoding=')
 	if encidx >= 0:
 		enc = body[encidx+10:encidx+30]
-		enc = enc[:enc.find('?>')-1]
+		if enc.count('"'): enc = enc[:enc.find('"')]
+		elif enc.count('\''): enc = enc[:enc.find('\'')]
 	else:
 		encidx = body.find('charset=')
 		if encidx >= 0:
