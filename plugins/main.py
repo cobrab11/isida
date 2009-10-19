@@ -123,8 +123,6 @@ def status(type, jid, nick, text):
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		stat = cu.execute('select message,status from age where jid=? and room=? and nick=?',(realjid,jid,text)).fetchone()
-		print realjid,jid,text
-		print stat
 		if stat[1]: msg = u'покинул данную конференцию.'
 		else:
 			stat = stat[0].split('\n',4)
