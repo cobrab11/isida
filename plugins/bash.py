@@ -8,7 +8,7 @@ def bash_org_ru(type, jid, nick, text):
 	if body.count('<div class="vote">') > 1 and url.count('quote'): msg = u'Цитата не найдена!'
 	else:
 		body = body.split('<div class="vote">')[1].split('<div class="q">')[0]
-		msg = u'http://bash.org.ru/quote/'+str(get_tag(body, 'a'))+u' '+replacer(body[body.find('[:||||:]'):].replace('</div>', '\n').replace('[:||||:]', '::: ').replace('</a>\n', ''))
+		msg = u'http://bash.org.ru/quote/'+str(get_tag(body, 'a'))+u' '+rss_del_nn(rss_replace(body[body.find('[:||||:]'):].replace('</div>', '\n').replace('<div>', '').replace('[:||||:]', '::: ').replace('</a>\n', '')))
 	send_msg(type, jid, nick, msg)
 
 def ibash_org_ru(type, jid, nick, text):
@@ -17,7 +17,7 @@ def ibash_org_ru(type, jid, nick, text):
 	body = html_encode(urllib.urlopen(url).read())
 	msg = u'http://ibash.org.ru/quote.php?id='+replacer(body.split('<div class="quothead"><span>')[1].split('</a></span>')[0])[1:]
 	if msg[-3:] == '???': msg = u'Цитата не найдена!'
-	else: msg += '\n'+replacer(body.split('<div class="quotbody">')[1].split('</div>')[0])
+	else: msg += '\n'+rss_replace(body.split('<div class="quotbody">')[1].split('</div>')[0])
 	send_msg(type, jid, nick, msg)
 
 global execute
