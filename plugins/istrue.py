@@ -12,7 +12,7 @@ def is_valid(type, jid, nick, text):
 	if ru_lit<en_lit: idx, hl = float(ru_lit)/en_lit, 1
 	elif ru_lit>en_lit: idx, hl = float(en_lit)/ru_lit, 2
 	else: idx, hl = 0.5, None
-	if (ru_lit == lt or en_lit == lt) and lt/caps_lit <= 0.5: msg = u'100% Ъ-ник!'
+	if (ru_lit == lt or en_lit == lt) and float(caps_lit)/lt <= 0.5: msg = u'100% Ъ-ник!'
 	elif ru_lit+en_lit == 0: msg = u'Ники без букв не Ъ!'
 	elif ru_lit+en_lit+text.count(' ')+text.count('.') == lt: msg = u'Кошерность ника - '+str(100-int(idx*100))+u'%'
 	elif not ru_lit or not en_lit: msg = u'Нормальный ник, а вот левые символы фтопку!'
