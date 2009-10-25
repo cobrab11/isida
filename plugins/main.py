@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+def match_room(room):
+	for tmp in confbase:
+		if getRoom(tmp) == room: return True
+	return None
+
 def shell_execute(cmd):
 	tmp_file = 'tmp'
 	try: os.remove(tmp_file)

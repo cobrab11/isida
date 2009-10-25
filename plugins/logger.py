@@ -11,6 +11,7 @@ if not os.path.exists(log_folder): os.mkdir(log_folder)
 if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log): os.mkdir(system_log)
 
+log_conf = set_folder+u'logroom.db'
 log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'
 
 def html_repl(ms):
@@ -19,12 +20,12 @@ def html_repl(ms):
 	return ms
 
 def append_message_to_log(room,jid,nick,type,text):
-#	print room,jid,nick,type,text
 	global public_log, system_log
-	if type == 'groupchat' and text != 'None':
-		msg_logger(room,jid,nick,type,text,public_log)
-	if type == 'chat' and text != 'None': nick = u'chat | '+nick
-	if text != 'None': msg_logger(room,jid,nick,type,text,system_log)
+	hr = getFile(log_conf,[])
+	if len(hr) and room in hr:
+		if type == 'groupchat' and text != 'None': msg_logger(room,jid,nick,type,text,public_log)
+		if type == 'chat' and text != 'None': nick = u'chat | '+nick
+		if text != 'None': msg_logger(room,jid,nick,type,text,system_log)
 
 def msg_logger(room,jid,nick,type,text,logfile):
 	lt = tuple(time.localtime())
@@ -40,8 +41,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 
 	log_body = u'<a><font color=gray>['+onlytimeadd(tuple(localtime()))+']</font> '
 
-	if nick == '':
-		log_body += u'<font color=#a00000>'+text+u'</font></a><br>'
+	if nick == '': log_body += u'<font color=#a00000>'+text+u'</font></a><br>'
 	else:
 		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>'
 		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
@@ -60,8 +60,10 @@ def msg_logger(room,jid,nick,type,text,logfile):
 
 def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
-	presence_logger(room,jid,nick,type,mass,0,public_log)
-	presence_logger(room,jid,nick,type,mass,1,system_log)
+	hr = getFile(log_conf,[])
+	if len(hr) and room in hr:
+		presence_logger(room,jid,nick,type,mass,0,public_log)
+		presence_logger(room,jid,nick,type,mass,1,system_log)
 
 def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	role = mass[1]
@@ -88,23 +90,18 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 
 		if type == 'unavailable': 
 			log_body += u'<font color=#00a000>'+nick
-			if mode and jid != 'None':
-				log_body += u' ('+jid+u')'
+			if mode and jid != 'None': log_body += u' ('+jid+u')'
 			if len(exit_type): log_body += u' '+exit_type.lower()
 			else: log_body += u' вышел'
-			if exit_message != '':
-				log_body += u' ('+exit_message+') '
+			if exit_message != '': log_body += u' ('+exit_message+') '
 			log_body += u'</font></i></a><br>'
 		else:
 			log_body += u'<font color=#00a000>'+nick
 			if not_found == 0:
-				if mode and jid != 'None':
-					log_body += u' ('+jid+u')'
+				if mode and jid != 'None': log_body += u' ('+jid+u')'
 				log_body += u' зашел как '+role+'/'+affiliation
-			elif not_found == 1: 
-				log_body += u' теперь '+role+'/'+affiliation
-			elif not_found == 2:
-				log_body += u' теперь '
+			elif not_found == 1: log_body += u' теперь '+role+'/'+affiliation
+			elif not_found == 2: log_body += u' теперь '
 			if not_found == 0 or not_found == 2:
 				if show != 'None': log_body += ' '+show
 				else: log_body += ' online'
@@ -132,4 +129,34 @@ global execute
 message_control = [append_message_to_log]
 presence_control = [append_presence_to_log]
 
-execute = []
+def log_room(type, jid, nick, text):
+	if type == 'groupchat': msg = u'Команда доступна только в привате!'
+	else:
+		hmode = text.split(' ')[0]
+		try: hroom = text.split(' ')[1]
+		except: hroom = jid
+		hr = getFile(log_conf,[])
+		if hmode == u'show':
+			if len(hr):
+				msg = u'Я веду логи в:'
+				for tmp in hr: msg += '\n'+tmp
+			else: msg = u'Логи не включены ни в одной конференции.'
+		elif hmode == u'add':
+			if not match_room(hroom): msg = u'Меня нет в конфе '+hroom
+			elif hr.count(hroom): msg = u'Я уже веду логи конфы '+hroom
+			else:
+				hr.append(hroom)
+				msg = u'Логи для '+hroom+u' включены.'
+				writefile(log_conf,str(hr))
+		elif hmode == u'del':
+			if not match_room(hroom): msg = u'Меня нет в конфе '+hroom
+			elif hr.count(hroom):
+				hr.remove(hroom)
+				msg = u'Логи для '+hroom+u' выключены.'
+				writefile(log_conf,str(hr))
+		else: msg = u'Что сделать?'
+	send_msg(type, jid, nick, msg)
+
+global execute
+
+execute = [(2, u'log', log_room, 2, u'Включение логов конференции.\nlog [add|del|show][ room@conference.server.tld]')]

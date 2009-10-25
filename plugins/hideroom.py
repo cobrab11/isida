@@ -3,11 +3,6 @@
 
 hide_conf = set_folder+u'hidenroom.db'
 
-def match_room(room):
-	for tmp in confbase:
-		if getRoom(tmp) == room: return True
-	return None
-
 def hide_room(type, jid, nick, text):
 	if type == 'groupchat': msg = u'Команда доступна только в привате!'
 	else:
