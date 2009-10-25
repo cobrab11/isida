@@ -2,6 +2,10 @@
 # -*- coding: utf -*-
 
 def weather(type, jid, nick, text):
+	for tm in text:
+		if ord(tm)<33 or ord(tm)>127:
+			send_msg(type, jid, nick, u'Ошибка в параметрах!')
+			return
 	text = text.upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
 	f = urllib.urlopen(link)
@@ -52,6 +56,10 @@ def weather(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def weather_short(type, jid, nick, text):
+	for tm in text:
+		if ord(tm)<33 or ord(tm)>127:
+			send_msg(type, jid, nick, u'Ошибка в параметрах!')
+			return
 	text = text.upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
 	f = urllib.urlopen(link)
@@ -89,6 +97,10 @@ def weather_short(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def weather_raw(type, jid, nick, text):
+	for tm in text:
+		if ord(tm)<33 or ord(tm)>127:
+			send_msg(type, jid, nick, u'Ошибка в параметрах!')
+			return
 	text = text.upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
 	f = urllib.urlopen(link)
@@ -99,6 +111,10 @@ def weather_raw(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def weather_city(type, jid, nick, text):
+	for tm in text:
+		if ord(tm)<32 or ord(tm)>127:
+			send_msg(type, jid, nick, u'Ошибка в параметрах!')
+			return
 	text = text.upper()
 	text = text.split(' ')
 
