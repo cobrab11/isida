@@ -12,7 +12,7 @@ if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log): os.mkdir(system_log)
 
 log_conf = set_folder+u'logroom.db'
-log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>'
+log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>\n'
 
 def html_repl(ms):
 	rmass = (('&','&amp;'),('<','&lt;'),('>','&gt;'),('\"','&quot;'),('\'','&apos;'),(u'·','&middot;'),(u'▼','&raquo;'),(u'©','&copy;'))
@@ -43,10 +43,10 @@ def msg_logger(room,jid,nick,type,text,logfile):
 
 	if nick == '': log_body += u'<font color=#a00000>'+text+u'</font></a><br>'
 	else:
-		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>'
-		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>'
+		if text[:4] == '/me ': log_body += u'<font color=#0000a0>*'+nick+'</font><font color=#000000> '+text[4:]+'</font></a><br>\n'
+		else: log_body += u'<font color=#0000a0>&lt;'+nick+'&gt;</font><font color=#000000> '+text+'</font></a><br>\n'
 	lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
-	log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
+	log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>\n'
 	if not os.path.isfile(curr_file):
 		fl = open(curr_file, 'a')
 		fl.write(log_he.encode('utf-8'))
@@ -94,7 +94,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			if len(exit_type): log_body += u' '+exit_type.lower()
 			else: log_body += u' вышел'
 			if exit_message != '': log_body += u' ('+exit_message+') '
-			log_body += u'</font></i></a><br>'
+			log_body += u'</font></i></a><br>\n'
 		else:
 			log_body += u'<font color=#00a000>'+nick
 			if not_found == 0:
@@ -109,9 +109,9 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 				else:  log_body += ' [0]'
 				if text != 'None':  log_body += ' ('+text+')'
 
-			log_body += '</font></i></a><br>'
+			log_body += '</font></i></a><br>\n'
 		lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
-		log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>'
+		log_he = log_header +lht+'</title></head><body><p align="right"><font size=small><a href="http://isida-bot.com">http://isida-bot.com</a></font></p><h1>'+lht+'</h1><hr>\n'
 		if not os.path.isfile(curr_file):
 			fl = open(curr_file, 'a')
 			fl.write(log_he.encode('utf-8'))
