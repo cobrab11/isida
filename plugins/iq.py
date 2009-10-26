@@ -31,9 +31,9 @@ def iq_vcard(type, jid, nick, text):
 		to -= 0.05
 	if to > 0:
 		isa = is_answ[0]
-		if isa == 'None': msg = u'Что-то не получается...'
+		if isa == None: msg = u'Что-то не получается...'
 		else:
-			if isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
+			while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 			if args.lower() == u'show':
 				msg = u'vCard tags: '
 				for i in range(0,len(isa)):
@@ -47,7 +47,7 @@ def iq_vcard(type, jid, nick, text):
 					if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
 					else: tname,ttag = tmp,tmp
 					tt = get_tag(isa,ttag.upper())
-					if tt != '': msg += '\n'+tname+': '+tt
+					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt))
 			else: msg = u'Ник: '+get_tag(isa,'NICKNAME')+u'\nИмя: '+get_tag(isa,'FN')+u'\nО себе: '+get_tag(isa,'DESC')+u'\nURL: '+get_tag(isa,'URL')
 	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
@@ -233,5 +233,5 @@ execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
 	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
 	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
 	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
-	 (0, u'vcard', iq_vcard, 2, u'Запрос vcard\nvcard [nick] - показ основной информации из vcard\nvcard nick\nshow - показ доступных полей vcard\nvcard nick\nполе:название|поле:название - показ запрошенных полей из vcard'),
+	 (0, u'vcard_raw', iq_vcard, 2, u'Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard'),
 	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]

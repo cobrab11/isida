@@ -1,6 +1,26 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+def wiki_search(type, jid, nick,text):
+	if text.count('\n'): ntext, text = text.split('\n')[0]+u' inurl:'+text.split('\n')[1][:2]+u'.wikipedia', text.split('\n')[0]
+	else: ntext = text+u' inurl:ru.wikipedia'
+	print ntext
+	print text
+	query = urllib.urlencode({'q' : ntext.encode("utf-8")})
+	url = u'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
+	search_results = urllib.urlopen(url)
+	json = simplejson.loads(search_results.read())
+	try:
+		results = json['responseData']['results']
+		title = results[0]['title']
+		content = results[0]['content']
+		noh_title = title.replace('<b>', u'').replace('</b>', u'')
+		content = content.replace('<b>', u'').replace('</b>', u'')
+		url = results[0]['unescapedUrl']
+		msg = replacer(noh_title)+u'\n'+replacer(content)+u'\n'+url
+	except: msg = u'Выражение \"' + text + u'\" не найдено! Попробуйте другой язык поиска.'
+	send_msg(type, jid, nick, msg)
+
 def xep_show(type, jid, nick,text):
 	ntext = u'xep '+text+' inurl:xmpp.org'
 	query = urllib.urlencode({'q' : ntext.encode("utf-8")})
@@ -73,4 +93,5 @@ global execute
 
 execute = [(0, u'tr', translate, 2, u'Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка'),
 	 (0, u'google', google, 2, u'Поиск через google'),
-	 (0, u'xep', xep_show, 2, u'Поиск XEP')]
+	 (0, u'xep', xep_show, 2, u'Поиск XEP'),
+	 (0, u'wiki', wiki_search, 2, u'Поиск по Wikipedia\nwiki <запрос>\n[двухбуквенное сокращение языка]')]
