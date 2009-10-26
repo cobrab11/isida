@@ -8,15 +8,12 @@ svn co http://isida.googlecode.com/svn/trunk isida
 - launch -
 
 1. rename defaul_config.py to config.py and fill look inside
-2. type in console: sh launch.sh
+2. create startup databases with "python create_databases.py" command
+3. type in console: sh launch.sh for launch with defaul python version or sh launch26.sh for launch with python 2.6 (recomended)
 
 - update -
 
 after global bot update - launch "sh update" script for correct update.
-
-- first start -
-
-when bot starts first time launch script for databases creation "python create_databases.py"
 
 that's all :)
 
