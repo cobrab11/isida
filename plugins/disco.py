@@ -17,7 +17,7 @@ def disco(type, jid, nick, text):
 	cl.send(i)
 	to = timeout
 
-	no_answ = 1
+	no_answ, is_answ = 1, None
 	while to >= 0 and no_answ:
 		for aa in iq_answer:
 			if aa[0]==iqid:
@@ -28,7 +28,7 @@ def disco(type, jid, nick, text):
 		sleep(0.5)
 		to -= 0.5
 
-	if not no_answ:
+	if not no_answ and is_answ[0] != None:
 		if where.count('conference') and not where.count('@'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
