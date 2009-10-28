@@ -29,11 +29,11 @@ def disco(type, jid, nick, text):
 		to -= 0.5
 
 	if not no_answ and is_answ[0] != None:
-		if where.count('conference') and not where.count('@'):
+		if (where.count('chat') or where.count('conference')) and not where.count('@'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (nick text, room text, size text)''')
-			isa = is_answ[0].split('<item ')
+			isa = unicode(is_answ[0]).split('<item ')
 			for ii in isa[1:]:
 				dname = get_subtag(ii,'name')
 				djid = get_subtag(ii,'jid')
@@ -56,11 +56,11 @@ def disco(type, jid, nick, text):
 			else:
 				msg = u'\"'+what+u'\" не найдено!'
 			tmp.close()
-		elif where.count('conference') and where.count('@'):
+		elif where.count('@conference') or where.count('@chat'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (nick text)''')
-			isa = is_answ[0].split('<item ')
+			isa = unicode(is_answ[0]).split('<item ')
 			for ii in isa[1:]:
 				dname = get_subtag(ii,'name')
 				cu.execute('insert into tempo values (?)', (dname,))
@@ -80,7 +80,7 @@ def disco(type, jid, nick, text):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (jid text)''')
-			isa = str(is_answ[0]).split('<item ')
+			isa = unicode(is_answ[0]).split('<item ')
 			for ii in isa[1:]:
 				djid = get_subtag(ii,'jid')
 				cu.execute('insert into tempo values (?)', (djid,))
@@ -133,7 +133,7 @@ def whereis(type, jid, nick, text):
 		cu = tmp.cursor()
 		cu.execute('''create table tempo (nick text, room text)''')
 
-		isa = is_answ[0].split('<item ')
+		isa = unicode(is_answ[0]).split('<item ')
 		djids = []
 		for ii in isa[1:]:
 			dname = get_subtag(ii,'name')
@@ -160,7 +160,7 @@ def whereis(type, jid, nick, text):
 				to -= 0.01
 
 			if not no_answ:
-				isd = is_answ[0].split('<item ')
+				isd = unicode(is_answ[0]).split('<item ')
 				for iii in isd[1:]:
 					dname = get_subtag(iii,'name')
 					if dname.lower().count(who.lower()):
