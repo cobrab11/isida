@@ -121,24 +121,24 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	if llim > 100: llim = 100
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
-	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid order by -time,-status',(jid,text,text.lower())).fetchall()
 	if not real_jid:
 		txt = '%'+text.lower()+'%'
-		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,txt,txt)).fetchone()		
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) group by jid order by -time,-status',(jid,txt,txt)).fetchall()		
 	if real_jid:
-		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		sbody = []
+		for rj in real_jid:
+			if xtype: sb = cu.execute('select * from age where room=? and jid=? order by status, jid',(jid,rj[0])).fetchall()
+			else: sb = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status, jid',(jid,rj[0])).fetchall()
+			for tmp in sb: sbody.append(tmp)
+		sbody = sbody[:llim]
 	else: sbody = None
 	if sbody:
 		ztype = True
-		msg = u'Я видела:'
+		msg = u'Я видела '+text+u':'
 		cnt = 1
 		for tmp in sbody:
-			if xtype: msg += '\n'+str(cnt)+'. '
-			else: msg += ' '
-			if text != tmp[1]: msg += text+u' (с ником: '+tmp[1]+')'
-			else: msg += tmp[1] 
-			msg += ' ('+tmp[2]+')'
+			msg += '\n'+str(cnt)+'. ' + tmp[1] + ' ('+tmp[2]+')'
 			if tmp[5]:
 				if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
 				else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'

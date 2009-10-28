@@ -494,17 +494,6 @@ def presenceCB(sess,mess):
 				confbase = arr_del_semi_find(confbase,getRoom(room))
 				writefile(confs,str(confbase))
 	elif nick != '':
-		sdb = sqlite3.connect(saytobase)
-		cu = sdb.cursor()
-		cm = cu.execute('select * from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick)).fetchall()
-		if len(cm):
-			cu.execute('delete from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick))
-			for cc in cm:
-				if cc[0].count('\n'):
-					zz = cc[0].split('\n')
-					send_msg('chat', room, nick, zz[0]+' ('+un_unix(time.time()-int(zz[1]))+u' назад) просил передать: '+cc[3])
-				else: send_msg('chat', room, nick, cc[0]+u' просил передать: '+cc[3])
-			sdb.commit()
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick:
 				megabase.remove(mmb)

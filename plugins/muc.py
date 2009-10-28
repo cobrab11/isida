@@ -57,7 +57,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 			reason = u'бан сроком '+un_unix(tttime)+u', начиная с '+timeadd(tuple(localtime()))+u', по причине: '+reason
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
-			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
 				msg = u'done'
 				whojid = getRoom(unicode(fnd[0][0]))
@@ -125,7 +125,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 			reason = u'by Isida!'
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
-		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
 			msg = u'done'
 			whojid = getRoom(unicode(fnd[0][0]))
@@ -167,7 +167,7 @@ def muc_role(type, jid, nick, text, role):
 			reason = u'by Isida!'
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
-		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1:
 			whonick = unicode(fnd[0][0])
 			msg = u'done'
@@ -257,7 +257,7 @@ def muc_arole(type, jid, nick, text, role):
 				except: reason = u'No reason!'
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
-			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
 				whonick = unicode(fnd[0][0])
 				whojid = unicode(fnd[0][1])
@@ -309,7 +309,7 @@ def muc_afind(type, jid, nick, text):
 			who = text
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
-			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?)',(jid,who,who)).fetchall()
+			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1:
 				whonick = unicode(fnd[0][0])
 				whojid = unicode(fnd[0][1])
