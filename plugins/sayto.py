@@ -2,10 +2,12 @@
 # -*- coding: utf -*-
 
 last_cleanup_sayto_base = 0
-sayto_timeout = 2592000
+sayto_timeout = 1209600
 
 def sayto(type, jid, nick, text):
-	if text == 'show':
+	if text.split(' ')[0] == 'show':
+		try: text = text.split(' ',1)[1]
+		except: text = ''
 		ga = get_access(jid, nick)
 		if ga[0] != 2: msg = u'Вам данная функция недоступна!'
 		else:
@@ -13,10 +15,14 @@ def sayto(type, jid, nick, text):
 			cu = sdb.cursor()
 			cm = cu.execute('select * from st').fetchall()
 			if len(cm):
-				msg = u'Не переданы сообщения:'
+				msg = u''
 				for cc in cm:
 					zz = cc[0].split('\n')
-					msg += u'\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+u'|'+un_unix(sayto_timeout-(time.time()-int(zz[1])))+u') для '+cc[2]+u' - '+cc[3]
+					tmsg = u'\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+u'|'+un_unix(sayto_timeout-(time.time()-int(zz[1])))+u') для '+cc[2]+u' - '+cc[3]
+					if len(text) and tmsg.lower().count(text.lower()): msg += tmsg
+					elif not len(text): msg += tmsg
+				if len(msg): msg = u'Не переданы сообщения:' + msg
+				else: msg = u'Не найдено!'
 				if type == 'groupchat':
 					send_msg('chat', jid, nick, msg)
 					msg = u'Отправила в приват!'
@@ -95,12 +101,12 @@ def cleanup_sayto_base():
 			for cc in cm:
 				if cc[0].count('\n'):
 					tim = int(cc[0].split('\n')[1])
-					if ctime-tim > sayto_timeout: cu.execute('delete from st where room=? and jid=?)',(cc[1], cc[2]))
-				else: cu.execute('delete from st where room=? and jid=?)',(cc[1], cc[2]))
+					if ctime-tim > sayto_timeout: cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
+				else: cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
 			sdb.commit()
 
 global execute, timer, presence_control
 
 timer = [cleanup_sayto_base]
 presence_control = [sayto_presence]
-execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message"')]
+execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хронятся 14 дней, после чего недоставленные сообщения удаляются.')]
