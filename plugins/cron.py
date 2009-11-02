@@ -3,9 +3,8 @@
 
 cron_base = set_folder+u'cron.db'	# база заданий
 
-# room type{} repeat time
-# cron add timer 10:00 [repeat 5:00] command
-# cron add alarm 2009-10-29 10:00 [repeat 24:00:00] command
+# cron add timer hh:mm:ss [repeat hh:mm:ss] command
+# cron add alarm YYYY-MM-DD hh:mm:ss [tz [+|-]hh:mm] [repeat hh:mm:ss] command
 
 def time_cron(type, jid, nick, text):
 	ar = text.lower().split(' ',1)
