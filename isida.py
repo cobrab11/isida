@@ -335,9 +335,10 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 def messageCB(sess,mess):
 	global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
 	global ignorebase, ignores
+	text=unicode(mess.getBody())
+	if text == None or text == '': return
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
-	text=unicode(mess.getBody())
 	type=unicode(mess.getType())
 	towh=unicode(mess.getTo().getStripped())
 	stamp=unicode(mess.getTimestamp())
