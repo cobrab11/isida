@@ -336,7 +336,7 @@ def messageCB(sess,mess):
 	global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
 	global ignorebase, ignores
 	text=unicode(mess.getBody())
-	if text == None or text == '': return
+	if text == 'None' or text == '': return
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	type=unicode(mess.getType())
