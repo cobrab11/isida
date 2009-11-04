@@ -14,11 +14,6 @@ if not os.path.exists(system_log): os.mkdir(system_log)
 log_conf = set_folder+u'logroom.db'
 log_header ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>\n'
 
-def html_repl(ms):
-	rmass = (('&','&amp;'),('<','&lt;'),('>','&gt;'),('\"','&quot;'),('\'','&apos;'),(u'·','&middot;'),(u'▼','&raquo;'),(u'©','&copy;'))
-	for tmp in rmass: ms = ms.replace(tmp[0],tmp[1])
-	return ms
-
 def append_message_to_log(room,jid,nick,type,text):
 	global public_log, system_log
 	hr = getFile(log_conf,[])
@@ -36,7 +31,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	curr_path += '/'+tZ(lt[1])
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_file = curr_path + '/'+tZ(lt[2])+'.html'
-	text = html_repl(text)
+	text = rss_replace(text)
 	text = text.replace('\n','<br>')
 
 	log_body = u'<a><font color=gray>['+onlytimeadd(tuple(localtime()))+']</font> '
@@ -83,7 +78,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		curr_path += '/'+tZ(lt[1])
 		if not os.path.exists(curr_path): os.mkdir(curr_path)
 		curr_file = curr_path + '/'+tZ(lt[2])+'.html'
-		text = html_repl(text)
+		text = rss_replace(text)
 		text = text.replace('\n','<br>')
 
 		log_body = u'<a><font color=gray>['+onlytimeadd(tuple(localtime()))+']</font><i> '

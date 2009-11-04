@@ -16,20 +16,19 @@ def anek(type, jid, nick):
 		message = message[:re.search('<br>',message).start()]
 		message = message.replace('<br />','')
 		message = message.strip()
+		message = rss_replace(unicode(message,'windows-1251'))
 		if type=='groupchat':
 			if len(message)<500:
-				send_msg(type, jid, nick, unicode(message,'windows-1251'))
+				send_msg(type, jid, nick, message)
 			else:
 				send_msg(type, jid, nick, u'Отправила в приват')
-				send_msg('chat', jid, nick, unicode(message,'windows-1251'))
+				send_msg('chat', jid, nick, message)
 				return
 		else:
-			send_msg(type, jid, nick, unicode(message,'windows-1251'))
+			send_msg(type, jid, nick, message)
 	except:
 		send_msg(type, jid, nick, u'что-то сломалось')
-    
-    
-global execute
 
+global execute
 
 execute = [(0, u'anek', anek, 1, u'Показывает случайный анекдот с интернет ресурса | author ferym')]

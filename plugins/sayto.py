@@ -105,8 +105,22 @@ def cleanup_sayto_base():
 				else: cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
 			sdb.commit()
 
+def sayjid(type, jid, nick, text):
+	try:
+		text = text.split(' ',1)
+		if len(text) != 2: msg = u'Ошибка'
+		elif not text[0].count('@') and not text[0].count('@'): msg = u'Ошибка'
+		elif not len(text[1]): msg = u'Ошибка'
+		else: 
+			send_msg(type, jid, nick, u'Отправила')
+			msg = nick + u' из конференции ' + jid + u' передал: ' + text[1]
+			type, nick, jid = 'chat', '', text[0]
+	except: msg = u'Ошибка'
+	send_msg(type, jid, nick, msg)
+			
 global execute, timer, presence_control
 
 timer = [cleanup_sayto_base]
 presence_control = [sayto_presence]
-execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хронятся 14 дней, после чего недоставленные сообщения удаляются.')]
+execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хронятся 14 дней, после чего недоставленные сообщения удаляются.'),
+			(1, u'sayjid', sayjid, 2, u'Отправить сообщение на jid.\nsayjid jid message')]

@@ -9,7 +9,7 @@ def afor(type, jid, nick):
 		od = re.search('<form id="qForm" method="post"><div align="center">',target)
 		message = target[od.end():]
 		message = message[:re.search('</div>',message).start()]
-		msg = unicode(message.strip(),'windows-1251')
+		msg = rss_replace(unicode(message.strip(),'windows-1251'))
 	except: msg = u'что-то сломалось'
 	send_msg(type, jid, nick, msg)
 
