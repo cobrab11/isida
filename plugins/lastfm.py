@@ -4,11 +4,17 @@ global execute, lf_api, lfm_url, lfm_api, timer
 
 lfm_url = u'http://ws.audioscrobbler.com/2.0/'
 
+def last_date_now(body):
+	ldate = get_tag(body,'date')
+	if ldate.count('nowplaying=\"true\"'): return 'now'
+	return ldate
+
 def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
 	else: cnt = 0
-	if cnt >=2: msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+get_tag(ms[1],'date')+']'
+	if cnt >=2:
+		msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+last_date_now(ms[1])+']'
 	else: msg = u'Недоступно.'
 	send_msg(type, jid, nick, msg)
 
@@ -29,7 +35,7 @@ def lasttracks(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = u'Последние дорожки '+text+':'
-	for a in ms[1:cnt]: msg += '\n ['+get_tag(a,'date')+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n ['+last_date_now(a)+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
@@ -49,7 +55,7 @@ def lastloved(type, jid, nick, text):
 	ms = lf_api('user.getlovedtracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = u'Любимые треки '+text+':'
-	for a in ms[1:cnt]: msg += '\n ['+get_tag(a,'date')+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n ['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):
