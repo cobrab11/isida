@@ -4,17 +4,27 @@ global execute, lf_api, lfm_url, lfm_api, timer
 
 lfm_url = u'http://ws.audioscrobbler.com/2.0/'
 
+def last_time_short(tm):
+	tm = time.localtime(tm)
+	tnow = time.localtime()
+	if tm[0] != tnow[0]: form = '%d.%m.%Y %H:%M'
+	elif tm[1]!=tnow[1] or tm[2]!=tnow[2]: form = '%d.%m %H:%M'
+	else: form = '%H:%M'
+	return str(time.strftime(form,tm))
+
 def last_date_now(body):
 	ldate = get_tag(body,'date')
 	if ldate.count('nowplaying=\"true\"'): return 'now'
+	else: 
+		try: return last_time_short(int(get_subtag(get_tag_full(body,'date'),'uts')))
+		except: return u'Unknown'
 	return ldate
-
+	
 def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
 	else: cnt = 0
-	if cnt >=2:
-		msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+last_date_now(ms[1])+']'
+	if cnt >=2: msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+last_date_now(ms[1])+']'
 	else: msg = u'Недоступно.'
 	send_msg(type, jid, nick, msg)
 
