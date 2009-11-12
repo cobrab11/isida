@@ -18,8 +18,7 @@ def last_date_now(body):
 	else: 
 		try: return last_time_short(int(get_subtag(get_tag_full(body,'date'),'uts')))
 		except: return u'Unknown'
-	return ldate
-	
+
 def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
@@ -45,7 +44,7 @@ def lasttracks(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = u'Последние дорожки '+text+':'
-	for a in ms[1:cnt]: msg += '\n ['+last_date_now(a)+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
@@ -65,7 +64,7 @@ def lastloved(type, jid, nick, text):
 	ms = lf_api('user.getlovedtracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = u'Любимые треки '+text+':'
-	for a in ms[1:cnt]: msg += '\n ['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):

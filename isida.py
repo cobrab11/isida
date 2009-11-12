@@ -46,11 +46,15 @@ def getFile(filename,default):
 	if os.path.isfile(filename):
 		try: filebody = eval(readfile(filename))
 		except:
-			while True:
-				try:
-					filebody = eval(readfile(filename+'.back'))
-					break
-				except: pass
+			if os.path.isfile(filename+'.back'):
+				while True:
+					try:
+						filebody = eval(readfile(filename+'.back'))
+						break
+					except: pass
+			else:
+				filebody = default
+				writefile(filename,str(default))
 	else:
 		filebody = default
 		writefile(filename,str(default))
@@ -159,17 +163,7 @@ def os_version():
 
 	if jOs == u'posix':
 		osInfo = os.uname()
-		if osInfo[4].count('iPhone'):
-			if osInfo[4].count('iPhone1,1'): japytOs = 'iPhone 2G'
-			elif osInfo[4].count('iPhone1,2'): japytOs = 'iPhone 3G'
-			elif osInfo[4].count('iPhone2'): japytOs = 'iPhone 3GS'
-			else: japytOs = 'iPhone Unknown (platform: '+osInfo[4]+')'
-			if osInfo[3].count('1228.7.37'): japytOs += ' FW.2.2.1'
-			elif osInfo[3].count('1228.7.36'): japytOs += ' FW.2.2'
-			elif osInfo[3].count('1357.2.89'): japytOs += ' FW.3.0.1'
-			else: japytOs += ' FW.Unknown ('+osInfo[3]+')'
-			japytOs += ' ('+osInfo[1]+') / Python v'+japytPyVer
-		else: japytOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+japytPyVer
+		japytOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+japytPyVer
 	elif jSys == 'win32':
 		def get_registry_value(key, subkey, value):
 			import _winreg
@@ -338,7 +332,9 @@ def messageCB(sess,mess):
 	text=unicode(mess.getBody())
 	if text == 'None' or text == '': return
 	room=unicode(mess.getFrom().getStripped())
-	nick=unicode(mess.getFrom().getResource())
+	nick=mess.getFrom().getResource()
+	if nick == None: nick = ''
+	else: nick = unicode(nick)
 	type=unicode(mess.getType())
 	towh=unicode(mess.getTo().getStripped())
 	stamp=unicode(mess.getTimestamp())
@@ -439,8 +435,7 @@ def presenceCB(sess,mess):
 	mss = unicode(mess)
 	if mss.strip().count('<x xmlns=\"http://jabber') > 1 and mss.strip().count(' affiliation=\"') > 1 and mss.strip().count(' role=\"') > 1 : bad_presence = True
 	else: bad_presence = None
-	while mss.count('<x ') > 1 and mss.count('</x>') > 1:
-		mss = mss[:mss.find('<x ')]+mss[mss.find('</x>')+4:]
+	while mss.count('<x ') > 1 and mss.count('</x>') > 1: mss = mss[:mss.find('<x ')]+mss[mss.find('</x>')+4:]
 	mss = get_tag_full(mss,'x')
 	role=get_valid_tag(mss,'role')
 	affiliation=get_valid_tag(mss,'affiliation')
@@ -456,9 +451,7 @@ def presenceCB(sess,mess):
 
 	if type=='error': iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
 
-	if jid == 'None':		
-		ta = get_access(room,nick)
-		jid =ta[1]
+	if jid == 'None': jid = get_access(room,nick)[1]
 
 	if bad_presence: send_msg('groupchat', room, '', u'/me смотрит на '+nick+u' и думает: "Факин умник детектед!"')
 
@@ -471,13 +464,9 @@ def presenceCB(sess,mess):
 	if room != selfjid and nick == nowname:
 		smiles = getFile(sml,[(getRoom(room),0)])
 		if (getRoom(room),1) in smiles:
-			msg = u''
-			if role == 'participant' and affiliation == 'none': msg = u' :-|'
-			elif role == 'participant' and affiliation == 'member': msg = u' :-)'
-			elif role == 'moderator' and affiliation == 'member': msg = u' :-"'
-			elif role == 'moderator' and affiliation == 'admin': msg = u' :-D'
-			elif role == 'moderator' and affiliation == 'owner': msg = u' 8-D'
-			if msg != u'': send_msg('groupchat', room, '', msg)
+			smile_action = {'participantnone':u' :-|', 'participantmember':u' :-)', 'moderatormember':u' :-"','moderatoradmin':u' :-D', 'moderatorowner':u' 8-D'}
+			try: send_msg('groupchat', room, '', smile_action[role+affiliation])
+			except: pass
 #	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
 	
 	if ownerbase.count(getRoom(room)) and type != 'unavailable':
@@ -784,8 +773,7 @@ schedule()
 
 while 1:
 	try:
-		while not game_over:
-			cl.Process(1)
+		while not game_over: cl.Process(1)
 		close_age()
 		break
 
