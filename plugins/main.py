@@ -530,12 +530,12 @@ def bot_rejoin(type, jid, nick, text):
 def bot_join(type, jid, nick, text):
 	global lastserver, lastnick, confs, confbase, blacklist_base
 	text=unicode(text)
-	blklist = eval(readfile(blacklist_base))
+	blklist = getFile(blacklist_base, [])
 	if text=='' or getRoom(text).count(' '): send_msg(type, jid, nick, u'косяк с аргументами!')
 	else:
 		if not text.count('@'): text+='@'+lastserver
 		if not text.count('/'): text+='/'+lastnick
-		if text[:text.find('/')] in blklist: send_msg(type, jid, nick, u'Запрещено')
+		if getRoom(text) in blklist: send_msg(type, jid, nick, u'Запрещено')
 		else:
 			lastserver = getServer(text.lower())
 			lastnick = getResourse(text)
