@@ -7,9 +7,8 @@ def leave_room(rjid, reason):
 	global confbase, confs
 	msg = u''
 	for i in range(0, len(confbase)):
-		jjid = confbase[i]
-		if rjid == jjid[:jjid.find('/')]:
-			confbase.remove(jjid)
+		if rjid == getRoom(confbase[i]):
+			confbase.remove(confbase[i])
 			writefile(confs, str(confbase))
 			leaveconf(rjid, domain, reason)
 			msg = u'Свалила из '+ rjid + '\n'
@@ -19,13 +18,13 @@ def blacklist(type, jid, nick, text):
 	global confbase, lastserver
 	text, msg = unicode(text.lower()), u''
 	templist = getFile(blacklist_base, [])
-	reason = u'Конференция находится в черном списке'
+	reason = u'Конференция занесена в черный список'
 	try:
 		text = text.split(' ')
 		if not text[1].count('@'): text[1] += '@'+lastserver
 		if text[0] == 'add':
 			if text[1] in templist: msg = u'Адрес уже содержится в списке.'
-			elif len(confbase)==1 and confbase[0].split('/')[0] == text[1]:
+			elif len(confbase)==1 and text[1] == getRoom(confbase[0]):
 				msg =u'Нельзя добавлять последнюю конференцию в черный список'
 			else:
 				msg = leave_room(text[1], reason)
