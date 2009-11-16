@@ -169,24 +169,23 @@ def unhtml(page):
 	page = page.replace('\n ','')
 	return page
 
+def del_space_both(t):
+	return del_space_end(del_space_begin(t))
+	
 def alias(type, jid, nick, text):
 	global aliases
 	aliases = getFile(alfile,[])
-	gs = text.find(' ')
-	if gs >= 0:
-		mode = text[:gs]
-		text = text[gs+1:]
-		gs = text.find('=')
-		if gs >= 0:
-			cmd = text[:gs]
-			cbody = text[gs+1:]
-		else:
-			cmd = text
-			cbody = ''
-	else:
-		mode = text
-		cmd = ''
-		cbody = ''
+	
+	text = text.strip()
+	while text.count('  '): text = text.replace('  ',' ')
+	mode = del_space_both(text.split(' ',1)[0])
+	try: cmd = del_space_both(text.split(' ',1)[1].split('=')[0])
+	except: cmd = ''
+	try: cbody = del_space_both(text.split(' ',1)[1].split('=')[1])
+	except: cbody = ''
+	
+	print mode,cmd,cbody
+	
 	msg = u'Режим '+mode+u' не опознан!'
 	if mode=='add':
 		fl = 0

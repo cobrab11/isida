@@ -398,10 +398,12 @@ def msg_afterwork(mess,room,jid,nick,type,back_text):
 		else: tmp(room,jid,nick,type,back_text)
 
 def send_msg_human(type, room, nick, text):
-	sleep(len(text)/4+randint(0,10))
+	if text: sleep(len(text)/4+randint(0,10))
+	else: text = u'Ась?'
 	send_msg(type, room, nick, text)
 
 def getAnswer(tx,type):
+	if not len(tx) or tx.count(' ') == len(tx): return None
 	mdb = sqlite3.connect(answersbase)
 	answers = mdb.cursor()
 	la = len(answers.execute('select * from answer').fetchall())
