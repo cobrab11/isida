@@ -179,9 +179,9 @@ def alias(type, jid, nick, text):
 	text = text.strip()
 	while text.count('  '): text = text.replace('  ',' ')
 	mode = del_space_both(text.split(' ',1)[0])
-	try: cmd = del_space_both(text.split(' ',1)[1].split('=')[0])
+	try: cmd = del_space_both(text.split(' ',1)[1].split('=',1)[0])
 	except: cmd = ''
-	try: cbody = del_space_both(text.split(' ',1)[1].split('=')[1])
+	try: cbody = del_space_both(text.split(' ',1)[1].split('=',1)[1])
 	except: cbody = ''
 	
 	print mode,cmd,cbody
