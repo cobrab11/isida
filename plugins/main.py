@@ -183,9 +183,6 @@ def alias(type, jid, nick, text):
 	except: cmd = ''
 	try: cbody = del_space_both(text.split(' ',1)[1].split('=',1)[1])
 	except: cbody = ''
-	
-	print mode,cmd,cbody
-	
 	msg = u'Режим '+mode+u' не опознан!'
 	if mode=='add':
 		fl = 0
