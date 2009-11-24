@@ -81,7 +81,7 @@ def translate(type, jid, nick,text):
 				url = u'http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&%s'.encode("utf-8") % (query)
 				search_results = urllib.urlopen(url)
 				json = simplejson.loads(search_results.read())
-				msg = json['responseData']['translatedText']
+				msg = rss_replace(json['responseData']['translatedText'])
 			else: msg = u'Неправильно указан язык или нет текста для перевода. tr list - доступные языки'
 		else: msg = u'Формат команды: tr с_какого на_какой текст'
 	send_msg(type, jid, nick, msg)
