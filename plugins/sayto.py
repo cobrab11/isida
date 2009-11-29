@@ -71,7 +71,7 @@ def sayto(type, jid, nick, text):
 					msg = u'Я не видела человека с jid\'ом '+to+u', но если зайдёт - я передам.'
 					cu.execute('insert into st values (?,?,?,?)', (frm, jid, to, what))
 				sdb.commit()
-			else: msg = u'Я не видела '+to+u'в конференции. Вы можете указать jid.'
+			else: msg = u'Я не видела '+to+u' в конференции. Вы можете указать jid.'
 	else: msg = u'Кому что передать?'
 	send_msg(type, jid, nick, msg)
 
