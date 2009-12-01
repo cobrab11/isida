@@ -2,8 +2,8 @@
 # -*- coding: utf -*-
 
 def exec_ute(type, jid, nick, text):
-	try: text = str(eval(text))
-	except: text = u'Я не могу это исполнить'
+	try: text = unicode(eval(text))
+	except Exception, SM: text = u'Я не могу это исполнить! Ошибка: '+str(SM)
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
