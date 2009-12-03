@@ -8,9 +8,10 @@ def bash_org_ru(type, jid, nick, text):
 	if body.count('<div class="vote">') > 1 and url.count('quote'): msg = u'Цитата не найдена!'
 	else:
 		body = body.split('<div class="vote">')[1].split(splitter)[0]
-		msg = u'http://bash.org.ru/quote/'+str(get_tag(body, 'a'))+u' '+rss_del_nn(rss_replace(body[body.find('[:||||:]'):].replace('</div>', '\n').replace('<div>', '').replace('[:||||:]', '::: ').replace('</a>\n', '')))
+		msg = u'http://bash.org.ru/quote/'+str(get_tag(body, 'a'))+u' ::: '
+		msg = msg +rss_del_nn(rss_replace(body.split('</a> /',3)[3].replace('</div>', '\n').replace('<div>', '').replace('</a>\n', '')))
 		if get_tag(msg,'a') == u'комикс' and msg.count('('+get_tag_full(msg,'a')+')'):
-			msg = msg.replace('('+get_tag_full(msg,'a')+')',u'http://bash.org.ru'+get_subtag(msg,'a'))
+			msg = msg.replace('('+get_tag_full(msg,'a')+')',u'комикс: http://bash.org.ru'+get_subtag(msg,'a'))
 	send_msg(type, jid, nick, msg)
 
 def ibash_org_ru(type, jid, nick, text):
