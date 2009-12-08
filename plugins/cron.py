@@ -14,11 +14,21 @@ def time_cron(type, jid, nick, text):
 	else: msg = u'Ась?'
 	send_msg(type, jid, nick, msg)
 
+# room t|a time True|None command
+
 def time_cron_show(ar):
 	return u'Не умею!'
 
-def time_cron_add(ar):
+def time_cron_add_timer(ar):
 	return u'Не умею!'
+	
+def time_cron_add_alarm(ar):
+	return u'Не умею!'
+	
+def time_cron_add(ar):
+	if ar[:5] == 'timer': return time_cron_add_timer(ar[5:])
+	if ar[:5] == 'alarm': return time_cron_add_alarm(ar[5:])
+	return u'Ошибка формата команды'
 	
 def time_cron_del(ar):
 	return u'Не умею!'

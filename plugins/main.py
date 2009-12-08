@@ -413,6 +413,11 @@ def show_error(type, jid, nick, text):
 	else: msg = u'No Errors'
 	send_msg(type, jid, nick, msg)
 
+def get_nick_by_jid(room, jid):
+	for tmp in megabase:
+		if tmp[0] == room and getRoom(tmp[4]) == jid: return tmp[1]
+	return None
+	
 def get_access(cjid, cnick):
 	access_mode = -2
 	jid = 'None'

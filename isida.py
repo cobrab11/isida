@@ -384,7 +384,7 @@ def messageCB(sess,mess):
 		is_flood = (getRoom(room),1) in floods
 	else: is_flood = 0
 
-	if no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
+	if selfjid != jid and no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
 		else:
 			text = getAnswer(text,type)
@@ -532,19 +532,23 @@ def onoff(msg):
 
 def getName(jid):
 	jid = unicode(jid)
+	if jid == 'None': return jid
 	return jid[:jid.find('@')].lower()
 
 def getServer(jid):
 	jid = unicode(jid)
 	if not jid.count('/'): jid += '/'
+	if jid == 'None': return jid
 	return jid[jid.find('@')+1:jid.find('/')].lower()
 
 def getResourse(jid):
 	jid = unicode(jid)
+	if jid == 'None': return jid
 	return jid[jid.find('/')+1:]
 
 def getRoom(jid):
 	jid = unicode(jid)
+	if jid == 'None': return jid
 	return getName(jid)+'@'+getServer(jid)
 
 def schedule():
