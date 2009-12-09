@@ -84,7 +84,9 @@ def karma_val(val):
 def karma_change(room,jid,nick,type,text,value):
 	if type == 'chat': msg = u'Изменение кармы в привате запрещено!'
 	else:
-		text = text.split(' ',1)[0][:-1]
+		if text.count(': '): text = text.split(': ',1)[0]
+		elif text.count(', '): text = text.split(', ',1)[0]
+		else: text = text[:-4]
 		k_aff = get_affiliation(room,nick)
 		k_acc = get_access(room,nick)[0]
 		if k_acc < 0: return
@@ -119,8 +121,8 @@ def karma_change(room,jid,nick,type,text,value):
 def karma_check(room,jid,nick,type,text):
 	if getRoom(jid) == getRoom(selfjid): return
 	if len(unicode(text)) < 5: return
-	if text[-2:] == '+1': karma_change(room,jid,nick,type,text,1)
-	elif text[-2:] == '-1': karma_change(room,jid,nick,type,text,-1)
+	if text[-3:] == ' +1': karma_change(room,jid,nick,type,text,1)
+	elif text[-3:] == ' -1': karma_change(room,jid,nick,type,text,-1)
 	
 global execute, message_control
 
