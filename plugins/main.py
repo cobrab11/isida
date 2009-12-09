@@ -10,15 +10,14 @@ def shell_execute(cmd):
 	try: os.remove(tmp_file)
 	except: pass
 	try:
-		os.system(cmd+' > '+tmp_file)
-		body = readfile(tmp_file)
+		os.system(cmd+' >> '+tmp_file)
+		try: body = readfile(tmp_file)
+		except: body = u'Ошибка выполнения команды.'
 		if len(body):
 			enc = chardet.detect(body)['encoding']
 			return unicode(body,enc)
 		else: return 'ok'
-	except:
-		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
-		return u'Ошибка выполнения. Подробности в логе.'
+	except Exception, SM: return u'Я не могу это исполнить! Ошибка: '+str(SM)
 	
 def concat(list):
 	result = ''
@@ -982,8 +981,9 @@ def html_encode(body):
 		else: enc = chardet.detect(body)['encoding']
 
 	if body == None: body = ''
-	if enc == None or enc == '': enc = 'utf-8'
-	return unicode(body,enc)
+	if enc == None or enc == '' or enc.lower() == 'unicode': enc = 'utf-8'
+	try: return unicode(body,enc)
+	except: return u'Ошибка определения кодировки'
 
 #[room, nick, role, affiliation, jid]
 

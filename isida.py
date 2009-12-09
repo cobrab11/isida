@@ -247,7 +247,8 @@ def iqCB(sess,iq):
 		is_vcard = iq.getTag('vCard')
 		if is_vcard: iq_answer.append((id, unicode(is_vcard)))
 		else:
-			nspace = query.getNamespace()
+			try: nspace = query.getNamespace()
+			except: nspace = 'None'
 			if nspace == NS_MUC_ADMIN:
 				cparse = cparse.split('<item')
 				for banm in cparse[1:]:
