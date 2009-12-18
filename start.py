@@ -19,8 +19,14 @@ writefile('settings/starttime',str(int(time.time())))
 
 while 1:
 	try: execfile('isida.py')
-	except: time.sleep(1)
+	except Exception, SM:
+		print '\n','*'*50,'\n Isida is crashed! It\'s imposible, but You do it!\n','*'*50,'\n'
+		raise
 	if os.path.isfile('settings/tmp'): mode = str(readfile('settings/tmp'))
+	else:
+		print '\nSystem error! Read user manual before start bot!'
+		print 'Try launch bot with debug mode.'
+		break
 	if mode == 'update':
 		os.system('echo `svnversion` > settings/ver')
 		os.system('rm plugins/list.txt')

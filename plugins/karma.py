@@ -3,7 +3,7 @@
 
 karmabase = set_folder+u'karma.db'	# база кармы
 karma_limit = 5						# минимум кармы для изменения
-karma_timeout = [86400, 3600, 60]	# время, через которое можно менять карму
+karma_timeout = [86400, 3600, 5]	# время, через которое можно менять карму
 
 karmabasefile = os.path.isfile(karmabase)
 karma_base = sqlite3.connect(karmabase)
@@ -58,7 +58,7 @@ def karma_show(type, jid, nick, text):
 		cu_karmabase = karma_base.cursor()
 		stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(jid,karmajid)).fetchone()
 		karma_base.close()
-		if stat == None: return u'У '+atext+u' читая карма!'
+		if stat == None: return u'У '+atext+u' чистая карма!'
 		else: return u'У '+atext+u' карма '+karma_val(int(stat[0]))
 
 def karma_ban(type, jid, nick, text):

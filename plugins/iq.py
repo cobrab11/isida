@@ -48,7 +48,7 @@ def iq_vcard(type, jid, nick, text):
 					else: tname,ttag = tmp,tmp
 					tt = get_tag(isa,ttag.upper())
 					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt))
-			else: msg = u'Ник: '+get_tag(isa,'NICKNAME')+u'\nИмя: '+get_tag(isa,'FN')+u'\nО себе: '+get_tag(isa,'DESC')+u'\nURL: '+get_tag(isa,'URL')
+			else: msg = u'vCard:\nНик: '+get_tag(isa,'NICKNAME')+u'\nИмя: '+get_tag(isa,'FN')+u'\nО себе: '+get_tag(isa,'DESC')+u'\nURL: '+get_tag(isa,'URL')
 	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
 	send_msg(type, jid, nick, msg)
 
@@ -130,6 +130,12 @@ def ping(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def iq_time(type, jid, nick, text):
+	iq_time_get(type, jid, nick, text, None)
+
+def iq_time_raw(type, jid, nick, text):
+	iq_time_get(type, jid, nick, text, True)
+
+def iq_time_get(type, jid, nick, text, mode):
 	global iq_answer
 	if text == '': who = getRoom(jid)+'/'+nick
 	else:
@@ -156,7 +162,9 @@ def iq_time(type, jid, nick, text):
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
 	if to > 0:
-		if len(iiqq) == 3: msg = iiqq[0]+' (Raw time: '+iiqq[1]+' | TimeZone: '+iiqq[2]+')'
+		if len(iiqq) == 3:
+			msg = iiqq[0]
+			if mode: msg += ', Raw time: '+iiqq[1]+', TimeZone: '+iiqq[2]
 		else:
 			msg = ''
 			for iiq in iiqq: msg += iiq+' '
@@ -232,6 +240,7 @@ global execute
 execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
 	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
 	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
+	 (0, u'time_raw', iq_time_raw, 2, u'Локальное время клиента + время в формате из станзы.'),
 	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
 	 (0, u'vcard_raw', iq_vcard, 2, u'Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard'),
 	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]

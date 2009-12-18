@@ -720,11 +720,11 @@ if os.path.isfile(cens):
 	censor = cn
 else: censor = []
 
-pprint(u'****************************')
+pprint(u'*'*50)
 pprint(u'*** Bot Name: '+botName)
 pprint(u'*** Version '+botVersion)
 pprint(u'*** OS '+botOs)
-pprint(u'******************************')
+pprint(u'*'*50)
 pprint(u'*** (c) 2oo9 Disabler Production Lab.')
 
 node = unicode(name)
