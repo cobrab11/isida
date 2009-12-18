@@ -84,6 +84,8 @@ def karma_val(val):
 def karma_change(room,jid,nick,type,text,value):
 	if type == 'chat': msg = u'Изменение кармы в привате запрещено!'
 	else:
+		cof = getFile(conoff,[])
+		if (room,'karma') in cof: return
 		if text.count(': '): text = text.split(': ',1)[0]
 		elif text.count(', '): text = text.split(', ',1)[0]
 		else: text = text[:-4]
