@@ -123,6 +123,7 @@ def karma_change(room,jid,nick,type,text,value):
 def karma_check(room,jid,nick,type,text):
 	if getRoom(jid) == getRoom(selfjid): return
 	if len(unicode(text)) < 5: return
+	while len(text) and text[-1:] == ' ': text = text[:-1]
 	if text[-3:] == ' +1': karma_change(room,jid,nick,type,text,1)
 	elif text[-3:] == ' -1': karma_change(room,jid,nick,type,text,-1)
 	

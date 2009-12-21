@@ -4,8 +4,46 @@
 tban = set_folder+u'temporary.ban'		# лог временного бана
 af_alist = set_folder+u'alist.aff'		# alist аффиляций
 ro_alist = set_folder+u'alist.rol'		# alist ролей
+ignoreban = set_folder+u'ignoreban.db'	# список игнора при глобальном бане
 
 # -------------- affiliation -----------------
+
+def global_ban(type, jid, nick, text):
+	text = text.lower()
+	hroom = getRoom(jid)
+	hr = getFile(ignoreban,[])
+	al = get_access(jid,nick)[0]
+	af = get_affiliation(jid,nick)
+	if al != 2 or af != 'owner': msg = u'Команда доступна только владельцу конференции!'
+	elif text == u'show' and al == 2:
+		if len(hr):
+			msg = u'Я не баню глобально в конфах:'
+			for tmp in hr: msg += '\n'+tmp
+		else: msg = u'Я баню глобально без ограничений!'
+	elif text == u'del' and (al == 2 or af == 'owner'):
+		if hr.count(hroom): msg = u'Конференция '+hroom+u' уже исключена из списка глобального бана!'
+		else:
+			hr.append(hroom)
+			msg = u'Конференция '+hroom+u' исключена из списка глобального бана.'
+			writefile(ignoreban,str(hr))
+	elif text == u'add' and (al == 2 or af == 'owner'):
+		if hr.count(hroom):
+			hr.remove(hroom)
+			msg = u'Конференция '+hroom+u' добавлена в список глобального бана.'
+			writefile(ignoreban,str(hr))
+		else: msg = u'Конференция '+hroom+u' уже добавлена в список глобального бана!'
+	else:
+		if hroom in hr: msg = u'Ваша конференция игнорируется при глобальном бане!'
+		elif not text.count('@') or not text.count('.'): msg = u'Необходимо указать jid!'
+		else:
+			reason = u'banned global by '+nick+u' from '+jid
+			for tmp in confbase:
+				if not (getRoom(tmp) in hr):
+					iqid = str(randint(1,100000))
+					i = Node('iq', {'id': iqid, 'type': 'set', 'to':getRoom(tmp)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(text)},[Node('reason',{},reason)])])])
+					cl.send(i)
+			msg = u'jid '+text+u' забанен в '+str(len(confbase)-len(hr))+u' конференциях.'
+	send_msg(type, jid, nick, msg)
 
 def muc_tempo_ban(type, jid, nick,text):
 	if text[:4].lower() == 'show' and not text.count('\n'):
@@ -368,4 +406,5 @@ execute = [(1, u'ban', muc_ban, 2, u'Забанить участника'),
 	   (1, u'akick', muc_akick, 2, u'Автокик.\nakick show|del [jid] - показать/удалить автокик\nakick nick\ntimeD|H|M|S\nreason - автоматически выгонять ник nick на срок time по причине reason'),
 	   (1, u'aparticipant', muc_aparticipant, 2, u'Автоучастник.\naparticipant show|del [jid] - показать/удалить автоучастник\naparticipant nick\ntimeD|H|M|S\nreason - автоматически делать ник nick участником на срок time по причине reason'),
 	   (1, u'avisitor', muc_avisitor, 2, u'Автогость.\navisitor show|del [jid] - показать/удалить автогостя\navisitor nick\ntimeD|H|M|S\nreason - автоматически делать ник nick гостем на срок time по причине reason'),
-	   (1, u'amoderator', muc_amoderator, 2, u'Автомодератор.\namoderator show|del [jid] - показать/удалить автомодератор\namoderator nick\ntimeD|H|M|S\nreason - автоматически делать ник nick модератором на срок time по причине reason')]
+	   (1, u'amoderator', muc_amoderator, 2, u'Автомодератор.\namoderator show|del [jid] - показать/удалить автомодератор\namoderator nick\ntimeD|H|M|S\nreason - автоматически делать ник nick модератором на срок time по причине reason'),
+	   (1, u'global_ban', global_ban, 2, u'Глобальный бан. Доступен только владельцам конференций.\nglobal_ban del - удалить конференцию из списка глобального бана,\nglobal_ban add - добавить конференцию в список глобального бана,\nglobal_ban <jid> - забанить jid во всех конференциях, в которых бот админ.')]
