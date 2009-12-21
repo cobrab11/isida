@@ -13,20 +13,21 @@ def global_ban(type, jid, nick, text):
 	hroom = getRoom(jid)
 	hr = getFile(ignoreban,[])
 	al = get_access(jid,nick)[0]
-	af = get_affiliation(jid,nick)
-	if al != 2 or af != 'owner': msg = u'Команда доступна только владельцу конференции!'
+	if al == 2: af = 'owner'
+	else: af = get_affiliation(jid,nick)
+	if af != 'owner': msg = u'Команда доступна только владельцу конференции!'
 	elif text == u'show' and al == 2:
 		if len(hr):
 			msg = u'Я не баню глобально в конфах:'
 			for tmp in hr: msg += '\n'+tmp
 		else: msg = u'Я баню глобально без ограничений!'
-	elif text == u'del' and (al == 2 or af == 'owner'):
+	elif text == u'del' and af == 'owner':
 		if hr.count(hroom): msg = u'Конференция '+hroom+u' уже исключена из списка глобального бана!'
 		else:
 			hr.append(hroom)
 			msg = u'Конференция '+hroom+u' исключена из списка глобального бана.'
 			writefile(ignoreban,str(hr))
-	elif text == u'add' and (al == 2 or af == 'owner'):
+	elif text == u'add' and af == 'owner':
 		if hr.count(hroom):
 			hr.remove(hroom)
 			msg = u'Конференция '+hroom+u' добавлена в список глобального бана.'
