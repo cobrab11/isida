@@ -78,7 +78,7 @@ def muc_tempo_ban(type, jid, nick,text):
 	else: muc_tempo_ban2(type, jid, nick,text)
 
 def muc_tempo_ban2(type, jid, nick,text):
-	skip = 1
+	skip = None
 	if len(text):
 		who = text.split('\n',2)[0]
 		try:
@@ -88,25 +88,20 @@ def muc_tempo_ban2(type, jid, nick,text):
 			tkpd = {'s':1, 'm':60, 'h':3600, 'd':86400}
 			tttime = tttime*tkpd[tmode]
 		except: tttime = 0
-
 		if tttime:
 			try: reason = text.split('\n',2)[2]
 			except: reason = u'No reason!'
-
 			reason = u'бан сроком '+un_unix(tttime)+u', начиная с '+timeadd(tuple(localtime()))+u', по причине: '+reason
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1:
-				msg = u'done'
-				whojid = getRoom(unicode(fnd[0][0]))
-				skip = 0
-			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			if len(fnd) == 1: msg, whojid = u'done', getRoom(unicode(fnd[0][0]))
+			elif len(fnd) > 1:
+				whojid = getRoom(get_access(jid,who)[1])
+				if whojid != 'None': msg = u'done'
+				else: msg, skip = u'Я видела несколько человек с таким ником. Укажите точнее!', True
 			else:
-				if who.count('.'):
-					msg = u'Я не в курсе кто такой '+who+u' и баню как есть!'
-					whojid = who
-					skip = 0
+				if who.count('.'): msg, whojid = u'Я не в курсе кто такой '+who+u' и баню как есть!', who
 				else: msg = u'Я не в курсе кто такой '+who
 		else: msg = u'Ошибка формата времени!'
 	else: msg = u'Ась?'
@@ -124,20 +119,11 @@ def muc_tempo_ban2(type, jid, nick,text):
 		writefile(tban,str(ubl))
 		send_msg(type, jid, nick, msg)
 
-def muc_ban(type, jid, nick,text):
-	muc_affiliation(type, jid, nick, text, 'outcast')
-
-def muc_none(type, jid, nick,text):
-	muc_affiliation(type, jid, nick, text, 'none')
-
-def muc_member(type, jid, nick,text):
-	muc_affiliation(type, jid, nick, text, 'member')
-
-def muc_admin(type, jid, nick,text):
-	muc_affiliation(type, jid, nick, text, 'admin')
-
-def muc_owner(type, jid, nick,text):
-	muc_affiliation(type, jid, nick, text, 'owner')
+def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast')
+def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none')
+def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member')
+def muc_admin(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'admin')
+def muc_owner(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'owner')
 
 def muc_affiliation(type, jid, nick, text, aff):
 	tmppos = arr_semi_find(confbase, jid)
@@ -150,30 +136,21 @@ def muc_affiliation(type, jid, nick, text, aff):
 		if base[0].lower() == jid and base[1] == nowname:
 			xtype = base[3]
 			break
-	if xtype == 'owner':
-		msg = u'Команда блокирована!'
-		text = ''
+	if xtype == 'owner': msg, text = u'Команда блокирована!', ''
 	else: msg = u'Ась?'
-	skip = 1
+	skip = None
 	if len(text):
-		if text.count('\n'):
-			who = text.split('\n',1)[0]
-			reason = text.split('\n',1)[1]
-		else:
-			who = text
-			reason = u'by Isida!'
+		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
+		else: who, reason = text, u'by Isida!'
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-		if len(fnd) == 1:
-			msg = u'done'
-			whojid = getRoom(unicode(fnd[0][0]))
-			skip = 0
-		elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-		else:
-			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
-			whojid = who
-			skip = 0
+		if len(fnd) == 1: msg, whojid = u'done', getRoom(unicode(fnd[0][0]))
+		elif len(fnd) > 1:
+			whojid = getRoom(get_access(jid,who)[1])
+			if whojid != 'None': msg = u'done'
+			else: msg, skip = u'Я видела несколько человек с таким ником. Укажите точнее!', True
+		else: msg, whojid = u'Я не в курсе кто такой '+who+u' и использую как есть!', who
 	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
@@ -183,39 +160,25 @@ def muc_affiliation(type, jid, nick, text, aff):
 
 # -------------- role -----------------
 
-def muc_kick(type, jid, nick,text):
-	muc_role(type, jid, nick, text, 'none')
-
-def muc_participant(type, jid, nick,text):
-	muc_role(type, jid, nick, text, 'participant')
-
-def muc_visitor(type, jid, nick,text):
-	muc_role(type, jid, nick, text, 'visitor')
-
-def muc_moderator(type, jid, nick,text):
-	muc_role(type, jid, nick, text, 'moderator')
+def muc_kick(type, jid, nick,text): muc_role(type, jid, nick, text, 'none')
+def muc_participant(type, jid, nick,text): muc_role(type, jid, nick, text, 'participant')
+def muc_visitor(type, jid, nick,text): muc_role(type, jid, nick, text, 'visitor')
+def muc_moderator(type, jid, nick,text): muc_role(type, jid, nick, text, 'moderator')
 
 def muc_role(type, jid, nick, text, role):
-	skip = 1
+	skip = None
 	if len(text):
-		if text.count('\n'):
-			who = text.split('\n',1)[0]
-			reason = text.split('\n',1)[1]
-		else:
-			who = text
-			reason = u'by Isida!'
+		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
+		else: who, reason = text, u'by Isida!'
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-		if len(fnd) == 1:
-			whonick = unicode(fnd[0][0])
-			msg = u'done'
-			skip = 0
-		elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-		else:
-			msg = u'Я не в курсе кто такой '+who+u' и использую как есть!'
-			whonick = who
-			skip = 0
+		if len(fnd) == 1: whonick, msg = unicode(fnd[0][0]), u'done'
+		elif len(fnd) > 1:
+			wj = getRoom(get_access(jid,who)[1])
+			if wj != 'None': whonick, msg = who, u'done'
+			else: msg, skip = u'Я видела несколько человек с таким ником. Укажите точнее!', True
+		else: msg, whonick = u'Я не в курсе кто такой '+who+u' и использую как есть!', who
 	else: msg = u'Ась?'
 	if skip: send_msg(type, jid, nick, msg)
 	else:
@@ -228,21 +191,14 @@ def muc_role(type, jid, nick, text, role):
 # role nick
 # time
 # reason
-def muc_akick(type, jid, nick,text):
-	muc_arole(type, jid, nick, text, 'none')
 
-def muc_aparticipant(type, jid, nick,text):
-	muc_arole(type, jid, nick, text, 'participant')
-
-def muc_avisitor(type, jid, nick,text):
-	muc_arole(type, jid, nick, text, 'visitor')
-
-def muc_amoderator(type, jid, nick,text):
-	muc_arole(type, jid, nick, text, 'moderator')
+def muc_akick(type, jid, nick,text): muc_arole(type, jid, nick, text, 'none')
+def muc_aparticipant(type, jid, nick,text): muc_arole(type, jid, nick, text, 'participant')
+def muc_avisitor(type, jid, nick,text): muc_arole(type, jid, nick, text, 'visitor')
+def muc_amoderator(type, jid, nick,text): muc_arole(type, jid, nick, text, 'moderator')
 
 def muc_arole(type, jid, nick, text, role):
-
-	skip = 1
+	skip = True
 	if len(text):
 		if text[:4].lower() == 'show' and not text.count('\n'):
 			text = text[5:]
@@ -257,7 +213,6 @@ def muc_arole(type, jid, nick, text, role):
 			if not len(msg):
 				if text == '.': msg = u'Список пуст!'
 				else: msg = u'Не найдено!'
-
 		elif text[:4].lower() == 'del ' and not text.count('\n'):
 			text = text[4:]
 			if not len(text): msg = u'Кого удалить?'
@@ -270,7 +225,6 @@ def muc_arole(type, jid, nick, text, role):
 						writefile(ro_alist,str(alist_role))
 						msg = u'Удалено: '+tmp[1]
 						break
-
 		elif text.lower() == 'clear':
 			alist_role = getFile(ro_alist,[])
 			tmp_role = []
@@ -278,7 +232,6 @@ def muc_arole(type, jid, nick, text, role):
 				if tmp[0] != jid: tmp_role.append(tmp)
 			writefile(ro_alist,str(tmp_role))
 			msg = u'Очищено для '+str(jid)
-
 		else:
 			who = text.split('\n',2)[0]
 			try:
@@ -297,11 +250,11 @@ def muc_arole(type, jid, nick, text, role):
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1:
-				whonick = unicode(fnd[0][0])
-				whojid = unicode(fnd[0][1])
-				skip = 0
-			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), None
+			elif len(fnd) > 1:
+				whojid = getRoom(get_access(jid,who)[1])
+				if whojid != 'None': whonick, msg, skip = who, u'done', None
+				else: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 			else: msg = u'Я не в курсе кто такой '+who
 	else: msg = u'Ась?'
 	
@@ -343,20 +296,19 @@ def decrease_alist_role():
 
 # ----------------------------------------------
 def muc_afind(type, jid, nick, text):
-	skip = 1
+	skip = None
 	if len(text):
 			who = text
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1:
-				whonick = unicode(fnd[0][0])
-				whojid = unicode(fnd[0][1])
-				skip = 0
-			elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
+			if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), None
+			elif len(fnd) > 1:
+				whojid = getRoom(get_access(jid,who)[1])
+				if whojid != 'None': whonick, msg, skip = who, u'done', None
+				else: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
 			else: msg = u'Я не в курсе кто такой '+who
 	else: msg = u'Ась?'
-	
 	if not skip:
 		alist_role = getFile(ro_alist,[])
 		not_found = 1

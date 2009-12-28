@@ -9,17 +9,21 @@ def readfile(filename):
 	fp.close()
 	return data
 
-
 def writefile(filename, data):
 	fp = file(filename, 'w')
 	fp.write(data)
 	fp.close()
 
-writefile('settings/starttime',str(int(time.time())))
+if os.name == 'nt': print 'Warning! Correct work only on *NIX system!'
+
+try: writefile('settings/starttime',str(int(time.time())))
+except:
+	print '\n','*'*50,'\n Isida is crashed! Incorrent launch!\n','*'*50,'\n'
+	raise
 
 while 1:
 	try: execfile('isida.py')
-	except Exception, SM:
+	except:
 		print '\n','*'*50,'\n Isida is crashed! It\'s imposible, but You do it!\n','*'*50,'\n'
 		raise
 	if os.path.isfile('settings/tmp'): mode = str(readfile('settings/tmp'))

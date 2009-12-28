@@ -9,13 +9,12 @@ def true_age(type, jid, nick, text):
 	
 def true_age_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
+	text = text.split('\n')
 	llim = 10
 	if len(text)>=2:
-		try: llim = int(text[0])
+		try: llim = int(text[1])
 		except: llim = 10
-		text = text[1]
-	else: text = text[0]
+	text = text[0]
 	if text == '': text = nick
 	if llim > 100: llim = 100
 	mdb = sqlite3.connect(agestatbase)
@@ -60,13 +59,12 @@ def seen_split(type, jid, nick, text):
 
 def seen_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
+	text = text.split('\n')
 	llim = 10
 	if len(text)>=2:
-		try: llim = int(text[0])
+		try: llim = int(text[1])
 		except: llim = 10
-		text = text[1]
-	else: text = text[0]
+	text = text[0]
 	if text == '': text = nick
 	if llim > 100: llim = 100
 	mdb = sqlite3.connect(agestatbase)
@@ -109,13 +107,12 @@ def seenjid_split(type, jid, nick, text):
 	
 def seenjid_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
-	text = text.split(' ')
+	text = text.split('\n')
 	llim = 10
 	if len(text)>=2:
-		try: llim = int(text[0])
+		try: llim = int(text[1])
 		except: llim = 10
-		text = text[1]
-	else: text = text[0]
+	text = text[0]
 	ztype = None
 	if text == '': text = nick
 	if llim > 100: llim = 100
@@ -158,8 +155,8 @@ def seenjid_raw(type, jid, nick, text, xtype):
 
 global execute
 
-execute = [(0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
-	 (0, u'age_split', true_age_split, 2, u'Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.\nage [number][word]\nnumber - максимальное количество при поиске,\nword - поиск слова в нике/jid\'е'),
+execute = [(0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.'),
+	 (0, u'age_split', true_age_split, 2, u'Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.'),
 	 (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
 	 (0, u'seen_split', seen_split, 2, u'Показывает время входа/выхода с разбивкой по никам.'),
 	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),

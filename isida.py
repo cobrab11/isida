@@ -130,10 +130,7 @@ def arr_del_semi_find(array, string):
 	
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
-		no_send = 1
-		log_limit = 50
-		if len(mmessage) <= log_limit: log_record = mmessage
-		else: log_record = mmessage[:log_limit] + ' [+' + str(len(mmessage)) +']'
+		no_send = True
 		if len(mmessage) > msg_limit:
 			cnt = 0
 			maxcnt = len(mmessage)/msg_limit + 1
@@ -146,7 +143,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
 				sleep(1)
 			tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
 			cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
-			if mtype == 'chat': no_send = 0
+			if mtype == 'chat': no_send = None
 			else: mmessage = mmessage[:msg_limit] + '[...]'
 		if no_send:
 			if mtype == 'groupchat' and mnick != '': mmessage = mnick+': '+mmessage
@@ -155,16 +152,14 @@ def send_msg(mtype, mjid, mnick, mmessage):
 			if len(mmessage): cl.send(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
-	jSys = sys.platform
-	jOs = os.name
-	japytPyVer = sys.version
-	japytPyVer = japytPyVer.split(',')
-	japytPyVer = japytPyVer[0]+')'
+	iSys = sys.platform
+	iOs = os.name
+	isidaPyVer = sys.version.split(',')[0]+')'
 
-	if jOs == u'posix':
+	if iOs == u'posix':
 		osInfo = os.uname()
-		japytOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+japytPyVer
-	elif jSys == 'win32':
+		isidaOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+isidaPyVer
+	elif iSys == 'win32':
 		def get_registry_value(key, subkey, value):
 			import _winreg
 			key = getattr(_winreg, key)
@@ -177,10 +172,10 @@ def os_version():
 		buildInfo = get("CurrentBuildNumber")
 		try:
 			spInfo = get("CSDVersion")
-			japytOs = osInfo+' '+spInfo+' (Build: '+buildInfo+') / Python v'+japytPyVer
-		except: japytOs = osInfo+' (Build: '+buildInfo+') / Python v'+japytPyVer
-	else: japytOs = 'unknown'
-	return japytOs
+			isidaOs = osInfo+' '+spInfo+' (Build: '+buildInfo+') / Python v'+isidaPyVer
+		except: isidaOs = osInfo+' (Build: '+buildInfo+') / Python v'+isidaPyVer
+	else: isidaOs = 'unknown'
+	return isidaOs
 
 def joinconf(conference, server):
 	node = unicode(JID(conference.lower()).getResource())
