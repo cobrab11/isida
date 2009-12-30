@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+rlmas = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u'&','&amp;'),(u'<','&lt;'),(u'>','&gt;'))
+
 lmass = (('\n','<br>'),('\n','<br />'),('\n','<br/>'),('\n','\n\r'),('','<![CDATA['),('',']]>'),(u'','&nbsp;'),
 		(u'','&shy;'),(u'','&ensp;'),(u'','&emsp;'),(u'','&thinsp;'),(u'','&zwnj;'),(u'','&zwj;'))
 		
@@ -926,7 +928,7 @@ def unescape(text):
 	return re.sub("&#?\w+;", fixup, text)	
 
 def html_escape(ms):
-	for tmp in rmass: ms = ms.replace(tmp[0],tmp[1])
+	for tmp in rlmas: ms = ms.replace(tmp[0],tmp[1])
 	return ms
 	
 def rss_replace(ms):
