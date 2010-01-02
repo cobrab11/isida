@@ -6,7 +6,7 @@
 #                               version 1.91
 #
 # --------------------------------------------------------------------
-#                    (c) 2009 Disabler Production Lab.
+#                  (c) 2oo9-2o1o Disabler Production Lab.
 # --------------------------------------------------------------------
 
 from __future__ import with_statement
@@ -490,8 +490,8 @@ def presenceCB(sess,mess):
 				else: not_found = 2
 		if not not_found: megabase.append([room, nick, role, affiliation, jid])
 	if not megabase2.count([room, nick, role, affiliation, jid]): megabase2.append([room, nick, role, affiliation, jid])	
-	if jid == 'None': jid = '<temporary>'+nick
-	else: jid = getRoom(jid.lower())
+	if jid == 'None': jid, jid2 = '<temporary>'+nick, 'None'
+	else: jid2, jid = jid, getRoom(jid.lower())
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
@@ -520,7 +520,7 @@ def presenceCB(sess,mess):
 			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
 	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
 	mdb.commit()
-	for tmp in gpresence: thr(tmp,(room,jid,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 	
 def onoff(msg):
 	if msg: return 'ON'
@@ -720,7 +720,7 @@ pprint(u'*** Bot Name: '+botName)
 pprint(u'*** Version '+botVersion)
 pprint(u'*** OS '+botOs)
 pprint(u'*'*50)
-pprint(u'*** (c) 2oo9 Disabler Production Lab.')
+pprint(u'*** (c) 2oo9-2o1o Disabler Production Lab.')
 
 node = unicode(name)
 lastnick = nickname

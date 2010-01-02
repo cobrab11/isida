@@ -526,7 +526,7 @@ def info_comm(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 	
 def helpme(type, jid, nick, text):
-	if text == u'about': msg = u'Isida Jabber Bot | © 2oo9 Disabler Production Lab. | http://isida-bot.com'
+	if text == u'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
 	elif text == u'donation': msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
 	elif text == u'доступ': msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
 	elif text != '':
@@ -545,7 +545,7 @@ def helpme(type, jid, nick, text):
 				for tmp in cm:
 					if tmp[0] == i and tmp[2] != u'': msg += tmp[1] + ', '
 				msg = msg[:-2]+'\n'
-	else: msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida-bot.com | © 2oo9 Disabler Production Lab. | Справка по командам: help команда'
+	else: msg = u'Isida Jabber Bot - Информационно-справочный бот | http://isida-bot.com | © 2oo9-2o1o Disabler Production Lab. | Справка по командам: help команда'
 	send_msg(type, jid, nick, msg)
 
 def bot_rejoin(type, jid, nick, text):
