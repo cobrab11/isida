@@ -71,7 +71,7 @@ def translate(type, jid, nick,text):
 		msg = u''
 		for tmp in text:
 			if tmp in trlang: msg += tmp+' - '+trlang[tmp]+', '
-		if len(msg): msg = u'Извесные языки: '+msg[:-2]
+		if len(msg): msg = u'Известные языки: '+msg[:-2]
 		else: msg = u'Я не знаю таких языков'
 	else:
 		if text.count(' ') > 1:
