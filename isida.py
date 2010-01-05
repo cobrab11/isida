@@ -638,7 +638,6 @@ banbase = []
 iq_answer = []
 th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
-backdoor = True					# отладочный бакдор
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
 NS_STATS = 'http://jabber.org/protocol/stats'
@@ -652,7 +651,6 @@ else: timeofset = int(gt[3])-int(lt[3]) + 24
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
-botVersion += '.beta'
 
 # --- load config.txt
 
@@ -662,8 +660,6 @@ capsNode = 'http://isida-bot.com'
 # --- check parameters
 baseParameters = [nickname ,name, domain, password, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 baseErrors = [u'nickname', u'name', u'domain', u'password', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
-md1 = '794d9ff1476324506da4812e2ee947ad'
-md2 = '65253e8b3ae2ba7734cefe0082eb66b0'
 megabase = []
 megabase2 = []
 for baseCheck in range(0, len(baseParameters)):
