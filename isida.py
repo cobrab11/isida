@@ -556,7 +556,6 @@ def now_schedule():
 		for tmp in gtimer: log_execute(tmp,())
 
 def check_rss():
-	lt=tuple(localtime())
 	l_hl = int(time.time())
 	feedbase = getFile(feeds,[])
 	for fd in feedbase:
@@ -573,7 +572,7 @@ def check_rss():
 			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
 			feedbase.remove(fd)
-			feedbase.append([fd[0], fd[1], fd[2], lt[:6], fd[4]])
+			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4]])
 		writefile(feeds,str(feedbase))
 
 def talk_count(room,jid,nick,text):
