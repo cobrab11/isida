@@ -557,7 +557,7 @@ def now_schedule():
 
 def check_rss():
 	lt=tuple(localtime())
-	l_hl = (lt[0]*400+lt[1]*40+lt[2]) * 86400 + lt[3]*3600+lt[4]*60+lt[5]
+	l_hl = int(time.time())
 	feedbase = getFile(feeds,[])
 	for fd in feedbase:
 		ltime = fd[1]
@@ -567,8 +567,8 @@ def check_rss():
 		except: ofset = 4
 		if timetype == 'h': ofset *= 3600
 		elif timetype == 'm': ofset *= 60
-		lttime = fd[3]
-		ll_hl = (lttime[0]*400+lttime[1]*40+lttime[2]) * 86400 + lttime[3]*3600+lttime[4]*60+lttime[5]
+		try: ll_hl = int(fd[3])
+		except: ll_hl = 0
 		if ll_hl + ofset <= l_hl:
 			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')

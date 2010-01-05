@@ -1002,45 +1002,25 @@ def rss(type, jid, nick, text):
 	nosend = 0
 	text = text.split(' ')
 	tl = len(text)
-
 	if tl < 5: text.append('!')
-		
 	mode = text[0].lower() # show | add | del | clear | new | get
-
-	if mode == 'add':
-		if tl < 4:
-			msg = 'rss add [http://]url timeH|M [full|body|head]'
-			mode = ''
-	elif mode == 'del':
-		if tl < 2:
-			msg = 'rss del [http://]url'
-			mode = ''
-	elif mode == 'new':
-		if tl < 4:
-			msg = 'rss new [http://]url max_feed_humber [full|body|head]'
-			mode = ''
-	elif mode == 'get':
-		if tl < 4:
-			msg = 'rss get [http://]url max_feed_humber [full|body|head]'
-			mode = ''
-
+	if mode == 'add' and tl < 4: msg,mode = 'rss add [http://]url timeH|M [full|body|head]',''
+	elif mode == 'del' and tl < 2: msg,mode = 'rss del [http://]url',''
+	elif mode == 'new' and tl < 4: msg,mode = 'rss new [http://]url max_feed_humber [full|body|head]',''
+	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head]',''
 	feedbase = getFile(feeds,[])
 	lastfeeds = getFile(lafeeds,[])
-
 	if mode == 'clear':
-		msg = u'All RSS was cleared!'
-		tf = []
+		msg, tf = u'All RSS was cleared!', []
 		for taa in feedbase:
 			if taa[4] != jid: tf.append(taa)
 		feedbase = tf
 		writefile(feeds,str(feedbase))
-
 		tf = []
 		for taa in lastfeeds:
 			if taa[2] == jid: tf.append(taa)
 		lastfeeds = tf
 		writefile(lafeeds,str(lastfeeds))
-
 	if mode == 'all':
 		msg = u'No RSS found!'
 		if feedbase != []:
@@ -1048,11 +1028,10 @@ def rss(type, jid, nick, text):
 			msg = u'All schedule feeds:'
 			for rs in feedbase:
 				msg += u'\n'+getName(rs[4])+'\t'+rs[0]+u' ('+rs[1]+u') '+rs[2]
-				lt = rs[3]
-				msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+				try: msg += u' - '+time.ctime(rs[3])
+				except: msg += u' - Unknown'
 				stt = 0
 			if stt: msg+= u' not found!'
-
 	if mode == 'show':
 		msg = u'No RSS found!'
 		if feedbase != []:
@@ -1061,69 +1040,54 @@ def rss(type, jid, nick, text):
 			for rs in feedbase:
 				if rs[4] == jid:
 					msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
-					lt = rs[3]
-					msg += u' '+tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
+					try: msg += u' - '+time.ctime(rs[3])
+					except: msg += u' - Unknown'
 					stt = 0
 			if stt: msg+= u' not found!'
-
 	elif mode == 'add':
-			
-		lt=tuple(localtime())
 		link = text[1]
-		if link[:7] != 'http://': link = 'http://'+link
+		if not link[:10].count('://'): link = 'http://'+link
 		for dd in feedbase:
 			if dd[0] == link and dd[4] == jid:
 				feedbase.remove(dd)
 				break
-		feedbase.append([link, text[2], text[3], lt[:6], getRoom(jid)]) # url time mode
+		feedbase.append([link, text[2], text[3], int(time.time()), getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
-
 		msg = u'Add feed to schedule: '+link+u' ('+text[2]+u') '+text[3]
 		send_msg(type, jid, nick, msg)
-
 		try:
 			f = urllib.urlopen(link)
 			feed = f.read()
 			f.close()
 		except: return
-
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
 		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
-
 		if is_rss_aton:
 			feed = html_encode(feed)
-
 			if feed.count('<items>'): feed = get_tag(feed,'items')
-
 			if is_rss_aton == 1: feed = feed.split('<item')
 			else: feed = feed.split('<entry>')
-
 			if len(text) > 3: submode = text[3]
 			else: submode = 'full'
-
 			msg = 'Feeds for '
 			if submode[-4:] == '-url':
 				submode = submode[:-4]
 				urlmode = 1
-
 			else:
 				urlmode = 0
 				msg += link+' '
-
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
 			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
-
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
 					lastfeeds.remove(dd)
 					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
-
 			mmsg = feed[1]
 			if is_rss_aton==1:
 				ttitle = get_tag(mmsg,'title')
@@ -1136,7 +1100,6 @@ def rss(type, jid, nick, text):
 				tu2 = mmsg.find('href=\"',tu1)+6
 				tu3 = mmsg.find('\"',tu2)
 				turl = mmsg[tu2:tu3].replace('\n',' ')
-
 			msg += u'• '
 			if submode == 'full':
 				msg += ttitle+ '\n'
@@ -1144,67 +1107,51 @@ def rss(type, jid, nick, text):
 			elif submode == 'body': msg += tbody + '\n'
 			elif submode[:4] == 'head': msg += ttitle + '\n'
 			if urlmode: msg += turl+'\n'
-
 			msg = replacer(msg)
-
 		else:
 			feed = html_encode(feed)
 			title = get_tag(feed,'title')
 			msg = u'bad url or rss/atom not found at '+link+' - '+title
-
-#---------
-
 	elif mode == 'del':
 		link = text[1]
-		if link[:7] != 'http://': link = 'http://'+link
-
+		if not link[:10].count('://'): link = 'http://'+link
 		bedel1 = 0
 		for rs in feedbase:
 			if rs[0] == link and rs[4] == jid:
 				feedbase.remove(rs)
 				bedel1 = 1
-
 		bedel2 = 0
 		for rs in lastfeeds:
 			if rs[0] == link and rs[2] == jid:
 				lastfeeds.remove(rs)
 				bedel2 = 1
-
 		if bedel1 or bedel2: msg = u'Delete feed from schedule: '+link
 		if bedel1: writefile(feeds,str(feedbase))
 		if bedel2: writefile(lafeeds,str(lastfeeds))
 		else: msg = u'Can\'t find in schedule: '+link
-
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
-		if link[:7] != 'http://': link = 'http://'+link
+		if not link[:10].count('://'): link = 'http://'+link
 		try:
 			f = urllib.urlopen(link)
 			feed = f.read()
 			f.close()
 		except: return
-
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
 		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
-
 		if is_rss_aton:
 			feed = html_encode(feed)
 			if feed.count('<items>'): feed = get_tag(feed,'<items>')
-
 			if is_rss_aton == 1: feed = feed.split('<item')
 			else: feed = feed.split('<entry>')
-	
 			if len(text) > 2: lng = int(text[2])+1
 			else: lng = len(feed)
-				
 			if len(feed) <= lng: lng = len(feed)
 			if lng>=11: lng = 11
-
 			if len(text) > 3: submode = text[3]
 			else: submode = 'full'
-
 			msg = 'Feeds for '
 			if submode[-4:] == '-url':
 				submode = submode[:-4]
@@ -1212,25 +1159,21 @@ def rss(type, jid, nick, text):
 			else:
 				urlmode = 0
 				msg += link+' '
-
 			tstop = ''
 			for ii in lastfeeds:
 				if ii[2] == jid and ii[0] == link:
 					 tstop = ii[1]
 					 tstop = tstop[:-1]
-
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
 			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
-
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
 					lastfeeds.remove(dd)
 					break
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
-
 			for mmsg in feed[1:lng]:
 				if is_rss_aton == 1:
 					ttitle = get_tag(mmsg,'title')
@@ -1243,7 +1186,6 @@ def rss(type, jid, nick, text):
 					tu2 = mmsg.find('href=\"',tu1)+6
 					tu3 = mmsg.find('\"',tu2)
 					turl = mmsg[tu2:tu3].replace('\n',' ')
-
 				if mode == 'new':
 					if ttitle == tstop: break
 				msg += u'• '
@@ -1253,20 +1195,15 @@ def rss(type, jid, nick, text):
 				elif submode == 'body': msg += tbody + '\n'
 				elif submode[:4] == 'head': msg += ttitle+ '\n'
 				if urlmode: msg += turl+'\n'
-
 			if mode == 'new':
 				if mmsg == feed[1] and text[4] == 'silent': nosend = 1
 				elif mmsg == feed[1] and text[4] != 'silent': msg = 'New feeds not found! '
-
 			if submode == 'body' or submode == 'head': msg = msg[:-1]
-
 			msg = replacer(msg)
-
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
-				feed = html_encode(feed)
-				title = get_tag(feed,'title')
+				feed, title = html_encode(feed), get_tag(feed,'title')
 				msg = u'bad url or rss/atom not found at '+link+' - '+title
 	if not nosend: send_msg(type, jid, nick, msg)
 
