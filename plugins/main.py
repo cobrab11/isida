@@ -1160,19 +1160,18 @@ def rss(type, jid, nick, text):
 				urlmode = 0
 				msg += link+' '
 			tstop = ''
-			for ii in lastfeeds:
-				if len(ii) != 2: lastfeeds.remove(ii)
-				elif ii[2] == jid and ii[0] == link:
-					 tstop = ii[1]
-					 tstop = tstop[:-1]
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
 			else: mmsg = get_tag(mmsg,'content').replace('\n',' ') + '\n'
 			for dd in lastfeeds:
-				if dd[0] == link and dd[2] == jid:
-					lastfeeds.remove(dd)
-					break
+				try:
+					if dd[0] == link and dd[2] == jid:
+						tstop = dd[1]
+						tstop = tstop[:-1]
+						lastfeeds.remove(dd)
+						break
+				except: lastfeeds.remove(dd)
 			lastfeeds.append([link,mmsg,jid])
 			writefile(lafeeds,str(lastfeeds))
 			for mmsg in feed[1:lng]:
