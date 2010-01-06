@@ -1021,7 +1021,7 @@ def rss(type, jid, nick, text):
 			if taa[2] == jid: tf.append(taa)
 		lastfeeds = tf
 		writefile(lafeeds,str(lastfeeds))
-	if mode == 'all':
+	elif mode == 'all':
 		msg = u'No RSS found!'
 		if feedbase != []:
 			stt = 1
@@ -1032,7 +1032,7 @@ def rss(type, jid, nick, text):
 				except: msg += u' - Unknown'
 				stt = 0
 			if stt: msg+= u' not found!'
-	if mode == 'show':
+	elif mode == 'show':
 		msg = u'No RSS found!'
 		if feedbase != []:
 			stt = 1
@@ -1081,7 +1081,7 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
+			else: mmsg = get_tag(mmsg,'content').replace('\n',' ') + '\n'
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
 					lastfeeds.remove(dd)
@@ -1161,13 +1161,14 @@ def rss(type, jid, nick, text):
 				msg += link+' '
 			tstop = ''
 			for ii in lastfeeds:
-				if ii[2] == jid and ii[0] == link:
+				if len(ii) != 2: lastfeeds.remove(ii)
+				elif ii[2] == jid and ii[0] == link:
 					 tstop = ii[1]
 					 tstop = tstop[:-1]
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = ttitle = get_tag(mmsg,'content').replace('\n',' ') + '\n'
+			else: mmsg = get_tag(mmsg,'content').replace('\n',' ') + '\n'
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
 					lastfeeds.remove(dd)
@@ -1203,7 +1204,8 @@ def rss(type, jid, nick, text):
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
-				feed, title = html_encode(feed), get_tag(feed,'title')
+				feed = html_encode(feed)
+				title = get_tag(feed,'title')
 				msg = u'bad url or rss/atom not found at '+link+' - '+title
 	if not nosend: send_msg(type, jid, nick, msg)
 
