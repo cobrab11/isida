@@ -650,6 +650,7 @@ else: timeofset = int(gt[3])-int(lt[3]) + 24
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
+botOs = os_version()
 
 # --- load config.txt
 
@@ -664,7 +665,6 @@ megabase2 = []
 for baseCheck in range(0, len(baseParameters)):
 	if baseParameters[baseCheck]=='': errorHandler(baseErrors[baseCheck]+u' is missed in '+configname)
 god = SuperAdmin
-botOs = os_version()
 
 execfile('plugins/main.py')
 plname = u'plugins/list.txt'
