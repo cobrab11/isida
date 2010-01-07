@@ -554,9 +554,6 @@ def getRoom(jid):
 	if jid == 'None': return jid
 	return getName(jid)+'@'+getServer(jid)
 
-def schedule():
-	thr(now_schedule,())
-
 def now_schedule():
 	while 1:
 		sleep(schedule_time)
@@ -565,6 +562,7 @@ def now_schedule():
 def check_rss():
 	l_hl = int(time.time())
 	feedbase = getFile(feeds,[])
+	feedb = []
 	for fd in feedbase:
 		ltime = fd[1]
 		timetype = ltime[-1:].lower()
@@ -578,9 +576,8 @@ def check_rss():
 		if ll_hl + ofset <= l_hl:
 			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
 			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
-			feedbase.remove(fd)
-			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4]])
-		writefile(feeds,str(feedbase))
+			feedb.append([fd[0], fd[1], fd[2], l_hl, fd[4]])
+	if len(feedb) == len(feedbase): writefile(feeds,str(feedb))
 
 def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
@@ -775,7 +772,7 @@ lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
 game_over = 0
 
-schedule()
+thr(now_schedule,())
 
 while 1:
 	try:

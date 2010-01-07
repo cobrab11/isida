@@ -1008,9 +1008,9 @@ def rss(type, jid, nick, text):
 	elif mode == 'del' and tl < 2: msg,mode = 'rss del [http://]url',''
 	elif mode == 'new' and tl < 4: msg,mode = 'rss new [http://]url max_feed_humber [full|body|head]',''
 	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head]',''
-	feedbase = getFile(feeds,[])
 	lastfeeds = getFile(lafeeds,[])
 	if mode == 'clear':
+		feedbase = getFile(feeds,[])
 		msg, tf = u'All RSS was cleared!', []
 		for taa in feedbase:
 			if taa[4] != jid: tf.append(taa)
@@ -1022,6 +1022,7 @@ def rss(type, jid, nick, text):
 		lastfeeds = tf
 		writefile(lafeeds,str(lastfeeds))
 	elif mode == 'all':
+		feedbase = getFile(feeds,[])
 		msg = u'No RSS found!'
 		if feedbase != []:
 			stt = 1
@@ -1033,6 +1034,7 @@ def rss(type, jid, nick, text):
 				stt = 0
 			if stt: msg+= u' not found!'
 	elif mode == 'show':
+		feedbase = getFile(feeds,[])
 		msg = u'No RSS found!'
 		if feedbase != []:
 			stt = 1
@@ -1045,6 +1047,7 @@ def rss(type, jid, nick, text):
 					stt = 0
 			if stt: msg+= u' not found!'
 	elif mode == 'add':
+		feedbase = getFile(feeds,[])
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
 		for dd in feedbase:
@@ -1113,6 +1116,7 @@ def rss(type, jid, nick, text):
 			title = get_tag(feed,'title')
 			msg = u'bad url or rss/atom not found at '+link+' - '+title
 	elif mode == 'del':
+		feedbase = getFile(feeds,[])
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
 		bedel1 = 0
