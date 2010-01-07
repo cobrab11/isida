@@ -96,8 +96,15 @@ def onlytimeadd(lt):
 	return st
 
 def pprint(text):
-	zz = parser('['+timeadd(tuple(localtime()))+'] '+text)
+	lt = tuple(localtime())
+	zz = parser('['+timeadd(lt)+'] '+text)
 	if dm2: print zz
+	if CommandsLog:
+		fname = slog_folder+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+u'.txt'
+		fbody = tZ(lt[3])+tZ(lt[4])+tZ(lt[5])+'|'+text+u'\n'
+		fl = open(fname, 'a')
+		fl.write(fbody.encode('utf-8'))
+		fl.close()
 
 def send_presence_all(sm):
 	pr=xmpp.Presence(typ='unavailable')
@@ -597,7 +604,8 @@ def disconnecter():
 	game_over = 1
 
 # --------------------- Иницилизация переменных ----------------------
-LOG_FILENAME = u'log/error.txt'			# логи ошибок
+slog_folder = u'log/'					# папка системных логов
+LOG_FILENAME = slog_folder+u'error.txt'	# логи ошибок
 set_folder = u'settings/'				# папка настроек
 back_folder = u'backup/'				# папка хронения резервных копий
 preffile = set_folder+u'prefix'			# префиксы
@@ -628,6 +636,7 @@ ul = 'update.log'				# лог последнего обновление
 debugmode = None				# остановка на ошибках
 dm = None						# отладка xmpppy
 dm2 = None						# отладка действий бота
+CommandsLog = None				# логгирование команд
 prefix = u'_'					# префикс комманд
 msg_limit = 1000				# лимит размера сообщений
 botName = 'Isida-Bot'			# название бота

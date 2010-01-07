@@ -21,7 +21,7 @@ def is_valid(type, jid, nick, text):
 
 	msg += u' Преобладают буквы: '
 	if hl == 1: msg += u'Латиница'
-	elif hl == 2: msg += u'Кирилица'
+	elif hl == 2: msg += u'Кириллица'
 	else: msg += u'Поровну'
 	send_msg(type, jid, nick, msg)
 
