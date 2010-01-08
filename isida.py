@@ -555,9 +555,10 @@ def getRoom(jid):
 	return getName(jid)+'@'+getServer(jid)
 
 def now_schedule():
-	while 1:
+	while not game_over:
 		sleep(schedule_time)
-		for tmp in gtimer: log_execute(tmp,())
+		if not game_over:
+			for tmp in gtimer: log_execute(tmp,())
 
 def check_rss():
 	l_hl = int(time.time())
@@ -646,6 +647,7 @@ th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
+reboot_time = 60				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
 NS_STATS = 'http://jabber.org/protocol/stats'
 
 gt=gmtime()
@@ -743,8 +745,6 @@ try:
 	cl.auth(jid.getNode(), password, jid.getResource())
 	pprint(u'Autheticated')
 except:
-	raise
-	reboot_time = 60
 	pprint(u'Auth error or no connection. Restart in '+str(reboot_time)+' sec.')
 	writefile(tmpf,str('restart'))
 	sleep(reboot_time)
