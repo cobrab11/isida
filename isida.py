@@ -597,10 +597,10 @@ def talk_count(room,jid,nick,text):
 	mdb.commit()
 
 def disconnecter():
+	global bot_exit_type
 	close_age()
-	writefile(tmpf,str('restart'))
 	sleep(2)
-	game_over = 1
+	game_over, bot_exit_type = 1, 'restart'
 
 # --------------------- Иницилизация переменных ----------------------
 slog_folder = u'log/'					# папка системных логов
