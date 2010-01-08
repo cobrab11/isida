@@ -2,12 +2,11 @@
 # -*- coding: utf -*-
 
 def bot_shutdown(type, jid, nick, text, reason, xtype):
-	global game_over
+	global game_over,bot_exit_type
 	StatusMessage = reason + u' по команде от '+nick
 	if text != '': StatusMessage += u', причина: '+text
 	send_presence_all(StatusMessage)
-	writefile(tmpf,str(xtype))
-	game_over = 1
+	bot_exit_type, game_over = xtype, 1
 
 def bot_exit(type, jid, nick, text):
 	bot_shutdown(type, jid, nick, text, u'Завершение работы', 'exit')

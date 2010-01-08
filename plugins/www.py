@@ -28,11 +28,7 @@ def netwww(type, jid, nick, text):
 	if regex:
 		try:
 			mt = re.findall(regex, page, re.S)
-			if mt != []:
-				mt = tuple(mt[0])
-				msg = ''
-				for tmp in mt: msg += tmp + ' '
-				msg = unhtml(msg)
+			if mt != []: msg = unhtml(''.join(mt))
 			else: msg = u'RegExp не найден!'
 		except: msg = u'Ошибка в RegExp!'
 	else: msg = get_tag(page,'title')+'\n'+unhtml(page)

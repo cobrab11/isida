@@ -104,7 +104,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 				if who.count('.'): msg, whojid = u'Я не в курсе кто такой '+who+u' и баню как есть!', who
 				else: msg = u'Я не в курсе кто такой '+who
 		else: msg = u'Ошибка формата времени!'
-	else: msg = u'Ась?'
+	else: msg, skip = u'Ась?', True
 
 	if skip: send_msg(type, jid, nick, msg)
 	else:
@@ -138,8 +138,8 @@ def muc_affiliation(type, jid, nick, text, aff):
 			break
 	if xtype == 'owner': msg, text = u'Команда блокирована!', ''
 	else: msg = u'Ась?'
-	skip = None
 	if len(text):
+		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
 		else: who, reason = text, u'by Isida!'
 		mdb = sqlite3.connect(agestatbase)
@@ -151,6 +151,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 			if whojid != 'None': msg = u'done'
 			else: msg, skip = u'Я видела несколько человек с таким ником. Укажите точнее!', True
 		else: msg, whojid = u'Я не в курсе кто такой '+who+u' и использую как есть!', who
+	else: skip = True
 	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
@@ -179,7 +180,7 @@ def muc_role(type, jid, nick, text, role):
 			if wj != 'None': whonick, msg = who, u'done'
 			else: msg, skip = u'Я видела несколько человек с таким ником. Укажите точнее!', True
 		else: msg, whonick = u'Я не в курсе кто такой '+who+u' и использую как есть!', who
-	else: msg = u'Ась?'
+	else: msg, skip = u'Ась?', True
 	if skip: send_msg(type, jid, nick, msg)
 	else:
 		iqid = str(randint(1,100000))
@@ -250,7 +251,7 @@ def muc_arole(type, jid, nick, text, role):
 			mdb = sqlite3.connect(agestatbase)
 			cu = mdb.cursor()
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), None
+			if len(fnd) == 1: whonick, whojid, skip, msg = unicode(fnd[0][0]), unicode(fnd[0][1]), None, u'done'
 			elif len(fnd) > 1:
 				whojid = getRoom(get_access(jid,who)[1])
 				if whojid != 'None': whonick, msg, skip = who, u'done', None

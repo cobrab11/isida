@@ -116,7 +116,7 @@ def errorHandler(text):
 	pprint(u'\n*** Error ***')
 	pprint(text)
 	pprint(u'more info at http://isida-bot.com\n')
-	exit (0)
+	sys.exit('exit')
 
 def arr_semi_find(array, string):
 	astring = [unicode(string.lower())]
@@ -617,7 +617,6 @@ cns = set_folder+u'censors'				# состояние цензора
 owners = set_folder+u'owner'			# база владельцев
 ignores = set_folder+u'ignore'			# черный список
 confs = set_folder+u'conf'				# список активных конф
-tmpf = set_folder+u'tmp'				# флаг завершения бота
 feeds = set_folder+u'feed'				# список rss каналов
 lafeeds = set_folder+u'lastfeeds'		# последние новости по каждому каналу
 cens = set_folder+u'censor.txt'			# список "запрещенных" слов для болтуна
@@ -648,6 +647,8 @@ timeout = 300					# таймаут в секундах на iq запросы
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
 reboot_time = 60				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
+bot_exit_type = None			# причина завершения бота
+
 NS_STATS = 'http://jabber.org/protocol/stats'
 
 gt=gmtime()
@@ -746,9 +747,8 @@ try:
 	pprint(u'Autheticated')
 except:
 	pprint(u'Auth error or no connection. Restart in '+str(reboot_time)+' sec.')
-	writefile(tmpf,str('restart'))
 	sleep(reboot_time)
-	while 1: sys.exit(0)
+	sys.exit('restart')
 pprint(u'Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
@@ -786,20 +786,18 @@ while 1:
 		StatusMessage = u'Какой-то умник нажал CTRL+C в консоле...'
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
-		writefile(tmpf,str('exit'))
 		sleep(0.1)
-		sys.exit(0)
+		sys.exit('exit')
 
 	except Exception, SM:
 		pprint('*** Error *** '+str(SM)+' ***')
 		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 		if str(SM).lower().count('parsing finished'):
 			close_age()
-			writefile(tmpf,str('restart'))
 			sleep(300)
-			sys.exit(0)
-		if debugmode:
-			writefile(tmpf,str('exit'))
-			raise
+			sys.exit('restart')
+		if debugmode: raise
+
+sys.exit(bot_exit_type)
 
 # The end is near!
