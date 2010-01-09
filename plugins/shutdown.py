@@ -6,7 +6,7 @@ def bot_shutdown(type, jid, nick, text, reason, xtype):
 	StatusMessage = reason + u' по команде от '+nick
 	if text != '': StatusMessage += u', причина: '+text
 	send_presence_all(StatusMessage)
-	bot_exit_type, game_over = xtype, 1
+	bot_exit_type, game_over = xtype, True
 
 def bot_exit(type, jid, nick, text):
 	bot_shutdown(type, jid, nick, text, u'Завершение работы', 'exit')

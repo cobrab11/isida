@@ -7,7 +7,7 @@ watch_time = time.time()
 watch_count = 0
 
 def connect_watch():
-	global iq_answer, watch_size, watch_time, watch_timeout, game_over, watch_count
+	global iq_answer, watch_size, watch_time, watch_timeout, game_over, watch_count, bot_exit_type
 	if (time.time() - watch_time) > watch_size:
 		watch_time = time.time()
 		watch_count += 1
@@ -26,9 +26,8 @@ def connect_watch():
 			to -= 0.1
 		if to < 0:
 			close_age()
-			writefile(tmpf,str('restart'))
+			bot_exit_type, game_over = 'restart', True
 			sleep(2)
-			game_over = 1
 
 def c_watcher(type, jid, nick):
 	msg = u'Таймаут запросов: '+str(watch_size)

@@ -600,7 +600,7 @@ def disconnecter():
 	global bot_exit_type
 	close_age()
 	sleep(2)
-	game_over, bot_exit_type = 1, 'restart'
+	game_over, bot_exit_type = True, 'restart'
 
 # --------------------- Иницилизация переменных ----------------------
 slog_folder = u'log/'					# папка системных логов
@@ -771,7 +771,7 @@ for tocon in confbase:
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
-game_over = 0
+game_over = None
 
 thr(now_schedule,())
 
