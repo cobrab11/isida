@@ -597,7 +597,7 @@ def talk_count(room,jid,nick,text):
 	mdb.commit()
 
 def disconnecter():
-	global bot_exit_type
+	global bot_exit_type, game_over
 	close_age()
 	sleep(2)
 	game_over, bot_exit_type = True, 'restart'
