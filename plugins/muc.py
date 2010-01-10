@@ -328,12 +328,14 @@ def muc_afind(type, jid, nick, text):
 def alist_role_presence(room,jid,nick,type,text):
 #	print 'presence:',room,jid,nick,type,text
 	alist_role = getFile(ro_alist,[])
+	jid = getRoom(jid)
 	if alist_role != []:
 		for tmp in alist_role:
 			if tmp[0] == room and tmp[2] == jid:
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':tmp[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':tmp[3], 'nick':unicode(nick)},[Node('reason',{},tmp[4])])])])
 				cl.send(i)
+				break
 
 #def alist_message(room,jid,nick,type,text):
 #	print 'message:',room,jid,nick,type,text
