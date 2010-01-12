@@ -22,16 +22,16 @@ def netwww(type, jid, nick, text):
 	if not text.count('://'): text = 'http://'+text
 	req = urllib2.Request(text)
 	req.add_header('User-Agent',user_agent)
-	try: page = urllib2.urlopen(req).read()
-	except: page = u'forbidden'
-	page = html_encode(page)
-	if regex:
-		try:
-			mt = re.findall(regex, page, re.S)
-			if mt != []: msg = unhtml(''.join(mt[0]))
-			else: msg = u'RegExp не найден!'
-		except: msg = u'Ошибка в RegExp!'
-	else: msg = get_tag(page,'title')+'\n'+unhtml(page)
+	try:
+		page = html_encode(urllib2.urlopen(req).read())
+		if regex:
+			try:
+				mt = re.findall(regex, page, re.S)
+				if mt != []: msg = unhtml(''.join(mt[0]))
+				else: msg = u'RegExp не найден!'
+			except: msg = u'Ошибка в RegExp!'
+		else: msg = get_tag(page,'title')+'\n'+unhtml(page)
+	except Exception, SM: msg = str(SM)
 	send_msg(type, jid, nick, msg[:msg_limit])
 
 global execute
