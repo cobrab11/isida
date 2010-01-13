@@ -26,6 +26,7 @@ def connect_watch():
 			to -= 0.1
 		if to < 0:
 			close_age()
+			pprint('Restart by watcher\'s timeout!')
 			bot_exit_type, game_over = 'restart', True
 			sleep(2)
 

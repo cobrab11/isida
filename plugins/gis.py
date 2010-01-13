@@ -1,70 +1,65 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-user_agent='Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'
+gisbase = set_folder+u'gis.db'
 
-def gis_append(ms,b):
-	cr = 9 # корректор смещения при смене разметки
-	ms.append(u'\nНочь:\t'+b[cr+2]+'\t'+b[cr+4]+'\t'+b[cr+6]+'\t'+b[cr+8]+b[cr+9]+'\t'+b[cr]+', '+b[cr+1])
-	ms.append(u'\nУтро:\t'+b[cr+12]+'\t'+b[cr+14]+'\t'+b[cr+16]+'\t'+b[cr+18]+b[cr+19]+'\t'+b[cr+10]+', '+b[cr+11])
-	ms.append(u'\nДень:\t'+b[cr+22]+'\t'+b[cr+24]+'\t'+b[cr+26]+'\t'+b[cr+28]+b[cr+29]+'\t'+b[cr+20]+', '+b[cr+21])
-	ms.append(u'\nВечер:\t'+b[cr+32]+'\t'+b[cr+34]+'\t'+b[cr+36]+'\t'+b[cr+38]+b[cr+39]+'\t'+b[cr+30]+', '+b[cr+31])
-	return ms
+def gweather_raw(type, jid, nick, text, fully):
+	def get_date(body):
+		tmp = get_tag_item(body,'FORECAST','day')+'.'+get_tag_item(body,'FORECAST','month')
+		ytmp = get_tag_item(body,'FORECAST','year')
+		if str(tuple(time.localtime())[0]) == ytmp: return tmp
+		return tmp+'.'+ytmp
+	def get_maxmin(body,tag,splitter):
+		tmax = get_tag_item(body,tag,'max')
+		tmin = get_tag_item(body,tag,'min')
+		if not fully: return str((int(tmax)+int(tmin))/2)
+		if tmax == tmin: return tmax
+		return tmin + splitter + tmax
+	def get_themp(body): return get_maxmin(body,'TEMPERATURE','..')
+	def get_wind(body): return get_maxmin(body,'WIND','-')
+	def get_pressure(body): return get_maxmin(body,'PRESSURE','-')
+	def get_relwet(body): return get_maxmin(body,'RELWET','-')
+		
+	tods = {'0':u'Ночь','1':u'Утро','2':u'День','3':u'Вечер'}
+	precipitation = {'4':u'дождь','5':u'ливень','6':u'снег','7':u'снег','8':u'гроза','9':u'нет данных','10':u'без осадков'}
+	cloudiness = {'0':u'ясно','1':u'малооблачно','2':u'облачно','3':u'пасмурно'}
+	winddir = {'0':u'С','1':u'СВ','2':u'В','3':u'ЮВ','4':u'Ю','5':u'ЮЗ','6':u'З','7':u'СЗ'}
 	
-def gis_get_day(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent',user_agent)
-	try:
-		body = urllib2.urlopen(req).read()
-		b = replacer(html_encode(body)).split('#006cb7')[3].replace(u',  м/с',u' ').replace(u'безветрие',u'штиль').split('\n')
-	except: b = u'forbidden'
-	return b
-	
-def weather_gis(type, jid, nick, text):
-	city_code = None
-	if text == '': msg = u'gis город|код города'
-	else:
-		try: city_code = str(int(text))
-		except:
-			ft = ''
-			for tex in text:
-				if ord(tex) == 32: ft += '%20'
-				elif ord(tex)<127: ft += tex
-				else: ft += hex(ord(tex.upper())-1040+192).replace('0x','%').upper()
-			url = 'http://wap.gismeteo.ru/gm/normal/node/search_result/6/?like_field_sname='+ft
-			req = urllib2.Request(url)
-			req.add_header('User-Agent',user_agent)
-			try: body = urllib2.urlopen(req).read()
-			except: body = u'forbidden'
-			try:
-				body = unicode(body.split('<br>')[1],'utf-8').split('field_index=')[1:]
-				giss = []
-				for tmp in body: giss.append((tmp.split('&')[0],tmp.split('gen_past_date_0">')[1].split('</a>')[0]))
-				if len(giss) == 1: city_code = giss[0][0]
-				elif len(giss) == 0: msg = u'Город '+text+u' не найден!'
-				else:
-					msg = u'Найдено больше одного города! Воспользуйтесь командой gis код_города'
-					for tmp in giss: msg += u'\n'+tmp[0]+u' — '+tmp[1]
-			except:
-				if body.lower().count(u'forbidden'): msg = u'Доступ к серверу погоды запрещён на стороне сервера.'
-				else: msg = u'К сожалению сервер не отвечает.'
-	if city_code:
-		b = gis_get_day('http://wap.gismeteo.ru/gm/normal/node/prognoz_type/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_0&ed_field_date=gen_past_date_0')
-		if b == u'forbidden': msg = u'Доступ к серверу погоды запрещён на стороне сервера.'
+	text = '%'+text.lower()+'%'
+	cbb = sqlite3.connect(gisbase)
+	cu = cbb.cursor()
+	wzc = cu.execute('select * from gis where code like ? or lcity like ?',(text,text)).fetchall()
+	cbb.close()
+	if wzc:
+		if len(wzc) == 1:		
+			text = wzc[0][0]
+			link = 'http://informer.gismeteo.ru/xml/'+text+'.xml'
+			try: body, noerr = html_encode(urllib.urlopen(link).read()), True
+			except Exception, SM: body, noerr = str(SM), None
+			if noerr:
+				body = body.split('<FORE')[1:]
+				msg = u'Погода в городе '+wzc[0][1]+u':\nДата\t t°\tВетер\tОблачность'
+				if fully: msg += u'\tДавление, мм.рт.ст.\tВлажность %'
+				for tmp in body:
+					tmp2 = '<FORE' + tmp
+					msg += u'\n' + tods[get_tag_item(tmp2,'FORECAST','tod')] + ' ' + get_date(tmp2)	# дата + время суток
+					msg += '\t' + get_themp(tmp2) 													# температура
+					msg += '\t' + get_wind(tmp2)+' '+winddir[get_tag_item(tmp2,'WIND','direction')]	# ветер
+					msg += '\t' + cloudiness[get_tag_item(tmp2,'PHENOMENA','cloudiness')]			# облачность
+					msg += ', ' + precipitation[get_tag_item(tmp2,'PHENOMENA','precipitation')]		# осадки
+					if fully: msg += '\t' + get_pressure(tmp2) + '\t' + get_relwet(tmp2)			# давление, влажность
+			else: msg = u'Ошибка: '+body
 		else:
-			if b[5].lower().count(u'завтра'):
-				msg = b[4]+', '+b[3]+' ('+b[1]+')'
-				b.insert(0,'')
-			else: msg = b[5]+', '+b[4]+', '+b[3]+' ('+b[1]+')'
-			msg += u'\n\tt°C\tДавл.\tВлажн.\tВетер'
-			ms = gis_append([''],b)
-			b = gis_get_day('http://wap.gismeteo.ru/gm/normal/node/prognoz_tomorrow/6/?field_wmo='+city_code+'&field_index='+city_code+'&sd_field_date=gen_past_date_-1&ed_field_date=gen_past_date_-1')
-			if b[5].lower().count(u'завтра'): b.insert(0,'')
-			ms = gis_append(ms,b)
-			beg = tuple(localtime())[3]/4+1
-			for tmp in ms[beg:beg+4]: msg += tmp
+			msg = u'Найдено:'
+			for tmp in wzc: msg += u'\n'+tmp[0]+u' - '+tmp[1]
+	else: msg = u'Не найдено!'
 	send_msg(type, jid, nick, msg)
+
+def gweather(type, jid, nick, text): gweather_raw(type, jid, nick, text, None)
+
+def gweatherplus(type, jid, nick, text): gweather_raw(type, jid, nick, text, True)
 
 global execute
 
-execute = [(0, u'gis', weather_gis, 2, u'Погода с GisMeteo.\ngis город|код_города')]
+execute = [(0, u'gis', gweather, 2, u'Краткий прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru'),
+		   (0, u'gis+', gweatherplus, 2, u'Полный прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru')]

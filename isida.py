@@ -69,8 +69,14 @@ def get_tag(body,tag):
 	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
 
 def get_tag_full(body,tag):
-	return body[body.find('<'+tag):body.find(tag+'>',body.find('<'+tag)+2)+len(tag)+1]
+	tmp_body = body[body.find('<'+tag):body.find(tag+'>',body.find('<'+tag)+2)+len(tag)+1]
+	if len(tmp_body): return tmp_body
+	return body[body.find('<'+tag):body.find('/>',body.find('<'+tag)+2)+2]
 
+def get_tag_item(body,tag,item):
+	body = get_tag_full(body,tag)
+	return get_subtag(body,item)
+	
 def parser(text):
 	text = unicode(text)
 	ttext = u''
@@ -646,7 +652,7 @@ th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
-reboot_time = 60				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
+reboot_time = 180				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
 bot_exit_type = None			# причина завершения бота
 
 NS_STATS = 'http://jabber.org/protocol/stats'
