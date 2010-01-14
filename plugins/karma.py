@@ -105,8 +105,7 @@ def karma_change(room,jid,nick,type,text,value):
 				if stat == None: karma_valid = True
 				elif karma_time - int(stat[0]) >= karma_timeout[k_acc]: karma_valid = True
 				if karma_valid:
-					cu_karmabase.execute('delete from commiters where room=? and jid=? and karmajid=?',(room,jid,karmajid)).fetchall()
-					cu_karmabase.execute('insert into commiters values (?,?,?,?)',(room,jid,karmajid,karma_time))
+					cu_karmabase.execute('update commiters set last=? where room=? and jid=? and karmajid=?',(karma_time,room,jid,karmajid))
 					stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(room,karmajid)).fetchone()
 					if stat:
 						stat = stat[0]+value

@@ -27,9 +27,6 @@ def info_res(type, jid, nick, text):
 	if text == 'count':
 		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
 		jidbase = []
-	elif text == '':
-		tlen = len(cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchall())
-		jidbase = cu.execute('select resourse,count(*) from jid group by resourse order by -count(*)').fetchmany(10)
 	else:
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchall())
@@ -52,9 +49,6 @@ def info_serv(type, jid, nick, text):
 	if text == 'count':
 		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
 		jidbase = []
-	elif text == '':
-		tlen = len(cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall())
-		jidbase = cu.execute('select server,count(*) from jid group by server order by -count(*)').fetchall()
 	else:
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall())
@@ -68,23 +62,22 @@ def info_serv(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def jidcatcher_presence(room,jid,nick,type,text):
-	if jid != 'None':
-		mdb = sqlite3.connect(jid_base)
-		cu = mdb.cursor()
+	if jid != 'None' and jid[:11] != '<temporary>':
 		aa1 = getName(jid)
 		aa2 = getServer(jid)
 		aa3 = getResourse(jid)
-		if aa2[:11] != '<temporary>':
-			try:
-				if not cu.execute('select * from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchall():
-					cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
-					mdb.commit()
-			except: pass
+		try:
+			mdb = sqlite3.connect(jid_base)
+			cu = mdb.cursor()
+			if not cu.execute('select login from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchone():
+				cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
+				mdb.commit()
+		except: pass
 
 global execute, presence_control
 
 presence_control = [jidcatcher_presence]
 
-execute = [(1, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
+execute = [(0, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
 		   (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
 		   (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),]

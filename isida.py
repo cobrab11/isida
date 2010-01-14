@@ -461,9 +461,7 @@ def presenceCB(sess,mess):
 	id = mess.getID()
 
 	if type=='error': iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
-
 	if jid == 'None': jid = get_access(room,nick)[1]
-
 	if bad_presence: send_msg('groupchat', room, '', u'/me смотрит на '+nick+u' и думает: "Факин умник детектед!"')
 
 	tmppos = arr_semi_find(confbase, room.lower())
@@ -486,6 +484,7 @@ def presenceCB(sess,mess):
 		cl.send(j)
 
 	not_found = 0
+
 	if type=='unavailable' and nick != '':
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick: megabase.remove(mmb)
@@ -509,29 +508,20 @@ def presenceCB(sess,mess):
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
 	tt = int(time.time())
-	cu.execute('delete from age where room=? and jid=? and nick=?',(room, jid, nick))
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
 	exit_type = ''
 	exit_message = ''
 	if ab:
 		if type=='unavailable':
-			if status=='307': #Kick
-				exit_type = u'Выгнали'
-				exit_message = reason
-			elif status=='301': #Ban
-				exit_type = u'Забанили'
-				exit_message = reason
-			else: #Leave
-				exit_type = u'Вышел'
-				exit_message = text
-			if exit_message == 'None':
-				exit_message = ''
-#				print exit_type, exit_message
-			cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room, nick,getRoom(jid.lower()),tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message))
+			if status=='307': exit_type,exit_message = u'Выгнали',reason
+			elif status=='301': exit_type,exit_message = u'Забанили',reason
+			else: exit_type,exit_message = u'Вышел',text
+			if exit_message == 'None': exit_message = ''
+			cu.execute('update age set time=?, age=?, status=?, type=?, message=? where room=? and jid=? and nick=?', (tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message,room, jid, nick))
 		else:
-			if ab[5]: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,ab[4],0,ab[6],ttext))
-			else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),ab[3],ab[4],0,ab[6],ttext))
-	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,getRoom(jid.lower()),tt,0,0,'',ttext))
+			if ab[5]: cu.execute('update age set time=?, status=?, message=? where room=? and jid=? and nick=?', (tt,0,ttext,room, jid, nick))
+			else: cu.execute('update age set status=?, message=? where room=? and jid=? and nick=?', (0,ttext,room, jid, nick))
+	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,jid,tt,0,0,'',ttext))
 	mdb.commit()
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 	
@@ -591,14 +581,12 @@ def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
 	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
-	tlen = len(cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchall())
+	ab = cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchone()
 	wtext = text.split(' ')
 	wtext = len(wtext)
 	beadd = 1
-	if tlen:
-		ab = cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchone()
-		cu.execute('delete from talkers where room=? and jid=?',(room,jid))
-		cu.execute('insert into talkers values (?,?,?,?,?)', (ab[0],ab[1],nick,ab[3]+wtext,ab[4]+1))
+	if ab:
+		cu.execute('update talkers set nick=?, words=?, frases=? where room=? and jid=?', (nick,ab[3]+wtext,ab[4]+1,room,jid))
 	else: cu.execute('insert into talkers values (?,?,?,?,?)', (room, jid, nick, wtext, 1))
 	mdb.commit()
 
