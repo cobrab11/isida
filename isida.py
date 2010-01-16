@@ -593,8 +593,9 @@ def talk_count(room,jid,nick,text):
 def disconnecter():
 	global bot_exit_type, game_over
 	close_age()
-	sleep(2)
+	pprint('Restart by disconnect handler!')
 	game_over, bot_exit_type = True, 'restart'
+	sleep(2)
 
 # --------------------- Иницилизация переменных ----------------------
 slog_folder = u'log/'					# папка системных логов
@@ -656,12 +657,10 @@ if os.path.isfile(ver_file):
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
 botOs = os_version()
 
-# --- load config.txt
-
 if os.path.isfile(configname): execfile(configname)
 else: errorHandler(configname+u' is missed.')
 capsNode = 'http://isida-bot.com'
-# --- check parameters
+
 baseParameters = [nickname ,name, domain, password, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 baseErrors = [u'nickname', u'name', u'domain', u'password', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
 megabase = []
@@ -670,11 +669,16 @@ for baseCheck in range(0, len(baseParameters)):
 	if baseParameters[baseCheck]=='': errorHandler(baseErrors[baseCheck]+u' is missed in '+configname)
 god = SuperAdmin
 
+pprint(u'-'*50)
+pprint(u'*** Loading main plugin')
+
 execfile('plugins/main.py')
 plname = u'plugins/list.txt'
 gtimer = [check_rss]
 gpresence = []
 gmessage = []
+
+pprint(u'*** Loading other plugins')
 
 if os.path.isfile(plname):
 	plugins = eval(readfile(plname))
