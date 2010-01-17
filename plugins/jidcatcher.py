@@ -64,15 +64,17 @@ def info_serv(type, jid, nick, text):
 
 #room number date
 	
-def info_top(type, jid, nick):
+def info_top(type, jid, nick, text):
 	tp = getFile(top_base,[])
+	if len(text): room = text
+	else: room = getRoom(jid)
 	ttop = None
 	for tmp in tp:
-		if tmp[0] == jid:
+		if tmp[0] == room:
 			ttop = tmp
 			break
 	if ttop: msg = u'Максимальное количество участников: '+str(ttop[1])+u' ('+time.ctime(ttop[2])+u')'
-	else: msg = u'Статистика не нейдена!'
+	else: msg = u'Статистика не найдена!'
 	send_msg(type, jid, nick, msg)
 
 def jidcatcher_presence(room,jid,nick,type,text):
@@ -91,12 +93,19 @@ def jidcatcher_presence(room,jid,nick,type,text):
 		cnt = 0
 		for tmp in megabase:
 			if tmp[0] == room: cnt += 1
+		ltop = None
 		for tmp in tp:
 			if tmp[0] == room:
-				tp.remove(tmp)
+				ltop = tmp
 				break
-		tp.append((room,cnt,int(time.time())))
-		writefile(top_base,unicode(tp))
+		if ltop:
+			if ltop[1] <= cnt:
+				tp.remove(ltop)
+				tp.append((room,cnt,int(time.time())))
+				writefile(top_base,unicode(tp))
+		else:
+			tp.append((room,cnt,int(time.time())))
+			writefile(top_base,unicode(tp))
 
 global execute, presence_control
 
@@ -105,4 +114,4 @@ presence_control = [jidcatcher_presence]
 execute = [(0, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
 		   (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
 		   (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
-		   (0, u'top', info_top, 1, u'Активность конференции')]
+		   (0, u'top', info_top, 2, u'Активность конференции')]
