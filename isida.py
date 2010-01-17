@@ -168,7 +168,6 @@ def os_version():
 	iSys = sys.platform
 	iOs = os.name
 	isidaPyVer = sys.version.split(',')[0]+')'
-
 	if iOs == u'posix':
 		osInfo = os.uname()
 		isidaOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+isidaPyVer
@@ -527,7 +526,7 @@ def presenceCB(sess,mess):
 	
 def onoff(msg):
 	if msg: return 'ON'
-	else: return 'OFF'
+	return 'OFF'
 
 def getName(jid):
 	jid = unicode(jid)
@@ -582,11 +581,8 @@ def talk_count(room,jid,nick,text):
 	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchone()
-	wtext = text.split(' ')
-	wtext = len(wtext)
-	beadd = 1
-	if ab:
-		cu.execute('update talkers set nick=?, words=?, frases=? where room=? and jid=?', (nick,ab[3]+wtext,ab[4]+1,room,jid))
+	wtext = len(text.split(' '))
+	if ab: cu.execute('update talkers set nick=?, words=?, frases=? where room=? and jid=?', (nick,ab[3]+wtext,ab[4]+1,room,jid))
 	else: cu.execute('insert into talkers values (?,?,?,?,?)', (room, jid, nick, wtext, 1))
 	mdb.commit()
 
@@ -710,8 +706,7 @@ cu_age = []
 close_age_null()
 confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
 if os.path.isfile(cens):
-	censor = readfile(cens).decode('UTF')
-	censor = censor.split('\n')
+	censor = readfile(cens).decode('UTF').split('\n')
 	cn = []
 	for c in censor:
 		if (not c.count('#')) and len(c): cn.append(c)
@@ -727,12 +722,9 @@ pprint(u'*** (c) 2oo9-2o1o Disabler Production Lab.')
 
 node = unicode(name)
 lastnick = nickname
-
 jid = JID(node=node, domain=domain, resource=mainRes)
 selfjid = jid
-
 pprint(u'bot jid: '+unicode(jid))
-
 psw = u''
 raw_iq = []
 
@@ -777,7 +769,7 @@ while 1:
 	try:
 		while not game_over: cl.Process(1)
 		close_age()
-		break
+		sys.exit(bot_exit_type)
 
 	except KeyboardInterrupt:
 		close_age()
@@ -795,7 +787,5 @@ while 1:
 			sleep(300)
 			sys.exit('restart')
 		if debugmode: raise
-
-sys.exit(bot_exit_type)
 
 # The end is near!
