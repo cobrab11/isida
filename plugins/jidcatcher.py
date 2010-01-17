@@ -2,6 +2,7 @@
 # -*- coding: utf -*-
 
 jid_base = set_folder+u'jidbase.db'		# статистика jid'ов
+top_base = set_folder+u'topbase.db'		# активность конференции
 
 def info_search(type, jid, nick, text):
 	msg = u'Чего искать то будем?'
@@ -61,6 +62,19 @@ def info_serv(type, jid, nick, text):
 		msg = msg[:-2]
 	send_msg(type, jid, nick, msg)
 
+#room number date
+	
+def info_top(type, jid, nick):
+	tp = getFile(top_base,[])
+	ttop = None
+	for tmp in tp:
+		if tmp[0] == jid:
+			ttop = tmp
+			break
+	if ttop: msg = u'Максимальное количество участников: '+str(ttop[1])+u' ('+time.ctime(ttop[2])+u')'
+	else: msg = u'Статистика не нейдена!'
+	send_msg(type, jid, nick, msg)
+
 def jidcatcher_presence(room,jid,nick,type,text):
 	if jid != 'None' and jid[:11] != '<temporary>':
 		aa1 = getName(jid)
@@ -73,6 +87,16 @@ def jidcatcher_presence(room,jid,nick,type,text):
 				cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))
 				mdb.commit()
 		except: pass
+		tp = getFile(top_base,[])
+		cnt = 0
+		for tmp in megabase:
+			if tmp[0] == room: cnt += 1
+		for tmp in tp:
+			if tmp[0] == room:
+				tp.remove(tmp)
+				break
+		tp.append((room,cnt,int(time.time())))
+		writefile(top_base,unicode(tp))
 
 global execute, presence_control
 
@@ -80,4 +104,5 @@ presence_control = [jidcatcher_presence]
 
 execute = [(0, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
 		   (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
-		   (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),]
+		   (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
+		   (0, u'top', info_top, 1, u'Активность конференции')]
