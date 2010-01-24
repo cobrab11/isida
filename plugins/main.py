@@ -525,8 +525,9 @@ def info_comm(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 	
 def helpme(type, jid, nick, text):
+	text = text.lower()
 	if text == u'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
-	elif text == u'donation': msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nС Уважением, Disabler'
+	elif text == u'donation' or text == u'donations': msg = u'Реквизиты для благодарностей/помощи:\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nMailRuMoney: 1055200110899412\nRBKmoney: RU169573070\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\nС Уважением, Disabler'
 	elif text == u'доступ': msg = u'У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.'
 	elif text != '':
 		msg = u'Префикс команд: '+get_prefix(get_local_prefix(jid))+u', Доступна справка по командам:\n'
