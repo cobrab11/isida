@@ -14,6 +14,7 @@ def gweather_raw(type, jid, nick, text, fully):
 		tmin = get_tag_item(body,tag,'min')
 		if not fully: return str((int(tmax)+int(tmin))/2)
 		if tmax == tmin: return tmax
+		if (int(tmin)+int(tmax))/2 == 0: return u'0'
 		return tmin + splitter + tmax
 	def get_themp(body): return get_maxmin(body,'TEMPERATURE','..')
 	def get_wind(body): return get_maxmin(body,'WIND','-')
@@ -45,7 +46,9 @@ def gweather_raw(type, jid, nick, text, fully):
 						tmp2 = '<FORE' + tmp
 						msg += u'\n' + tods[get_tag_item(tmp2,'FORECAST','tod')] + ' ' + get_date(tmp2)	# дата + время суток
 						msg += '\t' + get_themp(tmp2) 													# температура
-						msg += '\t' + get_wind(tmp2)+' '+winddir[get_tag_item(tmp2,'WIND','direction')]	# ветер
+						gwi = get_wind(tmp2)															# ветер
+						if gwi == u'0': msg += u'\tШтиль'
+						else: msg += '\t' + gwi+' '+winddir[get_tag_item(tmp2,'WIND','direction')]
 						msg += '\t' + cloudiness[get_tag_item(tmp2,'PHENOMENA','cloudiness')]			# облачность
 						msg += ', ' + precipitation[get_tag_item(tmp2,'PHENOMENA','precipitation')]		# осадки
 						if fully: msg += '\t' + get_pressure(tmp2) + '\t' + get_relwet(tmp2)			# давление, влажность
