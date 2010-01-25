@@ -128,8 +128,10 @@ def comm_on_off(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def reduce_spaces(text):
-	while text[0] == ' ': text = text[1:]
-	while text[-1:] == ' ': text = text[:-1]
+	if len(text) == text.count(' '): return u''
+	elif len(text):
+		while text[0] == ' ': text = text[1:]
+		while text[-1:] == ' ': text = text[:-1]
 	return text
 
 def censor_status(type, jid, nick, text):
