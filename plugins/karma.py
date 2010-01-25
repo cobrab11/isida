@@ -115,7 +115,7 @@ def karma_change(room,jid,nick,type,text,value):
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
 					msg = u'Вы изменили карму '+text+u' до '+karma_val(stat)+u'! Следующий раз можно изменить через: '+un_unix(karma_timeout[k_acc])
 					karma_base.commit()
-					pprint('karma change in'+room+' for '+text+' to '+str(stat))
+					pprint('karma change in '+room+' for '+text+' to '+str(stat))
 				else: msg = u'Вы недавно меняли карму '+text+u'! Надо подождать: '+un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time)
 				karma_base.close()
 		else: msg = u'Вам нельзя менять карму участника!'
