@@ -105,7 +105,8 @@ def karma_change(room,jid,nick,type,text,value):
 				if stat == None: karma_valid = True
 				elif karma_time - int(stat[0]) >= karma_timeout[k_acc]: karma_valid = True
 				if karma_valid:
-					cu_karmabase.execute('update commiters set last=? where room=? and jid=? and karmajid=?',(karma_time,room,jid,karmajid))
+					if stat: cu_karmabase.execute('update commiters set last=? where room=? and jid=? and karmajid=?',(karma_time,room,jid,karmajid))
+					else: cu_karmabase.execute('insert into commiters values (?,?,?,?)',(room,jid,karmajid,karma_time))
 					stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(room,karmajid)).fetchone()
 					if stat:
 						stat = stat[0]+value
@@ -114,6 +115,7 @@ def karma_change(room,jid,nick,type,text,value):
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
 					msg = u'Вы изменили карму '+text+u' до '+karma_val(stat)+u'! Следующий раз можно изменить через: '+un_unix(karma_timeout[k_acc])
 					karma_base.commit()
+					pprint('karma change in'+room+' for '+text+' to '+str(stat))
 				else: msg = u'Вы недавно меняли карму '+text+u'! Надо подождать: '+un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time)
 				karma_base.close()
 		else: msg = u'Вам нельзя менять карму участника!'
