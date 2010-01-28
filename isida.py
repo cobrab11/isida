@@ -748,6 +748,7 @@ cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
 
 pprint(u'Wait conference')
+sleep(1)
 for tocon in confbase:
 	baseArg = unicode(tocon)
 	if not tocon.count('/'): baseArg += u'/'+unicode(nickname)
@@ -757,7 +758,7 @@ for tocon in confbase:
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
-	sleep(0.1)
+	sleep(0.2)
 
 lastserver = getServer(confbase[0].lower())
 pprint(u'Joined')
