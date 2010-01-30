@@ -1122,20 +1122,18 @@ def rss(type, jid, nick, text):
 		feedbase = getFile(feeds,[])
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
-		bedel1 = 0
+		msg = u'Can\'t find in schedule: '+link
 		for rs in feedbase:
 			if rs[0] == link and rs[4] == jid:
 				feedbase.remove(rs)
-				bedel1 = 1
-		bedel2 = 0
-		for rs in lastfeeds:
-			if rs[0] == link and rs[2] == jid:
-				lastfeeds.remove(rs)
-				bedel2 = 1
-		if bedel1 or bedel2: msg = u'Delete feed from schedule: '+link
-		if bedel1: writefile(feeds,str(feedbase))
-		if bedel2: writefile(lafeeds,str(lastfeeds))
-		else: msg = u'Can\'t find in schedule: '+link
+				msg = u'Delete feed from schedule: '+link
+				writefile(feeds,str(feedbase))
+				for rs in lastfeeds:
+					if rs[0] == link and rs[2] == jid:
+						lastfeeds.remove(rs)
+						writefile(lafeeds,str(lastfeeds))
+						break
+				break
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
