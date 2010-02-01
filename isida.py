@@ -443,6 +443,9 @@ def presenceCB(sess,mess):
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
 	mss = unicode(mess)
+#	caps = get_tag_full(mss,'c')
+#	caps_node = get_subtag(caps,'node')
+#	caps_ver = get_subtag(caps,'ver')
 	if mss.strip().count('<x xmlns=\"http://jabber') > 1 and mss.strip().count(' affiliation=\"') > 1 and mss.strip().count(' role=\"') > 1 : bad_presence = True
 	else: bad_presence = None
 	while mss.count('<x ') > 1 and mss.count('</x>') > 1: mss = mss[:mss.find('<x ')]+mss[mss.find('</x>')+4:]
@@ -458,6 +461,7 @@ def presenceCB(sess,mess):
 	actor=unicode(mess.getActor())
 	to=unicode(mess.getTo())
 	id = mess.getID()
+#	print jid, caps_node, caps_ver
 
 	if type=='error': iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
 	if jid == 'None': jid = get_access(room,nick)[1]

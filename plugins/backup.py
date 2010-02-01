@@ -69,7 +69,7 @@ def conf_backup(type, jid, nick, text):
 				raw_back.append(memberlist[1][1])
 				raw_back.append(banlist[1][1])
 				raw_back.append(configlist[1][1])
-				writefile(back_folder+unicode(jid),str(raw_back))
+				writefile(back_folder+unicode(jid),unicode(raw_back))
 
 		if mode == u'restore':
 			if len(text)>1:
@@ -93,22 +93,29 @@ def conf_backup(type, jid, nick, text):
 						for zz in range(0,4):
 							iqid = str(randint(1,100000))
 							end = raw_back[zz][raw_back[zz].find('<query'):]
-							beg = '<iq xmlns="jabber:client" to="'+str(jid)+'" from="'+str(selfjid)+'" id="'+str(iqid)+'" type="set">'
-							cl.send(beg+end)
+							beg = '<iq xmlns="jabber:client" to="'+unicode(jid)+'" from="'+unicode(selfjid)+'" id="'+unicode(iqid)+'" type="set">'
+							i = beg+end
+							cl.send(i)
+							sleep(i.count('<item')*0.02)
 						iqid = str(randint(1,100000))
 						end = raw_back[4][raw_back[4].find('<query'):]
-						beg = '<iq to="'+str(jid)+'" id="'+str(iqid)+'" type="set">'
+						beg = '<iq to="'+unicode(jid)+'" id="'+unicode(iqid)+'" type="set">'
 						i = beg+end
-						ci = i.count('label="')
-						for ii in range(0,ci): i = i[:i.find('label="')-1]+i[i.find('"',i.find('label="')+8)+1:]
+						while i.count(' label="'): i = i[:i.find(' label="')]+i[i.find('"',i.find(' label="')+8)+1:]
+						while i.count('<option>') and i.count('</option>'): i = i.replace(get_tag_full(i,'option'),'')
+						i = i.replace('<value />','<value></value>')
+						i = i.replace('<value/>','<value></value>')
 						i = i[:i.find('<instructions>')]+i[i.find('</instructions>',i.find('<instructions>')+14)+15:]
 						i = i[:i.find('<title>')]+i[i.find('</title>',i.find('<title>')+7)+8:]
 						i = i.replace('form','submit')
 						cl.send(i)
+						sleep(0.1)
 						iqid = str(randint(1,100000))
-						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
-					cl.send(i)
-					msg = u'Восстановление завершено!'
+						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(unicode(selfjid))},[])])])
+						sleep(0.1)
+						cl.send(i)
+						sleep(0.1)
+						msg = u'Восстановление завершено!'
 				else: msg = u'Резервная копия не найдена. Просмотрите список используя ключ show'
 			else: msg = u'Что будем восстанавливать?'
 	else: msg = u'backup now|show|restore'
