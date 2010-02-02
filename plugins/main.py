@@ -1101,11 +1101,11 @@ def rss(type, jid, nick, text):
 				turl = get_tag(mmsg,'link')
 			else:
 				ttitle = get_tag(mmsg,'content').replace('\n',' ')
-				tbody = get_tag(mmsg,'title').replace('\n',' ')
+				tbody = get_tag(mmsg,'title')#.replace('\n',' ')
 				tu1 = mmsg.index('<link')
 				tu2 = mmsg.find('href=\"',tu1)+6
 				tu3 = mmsg.find('\"',tu2)
-				turl = mmsg[tu2:tu3].replace('\n',' ')
+				turl = mmsg[tu2:tu3]#.replace('\n',' ')
 			msg += u'• '
 			if submode == 'full':
 				msg += ttitle+ '\n'
@@ -1186,11 +1186,11 @@ def rss(type, jid, nick, text):
 					turl = get_tag(mmsg,'link')
 				else:
 					ttitle = get_tag(mmsg,'content').replace('\n',' ')
-					tbody = get_tag(mmsg,'title').replace('\n',' ')
+					tbody = get_tag(mmsg,'title')#.replace('\n',' ')
 					tu1 = mmsg.index('<link')
 					tu2 = mmsg.find('href=\"',tu1)+6
 					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3].replace('\n',' ')
+					turl = mmsg[tu2:tu3]#.replace('\n',' ')
 				if mode == 'new':
 					if ttitle == tstop: break
 				msg += u'• '
