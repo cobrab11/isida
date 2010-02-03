@@ -44,19 +44,20 @@ rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),
 def set_locale(type, jid, nick, text):
 	global locales
 	if len(text) >= 2:
-		text = text[:2].lower()
+		text = text.lower()
 		if text != 'en':
 			lf = loc_folder+text+'.txt'
 			if os.path.isfile(lf):
-				locales = {}
+				locales = []
 				lf = readfile(lf).decode('UTF').split('\n')
 				for c in lf:
-					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0]] = c.split('\t',1)[1]
+					if (not c.count('#')) and len(c) and c.count('\t'): 
+						locales.append(('\n'.join(c.split('\t',1)[0].split('\\n')),c.split('\t',1)[1]))
 				writefile(loc_file,unicode('\''+text+'\''))
 				msg = L('Locale set to: %s') % text
 			else: msg = L('Locale not found!')
 		else:
-			locales = {}
+			locales = []
 			msg = L('Locale set to: en')
 			writefile(loc_file,'\'en\'')
 	else: msg = L('What?')
