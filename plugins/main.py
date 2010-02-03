@@ -51,8 +51,7 @@ def set_locale(type, jid, nick, text):
 				locales = []
 				lf = readfile(lf).decode('UTF').split('\n')
 				for c in lf:
-					if (not c.count('#')) and len(c) and c.count('\t'): 
-						locales.append(('\n'.join(c.split('\t',1)[0].split('\\n')),c.split('\t',1)[1]))
+					if (not c.count('#')) and len(c) and c.count('\t'): locales.append(c.split('\t',1))
 				writefile(loc_file,unicode('\''+text+'\''))
 				msg = L('Locale set to: %s') % text
 			else: msg = L('Locale not found!')
