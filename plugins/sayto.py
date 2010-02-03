@@ -122,5 +122,5 @@ global execute, timer, presence_control
 
 timer = [cleanup_sayto_base]
 presence_control = [sayto_presence]
-execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хронятся 14 дней, после чего недоставленные сообщения удаляются.'),
+execute = [(0, u'sayto', sayto, 2, u'Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хранятся 14 дней, после чего недоставленные сообщения удаляются.'),
 			(1, u'sayjid', sayjid, 2, u'Отправить сообщение на jid.\nsayjid jid message')]

@@ -15,6 +15,16 @@ svn co http://isida.googlecode.com/svn/trunk isida
 
 after global bot update - launch "sh update" script for correct update.
 
+
+- fast install and launch -
+
+svn co http://isida.googlecode.com/svn/trunk isida
+cd isida/settings
+cp demo_config.py config.py
+nano config.py
+cd ..
+sh launch26.sh &
+
 that's all :)
 
 (c) Disabler Producion Lab.
