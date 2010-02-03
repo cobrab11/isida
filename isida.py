@@ -79,7 +79,7 @@ def get_tag_item(body,tag,item):
 	
 def parser(text):
 	text = unicode(text)
-	ttext = u''
+	ttext = ''
 	i = 0
 	while i<len(text):
 		if (text[i]<='~'): ttext+=text[i]
@@ -93,21 +93,17 @@ def tZ(val):
 	if len(val) == 1: val = '0'+val
 	return val
 
-def timeadd(lt):
-	st = tZ(lt[2])+u'.'+tZ(lt[1])+u'.'+tZ(lt[0])+u' '+tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
-	return st
+def timeadd(lt): return '%s.%s.%s %s:%s:%s' % (tZ(lt[2]),tZ(lt[1]),tZ(lt[0]),tZ(lt[3]),tZ(lt[4]),tZ(lt[5]))
 
-def onlytimeadd(lt):
-	st = tZ(lt[3])+u':'+tZ(lt[4])+u':'+tZ(lt[5])
-	return st
+def onlytimeadd(lt): return '%s:%s:%s' % (tZ(lt[3]),tZ(lt[4]),tZ(lt[5]))
 
 def pprint(text):
 	lt = tuple(localtime())
 	zz = parser('['+timeadd(lt)+'] '+text)
 	if dm2: print zz
 	if CommandsLog:
-		fname = slog_folder+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+u'.txt'
-		fbody = tZ(lt[3])+tZ(lt[4])+tZ(lt[5])+'|'+text+u'\n'
+		fname = slog_folder+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+'.txt'
+		fbody = tZ(lt[3])+tZ(lt[4])+tZ(lt[5])+'|'+text+'\n'
 		fl = open(fname, 'a')
 		fl.write(fbody.encode('utf-8'))
 		fl.close()
@@ -119,9 +115,9 @@ def send_presence_all(sm):
 	sleep(2)	
 
 def errorHandler(text):
-	pprint(u'\n*** Error ***')
+	pprint('\n*** Error ***')
 	pprint(text)
-	pprint(u'more info at http://isida-bot.com\n')
+	pprint('more info at http://isida-bot.com\n')
 	sys.exit('exit')
 
 def arr_semi_find(array, string):
@@ -168,7 +164,7 @@ def os_version():
 	iSys = sys.platform
 	iOs = os.name
 	isidaPyVer = sys.version.split(',')[0]+')'
-	if iOs == u'posix':
+	if iOs == 'posix':
 		osInfo = os.uname()
 		isidaOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+isidaPyVer
 	elif iSys == 'win32':
@@ -246,7 +242,7 @@ def iqCB(sess,iq):
 
 	if iq.getType()=='error':
 		try: iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
-		except: iq_answer.append((u'Неизвесная ошибка!'))
+		except: iq_answer.append((L('Unknown error!')))
 
 	if iq.getType()=='result':
 		cparse = unicode(iq)
@@ -261,11 +257,11 @@ def iqCB(sess,iq):
 				for banm in cparse[1:]:
 					st_index = banm.find('jid=\"')+5
 					cjid=banm[st_index:banm.find('\"',st_index)]
-					if banm.count('<reason />') or banm.count('<reason/>'): creason = u'No reason'
+					if banm.count('<reason />') or banm.count('<reason/>'): creason = L('No reason')
 					else: creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 					banbase.append((cjid, creason, str(id)))
-				banbase.append((u'TheEnd', u'None',str(id)))
-			if nspace == NS_MUC_OWNER: banbase.append((u'TheEnd', u'None',str(id)))
+				banbase.append(('TheEnd', 'None',str(id)))
+			if nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
 			if nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
 			if nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
 			if nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
@@ -274,7 +270,7 @@ def iqCB(sess,iq):
 
 	if iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
-			pprint(u'*** iq:version from '+unicode(nick))
+			pprint('*** iq:version from '+unicode(nick))
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setQueryNS(namespace=xmpp.NS_VERSION)
@@ -285,18 +281,18 @@ def iqCB(sess,iq):
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_TIME):
-			pprint(u'*** iq:time from '+unicode(nick))
+			pprint('*** iq:time from '+unicode(nick))
 			gt=timeZero(gmtime())
 			t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
 			lt=tuple(localtime())
 			ltt=timeZero(lt)
-			wday = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-			wlight = ['Winter','Summer']
-			wmonth = ['Jan','Fed','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+			wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
+			wlight = [L('Winter time'),L('Summer time')]
+			wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
 			t_display = ltt[3]+':'+ltt[4]+':'+ltt[5]+', '+ltt[2]+'.'+wmonth[lt[1]-1]+'\''+ltt[0]+', '+wday[lt[6]]+', '
 			if timeofset < 0: t_tz = 'GMT'+str(timeofset)
 			else: t_tz = 'GMT+'+str(timeofset)
-			t_display += t_tz + ', ' +wlight[lt[8]]+' time'
+			t_display += t_tz + ', ' +wlight[lt[8]]
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setQueryNS(namespace=xmpp.NS_TIME)
@@ -307,7 +303,7 @@ def iqCB(sess,iq):
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_LAST):
-			pprint(u'*** iq:uptime from '+unicode(nick))
+			pprint('*** iq:uptime from '+unicode(nick))
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setTag('query',namespace=xmpp.NS_LAST,attrs={'seconds':str(int(time.time())-starttime)})
@@ -365,7 +361,7 @@ def messageCB(sess,mess):
 	if type == 'groupchat' and nick != '' and jid != 'None': talk_count(room,jid,nick,text)
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0:
 		gl_censor = getFile(cns,[(getRoom(room),0)])
-		if (getRoom(room),1) in gl_censor: send_msg(type,room,nick,u'Фильтруем базар!')
+		if (getRoom(room),1) in gl_censor: send_msg(type,room,nick,L('Censored!'))
 	no_comm = 1
 	if (text != 'None') and (len(text)>=1) and access_mode >= 0:
 		no_comm = 1
@@ -393,7 +389,7 @@ def messageCB(sess,mess):
 	else: is_flood = 0
 
 	if selfjid != jid and no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
-		if len(text)>100: send_msg(type, room, nick, u'Слишком многа букаф!')
+		if len(text)>100: send_msg(type, room, nick, L('To many litters!'))
 		else:
 			text = getAnswer(text,type)
 			thr(send_msg_human,(type, room, nick, text))
@@ -402,12 +398,12 @@ def messageCB(sess,mess):
 def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': tmp(room,jid,'',type,u'*** '+nick+u' обновил(а) тему: '+subj)
+		if subj != 'None' and back_text == 'None': tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
 		else: tmp(room,jid,nick,type,back_text)
 
 def send_msg_human(type, room, nick, text):
 	if text: sleep(len(text)/4+randint(0,10))
-	else: text = u'Ась?'
+	else: text = L('What?')
 	send_msg(type, room, nick, text)
 
 def getAnswer(tx,type):
@@ -465,7 +461,7 @@ def presenceCB(sess,mess):
 
 	if type=='error': iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
 	if jid == 'None': jid = get_access(room,nick)[1]
-	if bad_presence: send_msg('groupchat', room, '', u'/me смотрит на '+nick+u' и думает: "Факин умник детектед!"')
+	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
 
 	tmppos = arr_semi_find(confbase, room.lower())
 	if tmppos == -1: nowname = nickname
@@ -476,7 +472,7 @@ def presenceCB(sess,mess):
 	if room != selfjid and nick == nowname:
 		smiles = getFile(sml,[(getRoom(room),0)])
 		if (getRoom(room),1) in smiles:
-			smile_action = {'participantnone':u' :-|', 'participantmember':u' :-)', 'moderatormember':u' :-"','moderatoradmin':u' :-D', 'moderatorowner':u' 8-D'}
+			smile_action = {'participantnone':' :-|', 'participantmember':' :-)', 'moderatormember':' :-"','moderatoradmin':' :-D', 'moderatorowner':' 8-D'}
 			try: send_msg('groupchat', room, '', smile_action[role+affiliation])
 			except: pass
 #	print room, nick, text, role, affiliation, jid, priority, show, reason, type, status, actor
@@ -516,9 +512,9 @@ def presenceCB(sess,mess):
 	exit_message = ''
 	if ab:
 		if type=='unavailable':
-			if status=='307': exit_type,exit_message = u'Выгнали',reason
-			elif status=='301': exit_type,exit_message = u'Забанили',reason
-			else: exit_type,exit_message = u'Вышел',text
+			if status=='307': exit_type,exit_message = L('Kicked'),reason
+			elif status=='301': exit_type,exit_message = L('Banned'),reason
+			else: exit_type,exit_message = L('Leave'),text
 			if exit_message == 'None': exit_message = ''
 			cu.execute('update age set time=?, age=?, status=?, type=?, message=? where room=? and jid=? and nick=?', (tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message,room, jid, nick))
 		else:
@@ -529,8 +525,8 @@ def presenceCB(sess,mess):
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
 	
 def onoff(msg):
-	if msg: return 'ON'
-	return 'OFF'
+	if msg: return L('on').upper()
+	return L('off').upper()
 
 def getName(jid):
 	jid = unicode(jid)
@@ -573,7 +569,7 @@ def check_rss():
 		try: ll_hl = int(fd[3])
 		except: ll_hl = 0
 		if ll_hl + ofset <= l_hl:
-			pprint(u'check rss: '+fd[0]+u' in '+fd[4])
+			pprint('check rss: '+fd[0]+' in '+fd[4])
 			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
 			feedbase.remove(fd)
 			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4]])
@@ -597,30 +593,36 @@ def disconnecter():
 	game_over, bot_exit_type = True, 'restart'
 	sleep(2)
 
+def L(text):
+	try: return locales[text]
+	except: return text
+
 # --------------------- Иницилизация переменных ----------------------
-slog_folder = u'log/'					# папка системных логов
-LOG_FILENAME = slog_folder+u'error.txt'	# логи ошибок
-set_folder = u'settings/'				# папка настроек
-back_folder = u'backup/'				# папка хронения резервных копий
-preffile = set_folder+u'prefix'			# префиксы
-ver_file = set_folder+u'version'		# версия бота
-configname = set_folder+u'config.py'	# конфиг бота
-alfile = set_folder+u'aliases'			# сокращения
-fld = set_folder+u'flood'				# автоответчик
-sml = set_folder+u'smile'				# смайлы на роли
-cns = set_folder+u'censors'				# состояние цензора
-owners = set_folder+u'owner'			# база владельцев
-ignores = set_folder+u'ignore'			# черный список
-confs = set_folder+u'conf'				# список активных конф
-feeds = set_folder+u'feed'				# список rss каналов
-lafeeds = set_folder+u'lastfeeds'		# последние новости по каждому каналу
-cens = set_folder+u'censor.txt'			# список "запрещенных" слов для болтуна
-conoff = set_folder+u'commonoff'		# список "запрещенных" команд для бота
-saytobase = set_folder+u'sayto.db'		# база команды "передать"
-agestatbase = set_folder+u'agestat.db'	# статистика возрастов
-talkersbase = set_folder+u'talkers.db'	# статистика болтунов
-wtfbase = set_folder+u'wtfbase.db'		# определения
-answersbase = set_folder+u'answers.db'	# ответы бота
+slog_folder = 'log/'					# папка системных логов
+LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
+set_folder = 'settings/'				# папка настроек
+back_folder = 'backup/'					# папка хронения резервных копий
+preffile = set_folder+'prefix'			# префиксы
+ver_file = set_folder+'version'			# версия бота
+configname = set_folder+'config.py'		# конфиг бота
+alfile = set_folder+'aliases'			# сокращения
+fld = set_folder+'flood'				# автоответчик
+sml = set_folder+'smile'				# смайлы на роли
+cns = set_folder+'censors'				# состояние цензора
+owners = set_folder+'owner'				# база владельцев
+ignores = set_folder+'ignore'			# черный список
+confs = set_folder+'conf'				# список активных конф
+feeds = set_folder+'feed'				# список rss каналов
+lafeeds = set_folder+'lastfeeds'		# последние новости по каждому каналу
+cens = set_folder+'censor.txt'			# список "запрещенных" слов для болтуна
+conoff = set_folder+'commonoff'			# список "запрещенных" команд для бота
+saytobase = set_folder+'sayto.db'		# база команды "передать"
+agestatbase = set_folder+'agestat.db'	# статистика возрастов
+talkersbase = set_folder+'talkers.db'	# статистика болтунов
+wtfbase = set_folder+'wtfbase.db'		# определения
+answersbase = set_folder+'answers.db'	# ответы бота
+loc_file = set_folder+'locale'			# файл локализации
+loc_folder = 'locales/'					# папка локализаций
 
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)		# включение логгирования
 
@@ -630,7 +632,7 @@ debugmode = None				# остановка на ошибках
 dm = None						# отладка xmpppy
 dm2 = None						# отладка действий бота
 CommandsLog = None				# логгирование команд
-prefix = u'_'					# префикс комманд
+prefix = '_'					# префикс комманд
 msg_limit = 1000				# лимит размера сообщений
 botName = 'Isida-Bot'			# название бота
 botVersion = 'v1.91'			# версия бота
@@ -658,27 +660,37 @@ if os.path.isfile(ver_file):
 botOs = os_version()
 
 if os.path.isfile(configname): execfile(configname)
-else: errorHandler(configname+u' is missed.')
+else: errorHandler(configname+' is missed.')
 capsNode = 'http://isida-bot.com'
 
 baseParameters = [nickname ,name, domain, password, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
-baseErrors = [u'nickname', u'name', u'domain', u'password', u'mainRes', u'SuperAdmin', u'defaultConf', u'CommStatus', u'StatusMessage', u'Priority']
+baseErrors = ['nickname', 'name', 'domain', 'password', 'mainRes', 'SuperAdmin', 'defaultConf', 'CommStatus', 'StatusMessage', 'Priority']
 megabase = []
 megabase2 = []
 for baseCheck in range(0, len(baseParameters)):
-	if baseParameters[baseCheck]=='': errorHandler(baseErrors[baseCheck]+u' is missed in '+configname)
+	if baseParameters[baseCheck]=='': errorHandler(baseErrors[baseCheck]+' is missed in '+configname)
 god = SuperAdmin
 
-pprint(u'-'*50)
-pprint(u'*** Loading main plugin')
+pprint('-'*50)
+pprint('*** Loading localization')
+
+locales = {}
+if os.path.isfile(loc_file):
+	lf = loc_folder+getFile(loc_file,'\'en\'')[:2]+'.txt'
+	print lf
+	if os.path.isfile(lf):
+		lf = readfile(lf).decode('UTF').split('\n')
+		for c in lf:
+			if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0]] = c.split('\t',1)[1]
+pprint('*** Loading main plugin')
 
 execfile('plugins/main.py')
-plname = u'plugins/list.txt'
+plname = 'plugins/list.txt'
 gtimer = [check_rss]
 gpresence = []
 gmessage = []
 
-pprint(u'*** Loading other plugins')
+pprint('*** Loading other plugins')
 
 if os.path.isfile(plname):
 	plugins = eval(readfile(plname))
@@ -689,7 +701,7 @@ if os.path.isfile(plname):
 		timer = []
 		pprint('Append plugin: '+pl)
 		execfile('plugins/'+pl)
-		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],u'Плагин '+pl[:-3]+'. '+cm[4]))
+		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (pl[:-3],cm[4])))
 		for tmr in timer: gtimer.append(tmr)
 		for tmp in presence_control: gpresence.append(tmp)
 		for tmp in message_control: gmessage.append(tmp)
@@ -708,7 +720,7 @@ ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
 cu_age = []
 close_age_null()
-confbase = getFile(confs,[defaultConf.lower()+u'/'+nickname])
+confbase = getFile(confs,[defaultConf.lower()+'/'+nickname])
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF').split('\n')
 	cn = []
@@ -717,33 +729,33 @@ if os.path.isfile(cens):
 	censor = cn
 else: censor = []
 
-pprint(u'*'*50)
-pprint(u'*** Bot Name: '+botName)
-pprint(u'*** Version '+botVersion)
-pprint(u'*** OS '+botOs)
-pprint(u'*'*50)
-pprint(u'*** (c) 2oo9-2o1o Disabler Production Lab.')
+pprint('*'*50)
+pprint('*** Bot Name: '+botName)
+pprint('*** Version '+botVersion)
+pprint('*** OS '+botOs)
+pprint('*'*50)
+pprint('*** (c) 2oo9-2o1o Disabler Production Lab.')
 
 node = unicode(name)
 lastnick = nickname
 jid = JID(node=node, domain=domain, resource=mainRes)
 selfjid = jid
-pprint(u'bot jid: '+unicode(jid))
-psw = u''
+pprint('bot jid: '+unicode(jid))
+psw = ''
 raw_iq = []
 
 try:
 	if dm: cl = Client(jid.getDomain())
 	else: cl = Client(jid.getDomain(), debug=[])
 	cl.connect()
-	pprint(u'Connected')
+	pprint('Connected')
 	cl.auth(jid.getNode(), password, jid.getResource())
-	pprint(u'Autheticated')
+	pprint('Autheticated')
 except:
-	pprint(u'Auth error or no connection. Restart in '+str(reboot_time)+' sec.')
+	pprint('Auth error or no connection. Restart in '+str(reboot_time)+' sec.')
 	sleep(reboot_time)
 	sys.exit('restart')
-pprint(u'Registration Handlers')
+pprint('Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
@@ -751,11 +763,11 @@ cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
 
-pprint(u'Wait conference')
+pprint('Wait conference')
 sleep(1)
 for tocon in confbase:
 	baseArg = unicode(tocon)
-	if not tocon.count('/'): baseArg += u'/'+unicode(nickname)
+	if not tocon.count('/'): baseArg += '/'+unicode(nickname)
 	conf = JID(baseArg)
 	pprint(tocon)
 	j = Presence(tocon, show=CommStatus, status=StatusMessage, priority=Priority)
@@ -765,7 +777,7 @@ for tocon in confbase:
 	sleep(0.2)
 
 lastserver = getServer(confbase[0].lower())
-pprint(u'Joined')
+pprint('Joined')
 game_over = None
 
 thr(now_schedule,())
@@ -778,7 +790,7 @@ while 1:
 
 	except KeyboardInterrupt:
 		close_age()
-		StatusMessage = u'Какой-то умник нажал CTRL+C в консоле...'
+		StatusMessage = L('Shutdown by CTRL+C...')
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
 		sleep(0.1)
