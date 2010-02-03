@@ -25,7 +25,7 @@ def true_age_raw(type, jid, nick, text, xtype):
 		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
 	try:
 		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchall()
 	except: sbody = None
 	if sbody:
 		msg = u'Я видела:'
