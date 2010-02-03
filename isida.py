@@ -679,7 +679,6 @@ pprint('*** Loading localization')
 locales = []
 if os.path.isfile(loc_file):
 	lf = loc_folder+getFile(loc_file,'\'en\'')+'.txt'
-	print lf
 	if os.path.isfile(lf):
 		lf = readfile(lf).decode('UTF').split('\n')
 		for c in lf:
