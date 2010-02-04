@@ -594,9 +594,9 @@ def disconnecter():
 	sleep(2)
 
 def L(text):
-	text = '\\n'.join(text.split('\n'))
+	text = text.replace('\n','\\n')
 	for LL in locales:
-		if LL[0] == text: return '\n'.join(LL[1].split('\\n'))
+		if LL[0] == text: return LL[1].replace('\\n','\n')
 	return text
 
 # --------------------- Иницилизация переменных ----------------------
