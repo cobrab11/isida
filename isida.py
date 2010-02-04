@@ -594,10 +594,8 @@ def disconnecter():
 	sleep(2)
 
 def L(text):
-	text = text.replace('\n','\\n')
-	for LL in locales:
-		if LL[0] == text: return LL[1].replace('\\n','\n')
-	return text
+	try: return locales[text]
+	except: return text
 
 # --------------------- Иницилизация переменных ----------------------
 slog_folder = 'log/'					# папка системных логов
@@ -676,13 +674,13 @@ god = SuperAdmin
 pprint('-'*50)
 pprint('*** Loading localization')
 
-locales = []
+locales = {}
 if os.path.isfile(loc_file):
 	lf = loc_folder+getFile(loc_file,'\'en\'')+'.txt'
 	if os.path.isfile(lf):
 		lf = readfile(lf).decode('UTF').split('\n')
 		for c in lf:
-			if (not c.count('#')) and len(c) and c.count('\t'): locales.append(c.split('\t',1))
+			if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n')] = c.split('\t',1)[1].replace('\\n','\n')
 pprint('*** Loading main plugin')
 
 execfile('plugins/main.py')

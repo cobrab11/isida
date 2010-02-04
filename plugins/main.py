@@ -48,15 +48,15 @@ def set_locale(type, jid, nick, text):
 		if text != 'en':
 			lf = loc_folder+text+'.txt'
 			if os.path.isfile(lf):
-				locales = []
+				locales = {}
 				lf = readfile(lf).decode('UTF').split('\n')
 				for c in lf:
-					if (not c.count('#')) and len(c) and c.count('\t'): locales.append(c.split('\t',1))
+					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n')] = c.split('\t',1)[1].replace('\\n','\n')
 				writefile(loc_file,unicode('\''+text+'\''))
 				msg = L('Locale set to: %s') % text
 			else: msg = L('Locale not found!')
 		else:
-			locales = []
+			locales = {}
 			msg = L('Locale set to: en')
 			writefile(loc_file,'\'en\'')
 	else: msg = L('What?')
