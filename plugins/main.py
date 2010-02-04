@@ -74,7 +74,7 @@ def shell_execute(cmd):
 	try:
 		os.system(cmd+' >> '+tmp_file)
 		try: body = readfile(tmp_file)
-		except: body = L('Command execute error.')
+		except: body = L('Command execution error.')
 		if len(body):
 			enc = chardet.detect(body)['encoding']
 			return unicode(body,enc)
@@ -245,7 +245,7 @@ def alias(type, jid, nick, text):
 	except: cmd = ''
 	try: cbody = del_space_both(text.split(' ',1)[1].split('=',1)[1])
 	except: cbody = ''
-	msg = L('Mode %s not detect!') % mode
+	msg = L('Mode %s not detected!') % mode
 	if mode=='add':
 		fl = 0
 		for i in aliases:
@@ -417,7 +417,7 @@ def set_prefix(type, jid, nick, text):
 			pref = [(getRoom(jid),lprefix)]
 			writefile(preffile,str(pref))
 	else: lprefix = get_local_prefix(jid)
-	msg = L('Commands prefix: %s') % get_prefix(lprefix)
+	msg = L('Command prefix: %s') % get_prefix(lprefix)
 	send_msg(type, jid, nick, msg)
 
 def smile(type, jid, nick, text):
@@ -505,7 +505,7 @@ def info_access(type, jid, nick):
 def raw_who(room,nick):
 	ta = get_access(room,nick)
 	access_mode = ta[0]
-	if access_mode == -2: msg = L('Who need?')
+	if access_mode == -2: msg = L('Who do you need?')
 	else:
 		realjid = ta[1]
 		msg = L('Access level: %s') % str(access_mode)
@@ -538,7 +538,7 @@ def helpme(type, jid, nick, text):
 	text = text.lower()
 	if text == 'about': msg = 'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
 	elif text == 'donation' or text == 'donations': msg = L('Send donation to:%sBest regards, %s') % ('\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nMailRuMoney: 1055200110899412\nRBKmoney: RU169573070\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
-	elif text == L('access'): msg = L('Bot have 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
+	elif text == L('access'): msg = L('Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
 	elif text != '':
 		msg = L('Prefix: %s, Available help for commands:\n') % get_prefix(get_local_prefix(jid))
 		tmpbase = sqlite3.connect(':memory:')
@@ -575,7 +575,7 @@ def bot_rejoin(type, jid, nick, text):
 		zz = joinconf(text, domain)
 		if zz != None: send_msg(type, jid, nick, L('Error! %s') % zz)
 	else:
-		send_msg(type, jid, nick, L('I never be in %s') % getRoom(lroom))
+		send_msg(type, jid, nick, L('I have never been in %s') % getRoom(lroom))
 		pprint('never be in '+text)
 
 def bot_join(type, jid, nick, text):
@@ -599,7 +599,7 @@ def bot_join(type, jid, nick, text):
 				else:
 					confbase.append(getRoom(text)+'/'+getResourse(text))
 					writefile(confs,str(confbase))
-					send_msg(type, jid, nick, L('Join to %s') % text)
+					send_msg(type, jid, nick, L('Joined to %s') % text)
 					pprint(u'join to '+text)
 
 			elif confbase.count(text):
@@ -613,7 +613,7 @@ def bot_join(type, jid, nick, text):
 				else:
 					confbase = arr_del_semi_find(confbase, lroom)
 					confbase.append(getRoom(text)+'/'+getResourse(text))
-					send_msg(type, jid, nick, L('Change nick into %s to %s') % (lroom,lastnick))
+					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,lastnick))
 					writefile(confs,str(confbase))
 					pprint(u'change nick '+text)
 
@@ -669,7 +669,7 @@ def bot_plugin(type, jid, nick, text):
 			for cm in execute:
 				msg += cm[1]+'['+str(cm[0])+'], '
 				comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (nnick[:-3],cm[4])))
-			msg = L('Load plugin: %s\nAdd commands: %s') % (nnick[:-3],msg[:-2])
+			msg = L('Loaded plugin: %s\nAdd commands: %s') % (nnick[:-3],msg[:-2])
 			for tmr in timer: gtimer.append(tmr)
 			for tmp in presence_control: gpresence.append(tmp)
 			for tmp in message_control: gmessage.append(tmp)
@@ -686,7 +686,7 @@ def bot_plugin(type, jid, nick, text):
 				msg += commmm[1]+'['+str(commmm[0])+'], '
 				for i in comms:
 					if i[1] == commmm[1]: comms.remove(i)
-			msg = L('Unload plugin: %s\nDel commands: %s') % (nnick[:-3],msg[:-2])
+			msg = L('Unloaded plugin: %s\nDel commands: %s') % (nnick[:-3],msg[:-2])
 			for tmr in timer: gtimer.remove(tmr)
 			for tmp in presence_control: gpresence.remove(tmp)
 			for tmp in message_control: gmessage.remove(tmp)
@@ -725,7 +725,7 @@ def owner(type, jid, nick, text):
 				cl.send(j)
 				msg = L('Append: %s') % nnick
 			else: msg = L('Wrong jid!')
-		else: msg = L('%s alredy in list!') % nnick
+		else: msg = L('%s is alredy in list!') % nnick
 	elif do == 'del':
 		if ownerbase.count(nnick) and nnick != god:
 			ownerbase.remove(nnick)
@@ -769,7 +769,7 @@ def ignore(type, jid, nick, text):
 		for jjid in ignorebase:
 			if jjid.count('@') and jjid.count('.'): msg += jjid+', '
 			else: msg += '*'+jjid+'*, '
-		msg = L('Igrone list: %s') % msg[:-2]
+		msg = L('Ignore list: %s') % msg[:-2]
 	else: msg = L('Wrong arguments!')
 	writefile(ignores,str(ignorebase))
 	send_msg(type, jid, nick, msg)
@@ -814,7 +814,7 @@ def info(type, jid, nick):
 	smiles = getFile(sml,[(getRoom(jid),0)])
 	floods = getFile(fld,[(getRoom(jid),0)])
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
-	msg += L('\nSmiles: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(int((getRoom(jid),1) in smiles)),onoff(int((getRoom(jid),1) in floods)),onoff(int((getRoom(jid),1) in gl_censor)),get_prefix(get_local_prefix(jid)))
+	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(int((getRoom(jid),1) in smiles)),onoff(int((getRoom(jid),1) in floods)),onoff(int((getRoom(jid),1) in gl_censor)),get_prefix(get_local_prefix(jid)))
 	send_msg(type, jid, nick, msg)
 
 # 0 - конфа
@@ -886,7 +886,7 @@ def real_search_owner(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)	
 
 def real_search(type, jid, nick, text):
-	msg = L('What need find?')
+	msg = L('What do you need to find?')
 	if text != '':
 		msg = L('Found:')
 		fl = 1
@@ -1213,30 +1213,30 @@ def rss(type, jid, nick, text):
 # 2 - передавать остаток текста
 
 comms = [
-	 (0, u'help', helpme, 2, L('Help system. Helps with out commands: about, donation, access')),
-	 (2, u'join', bot_join, 2, L('Join to conference.\njoin room[@conference.server.ru[/nick]]')),
+	 (0, u'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
+	 (2, u'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),
 	 (2, u'leave', bot_leave, 2, L('Leave conference.\nleave room[@conference.server.ru[/nick]]')),
-	 (2, u'rejoin', bot_rejoin, 2, L('Rejoin to conference.\nrejoin room[@conference.server.ru[/nick]]')),
+	 (2, u'rejoin', bot_rejoin, 2, L('Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]')),
 	 (2, u'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
 	 (2, u'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
 	 (1, u'where', info_where, 1, L('Show conferences.')),
 	 (0, u'inbase', info_base, 1, L('Your identification in global base.')),
-	 (2, u'look', real_search, 2, L('Search user in conferences where is bot.')),
-	 (2, u'glook', real_search_owner, 2, L('Search user in conferences where is bot. Additional show jid\'s')),
+	 (2, u'look', real_search, 2, L('Search user in conferences where the bot is.')),
+	 (2, u'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
 	 (1, u'tempo', tmp_search, 2, L('Local search in temporary base.')),
 	 (2, u'gtempo', gtmp_search, 2, L('Global search in temporary base.')),
-	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get only unread news.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of max recive. 10 max.\nmode - recive mode. full - full news, head - only headers, body - only bodys.\nwith -url to be show url of news.')),
+	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only .\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of max recive. 10 max.\nmode - recive mode. full - full news, head - only headers, body - only bodys.\nwith -url to be show url of news.')),
 	 (1, u'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
 	 (0, u'commands', info_comm, 1, L('Show commands list.')),
-	 (1, u'comm', comm_on_off, 2, L('Enable/Disabler commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
+	 (1, u'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
 	 (0, u'bot_uptime', uptime, 1, L('Show bot uptime.')),
-	 (1, u'info', info, 1, L('Any information about bot.')),
-	 (0, u'new', svn_info, 1, L('Update log from svn')),
+	 (1, u'info', info, 1, L('Misc information about bot.')),
+	 (0, u'new', svn_info, 1, L('Last svn update log')),
 	 (1, u'smile', smile, 2, L('Smile action for role/affiliation change\nsmile [on|off]')),
 	 (1, u'flood', autoflood, 2, L('Autoanswer\nflood [on|off]')),
 	 (1, u'censor', censor_status, 2, L('Censor notification\ncensor [on|off]')),
 	 (2, u'limit', conf_limit, 2, L('Set temporary message limit.')),
-	 (2, u'plugin', bot_plugin, 2, L('Plugins system.\nplugin show|local\nplugin add|del name')),
+	 (2, u'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
 	 (2, u'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
 	 (0, u'whoami', info_access, 1, L('Your identification.')),
 	 (0, u'whois', info_whois, 2, L('Identification.')),

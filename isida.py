@@ -389,7 +389,7 @@ def messageCB(sess,mess):
 	else: is_flood = 0
 
 	if selfjid != jid and no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
-		if len(text)>100: send_msg(type, room, nick, L('To many litters!'))
+		if len(text)>100: send_msg(type, room, nick, L('Too many letters!'))
 		else:
 			text = getAnswer(text,type)
 			thr(send_msg_human,(type, room, nick, text))

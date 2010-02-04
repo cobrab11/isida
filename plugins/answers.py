@@ -12,7 +12,7 @@ def answers_ie(type, jid, nick, text):
 		base_size = len(cu.execute('select * from answer').fetchall())
 		fnd = cu.execute('select body from answer where body like ? group by body order by body',('%',)).fetchall()
 		answer = ''
-		msg = L('Export to file: %s | Total records: %s | After remove duplicates: %s') % (fname,str(base_size),str(len(fnd)))
+		msg = L('Export to file: %s | Total records: %s | Unique records: %s') % (fname,str(base_size),str(len(fnd)))
 		for i in fnd:
 			if i[0] != '': answer += i[0].strip() +'\n'
 		writefile(fname,answer.encode('utf-8'))

@@ -15,14 +15,14 @@ Locale not found!	Локализация не найдена!
 Locale set to: %s	Установлена локализация: %s
 What?	Ась?
 Censored!	Фильтруем базар!
-To many litters!	Слишком многа букаф!
+Too many letters!	Слишком многа букаф!
 *** %s set topic: %s	*** %s обновил(а) тему: %s
 /me detect bad stanza from %s	/me смотрит на %s и думает: "Факин умник детектед!"
 Kicked	Выгнали
 Banned	Забанили
 Leave	Вышел
 Plugin %s. %s	Плагин %s. %s
-Unknown error!	Неизвесная ошибка!
+Unknown error!	Неизвестная ошибка!
 No reason	Причина не указана
 Mon	Пн
 Tue	Вт
@@ -47,17 +47,17 @@ Nov	Ноя
 Dec	Дек
 Censor is %s	Цензор %s
 Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоле...
-Command execute error.	Ошибка выполнения команды.
+Command execution error.	Ошибка выполнения команды.
 ok	ок
 I can't execute it! Error: %s	Я не могу это исполнить! Ошибка: %s
 Enabled: %s	Включено: %s
 Only conference owner can enable commands!	Включение команд доступно только владельцу конференции!
 Command %s is not disabled!	Для данной конференции команда %s не была отключена!
-What enable?	Что включить?
+What to enable?	Что включить?
 Disabled commands: %s	Отключены команды: %s
 Commands disabled before: %s	Отключенные ранее команды: %s
 Commands not found: %s	Не найдены команды: %s
-What disable?	Что отключить?
+What to disable?	Что отключить?
 Only conference owner can disable commands!	Отключение команд доступно только владельцу конференции!
 Disabled commands: %s	Отключены команды: %s
 Disabled commands not found!	Для данной конференции нет отключенных команд!
@@ -65,11 +65,11 @@ leave this room.	покинул данную конференцию.
 I can't see %s here... 	Я могу ошибаться, но %s тут нету...
 Last update:\n%s	Последнее обновление:\n%s
 File %s not found!	Файл %s не доступен!
-Mode %s not detect!	Режим %s не опознан!
+Mode %s not detected!	Режим %s не опознан!
 Updated:	Обновлено:
 Added:	Добавлено:
 Removed: %s	Удалено: %s
-Unable to remove %s	Не возможно удалить %s
+Unable to remove %s	Невозможно удалить %s
 Aliases: %s	Сокращения: %s
 Aliases not found!	Сокращения не найдены!
 Flood is %s	Флуд %s
@@ -84,13 +84,13 @@ off	выкл
 %s years %s	%s лет %s
 %s Years %s	%s года %s
 %s year %s	%s год %s
-Commands prefix: %s	Префикс команд: %s
+Command prefix: %s	Префикс команд: %s
 absent	отсутствует
 Smiles is %s	Смайлы %s
 Uptime: %s, Last session: %s	Время работы: %s, Последняя сессия: %s
 Total Error(s): %s\n	Ошибки: %s\n
 No Errors	Нет ошибок
-Who need?	А был ли мальчег?
+Who do you need?	А был ли мальчег?
 Access level: %s	Доступ: %s
 Ignored	Игнорируемый
 Minimal	Минимальный
@@ -100,42 +100,42 @@ Bot's owner	Владелец бота
 %s, Prefix: %s	%s, Префикс: %s
 Total commands: %s | Prefix: %s | Your access level: %s | Available commands: %s%s	Всего команд: %s | Префикс: %s | Ваш доступ: %s | Доступно команд: %s%s
 access	доступ
-Bot have 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot's settings. Available only for bot owner	У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.
+Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot's settings. Available only for bot owner	У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.
 Prefix: %s, Available help for commands:\n	Префикс команд: %s, Доступна справка по командам:\n
 Access level: %s. %s	Уровень доступа: %s. %s
 Send donation to: %sBest regards, %s	Реквизиты для благодарностей/помощи:%sС Уважением, %s
 %sInformation-referral bot%s Help for command: help command	%sИнформационно-справочный бот%s Справка по командам: help команда
 Rejoin by %s	Перезахожу по команде от %s
 Error! %s	Ошибка! %s
-I never be in %s	Хватит бухать! Меня нету в %s
+I have never been in %s	Хватит бухать! Меня нету в %s
 Wrong arguments!	Косяк с аргументами!
 Denied!	Запрещено!
-Join to %s	Зашла в %s
+Joined to %s	Зашла в %s
 I'm already in %s with nick %s	Хватит бухать! Я уже в %s с ником %s
-Change nick into %s to %s	Смена ника в %s на %s
+Changed nick in %s to %s	Смена ника в %s на %s
 I can't leave last room!	Не могу выйти из последней конфы!
 Leave room %s	Свалила из %s
 Leave room by %s	Меня выводит %s
 Temporary message size limit %s	Временный лимит размера сообщений %s
-Load plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны комманды: %s
-Unload plugin: %s\nDel commands: %s	Удалён плагин: %s\nУдалены комманды: %s
+Loaded plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны комманды: %s
+Unloaded plugin: %s\nDel commands: %s	Удалён плагин: %s\nУдалены комманды: %s
 Available plugins: %s	Доступные плагины: %s
 Active plugins: %s	Активные плагины: %s
 Append: %s	Добавлено: %s
 Wrong jid!	Не правильный jid!
-%s alredy in list!	%s уже есть в списке!
+%s is alredy in list!	%s уже есть в списке!
 Removed: %s	Удалено: %s
 Not found!	Не найдено!
 Bot owner(s): %s	Я принимаю команды от: %s
-Igrone list: %s	Я не принимаю команды от: %s
+Ignore list: %s	Я не принимаю команды от: %s
 Active conference(s): %s	Активных конференций: %s
 \nHidden conference(s): %s	\nСкрыто конференций: %s
 Conference(s): %s (for more info use 'where' command)\n	Конференций: %s (подробнее where)\n
 Server: %s | Nick: %s\n	Сервер: %s | Ник: %s\n
 Message size limit: %s\n	Лимит размера сообщений: %s\n
 Local time: %s\n	Локальное время: %s\n
-\nSmiles: %s | Flood: %s | Censor: %s | Prefix: %s	\nСмайлы: %s | Флуд: %s | Цензор: %s | Префикс команд: %s
-What need find?	Чего искать то будем?
+\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s	\nСмайлы: %s | Флуд: %s | Цензор: %s | Префикс команд: %s
+What do you need to find?	Чего искать то будем?
 I see you as %s/%s	Ты виден мне как %s/%s
 Found:	Найдено:
 '%s' not found!	'%s' не найдено!
@@ -152,30 +152,30 @@ Can't find in schedule: %s	Не могу найти в расписании: %s
 Delete feed from schedule: %s	Удалено из расписания: %s
 
 # --------------- перевод хелпов main.py ---------------
-Help system. Helps with out commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ
-Join to conference.\njoin room[@conference.server.ru[/nick]]	Вход в конференцию:\njoin room@conference.server.ru/nick - вход вконференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.
+Help system. Helps without commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ
+Join conference.\njoin room[@conference.server.ru[/nick]]	Вход в конференцию:\njoin room@conference.server.ru/nick - вход вконференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.
 Leave conference.\nleave room[@conference.server.ru[/nick]]	Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room
-Rejoin to conference.\nrejoin room[@conference.server.ru[/nick]]	Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room
+Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]	Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room
 Bot owners list.\nbot_owner show\nbot_owner add|del jid	Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.
 Black list.\nbot_ignore show\nbot_ignore add|del jid	Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.
 Show conferences.	Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.
 Your identification in global base.	Идентификация Вас в глобальной базе.
-Search user in conferences where is bot.	Поиск участника по конференциям, где находится бот.
-Search user in conferences where is bot. Additional show jid's	Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.
+Search user in conferences where the bot is.	Поиск участника по конференциям, где находится бот.
+Search user in conferences where the bot is. Also show jids	Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.
 Local search in temporary base.	Локальный поиск во временной базе.
 Global search in temporary base.	Глобальный поиск во временной базе.
-News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get only unread news.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of max recive. 10 max.\nmode - recive mode. full - full news, head - only headers, body - only bodys.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.
+News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.
 Aliases.\nalias add new=old\nalias del|show text	Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.
 Show commands list.	Показывает список доступных комманд.
-Enable/Disabler commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
+Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
 Show bot uptime.	Время работы бота.
-Any information about bot.	Различная информация о боте.
-Update log from svn	Показ svn-лога последнего обновления бота
+Misc information about bot.	Различная информация о боте.
+Last svn update log	Показ svn-лога последнего обновления бота
 Smile action for role/affiliation change\nsmile [on|off]	Реакция смайлами на смену роли/аффиляции в данной конференции.\nsmile [вкл|выкл]
 Autoanswer\nflood [on|off]	Включение/выключение самообучающегося автоответчика.\nflood [вкл|выкл]
 Censor notification\ncensor [on|off]	Включение/выключение цензор-нотификатора.\ncensor [вкл|выкл]
 Set temporary message limit.	Размер сообщения, свыше которого сообщения будут разбиваться на части кратные этому размеру
-Plugins system.\nplugin show|local\nplugin add|del name	Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name - добавить плагин.\nplugin del name - удалить плагин.
+Plugin system.\nplugin show|local\nplugin add|del name	Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name - добавить плагин.\nplugin del name - удалить плагин.
 Show error(s).\nerror [number|clear]	Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]
 Your identification.	Ваша идентификация перед ботом.
 Identification.	Идентификация перед ботом.
@@ -187,14 +187,14 @@ Set command prefix. Use 'none' for disabler prefix	Указание префик
 # ------------------------------------------------------
 
 # adminmail.py
-Time limit overquote. Wait: %s	Превышен лимит скорости посылки сообщений. Подождите: %s
+Time limit exceeded. Wait: %s	Превышен лимит скорости посылки сообщений. Подождите: %s
 User %s (%s) from %s at %s send massage to you: %s	Пользователь %s (%s) из конференции %s в %s отправил(а) вам сообщение: %s
-Sended	Отправила
+Sent	Отправила
 # - help -
 Send message to bot's owner\nmsgtoadmin text	Отправить сообщение владельцу бота.\nmsgtoadmin текст сообщения
 
 # afor.py
-Something broked.	Что-то сломалось.
+Something is broken.	Что-то сломалось.
 # - help -
 Show random aphorism from skio.ru | Author: ferym	Показывает случайный афоризм с ресурса skio.ru | Автор: ferym
 
@@ -204,7 +204,7 @@ I see:	Я видела:
 Leave %s ago	Вышел %s назад
 Is here: %s	Находится тут: %s
 %s (with nick: %s)	%s (с ником: %s)
-I see %s:	Я видела %s:
+I saw %s:	Я видела %s:
 Send for you in private	Результат отправлен Вам в приват.
 # - help -
 Show age of jid in conference.	Показывает какое время определённый jid или ник находился в данной конференции.
@@ -217,11 +217,11 @@ Show time of join/leave + jid splitted by nicks.	Показывает время
 
 # anek.py
 # - help -
-Show random	anecdote | Author: ferym	Показывает случайный анекдот с интернет ресурса | Автор: ferym
+Show random anecdote | Author: ferym	Показывает случайный анекдот с интернет ресурса | Автор: ferym
 
 
 # answers.py
-Export to file: %s | Total records: %s | After remove duplicates: %s	Экспорт в файл: %s | Всего записей: %s | После удаления дубликатов: %s
+Export to file: %s | Total records: %s | Unique records: %s	Экспорт в файл: %s | Всего записей: %s | После удаления дубликатов: %s
 Import from file: %s | Total records: %s	Импорт из файла: %s | Всего записей: %s
 # - help -
 Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file	Импорт/Экспорт базы ответов в текстовый файл.\nanswers import [название файла] - импорт ответов из текстового файла в базу\nanswers export [название файла] - экспорт ответов из базы в текстовый файл'
@@ -231,4 +231,4 @@ Import/Export answers base.\nanswers import [filename] - import from file\nanswe
 You troll!	Ты троль!
 Done	Готово
 # - help -
-Repeat messate to private.\ntroll nick\n[text]\n[number]	Повтор сообщения несколько раз в приват.\ntroll ник\n[текст]\n[количество]
+Repeat message to private.\ntroll nick\n[text]\n[number]	Повтор сообщения несколько раз в приват.\ntroll ник\n[текст]\n[количество]

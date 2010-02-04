@@ -24,7 +24,7 @@ def anek(type, jid, nick):
 		else:
 			send_msg(type, jid, nick, message)
 	except:
-		send_msg(type, jid, nick, L('Something broked.'))
+		send_msg(type, jid, nick, L('Something broken.'))
 
 global execute
 

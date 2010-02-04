@@ -132,7 +132,7 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	else: sbody = None
 	if sbody:
 		ztype = True
-		msg = L('I see %s:') % text
+		msg = L('I saw %s:') % text
 		cnt = 1
 		for tmp in sbody:
 			msg += '\n'+str(cnt)+'. ' + tmp[1] + ' ('+tmp[2]+')'

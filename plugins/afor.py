@@ -10,7 +10,7 @@ def afor(type, jid, nick):
 		message = target[od.end():]
 		message = message[:re.search('</div>',message).start()]
 		msg = rss_replace(unicode(message.strip(),'windows-1251'))
-	except: msg = L('Something broked.')
+	except: msg = L('Something broken.')
 	send_msg(type, jid, nick, msg)
 
 global execute
