@@ -28,27 +28,27 @@ def true_age_raw(type, jid, nick, text, xtype):
 		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchall()
 	except: sbody = None
 	if sbody:
-		msg = u'Я видела:'
+		msg = L('I see:')
 		cnt = 1
 		for tmp in sbody:
 			if tmp[5]: r_age = tmp[4]
 			else: r_age = int(time.time())-tmp[3]+tmp[4]
 			if xtype: msg += '\n'+str(cnt)+'. '+tmp[1]
 			else: msg += ' '+tmp[1]
-			msg += u'\t'+un_unix(r_age)+u', '
+			msg += '\t'+un_unix(r_age)+', '
 
 			if tmp[5]:
-				if tmp[6] != '': msg += tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-				else: msg += u'Вышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[6] != '': msg += L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
+				else: msg += L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
 				if tmp[7] != '':
 					if tmp[7].count('\n') >= 4:
 						stat = tmp[7].split('\n',4)[4]
 						if stat != '': msg += ' ('+stat+')'
 					else: msg += ' ('+tmp[7]+')'
-			else: msg += u'находится тут: '+un_unix(int(time.time()-tmp[3]))
+			else: msg += L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
-	else: msg = u'Не найдено!'
+	else: msg = L('Not found!')
 	send_msg(type, jid, nick, msg)
 
 def seen(type, jid, nick, text):
@@ -78,25 +78,25 @@ def seen_raw(type, jid, nick, text, xtype):
 		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
 	else: sbody = None
 	if sbody:
-		msg = u'Я видела:'
+		msg = L('I see:')
 		cnt = 1
 		for tmp in sbody:
 			if xtype: msg += '\n'+str(cnt)+'. '
 			else: msg += ' '
-			if text != tmp[1]: msg += text+u' (с ником: '+tmp[1]+')'
+			if text != tmp[1]: msg += L('%s (with nick: %s)') % (text,tmp[1])
 			else: msg += tmp[1] 
 			if tmp[5]:
-				if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-				else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[6] != '': msg += '\t'+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
+				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
 				if tmp[7] != '':
 					if tmp[7].count('\n') >= 4:
 						stat = tmp[7].split('\n',4)[4]
 						if stat != '': msg += ' ('+stat+')'
 					else: msg += ' ('+tmp[7]+')'
-			else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
+			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
-	else: msg = u'Не найдено!'
+	else: msg = L('Not found!')
 	send_msg(type, jid, nick, msg)
 
 def seenjid(type, jid, nick, text):
@@ -132,32 +132,32 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	else: sbody = None
 	if sbody:
 		ztype = True
-		msg = u'Я видела '+text+u':'
+		msg = L('I see %s:') % text
 		cnt = 1
 		for tmp in sbody:
 			msg += '\n'+str(cnt)+'. ' + tmp[1] + ' ('+tmp[2]+')'
 			if tmp[5]:
-				if tmp[6] != '': msg += u'\t'+tmp[6]+' '+un_unix(int(time.time()-tmp[3]))+u' назад'
-				else: msg += u'\tВышел '+un_unix(int(time.time()-tmp[3]))+u' назад'
+				if tmp[6] != '': msg += '\t'+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
+				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
 				if tmp[7] != '':
 					if tmp[7].count('\n') >= 4:
 						stat = tmp[7].split('\n',4)[4]
 						if stat != '': msg += ' ('+stat+')'
 					else: msg += ' ('+tmp[7]+')'
-			else: msg += u'\tнаходится тут: '+un_unix(int(time.time()-tmp[3]))
+			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
-	else: msg = u'Не найдено!'
+	else: msg = L('Not found!')
 	if type == 'groupchat' and ztype:
-		send_msg(type,jid,nick,u'Результат отправлен Вам в приват.')
+		send_msg(type,jid,nick,L('Send for you in private'))
 		send_msg('chat', jid, nick, msg)
 	else: send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'age', true_age, 2, u'Показывает какое время определённый jid или ник находился в данной конференции.'),
-	 (0, u'age_split', true_age_split, 2, u'Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.'),
-	 (0, u'seen', seen, 2, u'Показывает время входа/выхода.'),
-	 (0, u'seen_split', seen_split, 2, u'Показывает время входа/выхода с разбивкой по никам.'),
-	 (1, u'seenjid', seenjid, 2, u'Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.'),
-	 (1, u'seenjid_split', seenjid_split, 2, u'Показывает время входа/выхода + jid с разбивкой по никам. Результат работы команды всегда направляется в приват.')]
+execute = [(0, 'age', true_age, 2, L('Show age of jid in conference.')),
+	 (0, 'age_split', true_age_split, 2, L('Show age of jid in conference splitted by nicks.')),
+	 (0, 'seen', seen, 2, L('Show time of join/leave.')),
+	 (0, 'seen_split', seen_split, 2, L('Show time of join/leave splitted by nicks.')),
+	 (1, 'seenjid', seenjid, 2, L('Show time of join/leave + jid.')),
+	 (1, 'seenjid_split', seenjid_split, 2, L('Show time of join/leave + jid splitted by nicks.'))]

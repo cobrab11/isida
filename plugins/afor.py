@@ -10,9 +10,9 @@ def afor(type, jid, nick):
 		message = target[od.end():]
 		message = message[:re.search('</div>',message).start()]
 		msg = rss_replace(unicode(message.strip(),'windows-1251'))
-	except: msg = u'что-то сломалось'
+	except: msg = L('Something broked.')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'afor', afor, 1, u'Показывает случайный афоризм с ресурса skio.ru | Author: ferym')]
+execute = [(0, 'afor', afor, 1, L('Show random aphorism from skio.ru | Author: ferym'))]

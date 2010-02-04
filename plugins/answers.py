@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-answers_file = u'answers.txt'
+answers_file = 'answers.txt'
 
 def answers_ie(type, jid, nick, text):
 	if text.lower().strip().split(' ',1)[0] == 'export':
@@ -12,7 +12,7 @@ def answers_ie(type, jid, nick, text):
 		base_size = len(cu.execute('select * from answer').fetchall())
 		fnd = cu.execute('select body from answer where body like ? group by body order by body',('%',)).fetchall()
 		answer = ''
-		msg = u'Экспорт в файл: '+fname+u' | Всего записей: '+str(base_size)+u' | После удаления дубликатов: '+str(len(fnd))
+		msg = L('Export to file: %s | Total records: %s | After remove duplicates: %s') % (fname,str(base_size),str(len(fnd)))
 		for i in fnd:
 			if i[0] != '': answer += i[0].strip() +'\n'
 		writefile(fname,answer.encode('utf-8'))
@@ -25,17 +25,17 @@ def answers_ie(type, jid, nick, text):
 			mdb = sqlite3.connect(answersbase)
 			cu = mdb.cursor()
 			cu.execute('delete from answer where body like ?',('%',))
-			msg = u'Импорт из файла: '+fname+u' | Всего записей: '+str(len(answer))
+			msg = L('Import from file: %s | Total records: %s') % (fname,str(len(answer)))
 			idx = 1
 			for i in answer:
 				if i != '':
 					cu.execute('insert into answer values (?,?)', (idx,unicode(i.strip())))
 					idx += 1
 			mdb.commit()
-		else: msg = u'Не найден файл ответов '+fname
-	else: msg = u'Не указан параметр export/import'
+		else: msg = L('File %s not found!') % fname
+	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(2, u'answers', answers_ie, 2, u'Импорт/Экспорт базы ответов в текстовый файл.\nanswers import [название файла] - импорт ответов из текстового файла в базу\nanswers export [название файла] - экспорт ответов из базы в текстовый файл')]
+execute = [(2, 'answers', answers_ie, 2, L('Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file'))]

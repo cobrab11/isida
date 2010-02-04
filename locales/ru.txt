@@ -183,3 +183,52 @@ Show status.	Показ статуса.
 Set command prefix. Use 'none' for disabler prefix	Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.
 
 # ------------------------------------------------------
+#                       Plugins
+# ------------------------------------------------------
+
+# adminmail.py
+Time limit overquote. Wait: %s	Превышен лимит скорости посылки сообщений. Подождите: %s
+User %s (%s) from %s at %s send massage to you: %s	Пользователь %s (%s) из конференции %s в %s отправил(а) вам сообщение: %s
+Sended	Отправила
+# - help -
+Send message to bot's owner\nmsgtoadmin text	Отправить сообщение владельцу бота.\nmsgtoadmin текст сообщения
+
+# afor.py
+Something broked.	Что-то сломалось.
+# - help -
+Show random aphorism from skio.ru | Author: ferym	Показывает случайный афоризм с ресурса skio.ru | Автор: ferym
+
+# age.py
+I see:	Я видела:
+%s %s ago	%s %s назад
+Leave %s ago	Вышел %s назад
+Is here: %s	Находится тут: %s
+%s (with nick: %s)	%s (с ником: %s)
+I see %s:	Я видела %s:
+Send for you in private	Результат отправлен Вам в приват.
+# - help -
+Show age of jid in conference.	Показывает какое время определённый jid или ник находился в данной конференции.
+Show age of jid in conference splitted by nicks.	Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.
+Show time of join/leave.	Показывает время входа/выхода.
+Show time of join/leave splitted by nicks.	Показывает время входа/выхода с разбивкой по никам.
+Show time of join/leave + jid.	Показывает время входа/выхода + jid. Результат работы команды всегда направляется в приват.
+Show time of join/leave + jid splitted by nicks.	Показывает время входа/выхода + jid с разбивкой по никам. Результат работы команды всегда направляется в приват.
+
+
+# anek.py
+# - help -
+Show random	anecdote | Author: ferym	Показывает случайный анекдот с интернет ресурса | Автор: ferym
+
+
+# answers.py
+Export to file: %s | Total records: %s | After remove duplicates: %s	Экспорт в файл: %s | Всего записей: %s | После удаления дубликатов: %s
+Import from file: %s | Total records: %s	Импорт из файла: %s | Всего записей: %s
+# - help -
+Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file	Импорт/Экспорт базы ответов в текстовый файл.\nanswers import [название файла] - импорт ответов из текстового файла в базу\nanswers export [название файла] - экспорт ответов из базы в текстовый файл'
+
+
+# antitroll.py
+You troll!	Ты троль!
+Done	Готово
+# - help -
+Repeat messate to private.\ntroll nick\n[text]\n[number]	Повтор сообщения несколько раз в приват.\ntroll ник\n[текст]\n[количество]

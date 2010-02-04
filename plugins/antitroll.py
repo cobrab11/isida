@@ -11,15 +11,15 @@ def troll(type, jid, nick, text):
 	otake = unicode(otake)
 	pprint(u'Troll: '+unicode(otake))
 	if len(text)>1: message = text[1]
-	else: message = u'Ты троль!'
+	else: message = L('You troll!')
 	while count != 0:
 		cl.send(xmpp.Message(otake, message, "chat"))
 		sleep(0.05)
 		count -= 1
-	send_msg(type, jid, nick, u'done')
+	send_msg(type, jid, nick, L('Done'))
 
 global execute, timer
 
 timer = []
 
-execute = [(2, u'troll', troll, 2, u'Повтор сообщения несколько раз в приват. Формат:\ntroll nick\n[текст]\n[количество]')]
+execute = [(2, u'troll', troll, 2, L('Repeat messate to private.\ntroll nick\n[text]\n[number]'))]

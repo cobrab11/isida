@@ -3,9 +3,6 @@
 
 # by ferym@jabbim.org.ru
 
-import urllib2
-
-
 def anek(type, jid, nick):
 	try:
 		req = 'http://anekdot.odessa.ua/rand-anekdot.php'
@@ -21,14 +18,14 @@ def anek(type, jid, nick):
 			if len(message)<500:
 				send_msg(type, jid, nick, message)
 			else:
-				send_msg(type, jid, nick, u'Отправила в приват')
+				send_msg(type, jid, nick, L('Send for you in private'))
 				send_msg('chat', jid, nick, message)
 				return
 		else:
 			send_msg(type, jid, nick, message)
 	except:
-		send_msg(type, jid, nick, u'что-то сломалось')
+		send_msg(type, jid, nick, L('Something broked.'))
 
 global execute
 
-execute = [(0, u'anek', anek, 1, u'Показывает случайный анекдот с интернет ресурса | author ferym')]
+execute = [(0, 'anek', anek, 1, L('Show random	anecdote | Author: ferym'))]

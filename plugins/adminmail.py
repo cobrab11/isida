@@ -4,8 +4,8 @@
 # written by dr.Schmurge
 # fixed by Disabler
 
-time_limit_base = set_folder+u'saytoowner.db'
-amsg_limit = [86400,3600,60] # лимит размера сообщения
+time_limit_base = set_folder+'saytoowner.db'
+amsg_limit = [86400,3600,60] # лимит времени следующей посылки сообщения
 
 def adminmail(type, jid, nick, text):
 	if len(text):
@@ -17,16 +17,16 @@ def adminmail(type, jid, nick, text):
 		if timesent.has_key(fjid):
 			wt = int(timesent[fjid]-time.time())
 			if wt >= 0:
-				send_msg(type, jid, nick, u'Превышен лимит скорости посылки сообщений. Подождите: '+un_unix(wt))
+				send_msg(type, jid, nick, L('Time limit overquote. Wait: %s') % un_unix(wt))
 				return None
 			else: del timesent[fjid]
 		timesent[fjid] = int(time.time())+tmp_lim
 		writefile(time_limit_base, str(timesent))
-		msg = u'Пользователь '+nick+u' ('+fjid+u') из конференции '+jid+u' в '+str(time.strftime("%H:%M %d.%m.%y", time.localtime (time.time())))+u' отправил вам сообщение: '+text
+		msg = L('User %s (%s) from %s at %s send massage to you: %s') % (nick,fjid,jid,str(time.strftime("%H:%M %d.%m.%y", time.localtime (time.time()))),text)
 		for ajid in ownerbase: send_msg('chat', getRoom(ajid), '', msg)
-		send_msg(type, jid, nick, u'Отправила')
-	else: send_msg(type, jid, nick, u'Что-то отправить хочешь?')
+		send_msg(type, jid, nick, L('Sended'))
+	else: send_msg(type, jid, nick, L('What?'))
 
 global execute
 
-execute = [(0, u'msgtoadmin', adminmail, 2, u'Отправить сообщение владельцу бота.\nmsgtoadmin текст сообщения')]
+execute = [(0, 'msgtoadmin', adminmail, 2, L('Send message to bot\'s owner\nmsgtoadmin text'))]
