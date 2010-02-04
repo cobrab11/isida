@@ -678,7 +678,7 @@ locales = {}
 if os.path.isfile(loc_file):
 	lf = loc_folder+getFile(loc_file,'\'en\'')+'.txt'
 	if os.path.isfile(lf):
-		lf = readfile(lf).decode('UTF').split('\n')
+		lf = readfile(lf).decode('UTF').replace('\r','').split('\n')
 		for c in lf:
 			if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n')] = c.split('\t',1)[1].replace('\\n','\n')
 pprint('*** Loading main plugin')

@@ -49,7 +49,7 @@ def set_locale(type, jid, nick, text):
 			lf = loc_folder+text+'.txt'
 			if os.path.isfile(lf):
 				locales = {}
-				lf = readfile(lf).decode('UTF').split('\n')
+				lf = readfile(lf).decode('UTF').replace('\r','').split('\n')
 				for c in lf:
 					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n')] = c.split('\t',1)[1].replace('\\n','\n')
 				writefile(loc_file,unicode('\''+text+'\''))
