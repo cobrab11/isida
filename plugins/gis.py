@@ -27,10 +27,13 @@ def gweather_raw(type, jid, nick, text, fully):
 	winddir = {'0':u'С','1':u'СВ','2':u'В','3':u'ЮВ','4':u'Ю','5':u'ЮЗ','6':u'З','7':u'СЗ'}
 
 	if len(reduce_spaces(text)):
-		text = '%'+text.lower()+'%'
+		text = text.lower()
 		cbb = sqlite3.connect(gisbase)
 		cu = cbb.cursor()
 		wzc = cu.execute('select * from gis where code like ? or lcity like ?',(text,text)).fetchall()
+		if not wzc:
+			text = '%'+text+'%'
+			wzc = cu.execute('select * from gis where code like ? or lcity like ?',(text,text)).fetchall()
 		cbb.close()
 		if wzc:
 			if len(wzc) == 1:		
