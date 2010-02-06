@@ -16,16 +16,16 @@ def month_cal(type, jid, nick, text):
 	try: smbl = text[2]
 	except: smbl = ' '
 	try:
-		msg = u'\nПн Вт Ср Чт Пт Сб Вс\n'
+		msg = L('\nMon Tue Wed Thu Fri Sat Sun\n')
 		for tmp in calendar.monthcalendar(year, month):
 			for tmp2 in tmp:
 				if tmp2: msg+=add_space_to_number(tmp2)+' '
 				else: msg+='   '
 			msg = msg[:-1]+'\n'
-		msg = u'Сейчас: '+timeadd(tuple(localtime()))+msg[:-1].replace(' ',smbl)
-	except: msg = u'Ошибка!'
+		msg = L('Now: %s%s') % (timeadd(tuple(localtime())), msg[:-1].replace(' ',smbl))
+	except: msg = L('Error!')
 	send_msg(type, jid, nick, msg)
 	
 global execute
 
-execute = [(0, u'calendar', month_cal, 2, u'Показ календаря. Без параметров показывает календарь на текущий месяц\ncalendar [месяц][год][символ_разделитель]')]
+execute = [(0, 'calendar', month_cal, 2, L('Calendar. Without parameters show calendar for current month.\ncalendar [month][year][symbol_splitter]'))]

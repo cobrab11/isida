@@ -5,8 +5,8 @@ turn_base = []
 
 def turner(type, jid, nick, text):
 	global turn_base
-	rtab = u'йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>~'
-	ltab = u'qwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ'
+	rtab = L('qwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~')
+	ltab = L('QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;\'zxcvbnm,.`')
 	if text == '':
 		for tmp in turn_base:
 			if tmp[0] == jid and tmp[1] == nick:
@@ -15,7 +15,9 @@ def turner(type, jid, nick, text):
 				break
 	else:
 		to_turn = text
-	msg = ''
+	if to_turn[:3] == '/me': msg, to_turn = '*'+nick, to_turn[3:]
+	elif to_turn.count(': '): msg, to_turn = to_turn.split(': ',1)[0]+': ', to_turn.split(': ',1)[1]
+	else: msg = ''
 	for tex in to_turn:
 		notur = 1
 		for i in range(0,len(rtab)):
@@ -27,7 +29,7 @@ def turner(type, jid, nick, text):
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
 	if int((getRoom(jid),1) in gl_censor):
 		msg = to_censore(msg)
-	send_msg(type, jid, nick, msg)
+	send_msg(type, jid, '', msg)
 
 def append_to_turner(room,jid,nick,type,text):
 	global turn_base
@@ -50,4 +52,4 @@ global execute
 message_control = [append_to_turner]
 presence_control = [remove_from_turner]
 
-execute = [(0, u'turn', turner, 2, u'если не задан текст - "переворачивает" последнее сообщение с русской раскладки на английскую и обратно.')]
+execute = [(0, u'turn', turner, 2, L('Turn text from one layout to another.'))]

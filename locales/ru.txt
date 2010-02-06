@@ -13,6 +13,7 @@
 
 Locale not found!	Локализация не найдена!
 Locale set to: %s	Установлена локализация: %s
+Current locale: %s	Текущая локализация: %s
 What?	Ась?
 Censored!	Фильтруем базар!
 Too many letters!	Слишком многа букаф!
@@ -232,3 +233,269 @@ You troll!	Ты троль!
 Done	Готово
 # - help -
 Repeat message to private.\ntroll nick\n[text]\n[number]	Повтор сообщения несколько раз в приват.\ntroll ник\n[текст]\n[количество]
+
+
+# backup.py
+Aviable copies:	Резервные копии:
+Backup copies not found.	Резевные копии не найдены
+I need an owner affiliation for backup settings!	Для резервного копирования мне необходимы права владельца конференции
+I need an owner affiliation for restore settings!	Для восстановления резервной копии мне нужны права владельца конференции!
+Restore completed.	Восстановление завершено.
+What do you want to restore?	Что будем восстанавливать?
+Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
+
+
+# bash.py
+Quote not found!	Цитата не найдена!
+comix	комикс
+Quote from bash.org.ru\nbash [number]	Цитата с bash.org.ru\nbash [номер]
+Quote from ibash.org.ru\nibash [number]	Цитата с ibash.org.ru\nibash [номер]
+
+
+# blacklist.py
+Leave conference %s\n	Свалила из %s\n
+Conference was added in blacklist	Конференция занесена в черный список
+This conference already exist in blacklist.	Адрес уже содержится в списке.
+You can't add last conference in blacklist.	Нельзя добавлять последнюю конференцию в черный список.
+Add to blacklist: %s	Добавлено в черный список: %s
+Removed from blacklist: %s	Удалено из черного списка: %s
+Address not in blacklist.	Адрес отсутствует в черном списке.
+Error in parameters. Read the help about command.	Ошибка в параметрах, прочитайте помощь по команде.
+List is empty.	Список пуст.
+Cleared.	Очищено.
+List of conferences:\n	Список конференций:\n
+Manage of conferences blacklist.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - add|remove address from blacklist\nblacklist show - show blacklist\nblacklist clear - clear blacklist	Черный список конференций.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - добавить|удалить конферецию из черного списка\nblacklist show - показать список\nblacklist clear - очистить список
+
+
+# calendar.py
+\nMon Tue Wed Thu Fri Sat Sun\n	\nПн Вт Ср Чт Пт Сб Вс\n
+Now: %s%s	Сейчас: %s%s
+Error!	Ошибка!
+Calendar. Without parameters show calendar for current month.\ncalendar [month][year][symbol_splitter]	Показ календаря. Без параметров показывает календарь на текущий месяц\ncalendar [месяц][год][символ_разделитель]
+
+
+# clear.py
+Clean by %s messages in approximately %s sec.	Начинаю зачистку! Сообщений: %s, время зачистки примерно %s сек.
+Cleaned!	Стерильно!!!
+Hidden cleaning of conference history.	Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.
+
+# convert.py
+Aviable values:\n%s	Допустимые значения:\n%s
+Currency сonverter\nconvert [from] [to] [count]\nconvert list	Конвертер валют\nconvert [из][в][сумма]\nconvert list
+
+
+# cron.py
+I can't!	Не умею!
+
+
+# defcode.py
+Search only for mobile phones Russia	Поиск только по мобильным телефонам России!
+Not found.	Не найдено.
+Found:\n%s%s	Найдено:\n%s%s
+Territorial accessories mobile phone number. Warning Specify at least 7 of the first digits in order to avoid a large number of messages.	Территориальная пренадлежность номера мобильного телефона. Внимание! Указывайте не менее 7 первых цифр номера во избежании большого количества сообщений!
+
+
+# disco.py
+Total: %s	Всего: %s
+"%s" not found	"%s" не найдено
+Total: %s%s	Всего: %s%s
+I can't do it	Не получается...
+Please wait. Result you will be receive in private message approximately %s %s	Ожидайте, результат Вы получите в приват примерно через %s %s
+sec.	сек.
+matches with nick "%s": %s	совпадений с ником "%s": %s
+nick "%s" not found.	ник "%s" не найден.
+Total conferences: %s, aviable: %s	Всего конференций: %s, доступно: %s
+Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.	Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов
+Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld	Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld
+
+
+# domain.py
+Sites at Domain/IP address: %s\n	Сайты расположенные на IP адресе/домене: %s\n
+Domain/IP address info:	Информация о IP адресе/домене:
+No data!	Нет данных!
+Domain/IP address whois info.	Показывает информацию whois домена/IP адреса\ndomain_info IP|домен\ndomain_info sites IP|домен - показывает сайты находящиеся на домене/IP адресе
+
+
+# drink.py
+last	послендий
+Last	последняя
+lAst	последнее
+first	первое
+second	второе
+third	третье
+fourth	четвертое
+fifth	пятое
+sixth	шестое
+seventh	седьмое
+eighth	восьмое
+nineth	девятое
+tenth	десятое
+eleventh	одинадцатое
+twelveth	двенадцатое
+thirteenth	тринадцатое
+fourteenth	четырнадцатое
+fivteenth	пятнадцатое
+sixteenth	шеснадцатое
+seventeenth	семнадцатое
+eighteenth	восемнадцатое
+nineteenth	девятнадцатое
+twentieth	двадцатое
+twenty-first	двадцать первое
+twenty-second	двадцать второе
+twenty-third	двадцать третье
+twenty-fourth	двадцать четвёртое
+twenty-fifth	двадцать пятое
+twenty-sixth	двадцать шестое
+twenty-seventh	двадцать седьмое
+twenty-eighth	двадцать восьмое
+twenty-nineth	двадцать девятое
+thirtieth	тридцатое
+thirty-first	тридцать перове
+january	январь
+february	февраль
+march	март
+april	апрель
+may	май
+june июнь
+july	июль
+august август
+september	сентябрь
+october	октябрь
+november	ноябрь
+december	декабрь
+January	января
+February	февраля
+March	марта
+April	апреля
+May	мая
+June июня
+July	июля
+August августа
+September	сентября
+October	октября
+November	ноября
+December	декабя
+Read file error.	Ошибка чтения файла.
+Holiday: %s not found.	Повод: %s не найден.
+I know holidays: %s	Я знаю поводы выпить: %s
+Database doesn't exist.	К сожалению база отсутствует.
+Find holiday\ndrink [name_holiday/date]	Поиск повода выпить ;)\ndrink [повод/дата]
+
+
+# execute.py
+I can't calculate it	Я не могу это посчитать
+Expression unacceptable!	Недопустимое выражение!
+Execution of external code.	Выполнение внешнего кода.
+Calculator.	Калькулятор.
+
+
+# gis.py
+Night	Ночь
+Morning	Утро
+Day	День
+Evening	Вечер
+rain	дождь
+downpour	ливень
+snow	снег
+storm	гроза
+no data	нет данных
+no precipitation	без осадков
+clear	ясно
+cloudy	малооблачно
+Cloudy	облачно
+overcast	пасмурно
+N	С
+NE	СВ
+E	В
+SW	ЮЗ
+S	Ю
+SE	ЮВ
+W	З
+NW	СЗ
+Weather in %s:\nDate\t t°\tWind\tClouds	Погода в городе %s:\nДата\t t°\tВетер\tОблачность
+\tPressure, mm. Hg. Art.\tHumidity %	\tДавление, мм.рт.ст.\tВлажность %
+\tCalm	\tШтиль
+Weather forecast (short). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Краткий прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru
+Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Полный прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru'
+
+
+# google.py
+wiki %s inurl:en.wikipedia.org/wiki	вики %s inurl:ru.wikipedia.org/wiki
+Expression "%s" not found!	Выражение "%s" не найдено!
+xep "%s" not found!	xep "%s" не найден!
+Albanian	албанский
+English		английский
+Arabic	арабсий
+Afrikaans	африкаанс
+Belarusian	белорусский
+Bulgarian	болгарский
+Welsh	валийский
+Hungarian	венгерский
+Vietnamese	вьетнамский
+Galician	галийский
+Dutch	голландский
+Greek	греческий
+Danish	датский
+Hebrew	иврит
+Yiddish	идиш
+Indonesian	индонезийский
+Irish	ирландский
+Icelandic	исландский
+Spanish	испанский
+Italian	итяльянский
+Catalan	каталанский
+Chinese	китайский
+Korean	корейский
+Latvian	латвийский
+Lithuanian	литовский
+Macedonian	македонский
+Malay	малайский
+Maltese	мальтийский
+German	немецкий
+Norwegian	норвежский
+Persian	персидский
+Polish	польский
+Portuguese	португальский
+Romanian	румынский
+Russian	русский
+Serbian	сербский
+Slovak	словакский
+Slovenian	словенский
+Swahili	суахили
+Tagalog	тагальский
+Thai	тайский
+Turkish	турекий
+Ukrainian	украинский
+Finnish	финский
+french	французский
+Hindi	хинди
+Croatian	хорватский
+Czech	чешский
+Swedish	шведский
+Estonian	эстонский
+Japanese	японский
+Aviable languages for translate: 	Доступные языки для перевода: 
+Aviable languages: %s	Известные языки: %
+I don't know this language	Я не знаю таких языков
+Incorrect language settings for translate. tr list - aviable languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
+Command's format: tr from to text	Формат команды: tr с_какого на_какой текст
+Translator.\ntr from_language to_language text - translate text\ntr list - list for aviable languages for translate\ntr info <reduction> - get info about language reduction	Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка
+Search in google	Поиск через google
+Search XEP	Поиск XEP
+Search in wikipedia.org	Поиск по ru.wikipedia.org
+
+
+# hideroom.py
+This command aviable only in private!	Команда доступна только в привате!
+Hidden conferences:	Я скрываю конфы:
+No hidden conferences.	Скрытых конференций нет.
+I am not in the %s	Меня нет в %s
+I'm already hide a %s	Я уже скрываю конфу %s
+%s will be shown	%s будет показана
+%s has been hidden	%s была скрыта
+Hide conference.\nhide [add|del|show] [room@conference.server.tld]	Скрыть конференцию.\nhide [add|del|show][ room@conference.server.tld]
+
+# turn.py
+qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
+QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ
+Turn text from one layout to another.	Если не задан текст - "переворачивает" последнее сообщение с русской раскладки на английскую и обратно.

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-gisbase = set_folder+u'gis.db'
+gisbase = set_folder+'gis.db'
 
 def gweather_raw(type, jid, nick, text, fully):
 	def get_date(body):
@@ -14,17 +14,17 @@ def gweather_raw(type, jid, nick, text, fully):
 		tmin = get_tag_item(body,tag,'min')
 		if not fully: return str((int(tmax)+int(tmin))/2)
 		if tmax == tmin: return tmax
-		if (int(tmin)+int(tmax))/2 == 0: return u'0'
+		if (int(tmin)+int(tmax))/2 == 0: return '0'
 		return tmin + splitter + tmax
 	def get_themp(body): return get_maxmin(body,'TEMPERATURE','..')
 	def get_wind(body): return get_maxmin(body,'WIND','-')
 	def get_pressure(body): return get_maxmin(body,'PRESSURE','-')
 	def get_relwet(body): return get_maxmin(body,'RELWET','-')
 		
-	tods = {'0':u'Ночь','1':u'Утро','2':u'День','3':u'Вечер'}
-	precipitation = {'4':u'дождь','5':u'ливень','6':u'снег','7':u'снег','8':u'гроза','9':u'нет данных','10':u'без осадков'}
-	cloudiness = {'0':u'ясно','1':u'малооблачно','2':u'облачно','3':u'пасмурно'}
-	winddir = {'0':u'С','1':u'СВ','2':u'В','3':u'ЮВ','4':u'Ю','5':u'ЮЗ','6':u'З','7':u'СЗ'}
+	tods = {'0':L('Night'),'1':L('Morning'),'2':L('Day'),'3':L('Evening')}
+	precipitation = {'4':L('rain'),'5':L('downpour'),'6':L('snow'),'7':L('snow'),'8':L('storm'),'9':L('no data'),'10':L('no precipitation')}
+	cloudiness = {'0':L('clear'),'1':L('cloudy'),'2':L('Cloudy'),'3':L('overcast')}
+	winddir = {'0':L('N'),'1':L('NE'),'2':L('E'),'3':L('SE'),'4':L('S'),'5':L('SW'),'6':L('W'),'7':L('NW')}
 
 	if len(reduce_spaces(text)):
 		text = text.lower()
@@ -43,24 +43,24 @@ def gweather_raw(type, jid, nick, text, fully):
 				except Exception, SM: body, noerr = str(SM), None
 				if noerr:
 					body = body.split('<FORE')[1:]
-					msg = u'Погода в городе '+wzc[0][1]+u':\nДата\t t°\tВетер\tОблачность'
-					if fully: msg += u'\tДавление, мм.рт.ст.\tВлажность %'
+					msg = L('Weather in %s:\nDate\t t°\tWind\tClouds') % wzc[0][1]
+					if fully: msg += L('\tPressure, mm. Hg. Art.\tHumidity %')
 					for tmp in body:
 						tmp2 = '<FORE' + tmp
-						msg += u'\n' + tods[get_tag_item(tmp2,'FORECAST','tod')] + ' ' + get_date(tmp2)	# дата + время суток
+						msg += '\n' + tods[get_tag_item(tmp2,'FORECAST','tod')] + ' ' + get_date(tmp2)	# дата + время суток
 						msg += '\t' + get_themp(tmp2) 													# температура
 						gwi = get_wind(tmp2)															# ветер
-						if gwi == u'0': msg += u'\tШтиль'
+						if gwi == '0': msg += L('\tCalm')
 						else: msg += '\t' + gwi+' '+winddir[get_tag_item(tmp2,'WIND','direction')]
 						msg += '\t' + cloudiness[get_tag_item(tmp2,'PHENOMENA','cloudiness')]			# облачность
 						msg += ', ' + precipitation[get_tag_item(tmp2,'PHENOMENA','precipitation')]		# осадки
 						if fully: msg += '\t' + get_pressure(tmp2) + '\t' + get_relwet(tmp2)			# давление, влажность
-				else: msg = u'Ошибка: '+body
+				else: msg = L('Error! %s') % body
 			else:
-				msg = u'Найдено:'
-				for tmp in wzc: msg += u'\n'+tmp[0]+u' - '+tmp[1]
-		else: msg = u'Не найдено!'
-	else: msg = u'Ась?'
+				msg = L('Found:')
+				for tmp in wzc: msg += '\n'+tmp[0]+' - '+tmp[1]
+		else: msg = L('Not found.')
+	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
 def gweather(type, jid, nick, text): gweather_raw(type, jid, nick, text, None)
@@ -69,5 +69,5 @@ def gweatherplus(type, jid, nick, text): gweather_raw(type, jid, nick, text, Tru
 
 global execute
 
-execute = [(0, u'gis', gweather, 2, u'Краткий прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru'),
-		   (0, u'gis+', gweatherplus, 2, u'Полный прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru')]
+execute = [(0, 'gis', gweather, 2, L('Weather forecast (short). Courtesy Gismeteo.Ru | http://www.gismeteo.ru')),
+		   (0, 'gis+', gweatherplus, 2, L('Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru'))]

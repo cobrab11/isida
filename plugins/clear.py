@@ -8,13 +8,13 @@ def hidden_clear(type, jid, nick, text):
 	except: cntr = 20
 	if cntr < 1 or cntr > 100: cntr = 20
 	pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
-	send_msg(type, jid, nick, u'Начинаю зачистку! Сообщений: '+str(cntr)+u', время зачистки примерно '+str(int(cntr*clear_delay))+u' сек.')
+	send_msg(type, jid, nick, L('Clean by %s messages in approximately %s sec.') % (str(cntr),str(int(cntr*clear_delay))))
 	time.sleep(clear_delay)
 	for tmp in range(0,cntr):
 		cl.send(xmpp.Message(jid, '', "groupchat"))
 		time.sleep(clear_delay)
-	send_msg(type, jid, nick, u'стерильно!!!')
+	send_msg(type, jid, nick, L('Cleaned!'))
 
 global execute
 
-execute = [(1, u'clear', hidden_clear, 2, u'Скрытая очистка истории сообщений. По умолчанию будет послано 20 скрытых + 1 сообщение в конференцию. Можно задать свой параметр от 2 до 100.')]
+execute = [(1, 'clear', hidden_clear, 2, L('Hidden cleaning of conference history.'))]

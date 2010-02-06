@@ -8,10 +8,10 @@ def getMucItems(jid,affil,ns):
 	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
 	cl.send(i)
-	while not banbase.count((u'TheEnd', u'None', iqid)): sleep(0.1)
+	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
 	bb = []
 	for b in banbase: 
-		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
+		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
 	return (bb,raw_iq)
@@ -21,17 +21,17 @@ def conf_backup(type, jid, nick, text):
 		text = text.split(' ')
 		mode = text[0]
 
-		if mode == u'show':
+		if mode == 'show':
 			a = os.listdir(back_folder)
 			b = []
 			for c in a:
 				if c.count('conference'): b.append((c,os.path.getmtime(back_folder+c)))
 			if len(b):
-				msg = u'Резервные копии: '
+				msg = L('Aviable copies: ')
 				for c in b: msg += c[0]+' ('+un_unix(time.time()-c[1])+')'+', '
 				msg = msg[:-2]
-			else: msg = u'Резервных копий не найдено!'
-		if mode == u'now':
+			else: msg = L('Backup copies not found.')
+		if mode == 'now':
 			tmppos = arr_semi_find(confbase, jid)
 			if tmppos == -1:
 				nowname = nickname
@@ -44,7 +44,7 @@ def conf_backup(type, jid, nick, text):
 				if base[0].lower() == jid and base[1] == nowname:
 					xtype = base[3]
 					break
-			if xtype != 'owner': msg = u'Для резервного копирования мне нужны права владельца конференции!'
+			if xtype != 'owner': msg = L('I need an owner affiliation for backup settings!')
 
 			else:
 				ns = NS_MUC_ADMIN
@@ -57,12 +57,8 @@ def conf_backup(type, jid, nick, text):
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
 				cl.send(i)
 
-				msg = u'Копирование завершено!'
-				msg += u'\nВладельцев:\t'+str(len(ownerlist[0]))
-				msg += u'\nАдминов:\t'+str(len(adminlist[0]))
-				msg += u'\nУчастников:\t'+str(len(memberlist[0]))
-				msg += u'\nЗабаненных:\t'+str(len(banlist[0]))
-
+				msg = L('Copying completed!\nOwners:\t%s\nAdmins:\t%s\nMembers:\t%s\nBanned:\t%s') % (str(len(ownerlist[0])),\
+					str(len(adminlist[0])), str(len(memberlist[0])), str(len(banlist[0])))
 				raw_back = []
 				raw_back.append(ownerlist[1][1])
 				raw_back.append(adminlist[1][1])
@@ -71,7 +67,7 @@ def conf_backup(type, jid, nick, text):
 				raw_back.append(configlist[1][1])
 				writefile(back_folder+unicode(jid),unicode(raw_back))
 
-		if mode == u'restore':
+		if mode == 'restore':
 			if len(text)>1:
 				a = os.listdir(back_folder)
 				a = a.count(text[1])
@@ -87,7 +83,7 @@ def conf_backup(type, jid, nick, text):
 						if base[0].lower() == jid and base[1] == nowname:
 							xtype = base[3]
 							break
-					if xtype != 'owner': msg = u'Для восстановления резервной копии мне нужны права владельца конференции!'
+					if xtype != 'owner': msg = L('I need an owner affiliation for restore settings!')
 					else:
 						raw_back=eval(readfile(back_folder+unicode(text[1])))
 						for zz in range(0,4):
@@ -115,12 +111,12 @@ def conf_backup(type, jid, nick, text):
 						sleep(0.1)
 						cl.send(i)
 						sleep(0.1)
-						msg = u'Восстановление завершено!'
-				else: msg = u'Резервная копия не найдена. Просмотрите список используя ключ show'
-			else: msg = u'Что будем восстанавливать?'
-	else: msg = u'backup now|show|restore'
+						msg = L('Restore completed.')
+				else: msg = L('Copy not found. Use key "show" for lisen aviable copies.')
+			else: msg = L('What do you want to restore?')
+	else: msg = 'backup now|show|restore'
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(1, u'backup', conf_backup, 2, u'Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей')]
+execute = [(1, 'backup', conf_backup, 2, L('Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference'))]

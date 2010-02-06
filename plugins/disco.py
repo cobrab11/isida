@@ -3,7 +3,7 @@
 
 def disco(type, jid, nick, text):
 	if text == '':
-		send_msg(type, jid, nick, u'Ась?')
+		send_msg(type, jid, nick, L('What?'))
 		return
 	text = text.lower().split(' ')
 	where = text[0]
@@ -49,12 +49,12 @@ def disco(type, jid, nick, text):
 				cm = cu.execute('select * from tempo order by -size').fetchmany(hm)
 			if len(cm):
 				cnt = 1
-				msg = u'Всего: '+str(len(cm))
+				msg = L('Total: %s') % str(len(cm))
 				for i in cm:
-					msg += u'\n'+str(cnt)+u'. '+i[0]+u' ['+i[1]+u'] . '+i[2]
+					msg += '\n'+str(cnt)+'. '+i[0]+' ['+i[1]+'] . '+i[2]
 					cnt += 1
 			else:
-				msg = u'\"'+what+u'\" не найдено!'
+				msg = L('\" %s \" not found') % what
 			tmp.close()
 		elif where.count('@conference') or where.count('@chat'):
 			tmp = sqlite3.connect(':memory:')
@@ -69,12 +69,12 @@ def disco(type, jid, nick, text):
 			else:
 				cm = cu.execute('select * from tempo order by nick').fetchall()
 			if len(cm):
-				msg = u'Всего: '+str(len(cm))+' - '
+				msg = L('Total: %s%s') % (str(len(cm)), ' - ')
 				for i in cm:
-					msg += i[0]+u', '
+					msg += i[0]+', '
 				msg = msg[:-2]
 			else:
-				msg = u'\"'+what+u'\" не найдено!'
+				msg = L('\"%s\" not found') % what
 			tmp.close()
 		else:
 			tmp = sqlite3.connect(':memory:')
@@ -87,15 +87,15 @@ def disco(type, jid, nick, text):
 			cm = cu.execute('select * from tempo order by jid').fetchall()
 			if len(cm):
 				cnt = 1
-				msg = u'Всего: '+str(len(cm))
+				msg = L('Total: %s') % str(len(cm))
 				for i in cm:
 					msg += '\n'+str(cnt)+'. '+i[0]
 					cnt += 1
 			else:
-				msg = u'не найдено!'
+				msg = L('Not found.')
 			tmp.close()
 	else:
-		msg = u'Не получается...'
+		msg = L('I can\'t do it')
 	msg = rss_replace(msg)
 	send_msg(type, jid, nick, msg)
 
@@ -140,7 +140,7 @@ def whereis(type, jid, nick, text):
 			if dname[-5:] != '(n/a)' and dname[-3:] != '(0)':
 				djids.append(get_subtag(ii,'jid'))
 
-		send_msg(type, jid, nick, u'Ожидайте, результат Вы получите в приват примерно через '+str(int(len(djids)/6))+u' сек.')
+		send_msg(type, jid, nick, L('Please wait. Result you will be receive in private message approximately %s %s') % (str(int(len(djids)/6)), L('sec.')))
 
 		for ii in djids:
 			iqid = str(randint(1,100000))
@@ -168,19 +168,18 @@ def whereis(type, jid, nick, text):
 
 		cm = cu.execute('select * from tempo order by nick,room').fetchall()
 		if len(cm):
-			msgg = u', Совпадений с ником \"'+who+u'\": '+str(len(cm))
-			for i in cm:
-				msgg += '\n'+i[0]+'\t'+i[1]
+			msgg = L('matches with nick \"%s\": %s') % (who, str(len(cm)))
+			for i in cm: msgg += '\n'+i[0]+'\t'+i[1]
 		else:
-			msgg = u', ник \"'+who+u'\" не найден!'
+			msgg = L('nick \"%s\" not found.') % who
 
-		msg = u'Всего конференций: '+str(len(isa)-1)+u', доступно: '+str(len(djids))+msgg
+		msg = L('Total conferences: %s, aviable: %s') % (str(len(isa)-1), str(len(djids))+', '+msgg)
 		tmp.close()		
 	else:
-		msg = u'Не получается...'
+		msg = L('I can\'t do it')
 	send_msg('chat', jid, nick, msg)
 
 global execute
 
-execute = [(0, u'disco', disco, 2, u'Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов'),
-	 (1, u'whereis', whereis, 2, u'Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld')]
+execute = [(0, 'disco', disco, 2, L('Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.')),
+	 (1, 'whereis', whereis, 2, L('Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld'))]

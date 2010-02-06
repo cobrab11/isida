@@ -59,7 +59,7 @@ def set_locale(type, jid, nick, text):
 			locales = {}
 			msg = L('Locale set to: en')
 			writefile(loc_file,'\'en\'')
-	else: msg = L('What?')
+	else: msg = L('Current locale: %s') % getFile(loc_file,'\'en\'')
 	send_msg(type, jid, nick, msg)
 
 def match_room(room):

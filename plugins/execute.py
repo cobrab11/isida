@@ -3,7 +3,7 @@
 
 def exec_ute(type, jid, nick, text):
 	try: text = unicode(eval(text))
-	except Exception, SM: text = u'Я не могу это исполнить! Ошибка: '+str(SM)
+	except Exception, SM: text = L('I can\'t execute it! Error: %s') % str(SM)
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
@@ -22,11 +22,11 @@ def calc(type, jid, nick, text):
 
 	if ppc:	
 		try: text = str(eval(text))
-		except: text = u'Я не могу это посчитать'
-	else: text = u'Выражение недопустимо!'
+		except: text = L('I can\'t calculate it')
+	else: text = L('Expression unacceptable!')
 	send_msg(type, jid, nick, text)
 
 global execute
 
-execute = [(0, u'calc', calc, 2, u'Калькулятор.'),
-	 (2, u'exec', exec_ute, 2, u'Исполнение внешнего кода.')]
+execute = [(0, u'calc', calc, 2, L('Calculator.')),
+	 (2, u'exec', exec_ute, 2, L('Execution of external code.'))]
