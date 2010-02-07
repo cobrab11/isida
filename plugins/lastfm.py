@@ -23,7 +23,7 @@ def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
 	else: cnt = 0
-	if cnt >=2: msg = L('Last track %s: %s – %s [%s]') % (text,get_tag(ms[1],'artist'),get_tag(ms[1],'name'),last_date_now(ms[1]))
+	if cnt >=2: msg = L('Last track %s: %s - %s %s') % (text,get_tag(ms[1],'artist'),get_tag(ms[1],'name'),'['+last_date_now(ms[1])+']')
 	else: msg = L('Unavailable!')
 	send_msg(type, jid, nick, msg)
 

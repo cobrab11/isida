@@ -497,7 +497,7 @@ Hide conference.\nhide [add|del|show] [room@conference.server.tld]	Скрыть 
 
 
 # lastfm.py
-Last track %s: %s – %s [%s]	Последняя дорожка %s: %s – %s [%s]
+Last track %s: %s - %s %s	Последняя дорожка %s: %s – %s %s
 Unavailable!	Недоступно!
 Last tracks %s:	Последние дорожки %s:
 Friends %s:	Друзья %s:
