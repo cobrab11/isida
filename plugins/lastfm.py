@@ -23,8 +23,8 @@ def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
 	else: cnt = 0
-	if cnt >=2: msg = u'Последняя дорожка '+text+': '+get_tag(ms[1],'artist')+u' – '+get_tag(ms[1],'name')+' ['+last_date_now(ms[1])+']'
-	else: msg = u'Недоступно.'
+	if cnt >=2: msg = L('Last track %s: %s – %s [%s]') % (text,get_tag(ms[1],'artist'),get_tag(ms[1],'name'),last_date_now(ms[1]))
+	else: msg = L('Unavailable!')
 	send_msg(type, jid, nick, msg)
 
 def lf_api(method, user, splitter):
@@ -43,16 +43,16 @@ def lasttracks(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Последние дорожки '+text+':'
+	msg = L('Last tracks %s:') % text
 	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
 	ms = lf_api('user.getfriends',text, '<user')
-	msg = u'Друзья '+text+': '
+	msg = L('Loved tracks %s:') % text
 	for a in ms[1:]:
-		msg += get_tag(a,'name')+' ('+get_tag(a,'realname')+u'), '
-	msg = msg[:-2]
+		msg += ' ' + get_tag(a,'name')+' ('+get_tag(a,'realname')+u'),'
+	msg = msg[:-1]
 	send_msg(type, jid, nick, msg)
 
 def lastloved(type, jid, nick, text):
@@ -63,7 +63,7 @@ def lastloved(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.getlovedtracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Любимые треки '+text+':'
+	msg = L('Loved tracks %s:') % text
 	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
@@ -75,7 +75,7 @@ def lastneighbours(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.getneighbours',text, '<user')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Соседи '+text+':'
+	msg = L('Neighbours %s:') % text
 	for a in ms[1:cnt]: msg += '\n'+get_tag(a,'match')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
@@ -87,7 +87,7 @@ def lastplaylist(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.getplaylists',text, '<playlist')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Плейлисты '+text+':'
+	msg = L('Playlists %s:') % text
 	for a in ms[2:cnt]: msg += '\n['+get_tag(a,'id')+'] '+get_tag(a,'title')+' ('+get_tag(a,'description')+u') – '+get_tag(a,'size')+u' – '+get_tag(a,'duration')
 	send_msg(type, jid, nick, msg)
 
@@ -99,7 +99,7 @@ def topalbums(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.gettopalbums',text, '<album')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Топ альбомов '+text+':'
+	msg = L('Top albums %s:') % text
 	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(a.split('<artist')[1],'name')+u' – '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
@@ -111,7 +111,7 @@ def topartists(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.gettopartists',text, '<artist')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Топ исполнителей '+text+':'
+	msg = L('Top artists %s:') % text
 	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
@@ -123,7 +123,7 @@ def toptags(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.gettoptags',text, '<tag')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Топ тегов '+text+':'
+	msg = L('Top tags %s:') % text
 	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'count')+'] '+get_tag(a,'name')+u' – '+get_tag(a,'url')
 	send_msg(type, jid, nick, msg)
 
@@ -135,7 +135,7 @@ def toptracks(type, jid, nick, text):
 	text = text[0]
 	ms = lf_api('user.gettoptracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
-	msg = u'Топ треков '+text+':'
+	msg = L('Top tracks %s:') % text
 	for a in ms[1:cnt]:
 		b = a.split('<artist')
 		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(b[1],'name')+u' – '+get_tag(a,'name')
@@ -147,51 +147,54 @@ def tasteometer(type, jid, nick, text):
 		user1 = text[0]
 		user2 = text[1]
 	except:
-		send_msg(type, jid, nick, u'Надо указать двух пользователей')
+		send_msg(type, jid, nick, L('Need two users'))
 		return
 	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+lfm_api
 	f = urllib.urlopen(link)
 	lfxml = f.read()
 	f.close()
 	lfxml = html_encode(lfxml)
-	msg = u'Совместимость '+user1+u' и '+user2
-	if get_tag(lfxml,'score') <= '0': msg += u' - нулевая!'
+	scor = get_tag(lfxml,'score')
+	try: scor = float(scor)
+	except: scor = 0
+	if scor <= 0: msg = L('Tastes of %s and %s - soo different!') % (user1,user2)
 	else:
-		msg += u' – '+get_tag(lfxml,'score') +u'\nСовпадение вкусов: '
+		msg = L('Match tastes of %s and %s - %s') % (user1,user2,str(int(scor*100))+'%') 
+		msg2 = ''
 		lfxml = lfxml.split('<artist')
 		cnt = len(lfxml)
-		for a in lfxml[2:cnt]: msg += get_tag(a,'name')+', '
-		msg = msg[:-2]
+		for a in lfxml[2:cnt]: msg2 += get_tag(a,'name')+', '
+		if len(msg2): msg += '\n'+L('Artists: %s') % msg2[:-2]
 	send_msg(type, jid, nick, msg)
 
 def no_api(type, jid, nick):
-	send_msg(type, jid, nick, u'Не найден файл LastFM.api')
+	send_msg(type, jid, nick, L('Not found file LastFM.api'))
 
 apifile = 'plugins/LastFM.api'
 
-exec_yes = [(0, u'lasttracks', lasttracks, 2, u'Последние скробленные треки'),
-	    (0, u'last', lastonetrack, 2, u'Последний скробленный трек'),
-	    (0, u'lastfriends', lastfriends, 2, u'Последние друзья'),
-	    (0, u'lastloved', lastloved, 2, u'Последние любимые треки'),
-	    (0, u'lastneighbours', lastneighbours, 2, u'Соседи по вкусам'),
-	    (0, u'lastplaylist', lastplaylist, 2, u'Последний плейлист'),
-	    (0, u'topalbums', topalbums, 2, u'Топ альбомов'),
-	    (0, u'topartists', topartists, 2, u'Топ исполнителей'),
-	    (0, u'toptags', toptags, 2, u'Топ тегов'),
-	    (0, u'toptracks', toptracks, 2, u'Топ треков'),
-	    (0, u'tasteometer', tasteometer, 2, u'Музакальная совместимость')]
+exec_yes = [(0, u'lasttracks', lasttracks, 2, L('Last scrobled tracks')),
+	    (0, u'last', lastonetrack, 2, L('Last scrobled track')),
+	    (0, u'lastfriends', lastfriends, 2, L('Last friends')),
+	    (0, u'lastloved', lastloved, 2, L('Last loved tracks')),
+	    (0, u'lastneighbours', lastneighbours, 2, L('Last neighbours')),
+	    (0, u'lastplaylist', lastplaylist, 2, L('Last playlist')),
+	    (0, u'topalbums', topalbums, 2, L('Top albums')),
+	    (0, u'topartists', topartists, 2, L('Top artists')),
+	    (0, u'toptags', toptags, 2, L('Top tags')),
+	    (0, u'toptracks', toptracks, 2, L('Top tracks')),
+	    (0, u'tasteometer', tasteometer, 2, L('Music tastes'))]
 
-exec_no = [(0, u'lasttracks', no_api, 1, u''),
-	   (0, u'last', no_api, 1, u''),
-	   (0, u'lastfriends', no_api, 1, u''),
-	   (0, u'lastloved', no_api, 1, u''),
-	   (0, u'lastneighbours', no_api, 1, u''),
-	   (0, u'lastplaylist', no_api, 1, u''),
-	   (0, u'topalbums', no_api, 1, u''),
-	   (0, u'topartists', no_api, 1, u''),
-	   (0, u'toptags', no_api, 1, u''),
-	   (0, u'toptracks', no_api, 1, u''),
-	   (0, u'tasteometer', no_api, 1, u'')]
+exec_no = [(0, u'lasttracks', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'last', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'lastfriends', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'lastloved', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'lastneighbours', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'lastplaylist', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'topalbums', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'topartists', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'toptags', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'toptracks', no_api, 1, L('Not found file LastFM.api')),
+	   (0, u'tasteometer', no_api, 1, L('Not found file LastFM.api'))]
 
 if os.path.isfile(apifile):
 	lfm_api = str(readfile(apifile))

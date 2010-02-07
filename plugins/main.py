@@ -1049,10 +1049,7 @@ def rss(type, jid, nick, text):
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
 		send_msg(type, jid, nick, msg)
-		try:
-			f = urllib.urlopen(link)
-			feed = f.read()
-			f.close()
+		try: feed = urllib.urlopen(link).read()
 		except: return
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
@@ -1068,14 +1065,14 @@ def rss(type, jid, nick, text):
 			msg = L('Feeds for')+' '
 			if submode[-4:] == '-url':
 				submode = submode[:-4]
-				urlmode = 1
+				urlmode = True
 			else:
-				urlmode = 0
+				urlmode = None
 				msg += link+' '
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = get_tag(mmsg,'content').replace('\n',' ') + '\n'
+			else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
 			for dd in lastfeeds:
 				if dd[0] == link and dd[2] == jid:
 					lastfeeds.remove(dd)
@@ -1088,13 +1085,13 @@ def rss(type, jid, nick, text):
 				tbody = get_tag(mmsg,'description')
 				turl = get_tag(mmsg,'link')
 			else:
-				ttitle = get_tag(mmsg,'content').replace('\n',' ')
-				tbody = get_tag(mmsg,'title')#.replace('\n',' ')
+				ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+				tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
 				tu1 = mmsg.index('<link')
 				tu2 = mmsg.find('href=\"',tu1)+6
 				tu3 = mmsg.find('\"',tu2)
-				turl = mmsg[tu2:tu3]#.replace('\n',' ')
-			msg += u'• '
+				turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
+			msg += u'—\n• '
 			if submode == 'full':
 				msg += ttitle+ '\n'
 				msg += tbody + '\n\n'
@@ -1125,10 +1122,7 @@ def rss(type, jid, nick, text):
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
-		try:
-			f = urllib.urlopen(link)
-			feed = f.read()
-			f.close()
+		try: feed = urllib.urlopen(link).read()
 		except: return
 		is_rss_aton = 0
 		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
@@ -1148,15 +1142,15 @@ def rss(type, jid, nick, text):
 			msg = L('Feeds for')+' '
 			if submode[-4:] == '-url':
 				submode = submode[:-4]
-				urlmode = 1
+				urlmode = True
 			else:
-				urlmode = 0
+				urlmode = None
 				msg += link+' '
 			tstop = ''
 			msg += get_tag(feed[0],'title') + '\n'
 			mmsg = feed[1]
 			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = get_tag(mmsg,'content').replace('\n',' ') + '\n'
+			else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
 			for dd in lastfeeds:
 				try:
 					if dd[0] == link and dd[2] == jid:
@@ -1173,15 +1167,15 @@ def rss(type, jid, nick, text):
 					tbody = get_tag(mmsg,'description')
 					turl = get_tag(mmsg,'link')
 				else:
-					ttitle = get_tag(mmsg,'content').replace('\n',' ')
-					tbody = get_tag(mmsg,'title')#.replace('\n',' ')
+					ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+					tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
 					tu1 = mmsg.index('<link')
 					tu2 = mmsg.find('href=\"',tu1)+6
 					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3]#.replace('\n',' ')
+					turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
 				if mode == 'new':
 					if ttitle == tstop: break
-				msg += u'• '
+				msg += u'—\n• '
 				if submode == 'full':
 					msg += ttitle + '\n'
 					msg += tbody + '\n\n'
@@ -1225,7 +1219,7 @@ comms = [
 	 (2, u'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
 	 (1, u'tempo', tmp_search, 2, L('Local search in temporary base.')),
 	 (2, u'gtempo', gtmp_search, 2, L('Global search in temporary base.')),
-	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only .\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of max recive. 10 max.\nmode - recive mode. full - full news, head - only headers, body - only bodys.\nwith -url to be show url of news.')),
+	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
 	 (1, u'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
 	 (0, u'commands', info_comm, 1, L('Show commands list.')),
 	 (1, u'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),

@@ -165,7 +165,7 @@ Search user in conferences where the bot is.	Поиск участника по 
 Search user in conferences where the bot is. Also show jids	Поиск участника по конференциям, где находится бот. Дополнительно будут показаны jid\'ы, если они видны боту.
 Local search in temporary base.	Локальный поиск во временной базе.
 Global search in temporary base.	Глобальный поиск во временной базе.
-News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.
+News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nс окончанием -url будет ещё показана url новости.
 Aliases.\nalias add new=old\nalias del|show text	Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.
 Show commands list.	Показывает список доступных команд.
 Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
@@ -494,6 +494,38 @@ I'm already hide a %s	Я уже скрываю конфу %s
 %s will be shown	%s будет показана
 %s has been hidden	%s была скрыта
 Hide conference.\nhide [add|del|show] [room@conference.server.tld]	Скрыть конференцию.\nhide [add|del|show][ room@conference.server.tld]
+
+
+# lastfm.py
+Last track %s: %s – %s [%s]	Последняя дорожка %s: %s – %s [%s]
+Unavailable!	Недоступно!
+Last tracks %s:	Последние дорожки %s:
+Friends %s:	Друзья %s:
+Loved tracks %s:	Любимые треки %s:
+Neighbours %s:	Соседи %s:
+Playlists %s:	Плейлисты %s:
+Top albums %s:	Топ альбомов %s:
+Top artists %s:	Топ исполнителей %s:
+Top tags %s:	Топ тегов %s:
+Top tracks %s:	Топ треков %s:
+Need two users	Надо указать двух пользователей
+Tastes of %s and %s - soo different!	Совместимость %s и %s - нулевая!
+Match tastes of %s and %s - %s	Совпадение вкусов %s и %s - %s
+Artists: %s	Исполнители: %s
+Not found file LastFM.api	Не найден файл LastFM.api
+# - help -
+Last scrobled tracks	Последние скробленные треки
+Last scrobled track	Последний скробленный трек
+Last friends	Последние друзья
+Last loved tracks	Последние любимые треки
+Last neighbours	Соседи по вкусам
+Last playlist	Последний плейлист
+Top albums	Топ альбомов
+Top artists	Топ исполнителей
+Top tags	Топ тегов
+Top tracks	Топ треков
+Music tastes	Музакальная совместимость
+
 
 # turn.py
 qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
