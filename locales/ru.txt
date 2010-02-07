@@ -118,8 +118,8 @@ I can't leave last room!	Не могу выйти из последней кон
 Leave room %s	Свалила из %s
 Leave room by %s	Меня выводит %s
 Temporary message size limit %s	Временный лимит размера сообщений %s
-Loaded plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны комманды: %s
-Unloaded plugin: %s\nDel commands: %s	Удалён плагин: %s\nУдалены комманды: %s
+Loaded plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны команды: %s
+Unloaded plugin: %s\nDel commands: %s	Удалён плагин: %s\nУдалены команды: %s
 Available plugins: %s	Доступные плагины: %s
 Active plugins: %s	Активные плагины: %s
 Append: %s	Добавлено: %s
@@ -167,7 +167,7 @@ Local search in temporary base.	Локальный поиск во времен�
 Global search in temporary base.	Глобальный поиск во временной базе.
 News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nокончанием -url будет ещё показана url новости.
 Aliases.\nalias add new=old\nalias del|show text	Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.
-Show commands list.	Показывает список доступных комманд.
+Show commands list.	Показывает список доступных команд.
 Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
 Show bot uptime.	Время работы бота.
 Misc information about bot.	Различная информация о боте.
@@ -181,7 +181,7 @@ Show error(s).\nerror [number|clear]	Показывает последнюю л�
 Your identification.	Ваша идентификация перед ботом.
 Identification.	Идентификация перед ботом.
 Show status.	Показ статуса.
-Set command prefix. Use 'none' for disabler prefix	Указание префикса комманд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.
+Set command prefix. Use 'none' for disabler prefix	Указание префикса команд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.
 
 # ------------------------------------------------------
 #                       Plugins
@@ -242,7 +242,7 @@ I need an owner affiliation for backup settings!	Для резервного к�
 I need an owner affiliation for restore settings!	Для восстановления резервной копии мне нужны права владельца конференции!
 Restore completed.	Восстановление завершено.
 What do you want to restore?	Что будем восстанавливать?
-Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохронить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
+Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохранить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
 
 
 # bash.py

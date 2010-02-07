@@ -537,7 +537,7 @@ def info_comm(type, jid, nick):
 def helpme(type, jid, nick, text):
 	text = text.lower()
 	if text == 'about': msg = 'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
-	elif text == 'donation' or text == 'donations': msg = L('Send donation to:%sBest regards, %s') % ('\nMWallet id: 9034035371\nYandexMoney: 41001384336826\nMailRuMoney: 1055200110899412\nRBKmoney: RU169573070\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
+	elif text == 'donation' or text == 'donations': msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
 	elif text == L('access'): msg = L('Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
 	elif text != '':
 		msg = L('Prefix: %s, Available help for commands:\n') % get_prefix(get_local_prefix(jid))
