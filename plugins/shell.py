@@ -13,5 +13,5 @@ def sysshell(type, jid, nick, text, mode):
 
 global execute
 
-execute = [(2, u'sh', shell, 2, u'Выполнение shell команды.'),
-	   (2, u'sh_silent', shell_silent, 2, u'Выполнение shell команды без показа вывода команды.')]
+execute = [(2, u'sh', shell, 2, L('Execute shell command.')),
+	   (2, u'sh_silent', shell_silent, 2, L('Execute shell command without output result.'))]

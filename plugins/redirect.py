@@ -20,5 +20,5 @@ def raw_redirect(type, room, nick, text):
 
 global execute
 
-execute = [(0, u'private', to_private, 2, u'Перенаправляет вывод команды в приват.'),
-		   (0, u'public', to_public, 2, u'Перенаправляет вывод команды в конференцию.')]
+execute = [(0, u'private', to_private, 2, L('Redirect command output in private.')),
+		   (0, u'public', to_public, 2, L('Redirect command output in groupchat.'))]

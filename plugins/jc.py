@@ -13,18 +13,18 @@ def jc(type, jid, nick, text):
 		body = get_tag(body,'ol')
 		if body.count('<li>'):
 			body = body.split('<li>')[1:]
-			msg, cnt = u'Найдено:', 1
+			msg, cnt = L('Found:'), 1
 			for tmp in body:
 				msg += '\n'+str(cnt)+'. '+get_tag(tmp,'font')+' ['+tmp.split(u'комнате: ')[1].split(u'&nbsp;')[0]+u'] • '
 				msg += tmp.split('<br>')[1][1:].replace('<b>', u'«').replace('</b>', u'»')+u' • рейтинг: '+tmp.split(u'рейтинге: ')[1].split(u'</font>')[0]
 				cnt += 1
 			if type=='groupchat' and len(msg)>600:
 				send_msg('chat', jid, nick, msg)
-				msg = u'Отправлено в приват.'
-		else: msg = u'Не найдено!'
-	except: msg = u'Ошибка!'
+				msg = L('Send for you in private')
+		else: msg = L('Not found.')
+	except: msg = L('Error!')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'jc', jc, 2, u'Показывает информацию о указанной конференции с ресурса jc.jabber.ru\njc [конфа]')]
+execute = [(0, u'jc', jc, 2, L('Show information about conference from jc.jabber.ru.\njc [address]'))]

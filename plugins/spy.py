@@ -8,26 +8,26 @@ spy_action_time = 86400				# интервал реакции на сканиро
 
 #conf hrs usrs msgs action
 def spy_add(text):
-	if text == '': return u'что добавить?'
+	if text == '': return L('what do you want to add?')
 	text = text.lower()
 	sb = getFile(spy_base,[])
 	sconf = text.split(' ')[0]
 	try: saction = text.split(' ',1)[1]
-	except: return u'не заданы параметры слежения'
+	except: return L('not given tracking')
 	for tmp in saction.split(' '):
 		if tmp[0] != u'u' and tmp[0] != u'm':
-			return u'не указан критерий слежения'
+			return L('is not specified criterion tracking')
 		try: int(tmp[1:])
-		except: return u'не верно задан цифровой параметр'
+		except: return L('incorrect digital parameter')
 	cb = []
 	for tmp in confbase:
 		cb.append(getRoom(tmp))
-	if not cb.count(sconf): return u'меня нет в конфе '+sconf
-	msg = u'Добавлено: '+text
+	if not cb.count(sconf): return L('I am not in the %s ') % sconf
+	msg = L('Append: %s') % text
 	for tmp in sb:
 		if tmp[0] == sconf:
 			sb.remove(tmp)
-			msg = u'Обновлено: '+text
+			msg = L('Updated: %s') % text
 			break
 	cnt = 0
 	for mega in megabase:
@@ -37,25 +37,25 @@ def spy_add(text):
 	return msg
 	
 def spy_del(text):
-	if text == '': return u'что удалить?'
+	if text == '': return L('what do you want remove?')
 	text = text.lower().split(' ')[0]
 	sb = getFile(spy_base,[])
-	msg = u'Не найдено: '+text
+	msg = L('Not found: %s') % text
 	for tmp in sb:
 		if tmp[0] == text:
 			sb.remove(tmp)
-			msg = u'Удалено: '+text
+			msg = L('Removed: %s') % text
 			writefile(spy_base,str(sb))
 			break
 	return msg
 	
 def spy_show(text):
 	sb = getFile(spy_base,[])
-	if not len(sb): return u'база пуста'
-	msg = u'Слежение за конференциями:'
+	if not len(sb): return L('List is empty.')
+	msg = L('Monitoring conferences:')
 	for tmp in sb:
 		msg += u'\n'+tmp[0]+' '+tmp[4]+' ('+un_unix(int(time.time()-tmp[1]))+u'|u'+str(tmp[2])+u'|m'+str(tmp[3])+')'
-	msg += u'\nСледующее сканирование через '+un_unix(int(scan_time-(time.time()-spy_stat_time)))
+	msg += L('\nNext scanning across %s') % un_unix(int(scan_time-(time.time()-spy_stat_time)))
 	return msg
 	
 def conf_spy(type, jid, nick,text):
@@ -63,7 +63,7 @@ def conf_spy(type, jid, nick,text):
 	if text[:4] == 'add ': msg = spy_add(text[4:])
 	elif text[:4] == 'del ': msg = spy_del(text[4:])
 	elif text[:4] == 'show': msg = spy_show(text[4:])
-	if not msg: msg = u'Курим помощь по команде!'
+	if not msg: msg = L('Smoke help about command!')
 	send_msg(type, jid, nick, msg)
 
 def spy_message(room,jid,nick,type,text):
@@ -107,8 +107,8 @@ def spy_action():
 					if arr_semi_find(confbase, tmp[0]) >= 0:
 						confbase = arr_del_semi_find(confbase,tmp[0])
 						writefile(confs,str(confbase))
-						leaveconf(tmp[0], domain, u'Выхожу в связи с низкой активностью конференции')
-						for tmpo in ownerbase: send_msg('chat', getRoom(tmpo), '', u'Конференция '+tmp[0]+u' покинута по условию spy плагина: '+mist)
+						leaveconf(tmp[0], domain, L('I leave your conference because low activity'))
+						for tmpo in ownerbase: send_msg('chat', getRoom(tmpo), '', L('I leave conference %s by condition spy plugin: %s') % (tmp[0], mist))
 				else: sb.append((tmp[0],int(time.time()),tmp[2], 0,tmp[4]))
 				writefile(spy_base,str(sb))
 
@@ -118,4 +118,4 @@ timer = [get_spy_stat, spy_action]
 
 message_control = [spy_message]
 
-execute = [(2, u'spy', conf_spy, 2, u'Проверка активности конференции\nspy add <conference>[ u<number>][ m<number>] - добавить конференцию в список мониторинга активности. u - среднее число участников, m - количество сообщение за сутки. При невыполнении хотябы одного условия - бот выйдет из конференции\nspy del <conference> - удалить конференцю из списка мониторинга\nspy show - показать активное слежение')]
+execute = [(2, u'spy', conf_spy, 2, L('Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.'))]

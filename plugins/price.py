@@ -6,7 +6,7 @@
 def price(type, jid, nick, parameters):
 	try:
 		if parameters.count('http://'):
-			send_msg(type, jid, nick, u'формат ввода сайта domain.tld')
+			send_msg(type, jid, nick, L('site input format is domain.tld'))
 			return
 		if len(parameters):
 			parameters = parameters.split('.')[-2].lower()+'.'+parameters.split('.')[-1].lower()
@@ -22,30 +22,30 @@ def price(type, jid, nick, parameters):
 			except: pos = None
 			if pos:
 				if pos >= 2: message = message[pos:]+' '+message[:pos]
-			send_msg(type, jid, nick, u'Оценочная стоимость домена '+parameters.strip()+u' составляет - '+message)
+			send_msg(type, jid, nick, L('Estimated value %s is %s') % (parameters.strip(), message))
 		else:
-			send_msg(type, jid, nick, u'какой сайт оценивать?')
+			send_msg(type, jid, nick, L('What site be evaluated?'))
 	except:
-		send_msg(type, jid, nick, u'Не получилось обработать запрос')
+		send_msg(type, jid, nick, L('I can\'t process your request.'))
 
 		# by dissy@isida-bot.com
 
 def bizinfo(type, jid, nick, text):
 	try:
 		if text.count('http://'):
-			msg = u'формат ввода сайта domain.tld'
+			msg = L('site input format is domain.tld')
 		elif len(text):
 			text = text.split('.')[-2].lower()+'.'+text.split('.')[-1].lower()
 			req = 'http://bizinformation.org/ru/www.'+text
 			r = urllib2.urlopen(req)
 			body = unicode(r.read().strip(),'utf-8')
 			if body.count('How Much'): msg = u'Ошибка формата адреса!'
-			else: msg = u'Оценочная стоимость домена '+text.strip()+u' составляет - '+get_tag(body,'span')
-		else: msg = u'какой сайт оценивать?'
-	except: msg = u'Не получилось обработать запрос'
+			else: msg = L('Estimated value %s is %s') % (text.strip(), get_tag(body,'span'))
+		else: msg = L('What site be evaluated?')
+	except: msg = L('I can\'t process your request.')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'price', price, 2, u'Показывает ориентировочную оценочную стоимость домена | Author: ferym'),
-           (0, u'bizinfo', bizinfo, 2, u'Показывает ориентировочную оценочную стоимость домена | Author: Disabler')]
+execute = [(0, u'price', price, 2, L('Show estimated value of domain | Author: ferym')),
+           (0, u'bizinfo', bizinfo, 2, L('Show estimated value of domain | Author: Disabler'))]

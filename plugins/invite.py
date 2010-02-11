@@ -18,18 +18,18 @@ def call_body(type, jid, nick, text):
 				if tmp[0] == jid and getRoom(tmp[4]) == whojid:
 					is_found = 1
 					break
-			if is_found: msg = u'Хватит бухать! '+text+u' находится тут!'
+			if is_found: msg = L('%s ishere!') % text
 			else:
-				msg = u'Позвала'
+				msg = L('Invited')
 				skip = 0
-		elif len(fnd) > 1: msg = u'Я видела несколько человек с таким ником. Укажите точнее!'
-		else: msg = u'Я не в курсе кто такой '+text
-	else: msg = u'Ась?'
+		elif len(fnd) > 1: msg = L('I seen some peoples with this nick. Get more info!')
+		else: msg = L('I don\'n know %s') % text
+	else: msg = L('What?')
 
 	if skip: send_msg(type, jid, nick, msg)
 	else:
-		inv_msg = nick+u' просит Вас зайти в '+jid
-		if reason: inv_msg += u' по причине: '+reason
+		inv_msg = L('%s asks you to go to %s ') % (nick, jid)
+		if reason: inv_msg += L('because %') % reason
 		send_msg('chat',whojid, '',inv_msg)
 		
 		inv = xmpp.Message(jid)
@@ -40,4 +40,4 @@ def call_body(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'invite', call_body, 2, u'Пригласить участника в конференцию.\ninvite nick|jid\n[причина]')]
+execute = [(0, u'invite', call_body, 2, L('Invite to conference.\ninvite nick|jid\n[reason]'))]

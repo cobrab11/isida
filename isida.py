@@ -434,7 +434,7 @@ def get_valid_tag(body,tag):
 	else: return 'None'
 	
 def presenceCB(sess,mess):
-	global megabase, megabase2, ownerbase, iq_answer, confs, confbase, cu_age
+	global megabase, ownerbase, iq_answer, confs, confbase, cu_age
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
@@ -500,7 +500,6 @@ def presenceCB(sess,mess):
 				if role != mmb[2] or affiliation != mmb[3]: not_found = 1
 				else: not_found = 2
 		if not not_found: megabase.append([room, nick, role, affiliation, jid])
-	if not megabase2.count([room, nick, role, affiliation, jid]): megabase2.append([room, nick, role, affiliation, jid])	
 	if jid == 'None': jid, jid2 = '<temporary>'+nick, 'None'
 	else: jid2, jid = jid, getRoom(jid.lower())
 	mdb = sqlite3.connect(agestatbase)
@@ -666,7 +665,6 @@ capsNode = 'http://isida-bot.com'
 baseParameters = [nickname ,name, domain, password, mainRes, SuperAdmin, defaultConf, CommStatus, StatusMessage, Priority]
 baseErrors = ['nickname', 'name', 'domain', 'password', 'mainRes', 'SuperAdmin', 'defaultConf', 'CommStatus', 'StatusMessage', 'Priority']
 megabase = []
-megabase2 = []
 for baseCheck in range(0, len(baseParameters)):
 	if baseParameters[baseCheck]=='': errorHandler(baseErrors[baseCheck]+' is missed in '+configname)
 god = SuperAdmin

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-wzbase = set_folder+u'wz.db'
+wzbase = set_folder+'wz.db'
 
 def check_wz(text):
 	for tm in text:
@@ -23,10 +23,10 @@ def get_weather(text):
 	return wzz
 
 def weather(type, jid, nick, text):
-	if check_wz(text): msg = u'Ошибка в параметрах!'
+	if check_wz(text): msg = L('Error in parameters. Read the help about command.')
 	else:
 		wzz = get_weather(text)
-		if wzz.count('Not Found'): msg = u'Город не найден!'
+		if wzz.count('Not Found'): msg = L('City not found!')
 		else:
 			wzz = wzz.split('\n')
 			wzr = []
@@ -62,10 +62,10 @@ def weather(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def weather_short(type, jid, nick, text):
-	if check_wz(text): msg = u'Ошибка в параметрах!'
+	if check_wz(text): msg = L('Error in parameters. Read the help about command.')
 	else:
 		wzz = get_weather(text)
-		if wzz.count('Not Found'): msg = u'Город не найден!'
+		if wzz.count('Not Found'): msg = L('City not found!')
 		else:
 			wzz = wzz.split('\n')
 			wzr = []
@@ -92,33 +92,14 @@ def weather_short(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def weather_raw(type, jid, nick, text):
-	if check_wz(text): msg = u'Ошибка в параметрах!'
+	if check_wz(text): msg = L('Error in parameters. Read the help about command.')
 	else:
 		msg = get_weather(text)[:-1]
-		if msg.count('Not Found'): msg = u'Город не найден!'
-	send_msg(type, jid, nick, msg)
-
-def weather_city(type, jid, nick, text):
-	if check_wz(text): msg = u'Ошибка в параметрах!'
-	else:
-		try: cnt = int(text.split(' ',text.count(' '))[text.count(' ')])
-		except: cnt = 10
-		if cnt < 1: cnt = 1
-		elif cnt > 100: cnt = 100
-		text = text.split(' ',1)[0]
-		cbb = sqlite3.connect(wzbase)
-		cu = cbb.cursor()
-		wzc = cu.execute('select * from wz where code like ? or city like ? or counry like ? order by code',(text,text,text)).fetchall()
-		cbb.close()
-		if not wzc: msg = u'Такой город не найден!'
-		else:
-			msg = u'Найдено:'
-			for tmp in wzc[:cnt]: msg += '\n'+tmp[0]+' - '+tmp[1]+' ('+tmp[2]+')'
+		if msg.count('Not Found'): msg = L('City not found!')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'wzcity', weather_city, 2, u'Поиск кода города для запроса погоды.\nwzcity город|код [количество]'),
-	 (0, u'wzz', weather_raw, 2, u'Погода по коду аэропорта. Не оптимизированный вариант.'),
-	 (0, u'wzs', weather_short, 2, u'Погода по коду аэропорта. Укороченный вариант.'),
-	 (0, u'wz', weather, 2, u'Погода по коду аэропорта. Оптимизированный вариант.')]
+execute = [(0, 'wzz', weather_raw, 2, L('Weather by airport code. Full version.')),
+	 (0, 'wzs', weather_short, 2, L('Weather by airport code. Short version.')),
+	 (0, 'wz', weather, 2, L('Weather by airport code. Optimized version.'))]

@@ -44,7 +44,7 @@ def lasttracks(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Last tracks %s:') % text
-	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+u' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
@@ -64,7 +64,7 @@ def lastloved(type, jid, nick, text):
 	ms = lf_api('user.getlovedtracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Loved tracks %s:') % text
-	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a.split('<artist')[1],'name')+' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):
@@ -76,7 +76,7 @@ def lastneighbours(type, jid, nick, text):
 	ms = lf_api('user.getneighbours',text, '<user')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Neighbours %s:') % text
-	for a in ms[1:cnt]: msg += '\n'+get_tag(a,'match')+' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n'+get_tag(a,'match')+' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastplaylist(type, jid, nick, text):
@@ -88,7 +88,7 @@ def lastplaylist(type, jid, nick, text):
 	ms = lf_api('user.getplaylists',text, '<playlist')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Playlists %s:') % text
-	for a in ms[2:cnt]: msg += '\n['+get_tag(a,'id')+'] '+get_tag(a,'title')+' ('+get_tag(a,'description')+') – '+get_tag(a,'size')+' – '+get_tag(a,'duration')
+	for a in ms[2:cnt]: msg += '\n['+get_tag(a,'id')+'] '+get_tag(a,'title')+' ('+get_tag(a,'description')+') - '+get_tag(a,'size')+' - '+get_tag(a,'duration')
 	send_msg(type, jid, nick, msg)
 
 def topalbums(type, jid, nick, text):
@@ -100,7 +100,7 @@ def topalbums(type, jid, nick, text):
 	ms = lf_api('user.gettopalbums',text, '<album')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Top albums %s:') % text
-	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(a.split('<artist')[1],'name')+' – '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(a.split('<artist')[1],'name')+' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def topartists(type, jid, nick, text):
@@ -124,7 +124,7 @@ def toptags(type, jid, nick, text):
 	ms = lf_api('user.gettoptags',text, '<tag')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Top tags %s:') % text
-	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'count')+'] '+get_tag(a,'name')+' – '+get_tag(a,'url')
+	for a in ms[1:cnt]: msg += '\n['+get_tag(a,'count')+'] '+get_tag(a,'name')+' - '+get_tag(a,'url')
 	send_msg(type, jid, nick, msg)
 
 def toptracks(type, jid, nick, text):
@@ -138,7 +138,7 @@ def toptracks(type, jid, nick, text):
 	msg = L('Top tracks %s:') % text
 	for a in ms[1:cnt]:
 		b = a.split('<artist')
-		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(b[1],'name')+' – '+get_tag(a,'name')
+		msg += '\n['+get_tag(a,'playcount')+'] '+get_tag(b[1],'name')+' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def tasteometer(type, jid, nick, text):

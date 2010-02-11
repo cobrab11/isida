@@ -6,10 +6,10 @@ def set_nickname(type, jid, nick, text):
 		msg = None
 		if text == '': text = jid+'/'+nickname
 		else: text = jid+'/'+text
-	else: msg = u'Тибе низя!'
+	else: msg = L('You can\'t do it!')
 	if msg: send_msg(type, jid, nick, msg)
 	else: bot_join(type, jid, nick, text)
 
 global execute
 
-execute = [(1, u'setnick', set_nickname, 2, u'Смена ника. Доступна только владельцу конференции.')]
+execute = [(1, u'setnick', set_nickname, 2, L('Change bot nick. Aviable only for conference owner.'))]

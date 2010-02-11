@@ -9,8 +9,8 @@ def netheader(type, jid, nick, text):
 		req = urllib2.Request(text)
 		req.add_header('User-Agent',user_agent)
 		try: body = str(urllib2.urlopen(req).headers)
-		except: body = u'Что-то не получается!'
-	else: body = u'Что посмотреть?'
+		except: body = L('I can\'t do it')
+	else: body = L('What?')
 	send_msg(type, jid, nick, body)	
 
 def netwww(type, jid, nick, text):
@@ -28,13 +28,13 @@ def netwww(type, jid, nick, text):
 			try:
 				mt = re.findall(regex, page, re.S)
 				if mt != []: msg = unhtml(''.join(mt[0]))
-				else: msg = u'RegExp не найден!'
-			except: msg = u'Ошибка в RegExp!'
+				else: msg = L('RegExp not found!')
+			except: msg = L('Error in RegExp!')
 		else: msg = get_tag(page,'title')+'\n'+unhtml(page)
 	except Exception, SM: msg = str(SM)
 	send_msg(type, jid, nick, msg[:msg_limit])
 
 global execute
 
-execute = [(0, u'www', netwww, 2, u'Показывает содержимое веб страницы.\nwww regexp\n[http://]url - страница, обработанная regexp\nwww [http://]url - страница с убранными html тегами'),
-		   (0, u'header',netheader,2, u'Показывает заголовок файла')]
+execute = [(0, 'www', netwww, 2, L('Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags')),
+		   (0, 'header',netheader,2, L('Show net header'))]

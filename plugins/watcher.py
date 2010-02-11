@@ -30,15 +30,10 @@ def connect_watch():
 			bot_exit_type, game_over = 'restart', True
 			sleep(2)
 
-def c_watcher(type, jid, nick):
-	msg = u'Таймаут запросов: '+str(watch_size)
-	msg += u' | Таймаут ответов: '+str(watch_timeout)
-	msg += u' | Последний запрос: '+un_unix(int(time.time() - watch_time))
-	msg += u' | Всего проверок: '+str(watch_count)
-	send_msg(type, jid, nick, msg)
+def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s') % (str(watch_size),str(watch_timeout),un_unix(int(time.time() - watch_time)),str(watch_count)))
 
 global execute, timer
 
 timer = [connect_watch]
 
-execute = [(0,'watcher',c_watcher,1,u'Контроль активности соединения.')]
+execute = [(0,'watcher',c_watcher,1,L('Connection activity control.'))]

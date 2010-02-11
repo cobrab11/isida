@@ -15,7 +15,7 @@ def youtube(type, jid, nick, text):
 
 	tmass = []
 	ltube = len(tube)
-	smsg = u'Всего найдено: '+str(ltube-1)
+	smsg = L('Total found: %s') % str(ltube-1)
 	if ltube > 4: ltube=4
 	for i in range(1,ltube):
 
@@ -46,4 +46,4 @@ def youtube(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'youtube', youtube, 2, u'Поиск по YouTube')]
+execute = [(0, u'youtube', youtube, 2, L('Search at YouTube'))]

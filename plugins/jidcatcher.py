@@ -5,7 +5,7 @@ jid_base = set_folder+u'jidbase.db'		# статистика jid'ов
 top_base = set_folder+u'topbase.db'		# активность конференции
 
 def info_search(type, jid, nick, text):
-	msg = u'Чего искать то будем?'
+	msg = L('What I must find?')
 	if text != '':
 		mdb = sqlite3.connect(jid_base)
 		cu = mdb.cursor()
@@ -13,12 +13,12 @@ def info_search(type, jid, nick, text):
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from jid where login like ? or server like ? or resourse like ? order by login',(ttext,ttext,ttext)).fetchmany(10)
 		if len(tma):
-			msg = u'Найдено:'
+			msg = L('Found:')
 			cnd = 1
 			for tt in tma:
 				msg += u'\n'+str(cnd)+'. '+tt[0]+'@'+tt[1]+'/'+tt[2]
 				cnd += 1
-		else: msg = text +u' не найдено!'
+		else: msg = L('\'%s\' not found!') % text
 	send_msg(type, jid, nick, msg)
 
 def info_res(type, jid, nick, text):
@@ -32,10 +32,10 @@ def info_res(type, jid, nick, text):
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchall())
 		jidbase = cu.execute('select resourse,count(*) from jid where resourse like ? group by resourse order by -count(*)',(text1,)).fetchmany(10)
-	if not tlen: msg = u'Не найдено: '+text
+	if not tlen: msg = L('\'%s\' not found!') % text
 	else:
-		if text == '': msg = u'Всего ресурсов: '+str(tlen)+' \n'
-		else: msg = u'Найдено ресурсов: '+str(tlen)+' \n'
+		if text == '': msg = L('Total resources: %s\n') % str(tlen)
+		else: msg = L('Found resources: %s\n') % str(tlen)
 		cnt = 1
 		for jj in jidbase:
 			msg += str(cnt)+'. '+jj[0]+'\t'+str(jj[1])+' \n'
@@ -54,10 +54,10 @@ def info_serv(type, jid, nick, text):
 		text1 = '%'+text+'%'
 		tlen = len(cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall())
 		jidbase = cu.execute('select server,count(*) from jid where server like ? group by server order by -count(*)',(text1,)).fetchall()
-	if not tlen: msg = u'Не найдено: '+text
+	if not tlen: msg = L('\'%s\' not found!') % text
 	else:
-		if text == '': msg = u'Всего серверов: '+str(tlen)+' \n'
-		else: msg = u'Найдено серверов: '+str(tlen)+' \n'
+		if text == '': msg = L('Total servers: %s\n') % str(tlen)
+		else: msg = L('Found servers: %s\n') % str(tlen)
 		for jj in jidbase: msg += jj[0]+':'+str(jj[1])+' | '
 		msg = msg[:-2]
 	send_msg(type, jid, nick, msg)
@@ -73,8 +73,8 @@ def info_top(type, jid, nick, text):
 		if tmp[0] == room:
 			ttop = tmp
 			break
-	if ttop: msg = u'Максимальное количество участников: '+str(ttop[1])+u' ('+time.ctime(ttop[2])+u')'
-	else: msg = u'Статистика не найдена!'
+	if ttop: msg = L('Max count of members: %s %s') % (str(ttop[1]), '('+time.ctime(ttop[2])+')')
+	else: msg = L('Statistic not found!')
 	send_msg(type, jid, nick, msg)
 
 def jidcatcher_presence(room,jid,nick,type,text):
@@ -111,7 +111,7 @@ global execute, presence_control
 
 presence_control = [jidcatcher_presence]
 
-execute = [(0, u'res', info_res, 2, u'Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.'),
-		   (1, u'serv', info_serv, 2, u'Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.'),
-		   (2, u'search', info_search, 2, u'Поиск по внутренней базе jid\'ов.'),
-		   (0, u'top', info_top, 2, u'Активность конференции')]
+execute = [(0, u'res', info_res, 2, L('Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.')),
+		   (1, u'serv', info_serv, 2, L('Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.')),
+		   (2, u'search', info_search, 2, L('Search in internal jids base.')),
+		   (0, u'top', info_top, 2, L('Conference\'s activity.'))]

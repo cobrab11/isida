@@ -31,7 +31,7 @@ def iq_vcard(type, jid, nick, text):
 		to -= 0.05
 	if to > 0:
 		isa = is_answ[0]
-		if isa == None: msg = u'Что-то не получается...'
+		if isa == None: msg = L('I can\'t do it')
 		else:
 			while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 			if args.lower() == u'show':
@@ -48,8 +48,9 @@ def iq_vcard(type, jid, nick, text):
 					else: tname,ttag = tmp,tmp
 					tt = get_tag(isa,ttag.upper())
 					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt))
-			else: msg = u'vCard:\nНик: '+get_tag(isa,'NICKNAME')+u'\nИмя: '+get_tag(isa,'FN')+u'\nО себе: '+get_tag(isa,'DESC')+u'\nURL: '+get_tag(isa,'URL')
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			else: msg = L('vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s') % \
+				(get_tag(isa,'NICKNAME'),get_tag(isa,'FN'),get_tag(isa,'DESC'),get_tag(isa,'URL'))
+	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
 	send_msg(type, jid, nick, msg)
 
 def iq_uptime(type, jid, nick, text):
@@ -79,11 +80,11 @@ def iq_uptime(type, jid, nick, text):
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
 	if to > 0:
-		if iiqq == ['None']: msg = u'Что-то не получается...'
+		if iiqq == ['None']: msg = L('I can\'t do it')
 		else:
-			try: msg = u'Аптайм: '+un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
-			except: msg = u'Что-то не получается...'
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			try: msg = L('Uptime: %s') % un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
+			except: msg = L('I can\'t do it')
+	else: msg = L('Timeuot (%s) sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def ping(type, jid, nick, text):
@@ -120,13 +121,13 @@ def ping(type, jid, nick, text):
 		if iiq != None: iiqq.append(iiq)
 		else: iiqq.append('None')
 	if to > 0:
-		if iiqq == ['None']: msg = u'Что-то не получается...'
+		if iiqq == ['None']: msg = L('I can\'t do it')
 		else:
 			tpi = ct-lt
 			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
-			if sping: msg = u'Пинг от тебя '+tpi+u' сек.'
-			else: msg = u'Пинг от '+text+' '+tpi+u' сек.'
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+			if sping: msg = L('Ping from you %s sec.') % tpi
+			else: msg = L('Ping from %s %s sec.') % (text, tpi)
+	else: msg = L('Timeuot (%s) sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_time(type, jid, nick, text):
@@ -168,7 +169,7 @@ def iq_time_get(type, jid, nick, text, mode):
 		else:
 			msg = ''
 			for iiq in iiqq: msg += iiq+' '
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	else: msg = L('Timeuot (%s) sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_version(type, jid, nick, text):
@@ -202,7 +203,7 @@ def iq_version(type, jid, nick, text):
 		else:
 			msg = ''
 			for iiq in iiqq: msg += iiq+' '
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+	else: msg = msg = L('Timeuot (%s) sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_stats(type, jid, nick, text):
@@ -231,16 +232,17 @@ def iq_stats(type, jid, nick, text):
 		else:
 			try: ans = [get_subtag(iiqq.split('stat ')[1],'value'),get_subtag(iiqq.split('stat ')[2],'value')]
 			except: ans = [0,0]
-		msg = u'Статистика сервера: '+text+u' | Всего: '+str(ans[1])+u' | Онлайн: '+str(ans[0])
-	else: msg = u'Истекло время ожидания ('+str(timeout)+u'сек).'
+		msg = L('Server statistic: %s | Total: %s | Online: %s') % \
+			(text, str(ans[1]), str(ans[0]))
+	else: msg = L('Timeuot (%s) sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 	
 global execute
 
-execute = [(0, u'ver', iq_version, 2, u'Версия клиента'),
-	 (0, u'ping', ping, 2, u'Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.'),
-	 (0, u'time', iq_time, 2, u'Локальное время клиента'),
-	 (0, u'time_raw', iq_time_raw, 2, u'Локальное время клиента + время в формате из станзы.'),
-	 (0, u'stats', iq_stats, 2, u'Статистика пользователей сервера'),
-	 (0, u'vcard_raw', iq_vcard, 2, u'Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard'),
-	 (0, u'uptime', iq_uptime, 2, u'Аптайм jabber сервера или jid\'а')]
+execute = [(0, u'ver', iq_version, 2, L('Client version.')),
+	 (0, u'ping', ping, 2, L('Ping - reply time. You can ping nick in room, jid, server or transport.')),
+	 (0, u'time', iq_time, 2, L('Client side time.')),
+	 (0, u'time_raw', iq_time_raw, 2, L('Client side time + raw time format.')),
+	 (0, u'stats', iq_stats, 2, L('Users server statistic.')),
+	 (0, u'vcard_raw', iq_vcard, 2, L('vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show aviable fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.')),
+	 (0, u'uptime', iq_uptime, 2, L('Server or jid uptime.'))]

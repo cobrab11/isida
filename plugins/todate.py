@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+# -*- coding: utf -*-
+
+# NOT LOCALIZED!
 
 import datetime
 

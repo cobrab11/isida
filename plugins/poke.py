@@ -4,27 +4,27 @@
 def to_poke(type, jid, nick, text):
 	if len(text): text = reduce_spaces(text)
 	if type == 'chat' and get_access(jid,nick)[0] < 1:
-		send_msg(type, jid, nick, u'Участникам данная команда не доступна в привате!')
+		send_msg(type, jid, nick, L('For members this command not aviable in private!'))
 		return
-	predef_poke = [u'дала NICK... просто дала... :-\"',
-			u'потыкала палочкой NICK в глаз...',
-			u'предложила NICK козявку :-[',
-			u'накормила NICK пургеном с толчёным стеклом!',
-			u'прошептала NICK в ухо тихонько БУГАГА!',
-			u'целится плюсомётом в NICK и добро улыбается...',
-			u'кинула ломик в сторону NICK',
-			u'дала NICK клубничного йаду',
-			u'попрыгала с бубном вокруг NICK',
-			u'тыкает NICK со словами "купи мороженного, гадюка!"']
+	predef_poke = [L('gave NICK ... just gave ... :-\"'),
+			L('poked a stick NICK in the eye ...'),
+			L('suggested NICK shrimp :-['),
+			L('fed NICK laxative with powdered glass!'),
+			L('whispered in his ear softly NICK LOL!'),
+			L('trying kick the ass NICK'),
+			L('threw the crowbar aside NICK'),
+			L('gave NICK strawberry poison'),
+			L('jumped around with a tambourine NICK'),
+			L('sticking NICK with the words "buy ice cream, you creep!"')]
 	poke_file = 'plugins/poke.txt'
 	ta = get_access(jid,nick)
 	access_mode = ta[0]
 	dpoke = getFile(poke_file,predef_poke)
 	if text == 'show' and access_mode == 2:
 		if type == 'groupchat':
-			send_msg(type, jid, nick, u'Ушло в приват!')
+			send_msg(type, jid, nick, L('Sent in private message'))
 			type = 'chat'
-		msg = u'Фразы:'
+		msg = L('Phrases:')
 		cnt = 1
 		for tmp in dpoke:
 			msg += '\n'+str(cnt)+'. '+tmp
@@ -33,22 +33,22 @@ def to_poke(type, jid, nick, text):
 		text = text[4:]
 		try: pos = int(text)-1
 		except: pos = len(dpoke)+1
-		if pos < 0 or pos > len(dpoke): msg = u'Такой записи нет!'
+		if pos < 0 or pos > len(dpoke): msg = L('The record doesn\'t exist!')
 		else:
 			remove_body = dpoke[pos]
 			dpoke.remove(remove_body)
 			writefile(poke_file, str(dpoke))
-			msg = u'Удалила: '+remove_body
+			msg = L('Removed: %s') % remove_body
 
 	elif text[:4] == 'add ' and access_mode == 2:
 		text = text[4:]
 		if text.count('NICK'):
 			dpoke.append(text)
 			writefile(poke_file, str(dpoke))
-			msg = u'Добавила.'
-		else: msg = u'Не могу добавить! Нет ключевого слова "NICK"!'
-	elif text == '' or text == nick: msg = u'Самотык? 8-D'
-	elif get_access(jid,text)[1] == selfjid: msg = u'Ща зобаню по ip за такие шутки!'
+			msg = L('Added')
+		else: msg = L('I can\'t add it! No keyword "NICK"!')
+	elif text == '' or text == nick: msg = L('Masochist? 8-D')
+	elif get_access(jid,text)[1] == selfjid: msg = L('I ban a ip for such jokes!')
 	else:
 		is_found = 0
 		for tmp in megabase:
@@ -60,9 +60,9 @@ def to_poke(type, jid, nick, text):
 			msg = msg.replace('NICK',text)
 			nick = ''
 			type = 'groupchat'
-		else: msg = u'Я могу ошибаться, но '+text+u' тут нету...'
+		else: msg = L('I could be wrong, but %s not is here...') % text
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'poke', to_poke, 2, u'Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу')]
+execute = [(0, u'poke', to_poke, 2, L('"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.'))]

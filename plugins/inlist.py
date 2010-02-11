@@ -12,9 +12,9 @@ def inban(type, jid, nick, text):
 		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего в бане: '+str(len(bb))
+	msg = L('Total banned: %s, ')+str(len(bb))
 	if text != '':
-		mmsg = u', найдено:\n'
+		mmsg = L('found:\n')
 		fnd = 1
 		cnt = 1
 		for i in bb:
@@ -23,7 +23,7 @@ def inban(type, jid, nick, text):
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
+		if fnd: mmsg = L('no matches!')
 		msg += mmsg
 	send_msg(type, jid, nick, msg)
 
@@ -38,9 +38,9 @@ def inowner(type, jid, nick, text):
 		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего владельцев: '+str(len(bb))
+	msg = L('Total owners: %s, ') % str(len(bb))
 	if text != '':
-		mmsg = u', найдено:\n'
+		mmsg = L('found:\n')
 		fnd = 1
 		cnt = 1
 		for i in bb:
@@ -49,7 +49,7 @@ def inowner(type, jid, nick, text):
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
+		if fnd: mmsg = L('no matches!')
 		msg += mmsg
 	send_msg(type, jid, nick, msg)
 
@@ -64,9 +64,9 @@ def inadmin(type, jid, nick, text):
 		if b[2] == iqid and b[0] != u'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = u'Всего администраторов: '+str(len(bb))
+	msg = L('Total admins: %s, ') % str(len(bb))
 	if text != '':
-		mmsg = u', найдено:\n'
+		mmsg = L('found:\n')
 		fnd = 1
 		cnt = 1
 		for i in bb:
@@ -75,7 +75,7 @@ def inadmin(type, jid, nick, text):
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
+		if fnd: mmsg = L('no matches!')
 		msg += mmsg
 	send_msg(type, jid, nick, msg)
 
@@ -91,9 +91,9 @@ def inmember(type, jid, nick, text):
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
 
-	msg = u'Всего постоянных участников: '+str(len(bb))
+	msg = L('Total members: %s, ') % str(len(bb))
 	if text != '':
-		mmsg = u', найдено:\n'
+		mmsg = L('found:\n')
 		fnd = 1
 		cnt = 1
 		for i in bb:
@@ -102,13 +102,13 @@ def inmember(type, jid, nick, text):
 				fnd = 0
 				cnt += 1
 		mmsg = mmsg[:-1]
-		if fnd: mmsg = u', совпадений нет!'
+		if fnd: mmsg = L('no matches!')
 		msg += mmsg
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(1, u'inban', inban, 2, u'Поиск по outcast списку конференции.'),
-	 (1, u'inmember', inmember, 2, u'Поиск по member списку конференции.'),
-	 (1, u'inadmin', inadmin, 2, u'Поиск по admin списку конференции.'),
-	 (1, u'inowner', inowner, 2, u'Поиск по owner списку конференции.')]
+execute = [(1, u'inban', inban, 2, L('Search in outcats list of conference.')),
+	 (1, u'inmember', inmember, 2, L('Search in members list of conference.')),
+	 (1, u'inadmin', inadmin, 2, L('Search in admins list of conference.')),
+	 (1, u'inowner', inowner, 2, L('Search in owners list of conference.'))]

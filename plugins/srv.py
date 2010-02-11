@@ -11,7 +11,7 @@ def srv_host(type, jid, nick, text):
 	srv_raw_check(type, jid, nick, u'host '+text)
 
 def srv_raw_check(type, jid, nick, text):
-	if text.count('&') or text.count(';'): msg = u'Недоступно!'
+	if text.count('&') or text.count(';'): msg = L('Unavailable!')
 	else: msg = shell_execute(text)
 	send_msg(type, jid, nick, msg)
 
@@ -27,13 +27,13 @@ def chkserver(type, jid, nick, text):
 		url = u'http://status.blackout-gaming.net/status.php?dns='+text.replace(':','&port=')+u'&style=t'+str(mtype)
 		body = urllib.urlopen(url).read()
 		body = (body.split('("')[1])[:-3]
-		msg = u'Статус сервера: '+ body
-	else: msg = u'Что будем проверять?'
+		msg = L('Port status at %s') % body
+	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(1, u'nslookup', srv_nslookup, 2, u'команда nslookup'),
-		   (1, u'host', srv_host, 2, u'команда host'),
-		   (1, u'dig', srv_dig, 2, u'команда dig'),
-		   (0, u'port', chkserver, 2, u'Проверка активности порта на запрашиваемом сервере:\nport server:port [1..5]')]
+execute = [(1, u'nslookup', srv_nslookup, 2, L('Command nslookup')),
+		   (1, u'host', srv_host, 2, L('Command host')),
+		   (1, u'dig', srv_dig, 2, L('Command dig')),
+		   (0, u'port', chkserver, 2, L('Check port activity\nport server:port [1..5]'))]

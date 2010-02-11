@@ -482,7 +482,7 @@ Command's format: tr from to text	Формат команды: tr с_каког�
 Translator.\ntr from_language to_language text - translate text\ntr list - list for aviable languages for translate\ntr info <reduction> - get info about language reduction	Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка
 Search in google	Поиск через google
 Search XEP	Поиск XEP
-Search in wikipedia.org	Поиск по ru.wikipedia.org
+Search in en.wikipedia.org	Поиск по ru.wikipedia.org
 
 
 # hideroom.py
@@ -494,6 +494,156 @@ I'm already hide a %s	Я уже скрываю конфу %s
 %s will be shown	%s будет показана
 %s has been hidden	%s была скрыта
 Hide conference.\nhide [add|del|show] [room@conference.server.tld]	Скрыть конференцию.\nhide [add|del|show][ room@conference.server.tld]
+
+
+# horo.py
+Message send to private	Отправлен в приват
+List of dates:\n%s	Список дат:\n%s
+aries	овен
+taurus	телец
+gemini	близнецы
+cancer	рак
+leo 	лев
+virgo	дева
+libra	весы
+scorpio	скорпион
+sagittarius	стрелец
+capricorn	козерог
+aquarius	водолей
+pisces	рыбы
+Aries %s	Овен %s
+Taurus %s	Телец %s
+Gemini %s	Близнецы %s
+Cancer %s	Рак %s
+Leo %s	Лев %s
+Virgo %s	Дева %s
+Libra %s	Весы %s
+Scorpio %s	Скорпион %s
+Sagittarius %s	Стрелец %s
+Capricorn %s	Козерог %s
+Aquarius %s	Водолей %s
+Pisces %s	Рыбы %s
+Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym	Показывает гороскоп для указанного знака гороскопа. Просмотр знаков зодиака - "horo list". Просмотр списка дат - "horo date" | Автор: ferym
+
+
+# idle.py
+Your last activity was %s ago	Ваша последняя активность была %s назад
+%s's last ativity was %s ago	Последняя активность %s была %s назад
+message	сообщение
+presence	презенс
+Idle time	Время с момента последней активности
+I can't find %s	Не могу найти %s
+
+
+# inlist.py
+Total banned: %s, 	Всего в бане: %s, 
+found:\n	найдено:\n
+no matches!	совпадений нет!
+Total owners: %s, 	Всего владельцев: %s, 
+Total admins: %s, 	Всего администраторов: %s, 
+Total members: %s, 	Всего постоянных участников: %s, 
+Search in outcats list of conference.	Поиск по outcast списку конференции.
+Search in members list of conference.	Поиск по members списку конференции.
+Search in admins list of conference.	Поиск по admins списку конференции.
+Search in owners list of conference.	Поиск по owners списку конференции.
+
+
+# invite.py
+%s ishere!	%s находится тут!
+Invited	Позвала
+I seen some peoples with this nick. Get more info!	Я видела несколько человек с таким ником. Укажите точнее!
+I don't know %s	Я не в курсе кто такой %s
+%s asks you to go to %s	%s просит Вас зайти в %s
+because %	по причине %s
+Invite to conference.\ninvite nick|jid\n[reason]	Пригласить участника в конференцию.\ninvite nick|jid\n[причина]
+
+
+# iq.py
+vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s	vCard:\nНик: %s\nИмя: %s\nО себе: %s\nURL: %s
+Timeout %s sec.	Истекло время ожидания %s сек.
+Uptime: %s	Аптайм: %s
+Ping from you %s sec.	Пинг от тебя %s сек.
+Ping from %s %s sec.	Пинг от %s %s сек.
+Server statistic: %s | Total: %s | Online: %s	Статистика сервера: %s | Всего: %s | Онлайн: %s
+Client version.	Версия клиента.
+Ping - reply time. You can ping nick in room, jid, server or transport.	Пинг - время отклика. Можно пинговать ник в конференции, jid, сервер, транспорт.
+Client side time.	Локальное время клиента.
+Client side time + raw time format.	Локальное время клиента + время в формате из станзы.
+Users server statistic.	Статистика пользователей сервера.
+vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show aviable fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.	Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard
+Server or jid uptime.	Аптайм jabber сервера или jid'а
+
+
+#istrue.py
+100% True-nick!	100% Ъ-ник!
+Nicks without letters isn't true!	Ники без букв не Ъ!
+Valid of nick is - %s%s	Кошерность ника %s%s 
+Normal nick, but left symbols in fireplace.	Нормальный ник, а вот левые символы фтопку!
+Many caps - %s%s	Много капса - %s%s
+Dominate letters: 	Преобладают буквы: 
+Cyrillic	Кириллица
+Latin	Латиница
+Eually	Поровну
+And?	Ну и?
+Expression is true for %s%s	Вероятность того, что выражение верно - %s%s
+Check truth of expession.	Проверка выражения на правдивость.
+Check different languages symbols in nick.	Проверка ника на наличие использования букв из разных языков.
+
+
+#jc.py
+Show information about conference from jc.jabber.ru.\njc [address]	Показывает информацию о указанной конференции с ресурса jc.jabber.ru\njc [конфа]
+
+
+# jidcatcher.py
+What I must find?	Чего искать-то будем?
+Total resources: %s\n	Всего ресурсов: %s\n
+Found resources: %s\n	Найдено ресурсов: %s\n
+Total servers: %s\n	Всего серверов: %s\n
+Found servers: %s\n	Найдено серверов: %s\n
+Max count of members: %s %s	Максимальное количество участников: %s %s
+Statistic not found!	Статистика не найдена!
+Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.	Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.
+Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.	Без параметра показывает все сервера, с которых заходили в конференции, где находится бот.\nС параметром - поиск по базе серверов.\nЕсли параметр count - показывает количество уникальных серверов.\nЧисла - количество серверов.
+Search in internal jids base.	Поиск по внутренней базе jid\'ов.
+Conference's activity.	Активность конференции.
+
+
+# juick.py
+Smoke help about command!	Курим помощь по команде!
+User %s not found	Пользователь %s не найден
+Who?	Кто?
+Message #%s not found	Пост #%s не найден
+(Replies: %s)	(Ответов: %s)
+(No replies)	(Нет ответов)
+Invalid message number	Неверный номер поста
+What message do you want to find?	Какой пост найти?
+Tag %s not found	Тег %s не найден
+Tag %s found in %s	Тег %s найден у %s
+What tag do you want to find?	Какой тег найти?
+Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user's messages\njuick info <username> - show user info	Миниблоги http://juick.com\njuick tag user <tag>[ количество_пользователей] - пользователи, использующие теги\njuick tag msg <tag>[ лимит_сообщенй [лимит_размера_сообщений]] - сообщения с заданными тегами\njuick msg <номер_поста>[ количество] - пост+количество ответов\njuick msg <номер_поста/номер_ответа> - пост+ответ на пост\njuick user <user> [лимит_сообщенй [лимит_размера_сообщений]] - последние сообщения пользователя\njuick info <user> - информация о пользователе
+
+
+# karma.py
+you	тебя
+In this room karma is not changed!	В данной конфе карма не изменялась!
+Top karma: %s	Топ кармы: %s
+Karma for members is present not changed!	У присутсвующих карма не изменялась!
+I'm not sure, but %s not is here.	Я не уверена, но %s тут нет.
+%s have a clear karma	У %s чистая карма
+%s\'s karma is %s	У %s карма %s
+You can't change karma in private!	Изменение кармы в привате запрещено!
+You can't change karma in outdoor conference!	Нельзя изменить карму участника вне конференции!
+You can't change own karma!	Нельзя изменить карму самому себе!
+You changes %s's karma to %s. Next time to change across: %s.	Вы изменили карму %s до %s. Следующий раз можно изменить через: %s
+Time from last change %s's karma is very small. Please wait %s.	Вы недавно меняли карму %s. Надо подождать: %s.
+You can't change karma!	Вам нельзя менять карму участника!
+Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма участника.\nkarma [show] nick\nkarma top+|- [количество]\nДля изменения:\nnick: +1\nnick: -1
+
+
+# known.py
+I know you as: 	Я видела тебя как: 
+I know %s as: 	Я видела %s как: 
+Show user's nick changes.	Показ смены ников.
 
 
 # lastfm.py
@@ -524,10 +674,247 @@ Top albums	Топ альбомов
 Top artists	Топ исполнителей
 Top tags	Топ тегов
 Top tracks	Топ треков
-Music tastes	Музакальная совместимость
+Music tastes	Музыкальная совместимость
+
+
+# md5.py
+Calculate phrase md5 sum.	Расчёт md5 фразы.
+
+
+# muc.py
+This command aviable only for conference owner!	Команда доступна только владельцу конференции!
+Global ban is disable in:	Я не баню глобально в конфах:
+Global ban enable without limits!	Я баню глобально без ограничений!
+Conference %s already deleted from global ban list!	Конференция %s уже исключена из списка глобального бана!
+Conference %s has been deleted from global ban list!	Конференция %s исключена из списка глобального бана.
+Conference %s has been added from global ban list!	Конференция %s добавлена в список глобального бана.
+Conference %s already exist in global ban list!	Конференция %s уже добавлена в список глобального бана!
+Your conference will be ignored for global ban!	Ваша конференция игнорируется при глобальном бане!
+I need jid!	Необходимо указать jid!
+banned global by %s from %s	забанен глобально от %s из конференции %s
+jid %s has been banned in %s conferences.	jid %s забанен в %s конференциях.
+Found: %s	Найдено: %s
+ban on %s since %s because %s	бан сроком %s начиная с %s по причине %s
+I don'n know %s, and use as is!	Я не в курсе кто такой %s и баню как есть!
+I don't know %s	Я не знаю кто такой %s
+Time format error!	Ошибка формата времени!
+Command is locked!	Команда заблокирована!
+done	выполнено
+Who delete?	Кого удалить?
+Cleared for %s	Очищено для %s
+No reason!	Причина не указана!
+No matches for %s in alist.	%s не найдено в alist.
+Found in list: %s %s, reason: %s by %s	Найдено в списке: %s %s, причина: %s от %s
+Ban user.	Забанить участника.
+Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.	Временный бан.\ntban show|del [jid] - показать/удалить временные баны\ntban nick\ntimeD|H|M|S\nreason - бан ника nick на срок time по причине reason
+Delete user affiliation.	Удаление аффиляции
+Get member affiliation.	Сделать участника постоянным.
+Search in alist.	Поиск учстника в alist.
+Kick user.	Выгнать участника.
+Give participant.	Сделать участника без полномочий.
+Give visitor.	Сделать участника гостем.
+Give role moderator.	Сделать учасника модератором.
+Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.	Автокик.\nakick show|del [jid] - показать/удалить автокик\nakick nick\ntimeD|H|M|S\nreason - автоматически выгонять ник nick на срок time по причине reason
+Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.	Автоучастник.\naparticipant show|del [jid] - показать/удалить автоучастник\naparticipant nick\ntimeD|H|M|S\nreason - автоматически делать ник nick участником на срок time по причине reason
+Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.	Автогость.\navisitor show|del [jid] - показать/удалить автогостя\navisitor nick\ntimeD|H|M|S\nreason - автоматически делать ник nick гостем на срок time по причине reason
+Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.	Автомодератор.\namoderator show|del [jid] - показать/удалить автомодератор\namoderator nick\ntimeD|H|M|S\nreason - автоматически делать ник nick модератором на срок time по причине reason
+Global ban. Aviable only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.	Глобальный бан. Доступен только владельцам конференций.\nglobal_ban del - удалить конференцию из списка глобального бана,\nglobal_ban add - добавить конференцию в список глобального бана,\nglobal_ban <jid> - забанить jid во всех конференциях, в которых бот админ.
+
+
+# net.py
+What do you want to find?	Что искать то будем?
+I can't resolve it	Не резолвится
+DNS resolver.	DNS резолвер.
+Search domain zones TLD.	Поиск доменных зон TLD.
+
+
+# phone.py
+No matches for your request.	По вашему запросу ничего не найдено.
+Found:\n	Найдено:\n
+Information about telephone city code, DEF code or search code for city.	Информация о коде города, DEF коде, поиск кода по названию
+
+
+# poke.py
+For members this command not aviable in private!	Участникам данная команда не доступна в привате!
+gave NICK ... just gave ... :-"	дала NICK... просто дала... :-"
+poked a stick NICK in the eye ...	потыкала палочкой NICK в глаз...
+suggested NICK shrimp :-[	предложила NICK козявку :-[
+fed NICK laxative with powdered glass!	накормила NICK пургеном с толчёным стеклом!
+whispered in his ear softly NICK LOL!	прошептала NICK в ухо тихонько БУГАГА!
+threw the crowbar aside NICK	кинула ломик в сторону NICK
+gave NICK strawberry poison	дала NICK клубничного йаду
+jumped around with a tambourine NICK	попрыгала с бубном вокруг NICK
+sticking NICK with the words "buy ice cream, you creep!"	тыкает NICK со словами "купи мороженного, гадюка!"
+trying kick the ass NICK	целится в NICK плюсомётом и добро улыбается
+Phrases:	Фразы:
+The record doesn't exist!	Такой фразы нет!
+Added	Добавила
+I can't add it! No keyword "NICK"!	Не могу добавить! Нет ключевого слова "NICK"!
+I ban a ip for such jokes!	Ща зобаню по ip за такие шутки!
+I could be wrong, but %s not is here...	Я могу ошибаться, но %s тут нету...
+Masochist? 8-D	Самотык? 8-D
+"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу
+
+
+# price.py
+site input format is domain.tld	формат ввода сайта domain.tld
+What site be evaluated?	Какой сайт оценивать?
+Estimated value %s is %s	Оценочная стоимость домена %s составляет - %s
+I can't process your request.	Не получилось обработать запрос.
+Show estimated value of domain | Author: ferym	Показывает ориентировочную оценочную стоимость домена | Автор: ferym
+Show estimated value of domain | Author: Disabler	Показывает ориентировочную оценочную стоимость домена | Автор: Disabler
+
+
+# redirect.py
+Redirect command output in private.	Перенаправляет вывод команды в приват.
+Redirect command output in groupchat.	Перенаправляет вывод команды в конференцию.
+
+# say.py 
+"Say" command. Bot say in conference all text after command.	Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.
+Global message in all conferences, where bot is present.	Глобальное объявление во всех конференциях, где находится бот.
+Set conference topic.	Установка топика конференции
+
+
+# sayto.py
+You access level is to low!	Вам данная функция недоступна!
+Not transfered messages: %s	Не переданы сообщения: %s
+I will convey your message.	Передам.
+Or am I a fool or %s is here.	Или я дура, или %s находится тут...
+I seen some people with this nick, and I can convey is incorrect. Coincidence: %s, and count convey messages: %s	Я видела несколько человек с таким ником и могу ошибочно передать. Совпадений: %s, будет передано сообщений: %s
+All people with this nickname are here!	Все, кого я видела с таким ником, находятся в конфе!
+This jid is here!	Данный jid находится в конфе!
+I didn't see user with jid %s, but if he join here I convey your message.	Я не видела человека с jid'ом %s, но если зайдёт - я передам.
+I didn't see user with nick %s. You can use jid.	Я не видела '+to+u' в конференции. Вы можете указать jid.
+What convey to?	Кому что передать?
+%s %s ago convey for you: %s	%s %s назад просил передать: %s
+%s convey for you: %s	%s просил передать: %s
+%s from conference %s convey message for you: %s	%s из конференции %s передал: %s
+"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn't be send this message remove.	Команда "передать".\nsayto jid|nick message - при входе в конференцию jid\'a или ника отправит сообщение "message". Сообщения хранятся 14 дней, после чего недоставленные сообщения удаляются.
+Send message to jid\n sayjid jid message.	Отправить сообщение на jid.\nsayjid jid message
+
+# setnick.py
+You can't do it!	Тибе низя!
+Change bot nick. Aviable only for conference owner.	Смена ника. Доступна только владельцу конференции.
+
+
+# shutdown.py
+reason: %s	причина: %s
+Shutdown	Завершение работы
+Restart	Перезапуск
+Autoupdate	Автообновление
+%s by command from %s	%s по команде от %s
+Shutting down the bot. You cat set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
+Restart the bot. You cat set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
+Autoupdate from SVN.	Самообновление бота из SVN.
+
+
+# shell.py
+Execute shell command.	Выполнение shell команды.
+Execute shell command without output result.	Выполнение shell команды без показа вывода команды.
+
+
+# srv.py
+Port status at %s	Статус порта %s
+Command nslookup	Команда nslookup
+Command host	Команда host
+Command dig	Команда dig
+Check port activity\nport server:port [1..5]	Проверка активности порта на запрашиваемом сервере:\nport server:port [1..5]
+
+
+# spy.py
+what do you want to add?	что добавить?
+not given tracking	не заданы параметры слежения
+is not specified criterion tracking	не указан критерий слежения
+incorrect digital parameter	не верно задан цифровой параметр
+Updated: %s	Обновлено: %s
+what do you want remove?	что удалить?
+Not found: 	Не найдено: %s
+Monitoring conferences:	Слежение за конференциями:
+\nNext scanning across %s	\nСледующее сканирование через %s
+Leave conference because low activity	Выхожу в связи с низкой активностью конференции
+I leave conference %s by condition spy plugin: %s	Конференция %s покинута по условию spy плагина: %s
+Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.	Проверка активности конференции\nspy add <conference>[ u<number>][ m<number>] - добавить конференцию в список мониторинга активности. u - среднее число участников, m - количество сообщение за сутки. При невыполнении хотябы одного условия - бот выйдет из конференции\nspy del <conference> - удалить конференцю из списка мониторинга\nspy show - показать активное слежение'
+
+
+# svn.py
+en_EN.UTF8	ru_RU.UTF8
+Read user manual for commands...	Изучаем инструкции к командам...
+Show svn log.\nsvn [http://]url [limit] - show last revision(s) limit\nsvn [http://]url rXXX - show XXX revision	Показ svn-лога.\nsvn [http://]url [limit] - показ последней ревизий или нескольких, если указан параметр limit\nsvn [http://]url rXXX - показ ревизии с номером XXX
+
+
+# talkers.py
+Talkers:\nNick\t\tWords\tPhrases\tEffect\tConference	Болтуны:\nНик\t\tСлов\tФраз\tКоэф.\tКонфа
+Talkers:\nNick\t\tWords\tPhrases\tEffect	Болтуны:\nНик\t\tСлов\tФраз\tКоэф.
+Not found!	Не найдено!
+Show local talkers	Показ локальной базы "Болтунов"
+Show global talkers	Показ глобальной базы "Болтунов"
+
+# test.py
+Passed!	Две полоски!
+Check bot activity.	Проверка на "живость" бота.
+
+
+# th.py
+Executed threads: %s | Error(s): %s	Выполнено тредов: %s | Ошибок исполнения тредов: %s
+Threads statistic	Статистика работы тредов
 
 
 # turn.py
 qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
 QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ
 Turn text from one layout to another.	Если не задан текст - "переворачивает" последнее сообщение с русской раскладки на английскую и обратно.
+
+
+# watcher.py
+Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s	Таймаут запросов: %s | Таймаут ответов: %s | Последний запрос: %s | Всего проверок: %s
+Connection activity control.	Контроль активности соединения.
+
+
+# wtf.py
+What need to find?	Чего искать то будем?
+Some matches in definitions: %s	Нечто похожее я видела в: %s
+No matches.	Хм. Ничего похожего я не знаю...
+I know that %s is %s	Я знаю, что %s - %s
+All I know is: %s	Всё, что я знаю это: %s
+Locale definition: %s\nGlobal: %s\nImported: %s\nTotal: %s	В этой конфе определений: %s\nГлобальных: %s\nИмпортировано: %s\nВсего: %s
+Send to private %s	Отправлено в приват %s
+Nick %s not found!	Ник %s не найден!
+I don't know!	Хм. Мне про это никто не рассказывал...
+What search?	Чего искать то будем?
+\nfrom: %s %s	\nот: %s %s
+I know that %s was defined by %s %s %s	Я знаю, что %s было определено: %s %s %s
+This is global definition and not allowed to change!	Это глобальное определение и его нельзя изменить!
+Definition removed!	Жаль, что такую полезную хренотень надо забыть...
+Definition updated!	Боян, но я запомню!
+Definition saved!	Ммм.. Что-то новенькое, ща запомню!
+What need to remember?	Чего запомнить то надо?
+# - help -
+Random definition from base.	Показ случайного обределения из базы слов.
+List of definitions in conference.\nwtfnames [all|global|import]	Показ списка определений в конференции.\nwtfnames [all|global|import]
+Definitions count.	Показ количества определений в конференции.
+Search in definitions base.	Поиск по базе определний.
+Information about definition commiter.	Показ инфонмации о том, кто сделал определение.
+Show definition with nick and date.	Показ определения вместе с ником и датой.
+Show definition in private.\nwtfp word\n[nick]	Показ определения в приват, независимо от куда поступила команда.\nwtfp word - показать определение word себе в приват\nwtfp word\nnick - показать определение word в приват nick
+Show definition.	Показ определения.
+Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word	Установка определения.\ndfn word=definition - запоминает definition как определение word\ndfn word= - удаляет определение word
+Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word	Установка глобального определения.\ngdfn word=definition - запоминает definition как определение word\ngdfn word= - удаляет определение word
+
+
+# www.py
+RegExp not found!	RegExp не найден!
+Error in RegExp!	Ошибка в RegExp!
+Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags	Показывает содержимое веб страницы.\nwww regexp\n[http://]url - страница, обработанная regexp\nwww [http://]url - страница с убранными html тегами
+Show net header	Показывает заголовок файла
+
+
+# wz.py
+City not found!	Город не найден!
+Weather by airport code. Full version.	Погода по коду аэропорта. Не оптимизированный вариант.
+Weather by airport code. Short version.	Погода по коду аэропорта. Укороченный вариант.
+Weather by airport code. Optimized version.	Погода по коду аэропорта. Оптимизированный вариант.
+
+
+# youtube.ru
+Total found: %s	Всего найдено: %s
+Search at YouTube	Поиск по YouTube

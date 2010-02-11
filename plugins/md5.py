@@ -3,9 +3,9 @@
 
 def md5body(type, jid, nick, text):
 	if len(text): msg = hashlib.md5(text.encode('utf-8')).hexdigest()
-	else: msg = u'Ась?'
+	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'md5', md5body, 2, u'Расчёт md5 фразы.')]
+execute = [(0, u'md5', md5body, 2, L('Calculate phrase md5 sum.'))]

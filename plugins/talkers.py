@@ -15,12 +15,12 @@ def gtalkers(type, jid, nick, text):
 	beadd = 1
 
 	if len(tma):
-		msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.\tКонфа'
+		msg = L('Talkers:\nNick\t\tWords\tPhrases\tEffect\tConference')
 		cnd = 1
 		for tt in tma:
-			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + u'\t' + getName(tt[0])
+			msg += '\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +'\t'+ str(tt[4]) + '\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100) + '\t' + getName(tt[0])
 			cnd += 1
-	else: msg = text +u' не найдено!'
+	else: msg = text +' '+L('Not found!')
 	send_msg(type, jid, nick, msg)
 	
 
@@ -38,29 +38,17 @@ def talkers(type, jid, nick, text):
 	beadd = 1
 
 	if len(tma):
-		msg = u'Болтуны:\nНик\t\tСлов\tФраз\tКоэф.'
+		msg = L('Talkers:\nNick\t\tWords\tPhrases\tEffect')
 		cnd = 1
 		for tt in tma:
-			msg += u'\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +u'\t'+ str(tt[4]) + u'\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
+			msg += '\n'+str(cnd)+'. '+tt[2] +'\t\t'+ str(tt[3]) +'\t'+ str(tt[4]) + '\t'+ str(float(int(float(tt[3])/float(tt[4])*100))/100)
 			cnd += 1
-	else: msg = text +u' не найдено!'
+	else: msg = text +' '+L('Not found!')
 	send_msg(type, jid, nick, msg)
-
-#------------------------------------------------
-
-# в начале
-# 0 - всем
-# 1 - админам\овнерам
-# 2 - владельцу бота
-
-# в конце
-# 0 - передавать параметры
-# 1 - ничего не передавать
-# 2 - передавать остаток текста
 
 global execute, timer
 
 timer = []
 
-execute = [(0, u'talkers', talkers, 2, u'Показ локальной базы "Болтунов"'),
-	   (0, u'gtalkers', gtalkers, 2, u'Показ глобальной базы "Болтунов"')]
+execute = [(0, 'talkers', talkers, 2, L('Show local talkers')),
+	   (0, 'gtalkers', gtalkers, 2, L('Show global talkers'))]

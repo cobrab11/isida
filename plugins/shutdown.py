@@ -3,22 +3,22 @@
 
 def bot_shutdown(type, jid, nick, text, reason, xtype):
 	global game_over,bot_exit_type
-	StatusMessage = reason + u' по команде от '+nick
-	if text != '': StatusMessage += u', причина: '+text
+	StatusMessage = L('%s by command from %s') % (reason, nick)
+	if text != '': StatusMessage += ', ' + L('reason: %s') % text
 	send_presence_all(StatusMessage)
 	bot_exit_type, game_over = xtype, True
 
 def bot_exit(type, jid, nick, text):
-	bot_shutdown(type, jid, nick, text, u'Завершение работы', 'exit')
+	bot_shutdown(type, jid, nick, text, L('Shutdown'), 'exit')
 
 def bot_restart(type, jid, nick, text):
-	bot_shutdown(type, jid, nick, text, u'Перезапуск', 'restart')
+	bot_shutdown(type, jid, nick, text, L('Restart'), 'restart')
 
 def bot_update(type, jid, nick, text):
-	bot_shutdown(type, jid, nick, text, u'Самообновление', 'update')
+	bot_shutdown(type, jid, nick, text, L('Autoupdate'), 'update')
 
 global execute
 
-execute = [(2, u'quit', bot_exit, 2, u'Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.'),
-	 (2, u'restart', bot_restart, 2, u'Перезапуск бота. Можно указать параметр, который будет показан в статусе бота при перезапуске.'),
-	 (2, u'update', bot_update, 2, u'Самообновление бота из SVN.')]
+execute = [(2, u'quit', bot_exit, 2, L('Shutting down the bot. You cat set reason.')),
+	 (2, u'restart', bot_restart, 2, L('Restart the bot. You cat set reason.')),
+	 (2, u'update', bot_update, 2, L('Autoupdate from SVN.'))]

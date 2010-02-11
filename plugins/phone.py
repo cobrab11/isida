@@ -8,7 +8,7 @@ def gettelcode(text):
 	body = f.read()
 	f.close()
 	body = html_encode(body)
-	if body.count(u'Не найдено записей'): return u'Не найдено!'
+	if body.count(u'Не найдено записей'): return L('Not found!')
 	else:
 		msg = rss_del_html(get_tag(body,'h3'))+' ... '
 		city = body.replace('\n','').replace('\r','').split('</h3>')[1].split('<br> <br>')[0].split('<br>')
@@ -39,7 +39,7 @@ def gettcode(text):
 				tmp3 = tmp2[tmp2.find(u' тариф'):tmp2.find(u',',tmp2.find(u' тариф'))+1]
 				msg += tmp2.replace(tmp3,'')
 			return msg
-		else: return u'По вашему запросу ничего не найдено.'
+		else: return L('No matches for your request.')
 	
 def getdefcode(text):
 	ddef = text[1:4]
@@ -58,10 +58,10 @@ def getdefcode(text):
 	mbeg = msg.find('<INPUT TYPE=\"submit\" CLASS=\"submit\"')
 	msg = msg[mbeg:msg.find('</table>',mbeg)]
 	msg = msg.split('<tr')
-	if msg[0].count(u'не найдено'): return u'Не найдено!'
+	if msg[0].count(u'не найдено'): return L('Not found!')
 	else:
 		msg.remove(msg[0])
-		mmsg = u'Найдено:\n'
+		mmsg = L('Found:\n')
 		for mm in msg:
 			tmm = mm
 			tmm = replacer(tmm)
@@ -78,9 +78,9 @@ def phonecode(type, jid, nick, text):
 		else:
 			try: msg = gettelcode(str(int(text)))
 			except: msg = gettcode(text)
-	else: msg = u'Ась?'
+	else: msg = L('What?')
    	send_msg(type, jid, nick, msg)
 		
 global execute
 
-execute = [(0, u'phone', phonecode, 2, u'Информация о коде города, DEF коде, поиск кода по названию')]
+execute = [(0, u'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]

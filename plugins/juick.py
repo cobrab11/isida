@@ -7,7 +7,7 @@ def juick(type, jid, nick, text):
 	elif text[:4]== 'msg ': juick_msg(type, jid, nick, text[4:])
 	elif text[:5]== 'user ': juick_user(type, jid, nick, text[5:])
 	elif text[:5]== 'info ': juick_user_info(type, jid, nick, text[5:])
-	else: send_msg(type, jid, nick, u'Курим помощь по команде!')
+	else: send_msg(type, jid, nick, L('Smoke help about command!'))
 
 def juick_user_info(type, jid, nick, text):
 	if len(text):
@@ -20,7 +20,7 @@ def juick_user_info(type, jid, nick, text):
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
 
-		if body.count('<h1>Page Not Found</h1>'): msg = u'Пользователь '+text+u' не найден'
+		if body.count('<h1>Page Not Found</h1>'): msg = L('User %s not found') % text
 		else:
 			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/readers'
 			rbody = urllib.urlopen(link).read()
@@ -55,7 +55,7 @@ def juick_user_info(type, jid, nick, text):
 					for ttb in tb.split('<span')[1:]: msg += get_tag(ttb,'a')+', '
 					msg = msg[:-2]
 				except: msg += '\nNo tags'
-	else: msg = u'Кто нужен то?'
+	else: msg = L('Who?')
 	send_msg(type, jid, nick, msg)
 
 def juick_user(type, jid, nick, text):
@@ -69,7 +69,7 @@ def juick_user(type, jid, nick, text):
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
 		if body.count('<h1>Page Not Found</h1>'):
-			msg = u'Пользователь '+text+u' не найден'
+			msg = L('User %s not found') % text
 		else:
 			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
 			mes = body.split('<li id="')
@@ -82,7 +82,7 @@ def juick_user(type, jid, nick, text):
 				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
 				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
 			msg += mesg
-	else: msg = u'Кто нужен то?'
+	else: msg = msg = L('Who?')
 	send_msg(type, jid, nick, msg)
 
 def juick_msg(type, jid, nick, text):
@@ -100,7 +100,7 @@ def juick_msg(type, jid, nick, text):
 			body = urllib.urlopen(link).read()
 			body = rss_replace(html_encode(body.replace('<div><a href','<div><a ')))
 			if body.count('<h1>Page Not Found</h1>'):
-				msg = u'Пост #'+text+u' не найден'
+				msg = L('Message #%s not found') % text
 			else:
 				nname = get_tag(body,'h1')
 				if nname.count('(') and nname.count(')'): uname = nname[nname.find('(')+1:nname.find(')')]
@@ -109,10 +109,10 @@ def juick_msg(type, jid, nick, text):
 			repl = get_tag(body.split('<p>')[1],'h2')
 			if repl.lower().count('('):
 				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
-				msg += u' (Ответов: '+str(hm_repl)+')'
+				msg += L('(Replies: %s)') % str(hm_repl)
 			else:
 				hm_repl = 0
-				msg += u' (Нет ответов)'
+				msg += L('(No replies)')
 			frm = get_tag(body.split('<p>')[1],'small')
 			msg += frm[frm.find(' '):]
 			cnt = 1
@@ -125,8 +125,8 @@ def juick_msg(type, jid, nick, text):
 					msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
 			msg = rss_del_html(msg.replace('<a href="http','<a>http').replace('" rel',' <'))
 		except:
-			msg = u'Неверный номер поста'
-	else: msg = u'Какой пост найти?'
+			msg = L('Invalid message number')
+	else: msg = L('What message do you want to find?')
 	send_msg(type, jid, nick, msg)
 
 def juick_tag_user(type, jid, nick, text):
@@ -139,15 +139,15 @@ def juick_tag_user(type, jid, nick, text):
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
 		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
-			msg = u'Тег '+text+u' не найден'
+			msg = L('Tag %s not found') % text
 		else:
 			usr = body.split('<h2>Users</h2>')[1].split('<h2>Messages</h2>')[0].split('<a href')
 			users = ''
 			for us in usr[1:mlen+1]:
 				uus = us[us.find('>')+1:us.find('<',us.find('>'))]
 				users += '\n'+ uus + ' - http://juick.com/'+uus[1:]
-			msg = u'Тег '+text+u' найден у '+users
-	else: msg = u'Какой тег найти?'
+			msg = L('Tag %s found in %s') % (text, users)
+	else: msg = L('What tag do you want to find?')
 	send_msg(type, jid, nick, msg)
 
 def juick_tag_msg(type, jid, nick, text):
@@ -161,7 +161,7 @@ def juick_tag_msg(type, jid, nick, text):
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
 		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
-			msg = u'Тег '+text+u' не найден'
+			msg = msg = L('Tag %s not found') % text
 		else:
 			mes = body.split('<h2>Messages</h2>')[1].split('</div><div id="lcol"><h2>')[0].split('<li class="liav"')
 			mesg = ''
@@ -172,10 +172,10 @@ def juick_tag_msg(type, jid, nick, text):
 				else: mesg += mm[:mlim]+'[...]'
 				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
 				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
-			msg = u'Тег '+text+u' найден в сообщениях:'+mesg
-	else: msg = u'Какой тег найти?'
+			msg = L('Tag %s found in %s') % (text, mesg)
+	else: msg = L('What tag do you want to find?')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'juick', juick, 2, u'Миниблоги http://juick.com\njuick tag user <tag>[ количество_пользователей] - пользователи, использующие теги\njuick tag msg <tag>[ лимит_сообщенй [лимит_размера_сообщений]] - сообщения с заданными тегами\njuick msg <номер_поста>[ количество] - пост+количество ответов\njuick msg <номер_поста/номер_ответа> - пост+ответ на пост\njuick user <user> [лимит_сообщенй [лимит_размера_сообщений]] - последние сообщения пользователя\njuick info <user> - информация о пользователе')]
+execute = [(0, u'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]

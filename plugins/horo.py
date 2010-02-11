@@ -8,26 +8,26 @@ import string
 
 
 global horodb
-horodb={u'овен': u'/aries/today', u'телец': u'/taurus/today', u'близнецы': u'/gemini/today', u'рак': u'/cancer/today', u'лев': u'/leo/today', u'дева': u'/virgo/today', u'весы': u'/libra/today', u'скорпион': u'/scorpio/today', u'стрелец': u'/sagittarius/today', u'козерог': u'/capricorn/today', u'водолей': u'/aquarius/today', u'рыбы':u'/pisces/today'}
+horodb={L('aries'): u'/aries/today', L('taurus'): u'/taurus/today', L('gemini'): u'/gemini/today', L('cancer'): u'/cancer/today', L('leo'): u'/leo/today', L('virgo'): u'/virgo/today', L('libra'): u'/libra/today', L('scorpio'): u'/scorpio/today', L('sagittarius'): u'/sagittarius/today', L('capricorn'): u'/capricorn/today', L('aquarius'): u'/aquarius/today', L('pisces'): u'/pisces/today'}
 
 def handler_horoscope(type, jid, nick, parameters):
   if parameters:
     if parameters==u'list':
-      zod = [u'Овен', u'Телец', u'Близнецы', u'Рак', u'Лев', u'Дева', u'Весы', u'Скорпион', u'Стрелец', u'Козерог', u'Водолей', u'Рыбы']
+      zod = [L('Aries'), L('Taurus'), L('Gemini'), L('Cancer'), L('Leo'), L('Virgo'), L('Libra'), L('Scorpio'), L('Sagittarius'), L('Capricorn'), L('Aquarius'), L('Pisces')]
       send_msg(type, jid, nick, ', '.join(zod))
       return
     if parameters==u'date':
-      date = [u'Овен (21.03-19.04)', u'Телец (20.04-20.05)', u'Близнецы (21.05-20.06)', u'Рак (21.06-22.07)', u'Лев (23.07-22.08)', u'Дева (23.08-22.09)', u'Весы (23.09-22.10)', u'Скорпион (23.10-21.11)', u'Стрелец (22.11-21.12)', u'Козерог (22.12-19.01)', u'Водолей (20.01-18.02)', u'Рыбы (19.02-20.03)']
+      date = [L('Aries %s') % ('21.03-19.04'), L('Taurus %s') % ('20.04-20.05'), L('Gemini %s') % ('21.05-20.06'), L('Cancer %s') % ('21.06-22.07'), L('Leo %s') % ('23.07-22.08'), L('Virgo %s') % ('23.08-22.09'), L('Libra %s') % ('23.09-22.10'), L('Scorpio %s') % ('23.10-21.11'), L('Sagittarius %s') % ('22.11-21.12'), L('Capricorn %s') % ('22.12-19.01'), L('Aquarius %s') % ('20.01-18.02'), L('Pisces %s') % ('19.02-20.03')]
       sp = ''
       nm = 1
       for tb in date:
         sp+=str(nm)+'. '+tb+u'\n'
         nm+=1
       if type=='groupchat':
-        send_msg(type, jid, nick, u'ушёл в приват')
-        send_msg('chat', jid, nick, u'Список дат:\n'+sp)
+        send_msg(type, jid, nick, L('Sent in private message'))
+        send_msg('chat', jid, nick, L('List of dates:\n%s') % sp)
         return 
-      send_msg('chat', jid, nick, u'Список дат:\n'+sp)
+      send_msg('chat', jid, nick, L('List of dates:\n%s') % sp)
       return
     if horodb.has_key(parameters.lower()):
       req = urllib2.Request('http://horo.mail.ru/prediction'+horodb[parameters.lower()])
@@ -42,18 +42,18 @@ def handler_horoscope(type, jid, nick, parameters):
       message = rss_replace(message)
       message = message.replace('\n','')
       if type=='groupchat':
-          send_msg(type,jid,nick,u'ушёл в приват')
+          send_msg(type,jid,nick,L('Message send to private'))
           send_msg('chat',jid,nick,message)
           return
       send_msg('chat',jid,nick,message)
     else:
-      send_msg(type, jid, nick, u'что это за знак зодиака?')	
+      send_msg(type, jid, nick, L('What?'))	
       return	
   else:
-    send_msg(type,jid,nick,u'для какого знака гороскоп смотреть-то?')
+    send_msg(type,jid,nick,L('What?'))
     return
 
 
 global execute
 
-execute = [(0, u'horo', handler_horoscope, 2, u'Показывает гороскоп для указанного знака гороскопа. Просмотр знаков зодиака - "horo list". Просмотр списка дат - "horo date" | Author: ferym')]
+execute = [(0, u'horo', handler_horoscope, 2, L('Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym'))]

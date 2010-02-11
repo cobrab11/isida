@@ -451,7 +451,7 @@ def show_error(type, jid, nick, text):
 	try: cmd = int(text)
 	except: cmd = 1
 	if os.path.isfile(LOG_FILENAME) and text.lower() != 'clear':
-		log = str(readfile(LOG_FILENAME))
+		log = readfile(LOG_FILENAME).decode('UTF')
 		log = log.split('ERROR:')
 		lll = len(log)
 		if cmd > lll: cmd = lll
@@ -834,40 +834,6 @@ def info_base(type, jid, nick):
 				break
 	send_msg(type, jid, nick, msg)
 
-def gtmp_search(type, jid, nick, text):
-	msg = L('What need find?')
-	if text != '':
-		msg = L('Found:')
-		fl = 1
-		for mega1 in megabase2:
-			for mega2 in mega1:
-				if mega2.lower().count(text.lower()):
-					msg += '\n'+unicode(mega1[1])+' - '+unicode(mega1[2])+'/'+unicode(mega1[3])
-					if mega1[4] != 'None':
-						msg += ' ('+unicode(mega1[4])+')'
-					msg += ' '+unicode(mega1[0])
-					fl = 0
-					break
-		if fl: msg = L('\'%s\' not found!') % text
-	send_msg(type, jid, nick, msg)
-
-def tmp_search(type, jid, nick, text):
-	msg = L('What need find?')
-	if text != '':
-		msg = L('Found:')
-		fl = 1
-		for mega1 in megabase2:
-			if getRoom(mega1[0]) == getRoom(jid):
-				for mega2 in mega1:
-					if mega2.lower().count(text.lower()):
-						msg += u'\n'+unicode(mega1[1])+u' - '+unicode(mega1[2])+u'/'+unicode(mega1[3])
-						if mega1[4] != 'None': msg += u' ('+unicode(mega1[4])+u')'
-						fl = 0
-						break
-		if fl: msg = L('\'%s\' not found!') % text
-	send_msg(type, jid, nick, msg)
-
-
 def real_search_owner(type, jid, nick, text):
 	msg = L('What need find?')
 	if text != '':
@@ -1217,8 +1183,6 @@ comms = [
 	 (0, u'inbase', info_base, 1, L('Your identification in global base.')),
 	 (2, u'look', real_search, 2, L('Search user in conferences where the bot is.')),
 	 (2, u'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
-	 (1, u'tempo', tmp_search, 2, L('Local search in temporary base.')),
-	 (2, u'gtempo', gtmp_search, 2, L('Global search in temporary base.')),
 	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
 	 (1, u'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
 	 (0, u'commands', info_comm, 1, L('Show commands list.')),

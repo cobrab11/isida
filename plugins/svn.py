@@ -18,11 +18,11 @@ def svn_get(type, jid, nick,text):
 		if revn != 0: sh_exe = 'bash -c \"LANG=ru_RU.UTF8 svn log '+url+' -r'+str(revn)+'\"'
 		else:
 			if count > 10: count = 10
-			sh_exe = 'bash -c \"LANG=ru_RU.UTF8 svn log '+url+' --limit '+str(count)+'\"'
-		msg = u'SVN from '+url+'\n'+shell_execute(sh_exe)
-	else: msg = u'Изучаем инструкции к командам...'
+			sh_exe = 'bash -c \"LANG='+L('en_EN.UTF8')+' svn log '+url+' --limit '+str(count)+'\"'
+		msg = 'SVN from '+url+'\n'+shell_execute(sh_exe)
+	else: msg = L('Read user manual for commands...')
 	send_msg(type, jid, nick, msg)
 	
 global execute
 
-execute = [(0, u'svn', svn_get, 2, u'Показ svn-лога.\nsvn [http://]url [limit] - показ последней ревизий или нескольких, если указан параметр limit\nsvn [http://]url rXXX - показ ревизии с номером XXX')]
+execute = [(0, u'svn', svn_get, 2, L('Show svn log.\nsvn [http://]url [limit] - show last revision(s) limit\nsvn [http://]url rXXX - show XXX revision'))]

@@ -36,7 +36,7 @@ def karma_top(type, jid, nick, text, order):
 	if order: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by karma',(jid,)).fetchall()
 	else: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by -karma',(jid,)).fetchall()
 	karma_base.close()
-	if stat == None: return u'В данной конфе карма не изменялась!'
+	if stat == None: return L('In this room karma is not changed!')
 	msg, cnt = '', 1
 	for tmp in stat:
 		tmp2 = get_nick_by_jid(jid, tmp[0])
@@ -44,28 +44,28 @@ def karma_top(type, jid, nick, text, order):
 			msg += '\n'+str(cnt)+u'. '+tmp2+u'\t'+karma_val(int(tmp[1]))
 			cnt += 1
 		if cnt >= lim: break
-	if len(msg): return u'Топ кармы:'+msg
-	else: return u'У присутсвующих карма не изменялась!'
+	if len(msg): return L('Top karma: %s') % msg
+	else: return L('Karma for members is present not changed!')
 		
 	
 def karma_show(type, jid, nick, text):
-	if text == None or text == '' or text == nick: text, atext = nick, u'тебя'
+	if text == None or text == '' or text == nick: text, atext = nick, L('you')
 	else: atext = text
 	karmajid = getRoom(get_access(jid,text)[1])
-	if karmajid == 'None': return u'Я не уверена, но '+atext+u' тут нет.'
+	if karmajid == 'None': return L('I\'m not sure, but %s not is here.') % atext
 	else:
 		karma_base = sqlite3.connect(karmabase)
 		cu_karmabase = karma_base.cursor()
 		stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(jid,karmajid)).fetchone()
 		karma_base.close()
-		if stat == None: return u'У '+atext+u' чистая карма!'
-		else: return u'У '+atext+u' карма '+karma_val(int(stat[0]))
+		if stat == None: return L('%s have a clear karma') % atext
+		else: return L('%s\'s karma is %s') % (atext, karma_val(int(stat[0])))
 
 def karma_ban(type, jid, nick, text):
-	return u'Не умею!'
+	return L('I can\'t!')
 
 def karma_moderator(type, jid, nick, text):
-	return u'Не умею!'
+	return L('I can\'t!')
 	
 def karma_get_access(room,jid):
 	karma_base = sqlite3.connect(karmabase)
@@ -82,7 +82,7 @@ def karma_val(val):
 	else: return '+'+str(val)
 	
 def karma_change(room,jid,nick,type,text,value):
-	if type == 'chat': msg = u'Изменение кармы в привате запрещено!'
+	if type == 'chat': msg = L('You can\'t change karma in private!')
 	else:
 		cof = getFile(conoff,[])
 		if (room,'karma') in cof: return
@@ -95,8 +95,8 @@ def karma_change(room,jid,nick,type,text,value):
 		if k_aff != 'none' or k_acc > 0 or karma_get_access(room,jid):
 			jid, karmajid = getRoom(jid), getRoom(get_access(room,text)[1])
 			if karmajid == getRoom(selfjid): return
-			elif karmajid == 'None': msg = u'Нельзя изменить карму участника вне конференции!'
-			elif karmajid == jid: msg = u'Нельзя изменить карму самому себе!'
+			elif karmajid == 'None': msg = L('You can\'t change karma in outdoor conference!')
+			elif karmajid == jid: msg = L('You can\'t change own karma!')
 			else:
 				karma_base = sqlite3.connect(karmabase)
 				cu_karmabase = karma_base.cursor()
@@ -113,12 +113,14 @@ def karma_change(room,jid,nick,type,text,value):
 						cu_karmabase.execute('delete from karma where room=? and jid=?',(room,karmajid)).fetchall()
 					else: stat = value
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
-					msg = u'Вы изменили карму '+text+u' до '+karma_val(stat)+u'! Следующий раз можно изменить через: '+un_unix(karma_timeout[k_acc])
+					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') %\
+						(text,karma_val(stat),un_unix(karma_timeout[k_acc]))
 					karma_base.commit()
 					pprint('karma change in '+room+' for '+text+' to '+str(stat))
-				else: msg = u'Вы недавно меняли карму '+text+u'! Надо подождать: '+un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time)
+				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % \
+					(text,un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time))
 				karma_base.close()
-		else: msg = u'Вам нельзя менять карму участника!'
+		else: msg = L('You can\'t change karma!')
 	send_msg(type, room, nick, msg)
 
 def karma_check(room,jid,nick,type,text):
@@ -132,4 +134,4 @@ global execute, message_control
 
 message_control = [karma_check]
 
-execute = [(0, u'karma', karma, 2, u'Карма участника.\nkarma [show] nick\nkarma top+|- [количество]\nДля изменения:\nnick: +1\nnick: -1')]
+execute = [(0, u'karma', karma, 2, L('Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1'))]
