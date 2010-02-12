@@ -23,4 +23,4 @@ def currency_converter(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'convert', currency_converter, 2, L('Currency Converter\nconvert [from] [to] [count]\nconvert list'))]
+execute = [(0, 'convert', currency_converter, 2, L('Currency converter\nconvert from to count\nconvert list'))]

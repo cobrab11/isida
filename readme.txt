@@ -23,6 +23,7 @@ cd isida/settings
 cp demo_config.py config.py
 nano config.py
 cd ..
+python create_databases.py
 sh launch26.sh &
 
 that's all :)

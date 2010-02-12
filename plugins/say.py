@@ -12,6 +12,6 @@ def set_topic(type, jid, nick, text):
 	
 global execute
 
-execute = [(1, u'say', say, 2, L('"Say" command. Bot say in conference all text after command.')),
-	 (2, u'gsay', gsay, 2, L('Global message in all conferences, where bot is present.')),
-	 (1, u'topic', set_topic, 2, L('Set conference topic.'))]
+execute = [(1, 'say', say, 2, L('"Say" command. Bot say in conference all text after command.')),
+	 (2, 'gsay', gsay, 2, L('Global message in all conferences, where bot is present.')),
+	 (1, 'topic', set_topic, 2, L('Set conference topic.'))]

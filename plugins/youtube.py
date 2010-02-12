@@ -46,4 +46,4 @@ def youtube(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'youtube', youtube, 2, L('Search at YouTube'))]
+execute = [(0, 'youtube', youtube, 2, L('Search at YouTube'))]

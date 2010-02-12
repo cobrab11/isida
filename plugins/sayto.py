@@ -15,10 +15,10 @@ def sayto(type, jid, nick, text):
 			cu = sdb.cursor()
 			cm = cu.execute('select * from st').fetchall()
 			if len(cm):
-				msg = u''
+				msg = ''
 				for cc in cm:
 					zz = cc[0].split('\n')
-					tmsg = u'\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+u'|'+un_unix(sayto_timeout-(time.time()-int(zz[1])))+u') для '+cc[2]+u' - '+cc[3]
+					tmsg = '\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+'|'+un_unix(sayto_timeout-(time.time()-int(zz[1])))+') '+L('for')+' '+cc[2]+' - '+cc[3]
 					if len(text) and tmsg.lower().count(text.lower()): msg += tmsg
 					elif not len(text): msg += tmsg
 				if len(msg): msg = L('Not transfered messages: %s') % msg
@@ -122,5 +122,5 @@ global execute, timer, presence_control
 
 timer = [cleanup_sayto_base]
 presence_control = [sayto_presence]
-execute = [(0, u'sayto', sayto, 2, L('"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn\'t be send this message remove.')),
-			(1, u'sayjid', sayjid, 2, L('Send message to jid\n sayjid jid message.'))]
+execute = [(0, 'sayto', sayto, 2, L('"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn\'t be send this message remove.')),
+			(1, 'sayjid', sayjid, 2, L('Send message to jid\n sayjid jid message.'))]

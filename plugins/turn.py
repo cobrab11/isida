@@ -52,4 +52,4 @@ global execute
 message_control = [append_to_turner]
 presence_control = [remove_from_turner]
 
-execute = [(0, u'turn', turner, 2, L('Turn text from one layout to another.'))]
+execute = [(0, 'turn', turner, 2, L('Turn text from one layout to another.'))]

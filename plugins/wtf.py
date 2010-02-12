@@ -157,13 +157,13 @@ def gdfn(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'wtfrand', wtfrand, 1, L('Random definition from base.')),
-	 (0, u'wtfnames', wtfnames, 2, L('List of definitions in conference.\nwtfnames [all|global|import]')),
-	 (0, u'wtfcount', wtfcount, 1, L('Definitions count.')),
-	 (0, u'wtfsearch', wtfsearch, 2, L('Search in definitions base.')),
-	 (2, u'wwtf', wwtf, 2, L('Information about definition commiter.')),
-	 (0, u'wtff', wtff, 2, L('Show definition with nick and date.')),
-	 (0, u'wtfp', wtfp, 2, L('Show definition in private.\nwtfp word\n[nick]')),
-	 (0, u'wtf', wtf, 2, L('Show definition.')),
-	 (1, u'dfn', dfn, 2, L('Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word')),
-	 (2, u'gdfn', gdfn, 2, L('Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word'))]
+execute = [(0, 'wtfrand', wtfrand, 1, L('Random definition from base.')),
+	 (0, 'wtfnames', wtfnames, 2, L('List of definitions in conference.\nwtfnames [all|global|import]')),
+	 (0, 'wtfcount', wtfcount, 1, L('Definitions count.')),
+	 (0, 'wtfsearch', wtfsearch, 2, L('Search in definitions base.')),
+	 (2, 'wwtf', wwtf, 2, L('Information about definition commiter.')),
+	 (0, 'wtff', wtff, 2, L('Show definition with nick and date.')),
+	 (0, 'wtfp', wtfp, 2, L('Show definition in private.\nwtfp word\n[nick]')),
+	 (0, 'wtf', wtf, 2, L('Show definition.')),
+	 (1, 'dfn', dfn, 2, L('Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word')),
+	 (2, 'gdfn', gdfn, 2, L('Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word'))]

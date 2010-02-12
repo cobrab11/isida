@@ -7,7 +7,7 @@ def hidden_clear(type, jid, nick, text):
 	try: cntr = int(text)
 	except: cntr = 20
 	if cntr < 1 or cntr > 100: cntr = 20
-	pprint(u'clear: '+unicode(jid)+u' by: '+unicode(nick))
+	pprint('clear: '+unicode(jid)+' by: '+unicode(nick))
 	send_msg(type, jid, nick, L('Clean by %s messages in approximately %s sec.') % (str(cntr),str(int(cntr*clear_delay))))
 	time.sleep(clear_delay)
 	for tmp in range(0,cntr):

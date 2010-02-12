@@ -2,7 +2,7 @@
 
 global execute, lf_api, lfm_url, lfm_api, timer
 
-lfm_url = u'http://ws.audioscrobbler.com/2.0/'
+lfm_url = 'http://ws.audioscrobbler.com/2.0/'
 
 def last_time_short(tm):
 	tm = time.localtime(tm)
@@ -17,7 +17,7 @@ def last_date_now(body):
 	if ldate.count('nowplaying=\"true\"'): return 'now'
 	else: 
 		try: return last_time_short(int(get_subtag(get_tag_full(body,'date'),'uts')))
-		except: return u'Unknown'
+		except: return 'Unknown'
 
 def lastonetrack(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
@@ -44,7 +44,7 @@ def lasttracks(type, jid, nick, text):
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if cnt > len(ms): cnt = len(ms)
 	msg = L('Last tracks %s:') % text
-	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+u' - '+get_tag(a,'name')
+	for a in ms[1:cnt]: msg += '\n['+last_date_now(a)+'] '+get_tag(a,'artist')+' - '+get_tag(a,'name')
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):

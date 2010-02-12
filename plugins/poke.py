@@ -65,4 +65,4 @@ def to_poke(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'poke', to_poke, 2, L('"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.'))]
+execute = [(0, 'poke', to_poke, 2, L('"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.'))]

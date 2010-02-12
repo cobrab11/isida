@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-spy_base = set_folder+u'spy.db'		# база слежения
+spy_base = set_folder+'spy.db'		# база слежения
 spy_stat_time = int(time.time())	# время последнего сканирования
 scan_time = 1800					# интервал сканирования
 spy_action_time = 86400				# интервал реакции на сканирование
@@ -15,7 +15,7 @@ def spy_add(text):
 	try: saction = text.split(' ',1)[1]
 	except: return L('not given tracking')
 	for tmp in saction.split(' '):
-		if tmp[0] != u'u' and tmp[0] != u'm':
+		if tmp[0] != 'u' and tmp[0] != 'm':
 			return L('is not specified criterion tracking')
 		try: int(tmp[1:])
 		except: return L('incorrect digital parameter')
@@ -54,7 +54,7 @@ def spy_show(text):
 	if not len(sb): return L('List is empty.')
 	msg = L('Monitoring conferences:')
 	for tmp in sb:
-		msg += u'\n'+tmp[0]+' '+tmp[4]+' ('+un_unix(int(time.time()-tmp[1]))+u'|u'+str(tmp[2])+u'|m'+str(tmp[3])+')'
+		msg += '\n'+tmp[0]+' '+tmp[4]+' ('+un_unix(int(time.time()-tmp[1]))+'|u'+str(tmp[2])+'|m'+str(tmp[3])+')'
 	msg += L('\nNext scanning across %s') % un_unix(int(scan_time-(time.time()-spy_stat_time)))
 	return msg
 	
@@ -100,8 +100,8 @@ def spy_action():
 			act = tmp[4].split(' ')
 			mist = None
 			for tmp2 in act:
-				if tmp2[0] == u'u' and int(tmp2[1:]) > tmp[2]: mist = tmp2
-				elif tmp2[0] == u'm' and int(tmp2[1:]) > tmp[3]: mist = tmp2
+				if tmp2[0] == 'u' and int(tmp2[1:]) > tmp[2]: mist = tmp2
+				elif tmp2[0] == 'm' and int(tmp2[1:]) > tmp[3]: mist = tmp2
 				sb.remove(tmp)
 				if mist:
 					if arr_semi_find(confbase, tmp[0]) >= 0:
@@ -118,4 +118,4 @@ timer = [get_spy_stat, spy_action]
 
 message_control = [spy_message]
 
-execute = [(2, u'spy', conf_spy, 2, L('Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.'))]
+execute = [(2, 'spy', conf_spy, 2, L('Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.'))]

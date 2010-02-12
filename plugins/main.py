@@ -51,7 +51,7 @@ def set_locale(type, jid, nick, text):
 				locales = {}
 				lf = readfile(lf).decode('UTF').replace('\r','').split('\n')
 				for c in lf:
-					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n')] = c.split('\t',1)[1].replace('\\n','\n')
+					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
 				writefile(loc_file,unicode('\''+text+'\''))
 				msg = L('Locale set to: %s') % text
 			else: msg = L('Locale not found!')
@@ -1150,7 +1150,7 @@ def rss(type, jid, nick, text):
 				if urlmode: msg += turl+'\n'
 			if mode == 'new':
 				if mmsg == feed[1] and text[4] == 'silent': nosend = 1
-				elif mmsg == feed[1] and text[4] != 'silent': msg = 'New feeds not found! '
+				elif mmsg == feed[1] and text[4] != 'silent': msg = L('New feeds not found!')
 			if submode == 'body' or submode == 'head': msg = msg[:-1]
 			msg = replacer(msg)
 		else:

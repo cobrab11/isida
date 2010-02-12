@@ -22,8 +22,8 @@ def tZ(val):
 def printlog(text):
 	print text
 	lt = tuple(time.localtime())
-	fname = 'log/crash_'+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+u'.txt'
-	fbody = tZ(lt[3])+tZ(lt[4])+tZ(lt[5])+'|'+text+u'\n'
+	fname = 'log/crash_'+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+'.txt'
+	fbody = tZ(lt[3])+tZ(lt[4])+tZ(lt[5])+'|'+text+'\n'
 	fl = open(fname, 'a')
 	fl.write(fbody.encode('utf-8'))
 	fl.close()

@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-blacklist_base = set_folder + u'blacklist.db'
+blacklist_base = set_folder + 'blacklist.db'
 
 def leave_room(rjid, reason):
 	global confbase, confs
-	msg = u''
+	msg = ''
 	for i in range(0, len(confbase)):
 		if rjid == getRoom(confbase[i]):
 			confbase.remove(confbase[i])
@@ -50,4 +50,4 @@ def blacklist(type, jid, nick, text):
 
 global execute
 
-execute = [(2, u'blacklist', blacklist, 2, L('Manage of conferences blacklist.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - add|remove address from blacklist\nblacklist show - show blacklist\nblacklist clear - clear blacklist'))]
+execute = [(2, 'blacklist', blacklist, 2, L('Manage of conferences blacklist.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - add|remove address from blacklist\nblacklist show - show blacklist\nblacklist clear - clear blacklist'))]

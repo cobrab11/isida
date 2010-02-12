@@ -5,4 +5,4 @@ def thread_info(type, jid, nick): send_msg(type, jid, nick, L('Executed threads:
 
 global execute
 
-execute = [(1, u'th', thread_info, 1, L('Threads statistic'))]
+execute = [(1, 'th', thread_info, 1, L('Threads statistic'))]

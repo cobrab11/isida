@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-tban = set_folder+u'temporary.ban'		# лог временного бана
-af_alist = set_folder+u'alist.aff'		# alist аффиляций
-ro_alist = set_folder+u'alist.rol'		# alist ролей
-ignoreban = set_folder+u'ignoreban.db'	# список игнора при глобальном бане
+tban = set_folder+'temporary.ban'		# лог временного бана
+af_alist = set_folder+'alist.aff'		# alist аффиляций
+ro_alist = set_folder+'alist.rol'		# alist ролей
+ignoreban = set_folder+'ignoreban.db'	# список игнора при глобальном бане
 
 # -------------- affiliation -----------------
 
@@ -16,18 +16,18 @@ def global_ban(type, jid, nick, text):
 	if al == 2: af = 'owner'
 	else: af = get_affiliation(jid,nick)
 	if af != 'owner': msg = L('This command aviable only for conference owner!')
-	elif text == u'show' and al == 2:
+	elif text == 'show' and al == 2:
 		if len(hr):
 			msg = L('Global ban is off in:')
-			for tmp in hr: msg += u'\n'+tmp
+			for tmp in hr: msg += '\n'+tmp
 		else: msg = L('Global ban enable without limits!')
-	elif text == u'del' and af == 'owner':
+	elif text == 'del' and af == 'owner':
 		if hr.count(hroom): msg = L('Conference %s already deleted from global ban list!') % hroom
 		else:
 			hr.append(hroom)
 			msg = L('Conference %s has been deleted from global ban list!') % hroom
 			writefile(ignoreban,str(hr))
-	elif text == u'add' and af == 'owner':
+	elif text == 'add' and af == 'owner':
 		if hr.count(hroom):
 			hr.remove(hroom)
 			msg = L('Conference %s has been added from global ban list!') % hroom
@@ -66,7 +66,7 @@ def muc_tempo_ban(type, jid, nick,text):
 		msg = ''
 		for ub in ubl:
 			if ub[0] == jid and ub[1] == text.lower():
-				msg += ub[1]+u'\t'+un_unix(ub[2]-int(time.time()))
+				msg += ub[1]+'\t'+un_unix(ub[2]-int(time.time()))
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(unicode(ub[1]))},[])])])
 				cl.send(i)
@@ -217,7 +217,7 @@ def muc_arole(type, jid, nick, text, role):
 			if alist_role != '[]':
 				for tmp in alist_role:
 					if tmp[0] == jid and tmp[3] == role and tmp[2].count(text.lower()):
-						msg += u'\n'+tmp[2]+u'\t'+tmp[4]+u' (by '+tmp[1]+')'
+						msg += '\n'+tmp[2]+'\t'+tmp[4]+' (by '+tmp[1]+')'
 						if tmp[5]: msg += '\t'+un_unix(tmp[5]-int(time.time()))
 			if not len(msg):
 				if text == '.': msg = L('List is empty')
@@ -356,19 +356,19 @@ timer = [check_unban,decrease_alist_role]
 presence_control = [alist_role_presence]
 #message_control = [alist_message]
 
-execute = [(1, u'ban', muc_ban, 2, L('Ban user.')),
-	   (1, u'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
-	   (1, u'none', muc_none, 2, L('Delete user affiliation.')),
-	   (1, u'member', muc_member, 2, L('Get member affiliation.')),
-#	   (1, u'admin', muc_admin, 2, u''),
-#	   (1, u'owner', muc_owner, 2, u''),
-	   (1, u'afind', muc_afind, 2, L('Search in alist.')),
-	   (1, u'kick', muc_kick, 2, L('Kick user.')),
-	   (1, u'participant', muc_participant, 2, L('Give participant.')),
-	   (1, u'visitor', muc_visitor, 2, L('Give visitor.')),
-	   (1, u'moderator', muc_moderator, 2, L('Give role moderator.')),
-	   (1, u'akick', muc_akick, 2, L('Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.')),
-	   (1, u'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
-	   (1, u'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
-	   (1, u'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
-	   (1, u'global_ban', global_ban, 2, L('Global ban. Aviable only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]
+execute = [(1, 'ban', muc_ban, 2, L('Ban user.')),
+	   (1, 'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
+	   (1, 'none', muc_none, 2, L('Delete user affiliation.')),
+	   (1, 'member', muc_member, 2, L('Get member affiliation.')),
+#	   (1, 'admin', muc_admin, 2, ''),
+#	   (1, 'owner', muc_owner, 2, ''),
+	   (1, 'afind', muc_afind, 2, L('Search in alist.')),
+	   (1, 'kick', muc_kick, 2, L('Kick user.')),
+	   (1, 'participant', muc_participant, 2, L('Give participant.')),
+	   (1, 'visitor', muc_visitor, 2, L('Give visitor.')),
+	   (1, 'moderator', muc_moderator, 2, L('Give role moderator.')),
+	   (1, 'akick', muc_akick, 2, L('Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.')),
+	   (1, 'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
+	   (1, 'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
+	   (1, 'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
+	   (1, 'global_ban', global_ban, 2, L('Global ban. Aviable only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]

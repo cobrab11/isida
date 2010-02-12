@@ -3,7 +3,7 @@
 
 def gettelcode(text):
 	query = urllib.urlencode({'text' : text.encode("windows-1251")})
-	url = u'http://www.telcode.ru/mob/select.asp?%s'.encode("utf-8") % (query)
+	url = 'http://www.telcode.ru/mob/select.asp?%s'.encode("utf-8") % (query)
 	f = urllib.urlopen(url)
 	body = f.read()
 	f.close()
@@ -22,24 +22,24 @@ def gettcode(text):
 	if csize < 1: csize = 1
 	elif csize > 25: csize = 25
 	text = text.split('\n')[0]
-	try: url = u'http://www.btk-online.ru/phcode/?srchCId=1&srchTName=&srchCCode=&srchTCode='+str(int(text))
-	except: url = u'http://www.btk-online.ru/phcode/?srchCId=1&%s'.encode("utf-8") % (urllib.urlencode({'srchTName': text.encode("windows-1251")}))
+	try: url = 'http://www.btk-online.ru/phcode/?srchCId=1&srchTName=&srchCCode=&srchTCode='+str(int(text))
+	except: url = 'http://www.btk-online.ru/phcode/?srchCId=1&%s'.encode("utf-8") % (urllib.urlencode({'srchTName': text.encode("windows-1251")}))
 	user_agent='Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent',user_agent)
 	body = urllib2.urlopen(req).read()
 	body = html_encode(body)
-	if body.count('<table id=pcodephones cellspacing=0>\n  <tr><th width'): return u'По вашему запросу ничего не найдено.'
+	if body.count('<table id=pcodephones cellspacing=0>\n  <tr><th width'): return L('Your search returns no results.')
 	else:
 		body = body.split('<table id=pcodephones cellspacing=0>')[1].split('</table>')[0].split('</tr>')[1:]
-		if body != [u'\n ']:
-			msg = u'Найдено:'
+		if body != ['\n ']:
+			msg = L('Found:')
 			for tmp in body[:csize]:
 				tmp2 = '\n'+replacer(tmp).replace('\n',', ').replace(';',', ')
-				tmp3 = tmp2[tmp2.find(u' тариф'):tmp2.find(u',',tmp2.find(u' тариф'))+1]
+				tmp3 = tmp2[tmp2.find(u' тариф'):tmp2.find(',',tmp2.find(u' тариф'))+1]
 				msg += tmp2.replace(tmp3,'')
 			return msg
-		else: return L('No matches for your request.')
+		else: return L('Your search returns no results.')
 	
 def getdefcode(text):
 	ddef = text[1:4]
@@ -83,4 +83,4 @@ def phonecode(type, jid, nick, text):
 		
 global execute
 
-execute = [(0, u'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]
+execute = [(0, 'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]

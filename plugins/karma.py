@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-karmabase = set_folder+u'karma.db'	# база кармы
+karmabase = set_folder+'karma.db'	# база кармы
 karma_limit = 5						# минимум кармы для изменения
 karma_timeout = [86400, 3600, 5]	# время, через которое можно менять карму
 
@@ -41,7 +41,7 @@ def karma_top(type, jid, nick, text, order):
 	for tmp in stat:
 		tmp2 = get_nick_by_jid(jid, tmp[0])
 		if tmp2:
-			msg += '\n'+str(cnt)+u'. '+tmp2+u'\t'+karma_val(int(tmp[1]))
+			msg += '\n'+str(cnt)+'. '+tmp2+'\t'+karma_val(int(tmp[1]))
 			cnt += 1
 		if cnt >= lim: break
 	if len(msg): return L('Top karma: %s') % msg
@@ -134,4 +134,4 @@ global execute, message_control
 
 message_control = [karma_check]
 
-execute = [(0, u'karma', karma, 2, L('Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1'))]
+execute = [(0, 'karma', karma, 2, L('Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1'))]

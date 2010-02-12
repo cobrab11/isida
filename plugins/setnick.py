@@ -12,4 +12,4 @@ def set_nickname(type, jid, nick, text):
 
 global execute
 
-execute = [(1, u'setnick', set_nickname, 2, L('Change bot nick. Aviable only for conference owner.'))]
+execute = [(1, 'setnick', set_nickname, 2, L('Change bot nick. Aviable only for conference owner.'))]

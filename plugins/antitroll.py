@@ -9,7 +9,7 @@ def troll(type, jid, nick, text):
 	if count > 100: count = 100
 	otake = JID(node=getName(jid), domain=getServer(jid), resource=r)
 	otake = unicode(otake)
-	pprint(u'Troll: '+unicode(otake))
+	pprint('Troll: '+unicode(otake))
 	if len(text)>1: message = text[1]
 	else: message = L('You troll!')
 	while count != 0:
@@ -22,4 +22,4 @@ global execute, timer
 
 timer = []
 
-execute = [(2, u'troll', troll, 2, L('Repeat messagte to private.\ntroll nick\n[text]\n[number]'))]
+execute = [(2, 'troll', troll, 2, L('Repeat messagte to private.\ntroll nick\n[text]\n[number]'))]

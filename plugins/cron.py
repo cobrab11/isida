@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-cron_base = set_folder+u'cron.db'	# база заданий
+cron_base = set_folder+'cron.db'	# база заданий
 
 # cron add timer hh:mm:ss [repeat hh:mm:ss] command
 # cron add alarm YYYY-MM-DD hh:mm:ss [tz [+|-]hh:mm] [repeat hh:mm:ss] command

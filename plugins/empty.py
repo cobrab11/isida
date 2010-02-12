@@ -61,7 +61,7 @@ presence_control = [empty_presence] # реакция на презенс
 message_control = [empty_message] # реакция на сообщение
 
 # описание команд
-execute = [(0, u'empty', empty_command, 1, u'описание команды')]
+execute = [(0, 'empty', empty_command, 1, L('command decription'))]
 # 1. уровень доступа:
 #		0 - всем
 #		1 - админам\владельцам
@@ -73,6 +73,7 @@ execute = [(0, u'empty', empty_command, 1, u'описание команды')]
 #		1 - не передавать параметров
 #		2 - передавать остаток текста после команды
 # 5. описание команды, которое покажет бот по help <название_команды>
+# при этом в файл локали надо поместить текст вида 'command decription<tab>описание команды'
 
 # полезные функции:
 # send_msg(type,jid,nick,msg) - отправка сообщения

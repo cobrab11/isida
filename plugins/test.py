@@ -6,4 +6,4 @@ def test(type, jid, nick):
 
 global execute
 
-execute = [(0, u'test', test, 1, L('Check bot activity.'))]
+execute = [(0, 'test', test, 1, L('Check bot activity.'))]

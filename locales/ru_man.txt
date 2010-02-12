@@ -3,7 +3,7 @@
 #                             Isida Jabber Bot
 #                               version 1.91
 #
-#                          Russian locale (woman)
+#                           Russian locale (man)
 #
 # --------------------------------------------------------------------
 #                  (c) 2oo9-2o1o Disabler Production Lab.
@@ -110,11 +110,11 @@ Error! %s	Ошибка! %s
 I have never been in %s	Хватит бухать! Меня нету в %s
 Wrong arguments!	Косяк с аргументами!
 Denied!	Запрещено!
-Joined to %s	Зашла в %s
+Joined to %s	Зашел в %s
 I'm already in %s with nick %s	Хватит бухать! Я уже в %s с ником %s
 Changed nick in %s to %s	Смена ника в %s на %s
 I can't leave last room!	Не могу выйти из последней конфы!
-Leave room %s	Свалила из %s
+Leave room %s	Свалил из %s
 Leave room by %s	Меня выводит %s
 Temporary message size limit %s	Временный лимит размера сообщений %s
 Loaded plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны команды: %s
@@ -190,7 +190,7 @@ Set command prefix. Use 'none' for disabler prefix	Указание префик
 # adminmail.py
 Time limit exceeded. Wait: %s	Превышен лимит скорости посылки сообщений. Подождите: %s
 User %s (%s) from %s at %s send massage to you: %s	Пользователь %s (%s) из конференции %s в %s отправил(а) вам сообщение: %s
-Sent	Отправила
+Sent	Отправил
 # - help -
 Send message to bot's owner\nmsgtoadmin text	Отправить сообщение владельцу бота.\nmsgtoadmin текст сообщения
 
@@ -201,12 +201,12 @@ Show random aphorism from skio.ru | Author: ferym	Показывает случ�
 
 
 # age.py
-I see:	Я видела:
+I see:	Я видел:
 %s %s ago	%s %s назад
 Leave %s ago	Вышел %s назад
 Is here: %s	Находится тут: %s
 %s (with nick: %s)	%s (с ником: %s)
-I saw %s:	Я видела %s:
+I saw %s:	Я видел %s:
 Send for you in private	Результат отправлен Вам в приват.
 # - help -
 Show age of jid in conference.	Показывает какое время определённый jid или ник находился в данной конференции.
@@ -254,7 +254,7 @@ Quote from ibash.org.ru\nibash [number]	Цитата с ibash.org.ru\nibash [н�
 
 
 # blacklist.py
-Leave conference %s\n	Свалила из %s\n
+Leave conference %s\n	Свалил из %s\n
 Conference was added in blacklist	Конференция занесена в черный список
 This conference already exist in blacklist.	Адрес уже содержится в списке.
 You can't add last conference in blacklist.	Нельзя добавлять последнюю конференцию в черный список.
@@ -552,8 +552,8 @@ Search in owners list of conference.	Поиск по owners списку кон�
 
 # invite.py
 %s ishere!	%s находится тут!
-Invited	Позвала
-I seen some peoples with this nick. Get more info!	Я видела несколько человек с таким ником. Укажите точнее!
+Invited	Позвал
+I seen some peoples with this nick. Get more info!	Я видел несколько человек с таким ником. Укажите точнее!
 I don't know %s	Я не в курсе кто такой %s
 %s asks you to go to %s	%s просит Вас зайти в %s
 because %	по причине %s
@@ -645,8 +645,8 @@ Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnic
 
 
 # known.py
-I know you as: 	Я видела тебя как: 
-I know %s as: 	Я видела %s как: 
+I know you as: 	Я видел тебя как: 
+I know %s as: 	Я видел %s как: 
 Show user's nick changes.	Показ смены ников.
 
 
@@ -752,14 +752,14 @@ Information about telephone city code, DEF code or search code for city.	Инф�
 
 # poke.py
 For members this command not aviable in private!	Участникам данная команда не доступна в привате!
-gave NICK ... just gave ... :-"	дала NICK... просто дала... :-"
-poked a stick NICK in the eye ...	потыкала палочкой NICK в глаз...
-suggested NICK shrimp :-[	предложила NICK козявку :-[
-fed NICK laxative with powdered glass!	накормила NICK пургеном с толчёным стеклом!
-whispered in his ear softly NICK LOL!	прошептала NICK в ухо тихонько БУГАГА!
-threw the crowbar aside NICK	кинула ломик в сторону NICK
-gave NICK strawberry poison	дала NICK клубничного йаду
-jumped around with a tambourine NICK	попрыгала с бубном вокруг NICK
+gave NICK ... just gave ... :-"	дал NICK... просто в глаз... :-"
+poked a stick NICK in the eye ...	потыкал палочкой NICK в глаз...
+suggested NICK shrimp :-[	предложил NICK козявку :-[
+fed NICK laxative with powdered glass!	накормил NICK пургеном с толчёным стеклом!
+whispered in his ear softly NICK LOL!	прошептал NICK в ухо тихонько БУГАГА!
+threw the crowbar aside NICK	кинул ломик в сторону NICK
+gave NICK strawberry poison	дал NICK клубничного йаду
+jumped around with a tambourine NICK	попрыгал с бубном вокруг NICK
 sticking NICK with the words "buy ice cream, you creep!"	тыкает NICK со словами "купи мороженного, гадюка!"
 trying kick the ass NICK	целится в NICK плюсомётом и добро улыбается
 Phrases:	Фразы:
@@ -905,7 +905,7 @@ Connection activity control.	Контроль активности соедин�
 
 # wtf.py
 What need to find?	Чего искать то будем?
-Some matches in definitions: %s	Нечто похожее я видела в: %s
+Some matches in definitions: %s	Нечто похожее я видел в: %s
 No matches.	Хм. Ничего похожего я не знаю...
 I know that %s is %s	Я знаю, что %s - %s
 All I know is: %s	Всё, что я знаю это: %s

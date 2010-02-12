@@ -51,7 +51,7 @@ def juick_user_info(type, jid, nick, text):
 			if not tbody.count('<h1>Page Not Found</h1>'):
 				try:
 					tb = tbody.split('<div id="content">')[1].split('</div>')[0]
-					msg += u'\nTags: '
+					msg += '\nTags: '
 					for ttb in tb.split('<span')[1:]: msg += get_tag(ttb,'a')+', '
 					msg = msg[:-2]
 				except: msg += '\nNo tags'
@@ -178,4 +178,4 @@ def juick_tag_msg(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]
+execute = [(0, 'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]

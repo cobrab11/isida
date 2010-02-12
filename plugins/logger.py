@@ -1,12 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-# NOT LOCALIZED!
-
 logdir = 'logs_directory.txt'
 if os.path.isfile(logdir): log_folder = readfile(logdir)
 else: log_folder = 'logs/'
-#print '!'+log_folder+'!'
 public_log = log_folder+'chatlogs'
 system_log = log_folder+'syslogs'
 if not os.path.exists(log_folder): os.mkdir(log_folder)
@@ -78,16 +75,16 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			log_body += '<font color=#00a000>'+nick
 			if mode and jid != 'None': log_body += ' ('+jid+')'
 			if len(exit_type): log_body += ' '+exit_type.lower()
-			else: log_body += u' вышел'
+			else: log_body += ' '+L('leave')
 			if exit_message != '': log_body += ' ('+exit_message+') '
 			log_body += '</font></i></a><br>\n'
 		else:
 			log_body += '<font color=#00a000>'+nick
 			if not_found == 0:
 				if mode and jid != 'None': log_body += ' ('+jid+')'
-				log_body += u' зашел как '+role+'/'+affiliation
-			elif not_found == 1: log_body += u' теперь '+role+'/'+affiliation
-			elif not_found == 2: log_body += u' теперь '
+				log_body += ' '+L('join as')+' '+role+'/'+affiliation
+			elif not_found == 1: log_body += ' '+L('now is')+' '+role+'/'+affiliation
+			elif not_found == 2: log_body += ' '+L('now is')+' '
 			if not_found == 0 or not_found == 2:
 				if show != 'None': log_body += ' '+show
 				else: log_body += ' online'
@@ -113,7 +110,7 @@ message_control = [append_message_to_log]
 presence_control = [append_presence_to_log]
 
 def log_room(type, jid, nick, text):
-	if type == 'groupchat': msg = u'Команда доступна только в привате!'
+	if type == 'groupchat': msg = L('This command aviable only in private!')
 	else:
 		hmode = text.split(' ')[0]
 		try: hroom = text.split(' ')[1]
@@ -121,25 +118,25 @@ def log_room(type, jid, nick, text):
 		hr = getFile(log_conf,[])
 		if hmode == 'show':
 			if len(hr):
-				msg = u'Я веду логи в:'
+				msg = L('Logged conferences:')
 				for tmp in hr: msg += '\n'+tmp
-			else: msg = u'Логи не включены ни в одной конференции.'
+			else: msg = L('Logs are turned off in all conferences.')
 		elif hmode == 'add':
-			if not match_room(hroom): msg = u'Меня нет в конфе '+hroom
-			elif hr.count(hroom): msg = u'Я уже веду логи конфы '+hroom
+			if not match_room(hroom): msg = L('I am not in the %s') % hroom
+			elif hr.count(hroom): msg = L('Logs for %s already enabled.') % hroom
 			else:
 				hr.append(hroom)
-				msg = u'Логи для '+hroom+u' включены.'
+				msg = L('Logs for %s enabled.') % hroom
 				writefile(log_conf,str(hr))
 		elif hmode == 'del':
-			if not match_room(hroom): msg = u'Меня нет в конфе '+hroom
+			if not match_room(hroom): msg = L('I am not in the %s') % hroom
 			elif hr.count(hroom):
 				hr.remove(hroom)
-				msg = u'Логи для '+hroom+u' выключены.'
+				msg = L('Logs for %s disabled.') % hroom
 				writefile(log_conf,str(hr))
-		else: msg = u'Что сделать?'
+		else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(2, 'log', log_room, 2, u'Включение логов конференции.\nlog [add|del|show][ room@conference.server.tld]')]
+execute = [(2, 'log', log_room, 2, L('Logging history conference.\nlog [add|del|show][ room@conference.server.tld]'))]

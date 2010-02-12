@@ -5,7 +5,7 @@ def is_valid(type, jid, nick, text):
 	if text == '': text = nick
 	ru_lit, en_lit, caps_lit = 0, 0, 0
 	for tmp in text:
-		if re.match(u'[a-z]|[A-Z]',tmp): en_lit+=1
+		if re.match('[a-z]|[A-Z]',tmp): en_lit+=1
 		elif re.match(u'[а-я]|[А-Я]',tmp): ru_lit+=1
 		if re.match(u'[A-Z]|[А-Я]',tmp): caps_lit+=1
 	lt = len(text)
@@ -36,5 +36,5 @@ def is_true(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'true', is_true, 2, L('Check truth of expession.')),
-		   (0, u'valid', is_valid, 2, L('Check different languages symbols in nick.'))]
+execute = [(0, 'true', is_true, 2, L('Check truth of expession.')),
+		   (0, 'valid', is_valid, 2, L('Check different languages symbols in nick.'))]

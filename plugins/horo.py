@@ -8,20 +8,20 @@ import string
 
 
 global horodb
-horodb={L('aries'): u'/aries/today', L('taurus'): u'/taurus/today', L('gemini'): u'/gemini/today', L('cancer'): u'/cancer/today', L('leo'): u'/leo/today', L('virgo'): u'/virgo/today', L('libra'): u'/libra/today', L('scorpio'): u'/scorpio/today', L('sagittarius'): u'/sagittarius/today', L('capricorn'): u'/capricorn/today', L('aquarius'): u'/aquarius/today', L('pisces'): u'/pisces/today'}
+horodb={L('aries'): '/aries/today', L('taurus'): '/taurus/today', L('gemini'): '/gemini/today', L('cancer'): '/cancer/today', L('leo'): '/leo/today', L('virgo'): '/virgo/today', L('libra'): '/libra/today', L('scorpio'): '/scorpio/today', L('sagittarius'): '/sagittarius/today', L('capricorn'): '/capricorn/today', L('aquarius'): '/aquarius/today', L('pisces'): '/pisces/today'}
 
 def handler_horoscope(type, jid, nick, parameters):
   if parameters:
-    if parameters==u'list':
+    if parameters=='list':
       zod = [L('Aries'), L('Taurus'), L('Gemini'), L('Cancer'), L('Leo'), L('Virgo'), L('Libra'), L('Scorpio'), L('Sagittarius'), L('Capricorn'), L('Aquarius'), L('Pisces')]
       send_msg(type, jid, nick, ', '.join(zod))
       return
-    if parameters==u'date':
+    if parameters=='date':
       date = [L('Aries %s') % ('21.03-19.04'), L('Taurus %s') % ('20.04-20.05'), L('Gemini %s') % ('21.05-20.06'), L('Cancer %s') % ('21.06-22.07'), L('Leo %s') % ('23.07-22.08'), L('Virgo %s') % ('23.08-22.09'), L('Libra %s') % ('23.09-22.10'), L('Scorpio %s') % ('23.10-21.11'), L('Sagittarius %s') % ('22.11-21.12'), L('Capricorn %s') % ('22.12-19.01'), L('Aquarius %s') % ('20.01-18.02'), L('Pisces %s') % ('19.02-20.03')]
       sp = ''
       nm = 1
       for tb in date:
-        sp+=str(nm)+'. '+tb+u'\n'
+        sp+=str(nm)+'. '+tb+'\n'
         nm+=1
       if type=='groupchat':
         send_msg(type, jid, nick, L('Sent in private message'))
@@ -56,4 +56,4 @@ def handler_horoscope(type, jid, nick, parameters):
 
 global execute
 
-execute = [(0, u'horo', handler_horoscope, 2, L('Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym'))]
+execute = [(0, 'horo', handler_horoscope, 2, L('Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym'))]

@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-# NOT LOCALIZED!
-
 import datetime
 
 def get_holiday(sdate):
@@ -13,7 +11,7 @@ def get_holiday(sdate):
 
 	:[month, day]:'''
 
-	result = u''
+	result = ''
 	date_file = 'plugins/date.txt'
 	date_base = readfile(date_file).decode('UTF').split('\n')
 	for ddate in date_base:
@@ -24,7 +22,7 @@ def get_holiday(sdate):
 				hdate = map(int, hdate.split('.'))
 				hdate.reverse()
 				if hdate == sdate:
-					result += ddate[1].strip() + u', '
+					result += ddate[1].strip() + ', '
 	if len(result) > 2: result = result[:-2]
 	return result
 
@@ -32,8 +30,8 @@ def parse_date_string(string_date, spl='.'):
 	
 	''' Parse date string and return list [year, month, day] ''' 
 	
-	date_formats = ['%d'+spl+u'%m', '%d'+spl+u'%m'+spl+u'%y',
-		'%d'+spl+u'%m'+spl+u'%Y', '%Y'+spl+u'%m'+spl+u'%d']
+	date_formats = ['%d'+spl+'%m', '%d'+spl+'%m'+spl+'%y',
+		'%d'+spl+'%m'+spl+'%Y', '%Y'+spl+'%m'+spl+'%d']
 	#output = list(localtime())[:3]
 	for format in date_formats:
 		try: output = list(time.strptime(string_date, format))[:3]
@@ -41,11 +39,11 @@ def parse_date_string(string_date, spl='.'):
 	return output
 
 def to_date(type, jid, nick, text):
-	dmass = (u'дней', u'день', u'дня', u'дня', u'дня', u'дней', u'дней',
-		u'дней', u'дней', u'дней')
-	splitters = (u'.', u'-', u':', u'/', u',', u'\\')
+	dmass = (L('days'), L('day'), L('Days').lower(), L('Days').lower(), 
+		L('Days').lower(), L('days'), L('days'), L('days'), L('days'), L('days'))
+	splitters = ('.', '-', ':', '/', ',', '\\')
 	if len(text):
-		try:
+		#try:
 			spl = [spl for spl in splitters if text.count(spl)][0]
 			sdate = parse_date_string(text, spl)
 			if sdate[0] == 1900: sdate[0] = list(localtime())[0]
@@ -53,48 +51,50 @@ def to_date(type, jid, nick, text):
 			month, day = sdate
 			hday = get_holiday(sdate)
 			text = text.replace(spl, '.')
-			msg = u''
+			msg = ''
 			if len(hday) > 0: text = hday
 			days_remain = (datetime.date(year, month, day) - datetime.date.today()).days
 			if len(str(abs(days_remain))) > 1 and str(days_remain)[-2] == '1':
-				dmass = (u'дней', u'дней', u'дней', u'дней', u'дней', u'дней',
-					u'дней', u'дней', u'дней', u'дней')
-			if days_remain < 0: msg += u' был(и/о) ' + str(abs(days_remain)) + u' ' + \
-				dmass[int(str(days_remain)[-1])] + u' назад'
-			elif  days_remain == 0: msg += ' сегодня'
-			else: msg += u' будет через ' + str(abs(days_remain)) + u' ' + \
-				dmass[int(str(days_remain)[-1])]
-			msg = text + msg
-		except: msg = u'Ошибка в параметрах команды, прочитайте помощь по команде.'
-	else: msg = u'Ошибка в параметрах команды, прочитайте помощь по команде.'
+				dmass = (L('days'),L('days'),L('days'),L('days'),
+					L('days'),L('days'),L('days'),L('days'),
+					L('days'),L('days'))
+			if days_remain < 0: msg += L('was %s %s ago') % \
+				(str(abs(days_remain)), dmass[int(str(days_remain)[-1])])
+			elif  days_remain == 0: msg += L('today')
+			else: msg += L('will be in %s %s') % \
+				(str(abs(days_remain)), dmass[int(str(days_remain)[-1])])
+			msg = text + ' ' + msg
+#		except: msg = L('Error in parameters. Read the help about command.')
+	else: msg = L('Error in parameters. Read the help about command.')
 	send_msg(type, jid, nick, msg)
 
 def todate(type, jid, nick, text):
-	dmass = (u'дней', u'день', u'дня', u'дня', u'дня', u'дней', u'дней',
-		u'дней', u'дней', u'дней')
-	splitters = (u'.', u'-', u':', u'/', u',', u'\\')
-	msg = u''
+	dmass = (L('days'), L('day'), L('Days').lower(), L('Days').lower(),
+		L('Days').lower(), L('days'), L('days'), L('days'), L('days'), L('days'))
+	splitters = ('.', '-', ':', '/', ',', '\\')
+	msg = ''
 	if len(text):
 		try:
 			if text.count(' '): ddate, msg = text.split(' ', 1)[0], text.split(' ', 1)[1]
 			else: ddate = text
 			spl = [spl for spl in splitters if ddate.count(spl)][0]
-			if len(msg) == 0: msg = u'До ' + ddate.replace(spl, '.') + u' осталось'
+			if len(msg) == 0: msg = L('before the %s remained ') % ddate.replace(spl, '.')
 			sdate = parse_date_string(ddate, spl)
 			if sdate[0] < tuple(localtime())[0]: sdate[0] = list(localtime())[0]
 			year = sdate.pop(0)
 			month, day = sdate
 			days_remain = (datetime.date(year, month, day) - datetime.date.today()).days
 			if len(str(abs(days_remain))) > 1 and str(days_remain)[-2] == '1':
-				dmass = (u'дней', u'дней', u'дней', u'дней', u'дней', u'дней',
-					u'дней', u'дней', u'дней', u'дней')
-			if days_remain < 0: msg = u'Ошибка формата даты'
-			else: msg += u' ' + str(days_remain) + u' ' + dmass[int(str(days_remain)[-1])]
-		except: msg = u'Ошибка в параметрах команды, прочитайте помощь по команде.'
-	else: msg = u'Ошибка в параметрах команды, прочитайте помощь по команде.'
+				dmass = (L('days'),L('days'),L('days'),L('days'),
+					L('days'),L('days'),L('days'),L('days'),
+					L('days'),L('days'))
+			if days_remain < 0: msg = L('Error date format!')
+			else: msg += ' ' + str(days_remain) + ' ' + dmass[int(str(days_remain)[-1])]
+		except: msg = L('Error in parameters. Read the help about command.')
+	else: msg = L('Error in parameters. Read the help about command.')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, u'to_date', to_date, 2, u'Рассчет количества дней от текущей даты до заданной, если на заданную дату выпадает праздник, то возвращается название праздника вместо запрашиваемой даты\nПоддерживаемые форматы даты: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПоддерживаемые разделители: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010'),
-	(0, u'todate', todate, 2, u'Рассчет количества дней от текущей даты до заданной, с возможностью вставки собственного текста\nПоддерживаемые форматы даты: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПоддерживаемые разделители: ,-.:/\\\ntodate 05.09 До дня победы осталось\ntodate 5/9/2010 До дня победы осталось')]
+execute = [(0, 'to_date', to_date, 2, L('Calculate count of days for requested date, if the date is holiday, that returned title of holiday.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitters: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010')),
+	(0, 'todate', todate, 2, L('Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitter: ,-.:/\\\ntodate 05.09 before New year remained\ntodate 5/9/2010 before New year remained'))]
