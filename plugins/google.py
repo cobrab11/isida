@@ -48,7 +48,7 @@ def google(type, jid, nick,text):
 		content = content.replace('<b>', u'«').replace('</b>', u'»')
 		url = results[0]['unescapedUrl']
 		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
-	except: msg = L('Expression \"%s\" not found!')
+	except: msg = L('Expression \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
 
 def translate(type, jid, nick,text):
