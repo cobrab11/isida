@@ -50,7 +50,7 @@ def iq_vcard(type, jid, nick, text):
 					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt))
 			else: msg = L('vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s') % \
 				(get_tag(isa,'NICKNAME'),get_tag(isa,'FN'),get_tag(isa,'DESC'),get_tag(isa,'URL'))
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_uptime(type, jid, nick, text):
@@ -84,7 +84,7 @@ def iq_uptime(type, jid, nick, text):
 		else:
 			try: msg = L('Uptime: %s') % un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
 			except: msg = L('I can\'t do it')
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def ping(type, jid, nick, text):
@@ -127,7 +127,7 @@ def ping(type, jid, nick, text):
 			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
 			if sping: msg = L('Ping from you %s sec.') % tpi
 			else: msg = L('Ping from %s %s sec.') % (text, tpi)
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_time(type, jid, nick, text):
@@ -169,7 +169,7 @@ def iq_time_get(type, jid, nick, text, mode):
 		else:
 			msg = ''
 			for iiq in iiqq: msg += iiq+' '
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_version(type, jid, nick, text):
@@ -203,7 +203,7 @@ def iq_version(type, jid, nick, text):
 		else:
 			msg = ''
 			for iiq in iiqq: msg += iiq+' '
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 
 def iq_stats(type, jid, nick, text):
@@ -234,7 +234,7 @@ def iq_stats(type, jid, nick, text):
 			except: ans = [0,0]
 		msg = L('Server statistic: %s | Total: %s | Online: %s') % \
 			(text, str(ans[1]), str(ans[0]))
-	else: msg = L('Timeout %s sec.') % '('+str(timeout)+')'
+	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 	
 global execute
