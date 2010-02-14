@@ -1004,6 +1004,10 @@ def rss(type, jid, nick, text):
 			if len(msg): L('Schedule feeds for %s:%s') % (jid,msg)
 			else: L('Schedule feeds for %s not found!') % jid
 	elif mode == 'add':
+		mdd = ['full','body','head','full-url','body-url','head-url']
+		if text[3] not in mdd: 
+			send_msg(type, jid, nick, L('Mode %s not detected!') % text[3])
+			return
 		feedbase = getFile(feeds,[])
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
@@ -1063,6 +1067,7 @@ def rss(type, jid, nick, text):
 				msg += tbody + '\n\n'
 			elif submode == 'body': msg += tbody + '\n'
 			elif submode[:4] == 'head': msg += ttitle + '\n'
+			else: return
 			if urlmode: msg += turl+'\n'
 			msg = replacer(msg)
 		else:
@@ -1147,6 +1152,7 @@ def rss(type, jid, nick, text):
 					msg += tbody + '\n\n'
 				elif submode == 'body': msg += tbody + '\n'
 				elif submode[:4] == 'head': msg += ttitle+ '\n'
+				else: return
 				if urlmode: msg += turl+'\n'
 			if mode == 'new':
 				if mmsg == feed[1] and text[4] == 'silent': nosend = 1
