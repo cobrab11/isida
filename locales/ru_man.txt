@@ -237,13 +237,13 @@ Repeat message to private.\ntroll nick\n[text]\n[number]	Повтор сообщ
 
 
 # backup.py
-Aviable copies:	Резервные копии:
+Available copies:	Резервные копии:
 Backup copies not found.	Резевные копии не найдены
 I need an owner affiliation for backup settings!	Для резервного копирования мне необходимы права владельца конференции
 I need an owner affiliation for restore settings!	Для восстановления резервной копии мне нужны права владельца конференции!
 Restore completed.	Восстановление завершено.
 What do you want to restore?	Что будем восстанавливать?
-Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохранить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
+Backup/restore conference settings.\nbackup show|now|restore\nshow - show available copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохранить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
 
 
 # bash.py
@@ -282,7 +282,7 @@ Hidden cleaning of conference history.	Скрытая очистка истор�
 
 
 # convert.py
-Aviable values:\n%s	Допустимые значения:\n%s
+Available values:\n%s	Допустимые значения:\n%s
 Currency converter\nconvert from to count\nconvert list	Конвертер валют\nconvert из в сумма\nconvert list
 
 
@@ -306,7 +306,7 @@ Please wait. Result you will be receive in private message approximately %s %s	�
 sec.	сек.
 matches with nick "%s": %s	совпадений с ником "%s": %s
 nick "%s" not found.	ник "%s" не найден.
-Total conferences: %s, aviable: %s	Всего конференций: %s, доступно: %s
+Total conferences: %s, available: %s	Всего конференций: %s, доступно: %s
 Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.	Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов
 Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld	Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld
 
@@ -476,19 +476,19 @@ Czech	чешский
 Swedish	шведский
 Estonian	эстонский
 Japanese	японский
-Aviable languages for translate: 	Доступные языки для перевода: 
-Aviable languages: %s	Известные языки: %
+Available languages for translate: 	Доступные языки для перевода: 
+Available languages: %s	Известные языки: %
 I don't know this language	Я не знаю таких языков
-Incorrect language settings for translate. tr list - aviable languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
+Incorrect language settings for translate. tr list - available languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
 Command's format: tr from to text	Формат команды: tr с_какого на_какой текст
-Translator.\ntr from_language to_language text - translate text\ntr list - list for aviable languages for translate\ntr info <reduction> - get info about language reduction	Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка
+Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction	Переводчик.\ntr с_какого_языка на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка
 Search in google	Поиск через google
 Search XEP	Поиск XEP
 Search in en.wikipedia.org	Поиск по ru.wikipedia.org
 
 
 # hideroom.py
-This command aviable only in private!	Команда доступна только в привате!
+This command available only in private!	Команда доступна только в привате!
 Hidden conferences:	Я скрываю конфы:
 No hidden conferences.	Скрытых конференций нет.
 I am not in the %s	Меня нет в %s
@@ -574,7 +574,7 @@ Ping - reply time. You can ping nick in room, jid, server or transport.	Пинг
 Client side time.	Локальное время клиента.
 Client side time + raw time format.	Локальное время клиента + время в формате из станзы.
 Users server statistic.	Статистика пользователей сервера.
-vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show aviable fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.	Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard
+vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show available fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.	Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступных полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard
 Server or jid uptime.	Аптайм jabber сервера или jid'а
 
 
@@ -698,7 +698,7 @@ Calculate phrase md5 sum.	Расчёт md5 фразы.
 
 
 # muc.py
-This command aviable only for conference owner!	Команда доступна только владельцу конференции!
+This command available only for conference owner!	Команда доступна только владельцу конференции!
 Global ban is disable in:	Я не баню глобально в конфах:
 Global ban enable without limits!	Я баню глобально без ограничений!
 Conference %s already deleted from global ban list!	Конференция %s уже исключена из списка глобального бана!
@@ -734,7 +734,7 @@ Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\n
 Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.	Автоучастник.\naparticipant show|del [jid] - показать/удалить автоучастник\naparticipant nick\ntimeD|H|M|S\nreason - автоматически делать ник nick участником на срок time по причине reason
 Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.	Автогость.\navisitor show|del [jid] - показать/удалить автогостя\navisitor nick\ntimeD|H|M|S\nreason - автоматически делать ник nick гостем на срок time по причине reason
 Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.	Автомодератор.\namoderator show|del [jid] - показать/удалить автомодератор\namoderator nick\ntimeD|H|M|S\nreason - автоматически делать ник nick модератором на срок time по причине reason
-Global ban. Aviable only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.	Глобальный бан. Доступен только владельцам конференций.\nglobal_ban del - удалить конференцию из списка глобального бана,\nglobal_ban add - добавить конференцию в список глобального бана,\nglobal_ban <jid> - забанить jid во всех конференциях, в которых бот админ.
+Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.	Глобальный бан. Доступен только владельцам конференций.\nglobal_ban del - удалить конференцию из списка глобального бана,\nglobal_ban add - добавить конференцию в список глобального бана,\nglobal_ban <jid> - забанить jid во всех конференциях, в которых бот админ.
 
 
 # net.py
@@ -751,7 +751,7 @@ Information about telephone city code, DEF code or search code for city.	Инф�
 
 
 # poke.py
-For members this command not aviable in private!	Участникам данная команда не доступна в привате!
+For members this command not available in private!	Участникам данная команда не доступна в привате!
 gave NICK ... just gave ... :-"	дал NICK... просто в глаз... :-"
 poked a stick NICK in the eye ...	потыкал палочкой NICK в глаз...
 suggested NICK shrimp :-[	предложил NICK козявку :-[
@@ -769,7 +769,7 @@ I can't add it! No keyword "NICK"!	Не могу добавить! Нет клю
 I ban a ip for such jokes!	Ща зобаню по ip за такие шутки!
 I could be wrong, but %s not is here...	Я могу ошибаться, но %s тут нету...
 Masochist? 8-D	Самотык? 8-D
-"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу
+"Poke" command\npoke nick - say a random phrase for nick\nControls command, available only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу
 
 
 # price.py
@@ -813,7 +813,7 @@ Send message to jid\n sayjid jid message.	Отправить сообщение 
 
 # setnick.py
 You can't do it!	Тибе низя!
-Change bot nick. Aviable only for conference owner.	Смена ника. Доступна только владельцу конференции.
+Change bot nick. Available only for conference owner.	Смена ника. Доступна только владельцу конференции.
 
 
 # shutdown.py

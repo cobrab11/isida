@@ -4,7 +4,7 @@
 def to_poke(type, jid, nick, text):
 	if len(text): text = reduce_spaces(text)
 	if type == 'chat' and get_access(jid,nick)[0] < 1:
-		send_msg(type, jid, nick, L('For members this command not aviable in private!'))
+		send_msg(type, jid, nick, L('For members this command not available in private!'))
 		return
 	predef_poke = [L('gave NICK ... just gave ... :-\"'),
 			L('poked a stick NICK in the eye ...'),
@@ -65,4 +65,4 @@ def to_poke(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'poke', to_poke, 2, L('"Poke" command\npoke nick - say a random phrase for nick\nControls command, aviable only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.'))]
+execute = [(0, 'poke', to_poke, 2, L('"Poke" command\npoke nick - say a random phrase for nick\nControls command, available only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.'))]

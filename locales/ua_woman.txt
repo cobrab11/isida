@@ -1,0 +1,953 @@
+# --------------------------------------------------------------------
+#
+#                             Isida Jabber Bot
+#                               version 1.91
+#
+#                           Ukrainian locale (woman)
+#
+# --------------------------------------------------------------------
+#                  (c) 2oo9-2o1o Disabler Production Lab.
+# --------------------------------------------------------------------
+
+# перевод isida.py и main.py
+Locale not found!	Локалізація не знайдена!
+Locale set to: %s	Встановлена локалізація: %s
+Current locale: %s	Поточна локалізація: %s
+What?	Га?
+Censored!	Фільтруємо балачки!
+Too many letters!	Забагато букоф!
+*** %s set topic: %s	*** %s поновив(ила) тему: %s
+/me detect bad stanza from %s	/me дивиться на %s і гадає: "Факін розумник детектед!"
+Kicked	Вигнали
+Banned	Забанили
+Leave	Вийшов
+Plugin %s. %s	Плагін %s. %s
+Unknown error!	Невідома помилка!
+No reason	Причина не вказана
+Mon	Пн
+Tue	Вт
+Wed	Ср
+Thu	Чт
+Fri	Пт
+Sat	Сб
+Sun	Нд
+Winter time	Зимовий час
+Summer time	Літній час
+Jan	Січ
+Fed	Лют
+Mar	Бер
+Apr	Кві
+May	Тра
+Jun	Чер
+Jul	Лип
+Aug	Сер
+Sep	Вер
+Oct	Жов
+Nov	Лис
+Dec	Гру
+Censor is %s	Цензор %s
+Shutdown by CTRL+C...	Якийсь розумник натиснув CTRL+C у консолі...
+Command execution error.	Помилка виконання команди.
+ok	ок
+I can't execute it! Error: %s	Я не можу це виконати! Помилка: %s
+Enabled: %s	Включено: %s
+Only conference owner can enable commands!	Ввімкнення команд доступне лише власнику конференції!
+Command %s is not disabled!	Для даної конференції команда %s не була вимкнена!
+What to enable?	Що ввімкнути?
+Disabled commands: %s	Вимкнені команди: %s
+Commands disabled before: %s	Вимкнені раніше команди: %s
+Commands not found: %s	Не знайдені команди: %s
+What to disable?	Що вимкнути?
+Only conference owner can disable commands!	Вимкнення команд доступне лише власнику конференції!
+Disabled commands: %s	Вимкнені команди: %s
+Disabled commands not found!	Для даної конференції немає вимкнених команд!
+leave this room.	залишив цю конференцію.
+I can't see %s here... 	Я можу помилятися, але %s тут немає...
+Last update:\n%s	Останнє поновлення:\n%s
+File %s not found!	Файл %s недоступний!
+Mode %s not detected!	Режим %s не впізнан!
+Updated:	Поновлено:
+Added:	Додано:
+Removed: %s	Видалено: %s
+Unable to remove %s	Неможливо видалити %s
+Aliases: %s	Скорочення: %s
+Aliases not found!	Скорочення не знайдені!
+Flood is %s	Флуд %s
+on	ввімк
+off	вимк
+%s days %s	%s днів %s
+%s Days %s	%s дня %s
+%s day %s	%s день %s
+%s months %s	%s місяців %s
+%s Months %s	%s місяця %s
+%s month %s	%s місяць %s
+%s years %s	%s років %s
+%s Years %s	%s року %s
+%s year %s	%s рік %s
+Command prefix: %s	Префікс команд: %s
+absent	відсутній
+Smiles is %s	Смайли %s
+Uptime: %s, Last session: %s	Час роботи: %s, Остання сесія: %s
+Total Error(s): %s\n	Помилки: %s\n
+No Errors	Немає помилок
+Who do you need?	А чи був хлопчик?
+Access level: %s	Доступ: %s
+Ignored	Ігнорований
+Minimal	Мінімальний
+Admin/Owner	Адмін/Власник конфи
+Bot's owner	Власник бота
+%s, jid detected	%s, jid впізнаний
+%s, Prefix: %s	%s, Префікс: %s
+Total commands: %s | Prefix: %s | Your access level: %s | Available commands: %s%s	Усього команд %s | Префікс: %s | Ваш доступ: %s | Доступно команд: %s%s
+access	доступ
+Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot's settings. Available only for bot owner	У бота 3 рівня доступу:\n0 - команди доступні всім без обмежень.\n1 - доступ не нижче адміністратора конференції.\n2 - команди управління і налаштувань бота. доступні лише власнику бота.
+Prefix: %s, Available help for commands:\n	Префікс команд: %s, Доступна довідка з команд:\n
+Access level: %s. %s	Рівень доступу: %s. %s
+Send donation to: %sBest regards, %s	Реквізити для подяк/допомоги:%sЗ повагою, %s
+%sInformation-referral bot%s Help for command: help command	%sІнформаційно-довідковий бот%s Довідка з команд: help команда
+Rejoin by %s	Перезаходжу за командою %s
+Error! %s	Помилка! %s
+I have never been in %s	Вистачить бухати! Мене немає в %s
+Wrong arguments!	Скурвлені аргументи!
+Denied!	Заборонено!
+Joined to %s	Зайшла до %s
+I'm already in %s with nick %s	Вистачить бухати! Я вже в %s з ніком %s
+Changed nick in %s to %s	Зміна ніку в %s на %s
+I can't leave last room!	Не можу залишити останню конфу!
+Leave room %s	Залишила %s
+Leave room by %s	Мене виводить %s
+Temporary message size limit %s	Тимчасовий ліміт обсягу повідомлень %s
+Loaded plugin: %s\nAdd commands: %s	Завантажений плагін: %s\nДоступні команди: %s
+Unloaded plugin: %s\nDel commands: %s	Видалений плагін: %s\nВидалені команди: %s
+Available plugins: %s	Доступні плагіни: %s
+Active plugins: %s	Активні плагіни: %s
+Append: %s	Додано: %s
+Wrong jid!	Невірний jid!
+%s is alredy in list!	%s вже є у списку!
+Removed: %s	Видалено: %s
+Not found!	Не знайдено!
+Bot owner(s): %s	Я приймаю команди від: %s
+Ignore list: %s	Я не приймаю команди від: %s
+Active conference(s): %s	Активних конференцій: %s
+\nHidden conference(s): %s	\nПриховано конференцій: %s
+Conference(s): %s (for more info use 'where' command)\n	Конференцій: %s (докладніше where)\n
+Server: %s | Nick: %s\n	Сервер: %s | Нік: %s\n
+Message size limit: %s\n	Ліміт обсягу повідомлень: %s\n
+Local time: %s\n	Місцевий час: %s\n
+\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s	\nСмайли: %s | Флуд: %s | Цензор: %s | Префікс команд: %s
+What do you need to find?	Що ж будемо шукати?
+I see you as %s/%s	Я бачу тебе як %s/%s
+Found:	Знайдено:
+'%s' not found!	'%s' не знайдено!
+Encoding error!	Помилка визначення кодування
+All RSS was cleared!	Усі RSS були видалені!
+No RSS found!	RSS не знайдені!
+All schedule feeds:	Усі новини:
+Schedule feeds for %s:%s	Розклад новин в %s:%s
+Schedule feeds for %s not found!	Розклад новин в %s не знайдено!
+Add feed to schedule: %s (%s) %s	Додана новина в розклад: %s (%s) %s
+Feeds for	Новини для
+Bad url or rss/atom not found at %s - %s	Помилка url або новини не знайдені на %s - %s
+Can't find in schedule: %s	Не можу знайти в розкладі: %s
+Delete feed from schedule: %s	Видалено з розкладу: %s
+New feeds not found!	Немає новин!
+
+# --------------- перевод хелпов main.py ---------------
+Help system. Helps without commands: about, donation, access	Показує поточні розділи довідкової системи. Розділи довідки без команд: about, donation, доступ
+Join conference.\njoin room[@conference.server.ru[/nick]]	Вхід до конференції:\njoin room@conference.server.ru/nick - вхід до конференції room з ніком nick.\njoin room@conference.server.ru - вхід до конференції room з останнім заданим ніком.\njoin room - вхід до конференції room на останньому заданому сервері з останнім заданим ніком.
+Leave conference.\nleave room[@conference.server.ru[/nick]]	Вихід з конференції:\nleave - вихід з поточної конференції.\nleave room - вихід з конференції room на останньому заданому сервері.\nleave room@conference.server.ru - вихід з конференції room
+Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]	Перезахід до конференції.\nrejoin - перезайти в поточну конференцію.\nrejoin room - перезайти в конференцію room на останньому заданому сервері.\nrejoin room@conference.server.ru - перезайти в конференцію room
+Bot owners list.\nbot_owner show\nbot_owner add|del jid	Робота зі списком власників бота:\nbot_owner show - показати список власників.\nbot_owner add jid - додати jid до списку.\nbot_owner del jid - видалити jid зі списку.
+Black list.\nbot_ignore show\nbot_ignore add|del jid	Робота з "Чорним списком":\nbot_ignore show - показати список.\nbot_ignore add jid - додати jid до списку.\nbot_ignore del jid - видалити jid зі списку.
+Show conferences.	Показ конференцій, в яких знаходиться бот. Також показується нік бота в конференції і кількість учасників.
+Your identification in global base.	Ідентифікація вас у глобальній базі.
+Search user in conferences where the bot is.	Пошук учасника по конференціях, де знаходиться бот.
+Search user in conferences where the bot is. Also show jids	Пошук учасника по конференціях, де знаходиться бот. Додатково будуть показані jid\'и, якщо вони видні боту.
+Local search in temporary base.	Локальний пошук по тимчасовій базі.
+Global search in temporary base.	Глобальний пошук по тимчасовій базі.
+News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Канали новин:\nrss show - показати поточні підписки.\nrss add url time mode - додати підписку.\nrss del url - видалити підписку.\nrss get url feeds mode - отримати поточні новини.\nrss new url feeds mode - отримати лише непрочитані новини.\nrss clear - видалити всё новини в поточній конференції.\nrss all - показати усі новини в усіх конференціях.\n\nurl - адреса rss каналу. можна задавати без http://\ntime - час поновлення каналу. число + покажчик часу. h - години, m - хвилини. допускається лише один покажчик.\nfeeds - кількість повідомлень для отримання. не більше 10 шт.\nmode - режим отримання повідомлень. full - повідомлення цілком, head - лише заголовки, body - лише тіло повідомлення.\nс закінченням -url буде додатково показаний url новини.
+Aliases.\nalias add new=old\nalias del|show text	Скорочені команди.\nalias add aa=bb - виконати команду bb при написанні команди aa\nalias del aa - видалити скорочення aa\nalias show [text] - показати усі скорочення або схожі на text.
+Show commands list.	Показує список доступних команд.
+Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Ввімкнення/вимкнення команд.\ncomm - показати список\ncomm on команда - ввімкнути команду\ncomm off команда1[ команда2 команда3 ...] - вимкнути одну або кілька команд
+Show bot uptime.	Час роботи бота.
+Misc information about bot.	Різна інформація про бота.
+Last svn update log	Показ svn-лога останнього оновлення бота
+Smile action for role/affiliation change\nsmile [on|off]	Реакція смайлами на зміну ролі/аффіляції у даній конференції.\nsmile [ввімк|вимк]
+Autoanswer\nflood [on|off]	Ввімкнення/вимкнення самонавчаючогося автовідповідача.\nflood [ввімк|вимк]
+Censor notification\ncensor [on|off]	Ввімкнення/вимкнення цензор-нотифікатора.\ncensor [ввімк|вимк]
+Set temporary message limit.	Обсяг повідомлення, понад якого повідомлення будуть розбиватися на частини, кратні цьому обсягу.
+Plugin system.\nplugin show|local\nplugin add|del name	Управління системою плагінів:\nplugin show - показати підключені плагіни.\nplugin local - показати доступні для підключення плагіни.\nplugin add name - додати плагіни.\nplugin del name - видалити плагін.
+Show error(s).\nerror [number|clear]	Показує останню логіровану помилку або останні, якщо заданий параметр.\nerror [number|clear]
+Your identification.	Ваша ідентифікація перед ботом.
+Identification.	Ідентифікація перед ботом.
+Show status.	Показ статусу.
+Set command prefix. Use 'none' for disabler prefix	Вказання префікса команд. Без параметра показує поточний префікс. Якщо параметром є none, префікс буде вимкнений.
+
+# ------------------------------------------------------
+#                       Plugins
+# ------------------------------------------------------
+
+# adminmail.py
+Time limit exceeded. Wait: %s	Перевищен ліміт швидкості відправлення повідомлень. Чекайте: %s
+User %s (%s) from %s at %s send massage to you: %s	Користувач %s (%s) з конференції %s в %s відправив(ила) вам повідомлення: %s
+Sent	Відправила
+# - help -
+Send message to bot's owner\nmsgtoadmin text	Відіслати повідомлення власнику бота.\nmsgtoadmin текст повідомлення
+
+# afor.py
+Something is broken.	Щось зламалося.
+# - help -
+Show random aphorism from skio.ru | Author: ferym	Показує випадковий афоризм з ресурсу skio.ru | Автор: ferym
+
+
+# age.py
+I see:	Я бачила:
+%s %s ago	%s %s тому
+Leave %s ago	Вийшов %s тому
+Is here: %s	Знаходиться тут: %s
+%s (with nick: %s)	%s (з ніком: %s)
+I saw %s:	Я бачила %s:
+Send for you in private	Результат відправлений вам до привату.
+# - help -
+Show age of jid in conference.	Показує, скільки часу визначений jid або нік знаходився в даній конференції.
+Show age of jid in conference splitted by nicks.	Показує, скільки часу визначений jid або нік знаходився в даній конференції з розбивкою за ніками.
+Show time of join/leave.	Показує час входу/виходу.
+Show time of join/leave splitted by nicks.	Показує час входу/виходу з розбивкою за ніками.
+Show time of join/leave + jid.	Показує час входу/виходу + jid. Результат роботи команди завжди направляється до привату.
+Show time of join/leave + jid splitted by nicks.	Показує час входу/виходу + jid з розбивкою за ніками. Результат роботи команди завжди направляється до привату.
+
+
+# anek.py
+# - help -
+Show random anecdote | Author: ferym	Показує випадковий анекдот з інтернет-ресурсу | Автор: ferym
+
+
+# answers.py
+Export to file: %s | Total records: %s | Unique records: %s	Експорт до файлу: %s | Усього записів: %s | Після видалення дублікатів: %s
+Import from file: %s | Total records: %s	Імпорт з файлу %s | Усього записів: %s
+# - help -
+Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file	Імпорт/експорт бази відповідей до текстового файлу.\nanswers import [назва файлу] - імпорт відповідей з текстового файлу до бази\nanswers export [назва файлу] - експорт відповідей з бази до текстового файлу
+
+
+# antitroll.py
+You troll!	Ти троль!
+Done	Готово
+# - help -
+Repeat message to private.\ntroll nick\n[text]\n[number]	Повторення повідомлення кілька раз до привату.\ntroll нік\n[текст]\n[кількість]
+
+
+# backup.py
+Available copies:	Резервні копії:
+Backup copies not found.	Резервні копії не знайдені.
+I need an owner affiliation for backup settings!	Для резервного копіювання мені необхідні права власника конференції!
+I need an owner affiliation for restore settings!	Для відновлення резервної копії мені необхідні права власника конференції!
+Restore completed.	Відновлення завершено.
+What do you want to restore?	Що будемо відновлювати?
+Backup/restore conference settings.\nbackup show|now|restore\nshow - show available copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервне копіювання/відновлення конференцій.\nbackup show|now|restore\nshow - показати доступні копії\nnow - зберегти поточну конференцію\nrestore назва_конференції - відновити конференцію в поточній.
+
+
+# bash.py
+Quote not found!	Цитата не знайдена!
+comix	комікс
+Quote from bash.org.ru\nbash [number]	Цитата с bash.org.ru\nbash [номер]
+Quote from ibash.org.ru\nibash [number]	Цитата с ibash.org.ru\nibash [номер]
+
+
+# blacklist.py
+Leave conference %s\n	Залишила %s\n
+Conference was added in blacklist	Конференція занесена до чорного списку
+This conference already exist in blacklist.	Адреса уже є у списку.
+You can't add last conference in blacklist.	Не можна додавати останню конференцію до чорного списку.
+Add to blacklist: %s	Додано до чорного списку: %s
+Removed from blacklist: %s	Видалено з чорного списку: %s
+Address not in blacklist.	Адреса відсутня у чорному списку.
+Error in parameters. Read the help about command.	Помилка в параметрах, прочитайте довідку за командою.
+List is empty.	Список порожній.
+Cleared.	Очищено.
+List of conferences:\n	Список конференцій:\n
+Manage of conferences blacklist.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - add|remove address from blacklist\nblacklist show - show blacklist\nblacklist clear - clear blacklist	Чорний список конференцій.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - додати|видалити конференцію до/з чорного списку\nblacklist show - показати список\nblacklist clear - очистити список
+
+
+# calendar.py
+\nMon Tue Wed Thu Fri Sat Sun\n	\nПн Вт Ср Чт Пт Сб Нд\n
+Now: %s%s	Зараз: %s%s
+Error!	Помилка!
+Calendar. Without parameters show calendar for current month.\ncalendar [month][year][symbol_splitter]	Показ календаря. Без параметрів показує календар на поточний місяць\ncalendar [місяць][рік][символ_роздільник]
+
+
+# clear.py
+Clean by %s messages in approximately %s sec.	Розпочинаю зачистку! Повідомлень: %s, час зачистки приблизно %s сек.
+Cleaned!	Стерильно!
+Hidden cleaning of conference history.	Прихована очистка історії повідомлень. По замовчуванню буде послано 20 прихованих + 1 повідомлення в конференцію. Можна задати свій параметр від 2 до 100.
+
+
+# convert.py
+Available values:\n%s	Допустимі значення:\n%s
+Currency converter\nconvert from to count\nconvert list	Конвертор валют\nconvert з до сума\nconvert list
+
+
+# cron.py
+I can't!	Не вмію!
+
+
+# defcode.py
+Search only for mobile phones Russia	Пошук лише по мобільних телефонах Россії!
+Not found.	Не знайдено.
+Found:\n%s%s	Знайдено:\n%s%s
+Territorial accessories mobile phone number. Warning Specify at least 7 of the first digits in order to avoid a large number of messages.	Територіальна належність номера мобільного телефону. Увага! Вказуйте не менш 7-ми перших цифр номера, щоб уникнути великої кількості повідомлень!
+
+
+# disco.py
+Total: %s	Усього: %s
+"%s" not found	"%s" не знайдено
+Total: %s%s	Усього: %s%s
+I can't do it	Не виходить...
+Please wait. Result you will be receive in private message approximately %s %s	Чекайте, результат ви отримаете в приват приблизно через %s %s
+sec.	сек.
+matches with nick "%s": %s	збігів з ніком "%s": %s
+nick "%s" not found.	нік "%s" не знайден.
+Total conferences: %s, available: %s	Усього конференцій: %s, доступне: %s
+Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.	Обзор сервисів.\ndisco server.tld - запрос інформації про сервер\ndisco conference.server.tld [body [size]] - пошук рядка body в обзорі конференцій і показ size результатів\ndisco room@conference.server.tld [body [size]] - пошук рядка body в обзорі конференції room і показ size результатів
+Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld	Пошук ніка по серверу конференцій\nwhereis - пошук свого ніка по серверу, на якому знаходиться поточна конференція\nwhereis nick - пошук ніка по серверу, на якому знаходиться поточна конференція\nwhereis nick [conference.]server.tld - пошук ніка по серверу server.tld
+
+
+# domain.py
+Sites at Domain/IP address: %s\n	Сайти, розташовані на IP-адресі/домені: %s\n
+Domain/IP address info:	Інформація о IP-адресі/домені:
+No data!	Немає даних!
+Domain/IP address whois info.	Показує інформацію whois домену/IP-адреси\ndomain_info IP|домен\ndomain_info sites IP|домен - показує сайти, що знаходяться на домені/IP-адресі
+
+
+# drink.py
+last	останній
+Last	остання
+lAst	останнє
+first	перше
+second	друге
+third	трете
+fourth	четверте
+fifth	п'яте
+sixth	шосте
+seventh	сьоме
+eighth	восьме
+nineth	дев'яте
+tenth	десяте
+eleventh	одинадцяте
+twelveth	дванадцяте
+thirteenth	тринадцяте
+fourteenth	чотирнадцяте
+fivteenth	п'ятнадцяте
+sixteenth	шістнядцяте
+seventeenth	сімнадцяте
+eighteenth	вісімнадцяте
+nineteenth	дев'ятнадцяте
+twentieth	двадцяте
+twenty-first	двадцять перше
+twenty-second	двадцять друге
+twenty-third	двадцять трете
+twenty-fourth	двадцять четверте
+twenty-fifth	двадцять п'яте
+twenty-sixth	двадцять шосте
+twenty-seventh	двадцять сьоме
+twenty-eighth	двадцять восьме
+twenty-nineth	двадцять дев'яте
+thirtieth	тридцяте
+thirty-first	тридцять перше
+january	січень
+february	лютий
+march	березень
+april	квітень
+may	травень
+june червень
+july	липень
+august серпень
+september	вересень
+october	жовтень
+november	листопад
+december	грудень
+January	січня
+February	лютого
+March	березня
+April	квітня
+May	травня
+June червня
+July	липня
+August серпня
+September	вересня
+October	жовтня
+November	листопада
+December	грудня
+Read file error.	Помилка читання файлу.
+Holiday: %s not found.	Привід: %s не знайден.
+I know holidays: %s	Я знаю приводи випити: %s
+Database doesn't exist.	На жаль, база відсутня.
+Find holiday\ndrink [name_holiday/date]	Пошук приводу випити ;)\ndrink [привід/дата]
+
+
+# execute.py
+I can't calculate it	Я не можу це порахувати
+Expression unacceptable!	Неприпустимий вираз!
+Execution of external code.	Виконання зовнішнього коду.
+Calculator.	Калькулятор.
+
+
+# gis.py
+Night	Ніч
+Morning	Ранок
+Day	День
+Evening	Вечір
+rain	дощ
+downpour	злива
+snow	сніг
+storm	гроза
+no data	немає даних
+no precipitation	без опадів
+clear	ясно
+cloudy	малохмарно
+Cloudy	хмарно
+overcast	похмуро
+N	Пн
+NE	ПнСх
+E	Сх
+SW	ПдЗх
+S	Пд
+SE	ПдСх
+W	Зх
+NW	ПнЗх
+Weather in %s:\nDate\t t°\tWind\tClouds	Погода в місті %s:\nДата\t t°\tВітер\tХмарність
+\tPressure, mm. Hg. Art.\tHumidity %	\tТиск, мм.рт.ст.\tВологість %
+\tCalm	\tШтиль
+Weather forecast (short). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Короткий прогноз погоди. Надано Gismeteo.Ru | http://www.gismeteo.ru
+Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Повний прогноз погоди. Надано Gismeteo.Ru | http://www.gismeteo.ru
+
+
+# google.py
+wiki %s inurl:en.wikipedia.org/wiki	вікі %s inurl:ru.wikipedia.org/wiki
+Expression "%s" not found!	Виразу "%s" не знайдено!
+xep "%s" not found!	xep "%s" не знайден!
+Albanian	албанська
+English		англійська
+Arabic	арабська
+Afrikaans	африкаанс
+Belarusian	білоруська
+Bulgarian	болгарська
+Welsh	валійська
+Hungarian	угорська
+Vietnamese	в'єтнамська
+Galician	галісійська
+Dutch	голландська
+Greek	грецька
+Danish	данська
+Hebrew	іврит
+Yiddish	ідиш
+Indonesian	індонезійська
+Irish	ірландська
+Icelandic	ісландська
+Spanish	іспанська
+Italian	італійська
+Catalan	каталанська
+Chinese	китайська
+Korean	корейська
+Latvian	латиська
+Lithuanian	литовська
+Macedonian	македонська
+Malay	малайська
+Maltese	мальтійська
+German	немецька
+Norwegian	норвезька
+Persian	персидська
+Polish	польська
+Portuguese	португальська
+Romanian	румунська
+Russian	російська
+Serbian	сербська
+Slovak	словацька
+Slovenian	словенська
+Swahili	суахілі
+Tagalog	тагальстка
+Thai	тайська
+Turkish	турецька
+Ukrainian	українська
+Finnish	фінська
+french	французька
+Hindi	хінді
+Croatian	хорватська
+Czech	чеська
+Swedish	шведська
+Estonian	естонська
+Japanese	японська
+Available languages for translate: 	Доступні мови для перекладу: 
+Available languages: %s	Відомі мови: %
+I don't know this language	Я не знаю таких мов
+Incorrect language settings for translate. tr list - available languages.	Неправильно вказана мова або немає тексту для переводу. tr list - доступні мови
+Command's format: tr from to text	Формат команди: tr з_якої на_яку текст
+Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction	Перекладач.\ntr з_якої_мови на_яку_мову текст - переклад тексту\ntr list - список мов для перекладу\ntr info <скорочення> - розшифровка скорочення мови
+Search in google	Пошук через google
+Search XEP	Пошук XEP
+Search in en.wikipedia.org	Пошук по ru.wikipedia.org
+
+
+# hideroom.py
+This command available only in private!	Команда доступна лише в приваті!
+Hidden conferences:	Я приховую конфи:
+No hidden conferences.	Прихованих конференцій немає.
+I am not in the %s	Мене немає в %s
+I'm already hide a %s	Я вже приховую конфу %s
+%s will be shown	%s буде показана
+%s has been hidden	%s була прихована
+Hide conference.\nhide [add|del|show] [room@conference.server.tld]	Приховати конференцію.\nhide [add|del|show][ room@conference.server.tld]
+
+
+# horo.py
+Message send to private	Відправлено до привату
+List of dates:\n%s	Список дат:\n%s
+aries	овен
+taurus	телець
+gemini	близнюки
+cancer	рак
+leo 	лев
+virgo	діва
+libra	терези
+scorpio	скорпіон
+sagittarius	стрілець
+capricorn	козеріг
+aquarius	водолій
+pisces	риби
+Aries %s	Овен %s
+Taurus %s	Телець %s
+Gemini %s	Близнюки %s
+Cancer %s	Рак %s
+Leo %s	Лев %s
+Virgo %s	Діва %s
+Libra %s	Терези %s
+Scorpio %s	Скорпіон %s
+Sagittarius %s	Стрілець %s
+Capricorn %s	Козеріг %s
+Aquarius %s	Водолій %s
+Pisces %s	Риби %s
+Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym	Показує гороскоп для вказаного знака зодіаку. Перегляд знаков зодіаку - "horo list". Перегляд списку дат - "horo date" | Автор: ferym
+
+
+# idle.py
+Your last activity was %s ago	Ваша остання активність була %s тому
+%s's last ativity was %s ago	Остання активність %s була %s тому
+message	повідомлення
+presence	презенс
+Idle time	Час з моменту останньої активності
+I can't find %s	Не можу знайти %s
+
+
+# inlist.py
+Total banned: %s, 	Усього в бані: %s, 
+found:\n	знайдено:\n
+no matches!	збігів немає!
+Total owners: %s, 	Усього власників: %s, 
+Total admins: %s, 	Усього адміністраторів: %s, 
+Total members: %s, 	Усього постійних учасників: %s, 
+Search in outcats list of conference.	Пошук по outcast списку конференції.
+Search in members list of conference.	Пошук по members списку конференції.
+Search in admins list of conference.	Пошук по admins списку конференції.
+Search in owners list of conference.	Пошук по owners списку конференції.
+
+
+# invite.py
+%s ishere!	%s знаходиться тут!
+Invited	Покликала
+I seen some peoples with this nick. Get more info!	Я бачила кілька людей з таким ніком. Укажіть точніше!
+I don't know %s	Я не в курсі, хто такий %s
+%s asks you to go to %s	%s просить вас зайти до %s
+because %	з привіду %s
+Invite to conference.\ninvite nick|jid\n[reason]	Запросити учасника в конференцію.\ninvite nick|jid\n[привід]
+
+
+# iq.py
+vCard tags:	Теги з візитки:
+vCard:	Візитка:
+vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s	Візитка:\nНик: %s\nІм'я: %s\nПро себе: %s\nURL: %s
+Timeout %s sec.	Вийшов час очікування - %s сек.
+Uptime: %s	Аптайм: %s
+Ping from you %s sec.	Пінг від тебе - %s сек.
+Ping from %s %s sec.	Пінг від %s - %s сек.
+Server statistic: %s | Total: %s | Online: %s	Статистика сервера: %s | Усего: %s | Онлайн: %s
+Client version.	Версія клієнта.
+Ping - reply time. You can ping nick in room, jid, server or transport.	Пінг - час відгуку. Можна пингувати нік в конференції, jid, сервер, транспорт.
+Client side time.	Місцевий час клієнта.
+Client side time + raw time format.	Місцевий час клієнта + час у форматі зі станзи.
+Users server statistic.	Статистика користувачів сервера.
+vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show available fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.	Запрос vcard. Рекомендуется составить alias на базе команды для вывода нужных полей.\nvcard_raw [nick] - показ основной информации из vcard\nvcard_raw nick\nshow - показ доступних полей vcard\nvcard_raw nick\nполе:название|поле:название - показ запрошенных полей из vcard
+Server or jid uptime.	Аптайм jabber-сервера або jid'а
+
+
+#istrue.py
+100% True-nick!	100% Ъ-нік!
+Nicks without letters isn't true!	Ніки без літер не Ъ!
+Valid of nick is - %s%s	Кошерність ніка %s%s 
+Normal nick, but left symbols in fireplace.	Нормальний нік, а ліві символи фтопку!
+Many caps - %s%s	Багато капсу - %s%s
+Dominate letters: 	Переважають літери: 
+Cyrillic	Кирилиця
+Latin	Латиниця
+Eually	Порівну
+And?	Ну і?
+Expression is true for %s%s	Ймовірність того, что вираз вірний - %s%s
+Check truth of expession.	Перевірка виразу на правдивість.
+Check different languages symbols in nick.	Перевірка ніка на використання літер з різних мов.
+
+
+#jc.py
+Show information about conference from jc.jabber.ru.\njc [address]	Показує інформацию про вказану конференцію з ресурсу jc.jabber.ru\njc [конфа]
+
+
+# jidcatcher.py
+What I must find?	Що ж будемо щукати?
+Total resources: %s	Усього ресурсів: %s
+Found resources: %s\n	Знайдено ресурсів: %s\n
+Total servers: %s	Усього серверів: %s
+Found servers: %s\n	Знайдено серверів: %s\n
+Max count of members: %s %s	Максимальна кількість учасників: %s %s
+Statistic not found!	Статистика не знайдена!
+Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.	Без параметра показує топ10 ресурсів по всіх конференціях, де знаходиться бот.\nЗ параметром - пошук по базі ресурсів.\nЧисла - кількість ресурсів.
+Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.	Без параметра показує усі сервера, з яких заходили в конференції, де знаходиться бот.\nЗ параметром - пошук по базі серверів.\nЗ параметром count показує кількість унікальних серверів.\nЧисла - кількість серверів.
+Search in internal jids base.	Пошук по внутрішній базі jid\'ів.
+Conference's activity.	Активність конференції.
+
+
+# juick.py
+Smoke help about command!	Куримо довідку за командою!
+User %s not found	Користувач %s не знайден
+Who?	Хто?
+Message #%s not found	Пост #%s не знайден
+(Replies: %s)	(Відповідей: %s)
+(No replies)	(Немає відповідей)
+Invalid message number	Невірний номер поста
+What message do you want to find?	Який пост знайти?
+Tag %s not found	Тег %s не знайден
+Tag %s found in %s	Тег %s знайден у %s
+What tag do you want to find?	Який тег знайти?
+Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user's messages\njuick info <username> - show user info	Мініблоги http://juick.com\njuick tag user <tag>[ кількість_користувачів] - користувачі, які використовують теги\njuick tag msg <tag>[ ліміт_повідомлень [ліміт_обсягу_повідомлень]] - повідомлення з заданими тегами\njuick msg <номер_поста>[ кількість] - пост+кількість відповідей\njuick msg <номер_поста/номер_відповіді> - пост+відповідь на пост\njuick user <user> [ліміт_повідомлень [ліміт_обсягу_повідомлень]] - останні повідомлення користувача\njuick info <user> - інформація про користувача
+
+
+# karma.py
+you	тебе
+In this room karma is not changed!	В даній конфі карма не змінювалась!
+Top karma: %s	Топ карми: %s
+Karma for members is present not changed!	У присутніх карма не змінювалась!
+I'm not sure, but %s not is here.	Я не впевнена, але %s тут немає.
+%s have a clear karma	У %s чиста карма
+%s\'s karma is %s	У %s карма %s
+You can't change karma in private!	Змінення карми в приваті заборонено!
+You can't change karma in outdoor conference!	Не можна змінити карму учасника поза конференції!
+You can't change own karma!	Не можна змінити карму самому собі!
+You changes %s's karma to %s. Next time to change across: %s.	Ви змінили карму %s до %s. Наступний раз можна змінити через: %s
+Time from last change %s's karma is very small. Please wait %s.	Ви нещодавно змінювали карму %s. Почекайте: %s.
+You can't change karma!	Вам не можна змінювати карму учасника!
+Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма учасника.\nkarma [show] nick\nkarma top+|- [кількість]\nДля змінення:\nnick: +1\nnick: -1
+
+
+# known.py
+I know you as: 	Я бачила тебе як: 
+I know %s as: 	Я бачила %s як: 
+Show user's nick changes.	Показ зміни ніків.
+
+
+# lastfm.py
+Last track %s: %s - %s %s	Остання доріжка %s: %s – %s %s
+Unavailable!	Недоступно!
+Last tracks %s:	Останні доріжки %s:
+Friends %s:	Друзі %s:
+Loved tracks %s:	Улюблені треки %s:
+Neighbours %s:	Сусіди %s:
+Playlists %s:	Плейлисти %s:
+Top albums %s:	Топ альбомів %s:
+Top artists %s:	Топ виконавців %s:
+Top tags %s:	Топ тегів %s:
+Top tracks %s:	Топ треків %s:
+Need two users	Потрібно вказати двох користувачів
+Tastes of %s and %s - soo different!	Сумісність %s и %s - нульова!
+Match tastes of %s and %s - %s	Збіжність смаків %s і %s - %s
+Artists: %s	Виконавці: %s
+Not found file LastFM.api	Не знайден файл LastFM.api
+# - help -
+Last scrobled tracks	Останні скроблені треки
+Last scrobled track	Останній скроблений трек
+Last friends	Останні друзі
+Last loved tracks	Останні улюблені треки
+Last neighbours	Сусіди за смаками
+Last playlist	Останній плейлист
+Top albums	Топ альбомів
+Top artists	Топ виконавців
+Top tags	Топ тегів
+Top tracks	Топ треків
+Music tastes	Музична сумісність
+
+
+# logger.py
+now is	тепер
+leave	вийшов
+join as	зайшов як
+Logged conferences:	Я веду логи в:
+Logs are turned off in all conferences.	Логи не ввімкнені в жодній конференції.
+Logs for %s already enabled.	Я вже веду логи конфи %s
+Logs for %s enabled.	Логи для %s ввімкені.
+Logs for %s disabled.	Логи для %s вимкнені.
+Logging history conference.\nlog [add|del|show][ room@conference.server.tld]	Ввімкнення логів конференції.\nlog [add|del|show][ room@conference.server.tld]
+
+
+# md5.py
+Calculate phrase md5 sum.	Розрахунок md5 фрази.
+
+
+# muc.py
+This command available only for conference owner!	Команда доступна лише власнику конференції!
+Global ban is disable in:	Я не баню глобально в конфах:
+Global ban enable without limits!	Я баню глобально без обмежень!
+Conference %s already deleted from global ban list!	Конференція %s вже виключена зі списку глобального бану!
+Conference %s has been deleted from global ban list!	Конференція %s виключена зі списку глобального бану.
+Conference %s has been added from global ban list!	Конференція %s додана до списку глобального бану.
+Conference %s already exist in global ban list!	Конференція %s вже додана до списку глобального бану!
+Your conference will be ignored for global ban!	Ваша конференція ігнорується при глобальному бані!
+I need jid!	Необхідно вказати jid!
+banned global by %s from %s	забанен глобально від %s з конференції %s
+jid %s has been banned in %s conferences.	jid %s забанен в %s конференціях.
+Found: %s	Знайдено: %s
+ban on %s since %s because %s	бан строком %s починаючи з %s через %s
+I don'n know %s, and use as is!	Я не в курсі, хто такий %s - баню як є!
+I don't know %s	Я не знаю, хто такий %s
+Time format error!	Помилка формату часу!
+Command is locked!	Команда заблокована!
+done	виконано
+Who delete?	Кого видалити?
+Cleared for %s	Очищено для %s
+No reason!	Привід не вказан!
+No matches for %s in alist.	%s не знайдено в alist.
+Found in list: %s %s, reason: %s by %s	Знайдено в списку: %s %s, привід: %s від %s
+Ban user.	Забанити учасника.
+Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.	Тимчасовий бан.\ntban show|del [jid] - показати/видалити тимчасові бани\ntban nick\ntimeD|H|M|S\nreason - бан ніка nick на строк time через reason
+Delete user affiliation.	Видалення аффіляции
+Get member affiliation.	Зробити учасника постійним.
+Search in alist.	Пошук учасника в alist.
+Kick user.	Вигнать учасника.
+Give participant.	Зробити учасником без повноважень.
+Give visitor.	Зробити учасника гостем.
+Give role moderator.	Зробити учасника модератором.
+Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.	Автокік.\nakick show|del [jid] - показати/видалити автокік\nakick nick\ntimeD|H|M|S\nreason - автоматично виганяти нік nick на строк time через reason
+Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.	Автоучасник.\naparticipant show|del [jid] - показати/видалити автоучасників\naparticipant nick\ntimeD|H|M|S\nreason - автоматично робити нік nick учасніком на строк time через reason
+Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.	Автогість.\navisitor show|del [jid] - показати/видалити автогостей\navisitor nick\ntimeD|H|M|S\nreason - автоматично робити нік nick гостем на строк time через reason
+Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.	Автомодератор.\namoderator show|del [jid] - показати/видалити автомодераторів\namoderator nick\ntimeD|H|M|S\nreason - автоматично робити нік nick модератором на строк time через reason
+Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.	Глобальний бан. Доступний лише власникям конференцій.\nglobal_ban del - видалити конференцію зі списку глобального бану,\nglobal_ban add - додати конференцію в список глобального бану,\nglobal_ban <jid> - забанити jid в усіх конференціях, де бот - адмін.
+
+
+# net.py
+What do you want to find?	Що ж будемо шукати?
+I can't resolve it	Не ресолвиться
+DNS resolver.	DNS-ресолвер.
+Search domain zones TLD.	Пошук доменних зон TLD.
+
+
+# phone.py
+Your search returns no results.	За вашим запитом нічого не знайдено.
+Found:\n	Знайдено:\n
+Information about telephone city code, DEF code or search code for city.	Інформація про код міста, DEF-код, пошук кода за назвою.
+
+
+# poke.py
+For members this command not available in private!	Учасникам дана команда в приваті недоступна!
+gave NICK ... just gave ... :-"	дала NICK... просто в око... :-"
+poked a stick NICK in the eye ...	потикала дрючком в око NICK...
+suggested NICK shrimp :-[	запропонувала NICK козявку :-[
+fed NICK laxative with powdered glass!	нагодувала NICK пургеном з товченим склом!
+whispered in his ear softly NICK LOL!	прошепотіла NICK на вухо тихесенько МОСКАЛІ!
+threw the crowbar aside NICK	кинула ломик в бік NICK
+gave NICK strawberry poison	дала NICK полуничного йаду
+jumped around with a tambourine NICK	пострибала з бубном навколо NICK
+sticking NICK with the words "buy ice cream, you creep!"	тикає NICK зі словами "купи морозива, гадюка!"
+trying kick the ass NICK	цілиться в NICK плюсометом і добро посміхається
+Phrases:	Фрази:
+The record doesn't exist!	Такої фрази немає!
+Added	Додала
+I can't add it! No keyword "NICK"!	Не можу додати! Немає ключового слова "NICK"!
+I ban a ip for such jokes!	Ща зобаню по ip за такі жарти!
+I could be wrong, but %s not is here...	Я можу помилятися, але %s тут немає...
+Masochist? 8-D	Самотик? 8-D
+"Poke" command\npoke nick - say a random phrase for nick\nControls command, available only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тик"\npoke nick - сказати випадкову фразу nick\nКоманди управління, доступні лише власнику бота:\npoke show - показати список фраз\npoke add фраза - додати фразу\npoke del номер_фрази - видалити фразу
+
+
+# price.py
+site input format is domain.tld	формат вводу сайту domain.tld
+What site be evaluated?	Який сайт оцінювати?
+Estimated value %s is %s	Оцінна вартість домену %s складає - %s
+I can't process your request.	Не вийшло опрацювати запит.
+Show estimated value of domain | Author: ferym	Показує орієнтовну оцінну вартість домену | Автор: ferym
+Show estimated value of domain | Author: Disabler	Показує орієнтовну оцінну вартість домену | Автор: Disabler
+
+
+# redirect.py
+Redirect command output in private.	Перенаправляє виведення команди в приват.
+Redirect command output in groupchat.	Перенаправляє виведення команди в конференцію.
+
+
+# say.py 
+"Say" command. Bot say in conference all text after command.	Команда "Сказати". Бот видасть в поточну конференцію все, що буде після команди say.
+Global message in all conferences, where bot is present.	Глобальне оголошення во всіх конференціях, де знаходиться бот.
+Set conference topic.	Установка топіку конференції
+
+
+# sayto.py
+for	для
+You access level is to low!	Для вас ця функція недоступна!
+Not transfered messages: %s	Не передані повідомлення: %s
+I will convey your message.	Передам.
+Or am I a fool or %s is here.	Чи я дурепа, чи %s знаходиться тут...
+I seen some people with this nick, and I can convey is incorrect. Coincidence: %s, and count convey messages: %s	Я бачила кілька людей з таким ніком і можу помилково передати. Збігів: %s, буде передано повідомлень: %s
+All people with this nickname are here!	Усі, кого я бачила з таким ніком, знаходятся в конфі!
+This jid is here!	Даний jid знаходиться в конфі!
+I didn't see user with jid %s, but if he join here I convey your message.	Я не бачила людину з jid'ом %s, але якщо зайде - я передам.
+I didn't see user with nick %s. You can use jid.	Я не бачила %s в конференції. Ви можете вказати jid.
+What convey to?	Кому що передати?
+%s %s ago convey for you: %s	%s %s тому прохав передати: %s
+%s convey for you: %s	%s прохав передати: %s
+%s from conference %s convey message for you: %s	%s з конференції %s передав: %s
+"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn't be send this message remove.	Команда "передати".\nsayto jid|nick message - при вході в конференцію jid\'a або ніка відправить повідомлення "message". Повідомлення зберігаються 14 днів, після чого недоставлені повідомлення видаляються.
+Send message to jid\n sayjid jid message.	Відправити повідомлення на jid.\nsayjid jid message
+
+
+# setnick.py
+You can't do it!	Тобі не можна!
+Change bot nick. Available only for conference owner.	Зміна ніка. Доступна лише власнику конференції.
+
+
+# shutdown.py
+reason: %s	привід: %s
+Shutdown	Завершення роботи
+Restart	Перезапуск
+Autoupdate	Автопоновлення
+%s by command from %s	%s за командою %s
+Shutting down the bot. You cat set reason.	Завершення роботи бота. Можна вказати параметр, який буде показаний в статусі бота при виході.
+Restart the bot. You cat set reason.	Перезапуск бота. Можна вказати параметр, який буде показаний в статусі бота при виході.
+Autoupdate from SVN.	Самопоновлення бота з SVN.
+
+
+# shell.py
+Execute shell command.	Виконання shell-команди.
+Execute shell command without output result.	Виконання shell-команди без показу виведення команди.
+
+
+# srv.py
+Port status at %s	Статус порту %s
+Command nslookup	Команда nslookup
+Command host	Команда host
+Command dig	Команда dig
+Check port activity\nport server:port [1..5]	Перевірка активності порту на запитуємому сервері:\nport server:port [1..5]
+
+
+# spy.py
+what do you want to add?	що додати?
+not given tracking	не задані параметри спостереження
+is not specified criterion tracking	не вказан критерій спостереження
+incorrect digital parameter	невірно заданий цифровий параметр
+Updated: %s	Поновлено: %s
+what do you want remove?	що видалити?
+Not found: 	Не знайдено: %s
+Monitoring conferences:	Спостереження за конференціями:
+\nNext scanning across %s	\nНаступне сканування через %s
+Leave conference because low activity	Виходжу у зв'язку з низькою активністю конференції
+I leave conference %s by condition spy plugin: %s	Конференція %s залишена за умовою spy-плагіна: %s
+Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.	Перевірка активності конференції\nspy add <conference>[ u<number>][ m<number>] - додати конференцію в список моніторингу активності. u - середня кількість учасників, m - кількість повідомлень за добу. За невиконанням хоча б однієї умови бот залишить конференцію\nspy del <conference> - видалити конференцію зі списку моніторингу\nspy show - показати активне спостереження.
+
+
+# svn.py
+en_EN.UTF8	ru_RU.UTF8
+Read user manual for commands...	Вивчаємо інструкції до команд...
+Show svn log.\nsvn [http://]url [limit] - show last revision(s) limit\nsvn [http://]url rXXX - show XXX revision	Показ svn-лога.\nsvn [http://]url [limit] - показ останньої ревізії або кількох, якщо вказан параметр limit\nsvn [http://]url rXXX - показ ревізії з номером XXX
+
+
+# talkers.py
+Talkers:\nNick\t\tWords\tPhrases\tEffect\tConference	Базіки:\nНік\t\tСлів\tФраз\tКоеф.\tКонфа
+Talkers:\nNick\t\tWords\tPhrases\tEffect	Базіки:\nНік\t\tСлів\tФраз\tКоеф.
+Not found!	Не знайдено!
+Show local talkers	Показ локальної бази "Базік"
+Show global talkers	Показ глобальної бази "Базік"
+
+
+# test.py
+Passed!	Дві смужки!
+Check bot activity.	Перевірка на "живість" бота.
+
+
+# th.py
+Executed threads: %s | Error(s): %s	Виконано тредів: %s | Помилок виконання тредів: %s
+Threads statistic	Статистика роботи тредів
+
+
+# tdate.py
+days	днів
+Days	дні
+day	день
+Error date format!	Помилка формату команди!
+was %s %s ago	був %s %s тому
+will be in %s %s	буде через %s %s
+before the %s remained 	до %s залишилось 
+today	сьогодні
+Calculate count of days for requested date, if the date is holiday, that returned title of holiday.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitters: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010	Розрахунок кількості днів від поточної дати до заданої, якщо на задану дату выпадає свято, то повертається назва свята замість запитуваної дати\nПідтримувані формати дати: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПідтримувані роздільники: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010
+Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitter: ,-.:/\\\ntodate 05.09 before New year remained\ntodate 5/9/2010 before New year remained	Розрахунок кількості днів від поточної дати до заданої з можливістю вставки власного тексту\nПідтримувані формати дати: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПідтримувані роздільники: ,-.:/\\\ntodate 05.09 До Дня Перемоги залишилось\ntodate 5/9/2010 До Дня Перемоги залишилось
+
+
+# turn.py
+qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхїфівапролджєячсмитьбюёЙЦУКЕНГШЩЗХЇФІВАПРОЛДЖЄЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
+QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхїфівапролджєячсмитьбюёЙЦУКЕНГШЩЗХЇФІВАПРОЛДЖЄЯЧСМИТЬБЮЁ
+Turn text from one layout to another.	Якщо текст не заданий - "перевертає" останнє повідомлення з української розкладки на англійську та назад.
+
+
+# watcher.py
+Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s	Таймаут запитів: %s | Таймаут відповідей: %s | Останній запит: %s | Усього перевірок: %s
+Connection activity control.	Контроль активності з'єднання.
+
+
+# wtf.py
+What need to find?	Що ж будемо шукати?
+Some matches in definitions: %s	Дещо схоже я бачила в: %s
+No matches.	Хм. Нічого схожого я не знаю...
+I know that %s is %s	Я знаю, що %s - %s
+All I know is: %s	Все що я знаю - це: %s
+Locale definition: %s\nGlobal: %s\nImported: %s\nTotal: %s	В цій конфі визначень: %s\nГлобальних: %s\nІмпоровано: %s\nУсього: %s
+Send to private %s	Відправлено до привату %s
+Nick %s not found!	Нік %s не знайден!
+I don't know!	Хм. Мені про це ніхто не разповідав...
+What search?	Що ж будемо шукати?
+\nfrom: %s %s	\nвід: %s %s
+I know that %s was defined by %s %s %s	Я знаю, що %s було визначено: %s %s %s
+This is global definition and not allowed to change!	Це глобальне визначення і його не можна змінити!
+Definition removed!	Шкода, що таку корисну фігенцію потрібно забути...
+Definition updated!	Боян, але я запам'ятаю!
+Definition saved!	Ммм.. Щось новеньке, зараз запам'ятаю!
+What need to remember?	Що ж потрібно запам'ятати?
+# - help -
+Random definition from base.	Показ випадкового визначення з бази слів.
+List of definitions in conference.\nwtfnames [all|global|import]	Показ списку визначень в конференції.\nwtfnames [all|global|import]
+Definitions count.	Показ кількості визначень в конференції.
+Search in definitions base.	Пошук по базі визначень.
+Information about definition commiter.	Показ інформації про те, хто зробив визначення.
+Show definition with nick and date.	Показ визначення разом з ніком і датою.
+Show definition in private.\nwtfp word\n[nick]	Показ визначення в приват. Не залежить від того, звідки прийшла команда.\nwtfp word - показати визначення word собі в приват\nwtfp word\nnick - показати визначення word в приват nick
+Show definition.	Показ визначення.
+Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word	Установка визначення.\ndfn word=definition - запам'ятовуэ definition як визначення word\ndfn word= - видаляє визначення word
+Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word	Установка глобального визначення.\ngdfn word=definition - запам'ятовуэ definition як визначення word\ngdfn word= - видаляє визначення word
+
+
+# www.py
+RegExp not found!	RegExp не знайден!
+Error in RegExp!	Помилка в RegExp!
+Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags	Показує зміст веб-сторінки.\nwww regexp\n[http://]url - сторінка, оброблена regexp\nwww [http://]url - сторінка з прибраними html-тегами
+Show net header	Показує заголовок файлу
+
+
+# wz.py
+City not found!	Місто не знайдено!
+Weather by airport code. Full version.	Погода за кодом аеропорту. Неоптимізований варіант.
+Weather by airport code. Short version.	Погода за кодом аеропорту. Вкорочений варіант.
+Weather by airport code. Optimized version.	Погода за кодом аеропорту. Оптимізований варіант.
+
+
+# youtube.ru
+Total found: %s	Усього знайдено: %s
+Search at YouTube	Пошук по YouTube

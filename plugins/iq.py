@@ -244,5 +244,5 @@ execute = [(0, u'ver', iq_version, 2, L('Client version.')),
 	 (0, u'time', iq_time, 2, L('Client side time.')),
 	 (0, u'time_raw', iq_time_raw, 2, L('Client side time + raw time format.')),
 	 (0, u'stats', iq_stats, 2, L('Users server statistic.')),
-	 (0, u'vcard_raw', iq_vcard, 2, L('vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show aviable fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.')),
+	 (0, u'vcard_raw', iq_vcard, 2, L('vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show available fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.')),
 	 (0, u'uptime', iq_uptime, 2, L('Server or jid uptime.'))]

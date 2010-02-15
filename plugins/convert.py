@@ -8,7 +8,7 @@ def currency_converter(type, jid, nick, text):
 		#msg = u'Допустимые значения:\n'
 		#body = body.split('<TD><SELECT class=n name=tid_from>')[1].split('</SELECT></TD>')[0].replace('\t', '').split('<')
 		#for i in range(1, len(body)): msg += body[i].split('\"')[1]+' '
-		msg = L('Aviable values:\n%s') % 'ATS AUD BASE BEF BYR CAD CHF CNY DEM DKK EEK EGP ESP EUR FIM FRF GBP GRD IEP ISK ITL JPY KGS KWD KZT LTL NLG NOK PTE RUR SDR SEK SGD TRL TRY UAH USD XDR YUN'
+		msg = L('Available values:\n%s') % 'ATS AUD BASE BEF BYR CAD CHF CNY DEM DKK EEK EGP ESP EUR FIM FRF GBP GRD IEP ISK ITL JPY KGS KWD KZT LTL NLG NOK PTE RUR SDR SEK SGD TRL TRY UAH USD XDR YUN'
 	elif text.count(' '):
 		if text.lower().count('rur'): text = text.lower().replace('rur', 'base')
 		try:

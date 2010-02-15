@@ -110,7 +110,7 @@ message_control = [append_message_to_log]
 presence_control = [append_presence_to_log]
 
 def log_room(type, jid, nick, text):
-	if type == 'groupchat': msg = L('This command aviable only in private!')
+	if type == 'groupchat': msg = L('This command available only in private!')
 	else:
 		hmode = text.split(' ')[0]
 		try: hroom = text.split(' ')[1]

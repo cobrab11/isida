@@ -15,7 +15,7 @@ def global_ban(type, jid, nick, text):
 	al = get_access(jid,nick)[0]
 	if al == 2: af = 'owner'
 	else: af = get_affiliation(jid,nick)
-	if af != 'owner': msg = L('This command aviable only for conference owner!')
+	if af != 'owner': msg = L('This command available only for conference owner!')
 	elif text == 'show' and al == 2:
 		if len(hr):
 			msg = L('Global ban is off in:')
@@ -371,4 +371,4 @@ execute = [(1, 'ban', muc_ban, 2, L('Ban user.')),
 	   (1, 'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
 	   (1, 'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
 	   (1, 'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
-	   (1, 'global_ban', global_ban, 2, L('Global ban. Aviable only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]
+	   (1, 'global_ban', global_ban, 2, L('Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]

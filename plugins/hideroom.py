@@ -4,7 +4,7 @@
 hide_conf = set_folder+'hidenroom.db'
 
 def hide_room(type, jid, nick, text):
-	if type == 'groupchat': msg = L('This command aviable only in private!')
+	if type == 'groupchat': msg = L('This command available only in private!')
 	else:
 		hmode = text.split(' ')[0]
 		try: hroom = text.split(' ')[1]

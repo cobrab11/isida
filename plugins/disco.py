@@ -173,7 +173,7 @@ def whereis(type, jid, nick, text):
 		else:
 			msgg = L('nick \"%s\" not found.') % who
 
-		msg = L('Total conferences: %s, aviable: %s') % (str(len(isa)-1), str(len(djids))+', '+msgg)
+		msg = L('Total conferences: %s, available: %s') % (str(len(isa)-1), str(len(djids))+', '+msgg)
 		tmp.close()		
 	else:
 		msg = L('I can\'t do it')

@@ -63,7 +63,7 @@ def translate(type, jid, nick,text):
 			  'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
 			  'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese')}
 	if text.lower() == 'list':
-		msg = L('Aviable languages for translate: ')
+		msg = L('Available languages for translate: ')
 		for tl in trlang: msg += tl+', '
 		msg = msg[:-2]
 	elif text[:4].lower() == 'info':
@@ -71,7 +71,7 @@ def translate(type, jid, nick,text):
 		msg = ''
 		for tmp in text:
 			if tmp in trlang: msg += tmp+' - '+trlang[tmp]+', '
-		if len(msg): msg = L('Aviable languages: %s') % msg[:-2]
+		if len(msg): msg = L('Available languages: %s') % msg[:-2]
 		else: msg = L('I don\'t know this language')
 	else:
 		if text.count(' ') > 1:
@@ -82,13 +82,13 @@ def translate(type, jid, nick,text):
 				search_results = urllib.urlopen(url)
 				json = simplejson.loads(search_results.read())
 				msg = rss_replace(json['responseData']['translatedText'])
-			else: msg = L('Incorrect language settings for translate. tr list - aviabe langugaes.')
+			else: msg = L('Incorrect language settings for translate. tr list - available languages.')
 		else: msg = L('Command\'s format: tr from to text')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(0, 'tr', translate, 2, L('Translator.\ntr from_language to_language text - translate text\ntr list - list for aviable languages for translate\ntr info <reduction> - get info about language reduction')),
+execute = [(0, 'tr', translate, 2, L('Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction')),
 	 (0, 'google', google, 2, L('Search in google')),
 	 (0, 'xep', xep_show, 2, L('Search XEP')),
 	 (0, 'wiki', wiki_search, 2, L('Search in en.wikipedia.org'))]

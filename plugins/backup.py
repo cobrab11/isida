@@ -27,7 +27,7 @@ def conf_backup(type, jid, nick, text):
 			for c in a:
 				if c.count('conference'): b.append((c,os.path.getmtime(back_folder+c)))
 			if len(b):
-				msg = L('Aviable copies: ')
+				msg = L('Available copies: ')
 				for c in b: msg += c[0]+' ('+un_unix(time.time()-c[1])+')'+', '
 				msg = msg[:-2]
 			else: msg = L('Backup copies not found.')
@@ -112,11 +112,11 @@ def conf_backup(type, jid, nick, text):
 						cl.send(i)
 						sleep(0.1)
 						msg = L('Restore completed.')
-				else: msg = L('Copy not found. Use key "show" for lisen aviable copies.')
+				else: msg = L('Copy not found. Use key "show" for lisen available copies.')
 			else: msg = L('What do you want to restore?')
 	else: msg = 'backup now|show|restore'
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(1, 'backup', conf_backup, 2, L('Backup/restore conference settings.\nbackup show|now|restore\nshow - show aviable copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference'))]
+execute = [(1, 'backup', conf_backup, 2, L('Backup/restore conference settings.\nbackup show|now|restore\nshow - show available copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference'))]
