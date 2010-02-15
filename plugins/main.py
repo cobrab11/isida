@@ -1071,8 +1071,8 @@ def rss(type, jid, nick, text):
 			if urlmode: msg += turl+'\n'
 			msg = replacer(msg)
 		else:
-			feed = html_encode(feed)
-			title = get_tag(feed,'title')
+			if feed != L('Encoding error!'): title = get_tag(feed,'title')
+			else: title = feed
 			msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])
@@ -1162,8 +1162,8 @@ def rss(type, jid, nick, text):
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
-				feed = html_encode(feed)
-				title = get_tag(feed,'title')
+				if feed != L('Encoding error!'): title = get_tag(feed,'title')
+				else: title = feed
 				msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	if not nosend: send_msg(type, jid, nick, msg)
 
