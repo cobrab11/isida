@@ -628,13 +628,13 @@ Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use 
 
 
 # karma.py
-you	тебя
+Your	тебя
 In this room karma is not changed!	В данной конфе карма не изменялась!
 Top karma: %s	Топ кармы: %s
 Karma for members is present not changed!	У присутсвующих карма не изменялась!
 I'm not sure, but %s not is here.	Я не уверена, но %s тут нет.
 %s have a clear karma	У %s чистая карма
-%s\'s karma is %s	У %s карма %s
+%s karma is %s	У %s карма %s
 You can't change karma in private!	Изменение кармы в привате запрещено!
 You can't change karma in outdoor conference!	Нельзя изменить карму участника вне конференции!
 You can't change own karma!	Нельзя изменить карму самому себе!

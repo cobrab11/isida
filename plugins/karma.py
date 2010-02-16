@@ -49,7 +49,7 @@ def karma_top(type, jid, nick, text, order):
 		
 	
 def karma_show(type, jid, nick, text):
-	if text == None or text == '' or text == nick: text, atext = nick, L('you')
+	if text == None or text == '' or text == nick: text, atext = nick, L('Your')
 	else: atext = text
 	karmajid = getRoom(get_access(jid,text)[1])
 	if karmajid == 'None': return L('I\'m not sure, but %s not is here.') % atext
@@ -59,7 +59,7 @@ def karma_show(type, jid, nick, text):
 		stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(jid,karmajid)).fetchone()
 		karma_base.close()
 		if stat == None: return L('%s have a clear karma') % atext
-		else: return L('%s\'s karma is %s') % (atext, karma_val(int(stat[0])))
+		else: return L('%s karma is %s') % (atext, karma_val(int(stat[0])))
 
 def karma_ban(type, jid, nick, text):
 	return L('I can\'t!')

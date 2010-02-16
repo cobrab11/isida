@@ -162,7 +162,7 @@ Black list.\nbot_ignore show\nbot_ignore add|del jid	Робота з "Чорни
 Show conferences.	Показ конференцій, в яких знаходиться бот. Також показується нік бота в конференції і кількість учасників.
 Your identification in global base.	Ідентифікація вас у глобальній базі.
 Search user in conferences where the bot is.	Пошук учасника по конференціях, де знаходиться бот.
-Search user in conferences where the bot is. Also show jids	Пошук учасника по конференціях, де знаходиться бот. Додатково будуть показані jid\'и, якщо вони видні боту.
+Search user in conferences where the bot is. Also show jids	Пошук учасника по конференціях, де знаходиться бот. Додатково будуть показані jid'и, якщо вони видні боту.
 Local search in temporary base.	Локальний пошук по тимчасовій базі.
 Global search in temporary base.	Глобальний пошук по тимчасовій базі.
 News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Канали новин:\nrss show - показати поточні підписки.\nrss add url time mode - додати підписку.\nrss del url - видалити підписку.\nrss get url feeds mode - отримати поточні новини.\nrss new url feeds mode - отримати лише непрочитані новини.\nrss clear - видалити всё новини в поточній конференції.\nrss all - показати усі новини в усіх конференціях.\n\nurl - адреса rss каналу. можна задавати без http://\ntime - час поновлення каналу. число + покажчик часу. h - години, m - хвилини. допускається лише один покажчик.\nfeeds - кількість повідомлень для отримання. не більше 10 шт.\nmode - режим отримання повідомлень. full - повідомлення цілком, head - лише заголовки, body - лише тіло повідомлення.\nс закінченням -url буде додатково показаний url новини.
@@ -608,7 +608,7 @@ Max count of members: %s %s	Максимальна кількість учасн
 Statistic not found!	Статистика не знайдена!
 Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.	Без параметра показує топ10 ресурсів по всіх конференціях, де знаходиться бот.\nЗ параметром - пошук по базі ресурсів.\nЧисла - кількість ресурсів.
 Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.	Без параметра показує усі сервера, з яких заходили в конференції, де знаходиться бот.\nЗ параметром - пошук по базі серверів.\nЗ параметром count показує кількість унікальних серверів.\nЧисла - кількість серверів.
-Search in internal jids base.	Пошук по внутрішній базі jid\'ів.
+Search in internal jids base.	Пошук по внутрішній базі jid'ів.
 Conference's activity.	Активність конференції.
 
 
@@ -628,13 +628,13 @@ Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use 
 
 
 # karma.py
-you	тебе
+Your	тебе
 In this room karma is not changed!	В даній конфі карма не змінювалась!
 Top karma: %s	Топ карми: %s
 Karma for members is present not changed!	У присутніх карма не змінювалась!
 I'm not sure, but %s not is here.	Я не впевнений, але %s тут немає.
 %s have a clear karma	У %s чиста карма
-%s\'s karma is %s	У %s карма %s
+%s karma is %s	В %s карма %s
 You can't change karma in private!	Змінення карми в приваті заборонено!
 You can't change karma in outdoor conference!	Не можна змінити карму учасника поза конференції!
 You can't change own karma!	Не можна змінити карму самому собі!
@@ -807,7 +807,7 @@ What convey to?	Кому що передати?
 %s %s ago convey for you: %s	%s %s тому прохав передати: %s
 %s convey for you: %s	%s прохав передати: %s
 %s from conference %s convey message for you: %s	%s з конференції %s передав: %s
-"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn't be send this message remove.	Команда "передати".\nsayto jid|nick message - при вході в конференцію jid\'a або ніка відправить повідомлення "message". Повідомлення зберігаються 14 днів, після чого недоставлені повідомлення видаляються.
+"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn't be send this message remove.	Команда "передати".\nsayto jid|nick message - при вході в конференцію jid'a або ніка відправить повідомлення "message". Повідомлення зберігаються 14 днів, після чого недоставлені повідомлення видаляються.
 Send message to jid\n sayjid jid message.	Відправити повідомлення на jid.\nsayjid jid message
 
 

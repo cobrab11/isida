@@ -593,6 +593,7 @@ def disconnecter():
 	sleep(2)
 
 def L(text):
+	if not len(text): return text
 	try: return locales[text]
 	except: return text
 
