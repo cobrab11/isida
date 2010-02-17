@@ -244,6 +244,10 @@ def iqCB(sess,iq):
 		try: iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
 		except: iq_answer.append((L('Unknown error!')))
 
+#	if iq.getType()=='set':
+#		text = unescape(unicode(mess.getBody()))
+#		print text
+
 	if iq.getType()=='result':
 		cparse = unicode(iq)
 		raw_iq = [id,cparse]

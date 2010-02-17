@@ -790,6 +790,8 @@ Redirect command output in groupchat.	Перенаправляє виведен�
 "Say" command. Bot say in conference all text after command.	Команда "Сказати". Бот видасть в поточну конференцію все, що буде після команди say.
 Global message in all conferences, where bot is present.	Глобальне оголошення во всіх конференціях, де знаходиться бот.
 Set conference topic.	Установка топіку конференції
+Message posted to Juick.	Ваш допис у блог Juick.
+Send message to blog at juick.com	Відправлення повідомлення в блог на juick.com
 
 
 # sayto.py
