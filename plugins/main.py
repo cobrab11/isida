@@ -574,13 +574,10 @@ def bot_rejoin(type, jid, nick, text):
 		leaveconf(text, domain, sm)
 		sleep(1)
 		zz = joinconf(text, domain)
-		print zz
-		
 		while unicode(zz)[:3] == '409':
 			sleep(1)
 			text += '_'
 			zz = joinconf(text, domain)
-			print zz
 		sleep(1)
 		if zz != None: send_msg(type, jid, nick, L('Error! %s') % zz)
 		else:
@@ -630,7 +627,6 @@ def bot_join(type, jid, nick, text):
 				pprint('already in '+text)
 			else:
 				zz = joinconf(text, domain)
-				print zz
 				while unicode(zz)[:3] == '409':
 					sleep(0.1)
 					text += '_'
