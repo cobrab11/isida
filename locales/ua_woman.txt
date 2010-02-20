@@ -538,13 +538,13 @@ I can't find %s	Не можу знайти %s
 
 
 # inlist.py
-Total banned: %s, 	Усього в бані: %s, 
+Total banned: %s	Усього в бані: %s
 found:\n	знайдено:\n
 no matches!	збігів немає!
-Total owners: %s, 	Усього власників: %s, 
-Total admins: %s, 	Усього адміністраторів: %s, 
-Total members: %s, 	Усього постійних учасників: %s, 
-Search in outcats list of conference.	Пошук по outcast списку конференції.
+Total owners: %s	Усього власників: %s
+Total admins: %s	Усього адміністраторів: %s
+Total members: %s	Усього постійних учасників: %s
+Search in outcast list of conference.	Пошук по outcast списку конференції.
 Search in members list of conference.	Пошук по members списку конференції.
 Search in admins list of conference.	Пошук по admins списку конференції.
 Search in owners list of conference.	Пошук по owners списку конференції.
@@ -555,8 +555,8 @@ Search in owners list of conference.	Пошук по owners списку кон�
 Invited	Покликала
 I seen some peoples with this nick. Get more info!	Я бачила кілька людей з таким ніком. Укажіть точніше!
 I don't know %s	Я не в курсі, хто такий %s
-%s asks you to go to %s	%s просить вас зайти до %s
-because %	з привіду %s
+%s invite you to %s	%s просить вас зайти до %s
+because %s	з привіду %s
 Invite to conference.\ninvite nick|jid\n[reason]	Запросити учасника в конференцію.\ninvite nick|jid\n[привід]
 
 

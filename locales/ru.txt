@@ -477,7 +477,7 @@ Swedish	шведский
 Estonian	эстонский
 Japanese	японский
 Available languages for translate: 	Доступные языки для перевода: 
-Available languages: %s	Известные языки: %
+Available languages: %s	Известные языки: %s
 I don't know this language	Я не знаю таких языков
 Incorrect language settings for translate. tr list - available languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
 Command's format: tr from to text	Формат команды: tr с_какого на_какой текст
@@ -538,13 +538,13 @@ I can't find %s	Не могу найти %s
 
 
 # inlist.py
-Total banned: %s, 	Всего в бане: %s, 
+Total banned: %s	Всего в бане: %s
 found:\n	найдено:\n
 no matches!	совпадений нет!
-Total owners: %s, 	Всего владельцев: %s, 
-Total admins: %s, 	Всего администраторов: %s, 
-Total members: %s, 	Всего постоянных участников: %s, 
-Search in outcats list of conference.	Поиск по outcast списку конференции.
+Total owners: %s	Всего владельцев: %s
+Total admins: %s	Всего администраторов: %s
+Total members: %s	Всего постоянных участников: %s
+Search in outcast list of conference.	Поиск по outcast списку конференции.
 Search in members list of conference.	Поиск по members списку конференции.
 Search in admins list of conference.	Поиск по admins списку конференции.
 Search in owners list of conference.	Поиск по owners списку конференции.
@@ -555,8 +555,8 @@ Search in owners list of conference.	Поиск по owners списку кон�
 Invited	Позвала
 I seen some peoples with this nick. Get more info!	Я видела несколько человек с таким ником. Укажите точнее!
 I don't know %s	Я не в курсе кто такой %s
-%s asks you to go to %s	%s просит Вас зайти в %s
-because %	по причине %s
+%s invite you to %s	%s просит Вас зайти в %s
+because %s	по причине %s
 Invite to conference.\ninvite nick|jid\n[reason]	Пригласить участника в конференцию.\ninvite nick|jid\n[причина]
 
 

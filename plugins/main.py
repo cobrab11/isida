@@ -572,11 +572,31 @@ def bot_rejoin(type, jid, nick, text):
 		pprint('rejoin '+text+' by '+nick)
 		sm = L('Rejoin by %s') % nick
 		leaveconf(text, domain, sm)
+		sleep(1)
 		zz = joinconf(text, domain)
+		print zz
+		
+		while unicode(zz)[:3] == '409':
+			sleep(1)
+			text += '_'
+			zz = joinconf(text, domain)
+			print zz
+		sleep(1)
 		if zz != None: send_msg(type, jid, nick, L('Error! %s') % zz)
+		else:
+			confbase = remove_by_half(confbase, getRoom(lroom))
+			confbase.append(text)
+			writefile(confs,str(confbase))
 	else:
 		send_msg(type, jid, nick, L('I have never been in %s') % getRoom(lroom))
 		pprint('never be in '+text)
+		
+def remove_by_half(cb,rm):
+	for tmp in cb:
+		if tmp[:len(rm)] == rm:
+			cb.remove(tmp)
+			break
+	return cb
 
 def bot_join(type, jid, nick, text):
 	global lastserver, lastnick, confs, confbase, blacklist_base
@@ -590,30 +610,39 @@ def bot_join(type, jid, nick, text):
 		else:
 			lastserver = getServer(text.lower())
 			lastnick = getResourse(text)
-			lroom = text.lower()[:text.index('/')]
+			lroom = text.lower().split('/')[0]
 			if arr_semi_find(confbase, lroom) == -1:				
 				zz = joinconf(text, domain)
+				while unicode(zz)[:3] == '409':
+					sleep(1)
+					text += '_'
+					zz = joinconf(text, domain)
 				if zz != None:
-					send_msg(type, jid, nick, L('Error! %s')+zz)
+					send_msg(type, jid, nick, L('Error! %s') % zz)
 					pprint(u'*** Error join to '+text+' '+zz)
 				else:
-					confbase.append(getRoom(text)+'/'+getResourse(text))
+					confbase.append(text)
 					writefile(confs,str(confbase))
 					send_msg(type, jid, nick, L('Joined to %s') % text)
 					pprint(u'join to '+text)
-
 			elif confbase.count(text):
 				send_msg(type, jid, nick, L('I\'m already in %s with nick %s') % (lroom,lastnick))
 				pprint('already in '+text)
 			else:
 				zz = joinconf(text, domain)
+				print zz
+				while unicode(zz)[:3] == '409':
+					sleep(0.1)
+					text += '_'
+					zz = joinconf(text, domain)
 				if zz != None:
 					send_msg(type, jid, nick, L('Error! %s') % zz)
 					pprint(u'*** Error join to '+text+' '+zz)
 				else:
-					confbase = arr_del_semi_find(confbase, lroom)
-					confbase.append(getRoom(text)+'/'+getResourse(text))
-					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,lastnick))
+					confbase = remove_by_half(confbase, lroom)
+					confbase.append(text)
+					sleep(1)
+					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,getResource(text)))
 					writefile(confs,str(confbase))
 					pprint(u'change nick '+text)
 

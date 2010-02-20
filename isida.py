@@ -191,9 +191,7 @@ def joinconf(conference, server):
 	if dm: cl = Client(jid.getDomain())
 	else: cl = Client(jid.getDomain(), debug=[])
 	conf = unicode(JID(conference))
-	zz = join(conf)
-	if zz != None: pprint(' *** Error *** '+zz)
-	return zz
+	return join(conf)
 
 def leaveconf(conference, server, sm):
 	node = unicode(JID(conference).getResource())
@@ -210,16 +208,20 @@ def join(conference):
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	if len(psw): j.getTag('x').setTagData('password', psw)
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-
 	cl.send(j)
-	id=j.getID()
-	Error = None
-	for aa in range(0,5):
-		for bb in iq_answer:
-			if bb[0]==id:
-				Error = bb[1]
+	id=unicode(j.getID())
+	answered, Error, join_timeout = None, None, 5
+	while not answered and join_timeout:
+		if is_start: cl.Process(1)
+		else:
+			sleep(1)
+			join_timeout -= 1
+		for tmp in iq_answer:
+			if tmp[0]==id:
+				Error = tmp[1]
+				iq_answer.remove(tmp)
+				answered = True
 				break
-		if Error != None: break
 	return Error
 
 def leave(conference, sm):
@@ -241,8 +243,8 @@ def iqCB(sess,iq):
 	query = iq.getTag('query')
 
 	if iq.getType()=='error':
-		try: iq_answer.append((id,iq.getTag('error').getTagData(tag='text')))
-		except: iq_answer.append((L('Unknown error!')))
+		try: iq_answer.append((id,get_tag_item(unicode(iq),'error','code')+':'+iq.getTag('error').getTagData(tag='text')))
+		except: iq_answer.append((id,L('Unknown error!')))
 
 #	if iq.getType()=='set':
 #		text = unescape(unicode(mess.getBody()))
@@ -356,6 +358,7 @@ def messageCB(sess,mess):
 	access_mode = ta[0]
 	jid =ta[1]
 #	print access_mode, jid
+
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1: nowname = nickname
 	else:
@@ -463,7 +466,10 @@ def presenceCB(sess,mess):
 	id = mess.getID()
 #	print jid, caps_node, caps_ver
 
-	if type=='error': iq_answer.append((id,mess.getTag('error').getTagData(tag='text')))
+	if type=='error':
+		try: iq_answer.append((id,get_tag_item(unicode(mess),'error','code')+':'+mess.getTag('error').getTagData(tag='text')))
+		except: iq_answer.append((id,L('Unknown error!')))
+	elif id != None: iq_answer.append((id,None))
 	if jid == 'None': jid = get_access(room,nick)[1]
 	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
 
@@ -767,16 +773,26 @@ cl.sendInitPresence()
 
 pprint('Wait conference')
 sleep(1)
+cb = []
+is_start = True
 for tocon in confbase:
 	baseArg = unicode(tocon)
 	if not tocon.count('/'): baseArg += '/'+unicode(nickname)
 	conf = JID(baseArg)
+	zz = joinconf(tocon, domain)
+	while unicode(zz)[:3] == '409':
+		sleep(1)
+		tocon += '_'
+		zz = joinconf(tocon, domain)
+	cb.append(tocon)
 	pprint(tocon)
-	j = Presence(tocon, show=CommStatus, status=StatusMessage, priority=Priority)
-	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-	cl.send(j)
+#	j = Presence(tocon, show=CommStatus, status=StatusMessage, priority=Priority)
+#	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
+#	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+#	cl.send(j)
 	sleep(0.2)
+confbase = cb
+is_start = None
 
 lastserver = getServer(confbase[0].lower())
 pprint('Joined')

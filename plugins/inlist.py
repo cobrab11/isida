@@ -12,7 +12,7 @@ def inban(type, jid, nick, text):
 		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total banned: %s, ')+str(len(bb))
+	msg = L('Total banned: %s') % str(len(bb)) + ', '
 	if text != '':
 		mmsg = L('found:\n')
 		fnd = 1
@@ -38,7 +38,7 @@ def inowner(type, jid, nick, text):
 		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total owners: %s, ') % str(len(bb))
+	msg = L('Total owners: %s') % str(len(bb)) + ', '
 	if text != '':
 		mmsg = L('found:\n')
 		fnd = 1
@@ -64,7 +64,7 @@ def inadmin(type, jid, nick, text):
 		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total admins: %s, ') % str(len(bb))
+	msg = L('Total admins: %s') % str(len(bb)) + ', '
 	if text != '':
 		mmsg = L('found:\n')
 		fnd = 1
@@ -91,7 +91,7 @@ def inmember(type, jid, nick, text):
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
 
-	msg = L('Total members: %s, ') % str(len(bb))
+	msg = L('Total members: %s') % str(len(bb)) + ', '
 	if text != '':
 		mmsg = L('found:\n')
 		fnd = 1
@@ -108,7 +108,7 @@ def inmember(type, jid, nick, text):
 
 global execute
 
-execute = [(1, 'inban', inban, 2, L('Search in outcats list of conference.')),
+execute = [(1, 'inban', inban, 2, L('Search in outcast list of conference.')),
 	 (1, 'inmember', inmember, 2, L('Search in members list of conference.')),
 	 (1, 'inadmin', inadmin, 2, L('Search in admins list of conference.')),
 	 (1, 'inowner', inowner, 2, L('Search in owners list of conference.'))]
