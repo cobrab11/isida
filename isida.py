@@ -210,7 +210,7 @@ def join(conference):
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	cl.send(j)
 	id=unicode(j.getID())
-	answered, Error, join_timeout = None, None, 5
+	answered, Error, join_timeout = None, None, 3
 	while not answered and join_timeout:
 		if is_start: cl.Process(1)
 		else:
@@ -246,11 +246,7 @@ def iqCB(sess,iq):
 		try: iq_answer.append((id,get_tag_item(unicode(iq),'error','code')+':'+iq.getTag('error').getTagData(tag='text')))
 		except: iq_answer.append((id,L('Unknown error!')))
 
-#	if iq.getType()=='set':
-#		text = unescape(unicode(mess.getBody()))
-#		print text
-
-	if iq.getType()=='result':
+	elif iq.getType()=='result':
 		cparse = unicode(iq)
 		raw_iq = [id,cparse]
 		is_vcard = iq.getTag('vCard')
@@ -267,14 +263,14 @@ def iqCB(sess,iq):
 					else: creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
 					banbase.append((cjid, creason, str(id)))
 				banbase.append(('TheEnd', 'None',str(id)))
-			if nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
-			if nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
-			if nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
-			if nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
-			if nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
-			if nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
+			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
+			elif nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
+			elif nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
+			elif nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
+			elif nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
+			elif nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
 
-	if iq.getType()=='get':
+	elif iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
 			pprint('*** iq:version from '+unicode(nick))
 			i=xmpp.Iq(to=nick, typ='result')
@@ -767,12 +763,12 @@ pprint('Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
-cl.RegisterDisconnectHandler(disconnecter)
-cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
+#cl.RegisterDisconnectHandler(disconnecter)
+#cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
 cl.sendInitPresence()
 
 pprint('Wait conference')
-sleep(1)
+sleep(0.5)
 cb = []
 is_start = True
 for tocon in confbase:
@@ -790,7 +786,6 @@ for tocon in confbase:
 #	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 #	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 #	cl.send(j)
-	sleep(0.2)
 confbase = cb
 is_start = None
 
