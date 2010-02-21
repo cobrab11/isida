@@ -707,7 +707,7 @@ Conference %s has been added from global ban list!	Конференція %s д�
 Conference %s already exist in global ban list!	Конференція %s вже додана до списку глобального бану!
 Your conference will be ignored for global ban!	Ваша конференція ігнорується при глобальному бані!
 I need jid!	Необхідно вказати jid!
-banned global by %s from %s	забанен глобально від %s з конференції %s
+banned global by %s from %s	глобальний бан від %s з конференції %s
 jid %s has been banned in %s conferences.	jid %s забанен в %s конференціях.
 Found: %s	Знайдено: %s
 ban on %s since %s because %s	бан строком %s починаючи з %s через %s
