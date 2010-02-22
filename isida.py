@@ -89,9 +89,9 @@ def parser(text):
 	return ttext
 
 def remove_sub_space(text):
-	tx = ''
+	tx, es = '', '\t\r\n'
 	for tmp in text:
-		if ord(tmp) >= 32: tx += tmp
+		if ord(tmp) >= 32 or tmp in es : tx += tmp
 		else: tx += '?'
 	return tx
 	
