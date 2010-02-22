@@ -940,7 +940,6 @@ Set global definition.\ngdfn word=definition - remember definition as word\ngdfn
 RegExp not found!	RegExp не знайден!
 Error in RegExp!	Помилка в RegExp!
 Site size limit overflow! Size - %skb, allowed - %skb	Перевищено допустимий розмір сторінки! Розмір - %skb, припустимо - %skb
-Unable detect size!	Неможливо визначити розмір вмісту!
 Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags	Показує зміст веб-сторінки.\nwww regexp\n[http://]url - сторінка, оброблена regexp\nwww [http://]url - сторінка з прибраними html-тегами
 Show net header	Показує заголовок файлу
 

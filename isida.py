@@ -88,6 +88,13 @@ def parser(text):
 	ttext = unicode(ttext)
 	return ttext
 
+def remove_sub_space(text):
+	tx = ''
+	for tmp in text:
+		if ord(tmp) >= 32: tx += tmp
+		else: tx += '?'
+	return tx
+	
 def tZ(val):
 	val = str(val)
 	if len(val) == 1: val = '0'+val
