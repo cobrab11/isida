@@ -47,9 +47,14 @@ def iq_vcard(type, jid, nick, text):
 					if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
 					else: tname,ttag = tmp,tmp
 					tt = get_tag(isa,ttag.upper())
-					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt))
-			else: msg = L('vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s') % \
-				(get_tag(isa,'NICKNAME'),get_tag(isa,'FN'),get_tag(isa,'DESC'),get_tag(isa,'URL'))
+					if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt.replace('><','> <').replace('>\n<','> <')))
+			else:
+				msg = ''
+				for tmp in [(L('Nick'),'NICKNAME'),(L('Name'),'FN'),(L('About'),'DESC'),(L('URL'),'URL')]:
+					tt = get_tag(isa,tmp[1])
+					if len(tt): msg += '\n'+tmp[0]+': '+tt
+				if len(msg): msg = L('vCard:') + msg
+				else: msg = L('Пусто!')
 	else: msg = L('Timeout %s sec.') % str(timeout)
 	send_msg(type, jid, nick, msg)
 

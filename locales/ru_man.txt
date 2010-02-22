@@ -563,7 +563,10 @@ Invite to conference.\ninvite nick|jid\n[reason]	Пригласить участ
 # iq.py
 vCard tags:	Теги из визитки:
 vCard:	Визитка:
-vCard:\nNick: %s\nName: %s\nAbout: %s\nURL: %s	Визитка:\nНик: %s\nИмя: %s\nО себе: %s\nURL: %s
+Nick	Ник
+Name	Имя
+About	О себе
+URL	URL
 Timeout %s sec.	Истекло время ожидания %s сек.
 Uptime: %s	Аптайм: %s
 Ping from you %s sec.	Пинг от тебя %s сек.
