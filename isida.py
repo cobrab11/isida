@@ -339,12 +339,64 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				break
 	return no_comm
 
+def to_scrobble(room,mess):
+	item = get_tag(unicode(mess),'item')
+	if item.count('http://jabber.org/protocol/tune'):
+		if item.count('<title'):
+			played = True
+			title = get_tag(item,'title')
+			if item.count('<artist'):
+				artist = get_tag(item,'artist')
+				if len(artist) and artist != '?': title = artist + ' - ' + title
+			caps_lit = 0
+			for tmp in title:
+				if re.match(u'[A-Z]|[А-Я]',tmp): caps_lit+=1
+			if caps_lit >= len(title)/2:
+				tm,tm1 = title.split(),[]
+				for tmp in tm: tm1.append(tmp.capitalize())
+				title = ' '.join(tm1)
+			if title[:10].count('. '): title = title.split('. ',1)[1]
+			length = get_tag(item,'length')
+			try:
+				if int(length) > 86400: length = 'stream'
+			except: length = 'unknown'
+			#print '%s - %s [%s]' % (room,title,length)
+		else: played = None
+		stb = os.path.isfile(scrobblebase)
+		scrobbase = sqlite3.connect(scrobblebase)
+		cu_scrobl = scrobbase.cursor()
+		if not stb:
+			cu_scrobl.execute('''create table tune (jid text, song text, length text, played integer)''')
+			cu_scrobl.execute('''create table nick (jid text, nick text)''')
+			scrobbase.commit()
+		tune = cu_scrobl.execute('select * from tune where jid=? order by -played',(room,)).fetchone()
+		if not tune: tune = ['','','',0]
+		if played:
+			if tune[1] != title or tune[2] != length:
+				if title.count('] ') and title.count('['):
+					if title.split('] ',1)[1] != tune[1]: scrb = None
+					else: scrb = True
+				else: scrb = True
+			else: scrb = None
+		else: scrb = True
+		try: tlen = int(length)/2
+		except: tlen = 30
+		if scrb:
+			if (time.time() - tune[3]) < tlen: cu_scrobl.execute('delete from tune where jid=? and song=? and length=? and played=?',tune).fetchall()
+			if played: cu_scrobl.execute('insert into tune values (?,?,?,?)', (room, title, length, int(time.time())))
+		scrobbase.commit()
+		scrobbase.close()
+	
 def messageCB(sess,mess):
+	#print '*'*20
+	#pprint(unicode(mess))
 	global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
 	global ignorebase, ignores
+	type=unicode(mess.getType())
+	room=unicode(mess.getFrom().getStripped())
+	if type == 'headline': to_scrobble(room,mess)
 	text=unicode(mess.getBody())
 	if text == 'None' or text == '': return
-	room=unicode(mess.getFrom().getStripped())
 	nick=mess.getFrom().getResource()
 	if nick == None: nick = ''
 	else: nick = unicode(nick)
@@ -634,6 +686,7 @@ agestatbase = set_folder+'agestat.db'	# статистика возрастов
 talkersbase = set_folder+'talkers.db'	# статистика болтунов
 wtfbase = set_folder+'wtfbase.db'		# определения
 answersbase = set_folder+'answers.db'	# ответы бота
+scrobblebase = set_folder+'scrobble.db'	# база PEP скробблера
 loc_file = set_folder+'locale'			# файл локализации
 loc_folder = 'locales/'					# папка локализаций
 

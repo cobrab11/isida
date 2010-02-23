@@ -41,6 +41,49 @@ rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),
 		(u'⌈','&lceil;'),(u'⌉','&rceil;'),(u'⌊','&lfloor;'),(u'⌋','&rfloor'),(u'◊','&loz;'),(u'♠','&spades;'),(u'♣','&clubs;'),
 		(u'♥','&hearts;'),(u'♦','&diams;'))
 
+def get_scrobble(type, room, nick, text):
+	def last_time_short(tm):
+		tm = time.localtime(tm)
+		tnow = time.localtime()
+		if tm[0] != tnow[0]: form = '%d.%m.%Y %H:%M'
+		elif tm[1]!=tnow[1] or tm[2]!=tnow[2]: form = '%d.%m %H:%M'
+		else: form = '%H:%M'
+		return str(time.strftime(form,tm))
+	if text == '': text = nick
+	text = text.split()
+	csize = 3
+	if len(text)>1:
+		try: csize = int(text[1])
+		except: pass
+	text = text[0]
+	if csize < 1: csize = 1
+	elif csize > 10: csize = 10
+	jid = getRoom(get_access(room,text)[1])
+	if jid == 'None': jid = room
+	stb = os.path.isfile(scrobblebase)
+	scrobbase = sqlite3.connect(scrobblebase)
+	cu_scrobl = scrobbase.cursor()
+	if not stb:
+		cu_scrobl.execute('''create table tune (jid text, song text, length integer, played integer)''')
+		cu_scrobl.execute('''create table nick (jid text, nick text)''')
+		scrobbase.commit()
+	tune = cu_scrobl.execute('select song,length,played from tune where jid=? order by -played',(jid,)).fetchmany(csize)
+	scrobbase.close()
+	if tune:
+		msg = ''
+		for ttune in tune:
+			try:
+				t_time = int(ttune[1])
+				t_min = tZ(t_time/60)
+				t_sec = tZ(t_time - int(t_min)*60)
+				t_minsec = t_min+':'+t_sec
+			except: t_minsec = ttune[1]
+			msg += '\n[%s] %s - %s' % (last_time_short(ttune[2]),unescape(ttune[0]),t_minsec)
+		if len(msg): msg = 'PEP Scrobbled:' + msg
+		else: msg = L('Not found!')
+	else: msg = L('Not found!')
+	send_msg(type, room, nick, msg)
+		
 def set_locale(type, jid, nick, text):
 	global locales
 	if len(text) >= 2:
@@ -1231,4 +1274,5 @@ comms = [
 	 (0, u'whois', info_whois, 2, L('Identification.')),
 	 (0, u'status', status, 2, L('Show status.')),
 	 (1, u'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disabler prefix')),
-	 (2, u'set_locale', set_locale, 2, u'Change bot localization.\nset_locale ru|en')]
+	 (2, u'set_locale', set_locale, 2, u'Change bot localization.\nset_locale ru|en'),
+	 (2, u'tune', get_scrobble, 2, u'PEP Scrobbler. Test version')]
