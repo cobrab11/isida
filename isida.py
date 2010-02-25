@@ -264,10 +264,9 @@ def iqCB(sess,iq):
 			if nspace == NS_MUC_ADMIN:
 				cparse = cparse.split('<item')
 				for banm in cparse[1:]:
-					st_index = banm.find('jid=\"')+5
-					cjid=banm[st_index:banm.find('\"',st_index)]
-					if banm.count('<reason />') or banm.count('<reason/>'): creason = L('No reason')
-					else: creason=banm[banm.find('<reason>')+8:banm.find('</reason>')]
+					cjid = get_subtag(banm,'jid')
+					if banm.count('<reason />') or banm.count('<reason/>'): creason = ''#L('No reason')
+					else: creason=get_tag(banm,'reason')
 					banbase.append((cjid, creason, str(id)))
 				banbase.append(('TheEnd', 'None',str(id)))
 			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
@@ -848,9 +847,12 @@ for tocon in confbase:
 #	cl.send(j)
 confbase = cb
 is_start = None
-
 lastserver = getServer(confbase[0].lower())
 pprint('Joined')
+
+#pep = xmpp.Message(to=selfjid, frm=getRoom(selfjid), payload=[xmpp.Node('event',{'xmlns':'http://jabber.org/protocol/pubsub#event'},[xmpp.Node('items',{'node':'http://jabber.org/protocol/tune'},[xmpp.Node('item',{'id':'current'},[xmpp.Node('tune',{'xmlns':'http://jabber.org/protocol/tune'},[])])])])])
+#cl.send(pep)
+
 game_over = None
 
 thr(now_schedule,())

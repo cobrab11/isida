@@ -10,6 +10,7 @@ def juick(type, jid, nick, text):
 	else: send_msg(type, jid, nick, L('Smoke help about command!'))
 
 def juick_user_info(type, jid, nick, text):
+	text = text.replace('@','')
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
 		except: mlen = 3
@@ -59,6 +60,7 @@ def juick_user_info(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def juick_user(type, jid, nick, text):
+	text = text.replace('@','')
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
 		except: mlen = 3
@@ -68,26 +70,26 @@ def juick_user(type, jid, nick, text):
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<h1>Page Not Found</h1>'):
-			msg = L('User %s not found') % text
+		if body.count('<h1>Page Not Found</h1>'): msg = L('User %s not found') % text
 		else:
 			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
-			mes = body.split('<li id="')
+			mes = body.split('<li class="liav"')
 			mesg = ''
 			for us in mes[1:mlen+1]:
 				mesg += '\n'+get_tag(us.split('<small>')[1],'a')+' - '
-				mm = rss_del_html(get_tag(us,'div'))
+				if us.count('<div class="ps">'): mm = get_subtag(us.split('<div>')[1],'a href') + ' ' + rss_del_html(us.split('<div>',1)[1].split('<small>')[0])
+				else: mm = rss_del_html(get_tag(us,'div'))
 				if len(mm)<mlim: mesg += mm
 				else: mesg += mm[:mlim]+'[...]'
 				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
 				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
 			msg += mesg
-	else: msg = msg = L('Who?')
+	else: msg = L('Who?')
 	send_msg(type, jid, nick, msg)
 
 def juick_msg(type, jid, nick, text):
 	if len(text):
-		try:
+#		try:
 			text = text.replace('#','')
 			if text.count('/'):
 				link = 'http://juick.com/'+text.split('/')[0]
@@ -99,13 +101,14 @@ def juick_msg(type, jid, nick, text):
 			except: repl_limit = 3
 			body = urllib.urlopen(link).read()
 			body = rss_replace(html_encode(body.replace('<div><a href','<div><a ')))
-			if body.count('<h1>Page Not Found</h1>'):
-				msg = L('Message #%s not found') % text
+			if body.count('<h1>Page Not Found</h1>'): msg = L('Message #%s not found') % text
 			else:
 				nname = get_tag(body,'h1')
 				if nname.count('(') and nname.count(')'): uname = nname[nname.find('(')+1:nname.find(')')]
 				else: uname = nname
-				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0]+'\n'+nname+' - '+get_tag(body.split('<p>')[1],'div')
+				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0]+'\n'+nname+' - '
+				if body.split('<p>')[1].count('<div class="ps">'): msg += get_subtag(body.split('<p>')[1].split('<div class="ps">')[1],'a href') + rss_del_html(body.split('<p>')[1].split('</div>',1)[1].split('<small>')[0])
+				else: msg += rss_del_html(get_tag(body.split('<p>')[1],'div'))
 			repl = get_tag(body.split('<p>')[1],'h2')
 			if repl.lower().count('('):
 				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
@@ -119,13 +122,11 @@ def juick_msg(type, jid, nick, text):
 			if hm_repl:
 				if not post:
 					for rp in body.split('<li id="')[1:repl_limit+1]:
-						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp.split('by')[1],'a')+': '+get_tag(rp,'div')
+						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp,'a')+': '+get_tag(rp,'div')
 						cnt += 1
-				else:
-					msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
+				else: msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
 			msg = rss_del_html(msg.replace('<a href="http','<a>http').replace('" rel',' <'))
-		except:
-			msg = L('Invalid message number')
+#		except: msg = L('Invalid message number')
 	else: msg = L('What message do you want to find?')
 	send_msg(type, jid, nick, msg)
 
@@ -138,8 +139,7 @@ def juick_tag_user(type, jid, nick, text):
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
-			msg = L('Tag %s not found') % text
+		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'): msg = L('Tag %s not found') % text
 		else:
 			usr = body.split('<h2>Users</h2>')[1].split('<h2>Messages</h2>')[0].split('<a href')
 			users = ''
@@ -160,8 +160,7 @@ def juick_tag_msg(type, jid, nick, text):
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
-		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'):
-			msg = msg = L('Tag %s not found') % text
+		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'): msg = L('Tag %s not found') % text
 		else:
 			mes = body.split('<h2>Messages</h2>')[1].split('</div><div id="lcol"><h2>')[0].split('<li class="liav"')
 			mesg = ''

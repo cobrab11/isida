@@ -1,10 +1,15 @@
 #!/usr/bin/python
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 
-def inban(type, jid, nick, text):
+def inban(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'outcast', L('Total banned: %s'))
+def inowner(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'owner', L('Total owners: %s'))
+def inadmin(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'admin', L('Total admins: %s'))
+def inmember(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'member', L('Total members: %s'))
+	
+def inlist_raw(type, jid, nick, text, affil, message):
 	global banbase
 	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast'})])])
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	cl.send(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
 	bb = []
@@ -12,98 +17,17 @@ def inban(type, jid, nick, text):
 		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
 	for b in banbase:
 		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total banned: %s') % str(len(bb))
+	msg = message % str(len(bb))
 	if text != '':
-		mmsg = L('found:\n')
-		fnd = 1
-		cnt = 1
+		msg += ', '
+		mmsg, cnt = '', 1
 		for i in bb:
 			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
+				mmsg += '\n%s. %s' % (cnt,i[0])
+				if len(i[1]): mmsg += ' - %s' % i[1]
 				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = L('no matches!')
-		msg += ', ' + mmsg
-	send_msg(type, jid, nick, msg)
-
-def inowner(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'owner'})])])
-	cl.send(i)
-	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total owners: %s') % str(len(bb))
-	if text != '':
-		mmsg = L('found:\n')
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = L('no matches!')
-		msg += ', ' + mmsg
-	send_msg(type, jid, nick, msg)
-
-def inadmin(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin'})])])
-	cl.send(i)
-	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-	msg = L('Total admins: %s') % str(len(bb))
-	if text != '':
-		mmsg = L('found:\n')
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = L('no matches!')
-		msg += ', ' + mmsg
-	send_msg(type, jid, nick, msg)
-
-def inmember(type, jid, nick, text):
-	global banbase
-	iqid = str(randint(1,1000000))
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'member'})])])
-	cl.send(i)
-	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
-
-	msg = L('Total members: %s') % str(len(bb))
-	if text != '':
-		mmsg = L('found:\n')
-		fnd = 1
-		cnt = 1
-		for i in bb:
-			if i[0].lower().count(text.lower()) or i[1].lower().count(text.lower()):
-				mmsg += str(cnt)+'. '+i[0]+' - '+i[1]+'\n'
-				fnd = 0
-				cnt += 1
-		mmsg = mmsg[:-1]
-		if fnd: mmsg = L('no matches!')
-		msg += ', ' + mmsg
+		if len(mmsg): msg += L('Found:') + mmsg
+		else: msg += L('no matches!')
 	send_msg(type, jid, nick, msg)
 
 global execute
