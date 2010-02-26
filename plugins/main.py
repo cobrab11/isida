@@ -681,7 +681,7 @@ def bot_join(type, jid, nick, text):
 					confbase = remove_by_half(confbase, lroom)
 					confbase.append(text)
 					sleep(1)
-					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,getResource(text)))
+					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,getResourse(text)))
 					writefile(confs,str(confbase))
 					pprint(u'change nick '+text)
 
