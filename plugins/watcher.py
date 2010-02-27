@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-watch_size = 600		# период запросов в секундах
-watch_timeout = 480		# таймаут соединения в секундах
+watch_size = 900		# период запросов в секундах
+watch_timeout = 600		# таймаут соединения в секундах
 watch_time = time.time()
 watch_count = 0
 
@@ -14,18 +14,16 @@ def connect_watch():
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 		cl.send(i)
-		to = watch_timeout
-		no_answ = 1
-		is_answ = [None]
+		to, no_answ = watch_timeout, True
 		while to >= 0 and no_answ:
 			for aa in iq_answer:
 				if aa[0]==iqid:
-					no_answ = 0
+					iq_answer.remove(aa)
+					no_answ = None
 					break
-			sleep(0.1)
-			to -= 0.1
-		if to < 0:
-			close_age()
+			sleep(5)
+			to -= 5
+		if to <= 0:
 			pprint('Restart by watcher\'s timeout!')
 			bot_exit_type, game_over = 'restart', True
 			sleep(2)
