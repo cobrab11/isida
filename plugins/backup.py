@@ -7,7 +7,7 @@ def getMucItems(jid,affil,ns):
 	raw_iq = []
 	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
-	cl.send(i)
+	sender(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
 	bb = []
 	for b in banbase: 
@@ -55,7 +55,7 @@ def conf_backup(type, jid, nick, text):
 				configlist = getMucItems(jid,'',NS_MUC_OWNER)
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
-				cl.send(i)
+				sender(i)
 
 				msg = L('Copying completed!\nOwners:\t%s\nAdmins:\t%s\nMembers:\t%s\nBanned:\t%s') % (str(len(ownerlist[0])),\
 					str(len(adminlist[0])), str(len(memberlist[0])), str(len(banlist[0])))
@@ -91,7 +91,7 @@ def conf_backup(type, jid, nick, text):
 							end = raw_back[zz][raw_back[zz].find('<query'):]
 							beg = '<iq xmlns="jabber:client" to="'+unicode(jid)+'" from="'+unicode(selfjid)+'" id="'+unicode(iqid)+'" type="set">'
 							i = beg+end
-							cl.send(i)
+							sender(i)
 							sleep(i.count('<item')*0.02)
 						iqid = str(randint(1,100000))
 						end = raw_back[4][raw_back[4].find('<query'):]
@@ -104,12 +104,12 @@ def conf_backup(type, jid, nick, text):
 						i = i[:i.find('<instructions>')]+i[i.find('</instructions>',i.find('<instructions>')+14)+15:]
 						i = i[:i.find('<title>')]+i[i.find('</title>',i.find('<title>')+7)+8:]
 						i = i.replace('form','submit')
-						cl.send(i)
+						sender(i)
 						sleep(0.1)
 						iqid = str(randint(1,100000))
 						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(unicode(selfjid))},[])])])
 						sleep(0.1)
-						cl.send(i)
+						sender(i)
 						sleep(0.1)
 						msg = L('Restore completed.')
 				else: msg = L('Copy not found. Use key "show" for lisen available copies.')

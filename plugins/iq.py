@@ -16,7 +16,7 @@ def iq_vcard(type, jid, nick, text):
 				break
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VCARD},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	is_answ = [None]
@@ -69,7 +69,7 @@ def iq_uptime(type, jid, nick, text):
 				break
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_LAST},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	is_answ = [None]
@@ -106,7 +106,7 @@ def ping(type, jid, nick, text):
 				break
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	lt = time.time()
 	no_answ = 1
@@ -152,7 +152,7 @@ def iq_time_get(type, jid, nick, text, mode):
 				break
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_TIME},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	is_answ = [None]
@@ -188,7 +188,7 @@ def iq_version(type, jid, nick, text):
 				break
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	is_answ = [None]
@@ -218,7 +218,7 @@ def iq_stats(type, jid, nick, text):
 			return
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':text}, payload = [Node('query', {'xmlns': NS_STATS},[Node('stat', {'name':'users/total'},[]),Node('stat', {'name':'users/online'},[])])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	is_answ = [None]

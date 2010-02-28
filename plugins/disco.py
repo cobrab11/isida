@@ -14,7 +14,7 @@ def disco(type, jid, nick, text):
 	except: hm = 10
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ, is_answ = 1, None
 	while to >= 0 and no_answ:
@@ -100,7 +100,7 @@ def whereis(type, jid, nick, text):
 		else: where = 'conference.'+text[1]
 	iqid = str(randint(1,100000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-	cl.send(i)
+	sender(i)
 	to = timeout
 	no_answ = 1
 	while to >= 0 and no_answ:
@@ -125,7 +125,7 @@ def whereis(type, jid, nick, text):
 		for ii in djids:
 			iqid = str(randint(1,100000))
 			i = Node('iq', {'id': iqid, 'type': 'get', 'to':ii}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
-			cl.send(i)
+			sender(i)
 			to = 500
 			no_answ = 1
 			while to >= 0 and no_answ:

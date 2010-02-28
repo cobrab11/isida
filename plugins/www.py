@@ -44,7 +44,7 @@ def netwww(type, jid, nick, text):
 			else:
 				if page.count('<title'): msg = get_tag(page,'title')+'\n'+unhtml(page)
 				else: msg = unhtml(page)
-		except Exception, SM: msg = str(SM)
+		except Exception, SM: msg = unicode(SM)
 	send_msg(type, jid, nick, msg[:msg_limit])
 
 global execute

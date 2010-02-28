@@ -790,7 +790,7 @@ def owner(type, jid, nick, text):
 				ownerbase.append(nnick)
 				j = Presence(nnick, 'subscribe')
 				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-				cl.send(j)
+				sender(j)
 				msg = L('Append: %s') % nnick
 			else: msg = L('Wrong jid!')
 		else: msg = L('%s is alredy in list!') % nnick
@@ -799,7 +799,7 @@ def owner(type, jid, nick, text):
 			ownerbase.remove(nnick)
 			j = Presence(nnick, 'unsubscribed')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-			cl.send(j)
+			sender(j)
 			msg = L('Removed: %s') % nnick
 		else: msg = L('Not found!')
 	elif do == 'show':

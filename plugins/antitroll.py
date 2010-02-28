@@ -13,7 +13,7 @@ def troll(type, jid, nick, text):
 	if len(text)>1: message = text[1]
 	else: message = L('You troll!')
 	while count != 0:
-		cl.send(xmpp.Message(otake, message, "chat"))
+		sender(xmpp.Message(otake, message, "chat"))
 		sleep(0.05)
 		count -= 1
 	send_msg(type, jid, nick, L('Done'))

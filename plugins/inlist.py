@@ -10,7 +10,7 @@ def inlist_raw(type, jid, nick, text, affil, message):
 	global banbase
 	iqid = str(randint(1,1000000))
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
-	cl.send(i)
+	sender(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
 	bb = []
 	for b in banbase:

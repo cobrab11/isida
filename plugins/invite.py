@@ -34,7 +34,7 @@ def call_body(type, jid, nick, text):
 		
 		inv = xmpp.Message(jid)
 		inv.setTag('x', namespace=NS_MUC_USER).addChild('invite', {'to':whojid})
-		cl.send(inv)
+		sender(inv)
 
 		send_msg(type, jid, nick, msg)
 

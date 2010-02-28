@@ -42,7 +42,7 @@ def global_ban(type, jid, nick, text):
 				if not (getRoom(tmp) in hr):
 					iqid = str(randint(1,100000))
 					i = Node('iq', {'id': iqid, 'type': 'set', 'to':getRoom(tmp)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(text)},[Node('reason',{},reason)])])])
-					cl.send(i)
+					sender(i)
 			msg = L('jid %s has been banned in %s conferences.') % (text, str(len(confbase)-len(hr)))
 	send_msg(type, jid, nick, msg)
 
@@ -68,7 +68,7 @@ def muc_tempo_ban(type, jid, nick,text):
 				msg += ub[1]+'\t'+un_unix(ub[2]-int(time.time()))
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(unicode(ub[1]))},[])])])
-				cl.send(i)
+				sender(i)
 				ubl.remove(ub)
 		if len(msg):
 			msg = L('Removed: %s') % msg
@@ -113,7 +113,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
-		cl.send(i)
+		sender(i)
 
 		ubl = getFile(tban,[])
 		for ub in ubl:
@@ -161,7 +161,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':unicode(whojid)},[Node('reason',{},reason)])])])
-		cl.send(i)
+		sender(i)
 		send_msg(type, jid, nick, msg)
 
 # -------------- role -----------------
@@ -192,7 +192,7 @@ def muc_role(type, jid, nick, text, role):
 	else:
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
-		cl.send(i)
+		sender(i)
 		send_msg(type, jid, nick, msg)
 
 # ----------------------------------------------
@@ -275,7 +275,7 @@ def muc_arole(type, jid, nick, text, role):
 		else: alist_role.append((jid,nick,whojid,role,reason,0))
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
-		cl.send(i)
+		sender(i)
 		writefile(ro_alist,str(alist_role))
 		send_msg(type, jid, nick, L('done'))
 # ----------------------------------------------
@@ -291,7 +291,7 @@ def check_unban():
 			else:
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':ub[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'none', 'jid':getRoom(unicode(ub[1]))},[])])])
-				cl.send(i)
+				sender(i)
 		if unban_log != ubl: writefile(tban,str(ubl))
 
 def decrease_alist_role():
@@ -341,7 +341,7 @@ def alist_role_presence(room,jid,nick,type,text):
 			if tmp[0] == room and tmp[2] == jid:
 				iqid = str(randint(1,100000))
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':tmp[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':tmp[3], 'nick':unicode(nick)},[Node('reason',{},tmp[4])])])])
-				cl.send(i)
+				sender(i)
 				break
 
 #def alist_message(room,jid,nick,type,text):

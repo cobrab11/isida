@@ -31,6 +31,25 @@ def log_execute(proc, params):
 	try: proc(*params)
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
+def sender(item):
+	global last_stream
+	last_stream.append(item)
+	
+def sender_stack():
+	global last_stream
+	timeout_match = 1.2
+	timeout_diff = 0.1
+	last_item = ''
+	while not game_over:
+		if last_stream != []:
+			tmp = last_stream[0]
+			if unicode(tmp)[:3] == last_item: sleep(time_match)
+			else:
+				last_item = unicode(tmp[:3])
+				sleep(timeout_diff)
+			last_stream.remove(tmp)
+			cl.send(tmp)
+
 def readfile(filename):
 	fp = file(filename)
 	data = fp.read()
@@ -118,7 +137,7 @@ def pprint(text):
 def send_presence_all(sm):
 	pr=xmpp.Presence(typ='unavailable')
 	pr.setStatus(sm)
-	cl.send(pr)
+	sender(pr)
 	sleep(2)	
 
 def errorHandler(text):
@@ -154,18 +173,18 @@ def send_msg(mtype, mjid, mnick, mmessage):
 			while len(mmsg) > msg_limit:
 				tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg[:msg_limit]+'[...]'
 				cnt += 1
-				cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+				sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
 				mmsg = mmsg[msg_limit:]
-				sleep(1)
+				#sleep(1)
 			tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
-			cl.send(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+			sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
 			if mtype == 'chat': no_send = None
 			else: mmessage = mmessage[:msg_limit] + '[...]'
 		if no_send:
 			if mtype == 'groupchat' and mnick != '': mmessage = mnick+': '+mmessage
 			else: mjid += '/' + mnick
 			while mmessage[-1:] == '\n' or mmessage[-1:] == '\t' or mmessage[-1:] == '\r' or mmessage[-1:] == ' ': mmessage = mmessage[:-1]
-			if len(mmessage): cl.send(xmpp.Message(mjid, mmessage, mtype))
+			if len(mmessage): sender(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
 	iSys = sys.platform
@@ -211,12 +230,14 @@ def leaveconf(conference, server, sm):
 
 def join(conference):
 	global iq_answer
-	j = Presence(conference, show=CommStatus, status=StatusMessage, priority=Priority)
+	id = str(randint(1,100000))
+	j = Node('presence', {'id': id, 'to': conference}, payload = [Node('show', {},[CommStatus]), \
+																  Node('status', {},[StatusMessage]), \
+																  Node('priority', {},[Priority])])
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	if len(psw): j.getTag('x').setTagData('password', psw)
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-	cl.send(j)
-	id=unicode(j.getID())
+	sender(j)
 	answered, Error, join_timeout = None, None, 3
 	while not answered and join_timeout:
 		if is_start: cl.Process(1)
@@ -233,7 +254,7 @@ def join(conference):
 
 def leave(conference, sm):
 	j = Presence(conference, 'unavailable', status=sm)
-	cl.send(j)
+	sender(j)
 
 def timeZero(val):
 	rval = []
@@ -285,7 +306,7 @@ def iqCB(sess,iq):
 			i.getTag('query').setTagData(tag='name', val=botName)
 			i.getTag('query').setTagData(tag='version', val=botVersion)
 			i.getTag('query').setTagData(tag='os', val=botOs)
-			cl.send(i)
+			sender(i)
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_TIME):
@@ -307,7 +328,7 @@ def iqCB(sess,iq):
 			i.getTag('query').setTagData(tag='utc', val=t_utc)
 			i.getTag('query').setTagData(tag='tz', val=t_tz)
 			i.getTag('query').setTagData(tag='display', val=t_display)
-			cl.send(i)
+			sender(i)
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_LAST):
@@ -315,7 +336,7 @@ def iqCB(sess,iq):
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setTag('query',namespace=xmpp.NS_LAST,attrs={'seconds':str(int(time.time())-starttime)})
-			cl.send(i)
+			sender(i)
 			raise xmpp.NodeProcessed
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
@@ -544,7 +565,7 @@ def presenceCB(sess,mess):
 	if ownerbase.count(getRoom(room)) and type != 'unavailable':
 		j = Presence(room, show=CommStatus, status=StatusMessage, priority=Priority)
 		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		cl.send(j)
+		sender(j)
 
 	not_found = 0
 
@@ -710,6 +731,7 @@ schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
 reboot_time = 180				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
 bot_exit_type = None			# причина завершения бота
+last_stream = []
 
 NS_STATS = 'http://jabber.org/protocol/stats'
 
@@ -828,8 +850,11 @@ cl.sendInitPresence()
 
 pprint('Wait conference')
 sleep(0.5)
+game_over = None
+thr(sender_stack,())
 cb = []
 is_start = True
+lastserver = getServer(confbase[0].lower())
 for tocon in confbase:
 	baseArg = unicode(tocon)
 	if not tocon.count('/'): baseArg += '/'+unicode(nickname)
@@ -844,16 +869,13 @@ for tocon in confbase:
 #	j = Presence(tocon, show=CommStatus, status=StatusMessage, priority=Priority)
 #	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 #	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-#	cl.send(j)
+#	sender(j)
 confbase = cb
 is_start = None
-lastserver = getServer(confbase[0].lower())
 pprint('Joined')
 
 #pep = xmpp.Message(to=selfjid, frm=getRoom(selfjid), payload=[xmpp.Node('event',{'xmlns':'http://jabber.org/protocol/pubsub#event'},[xmpp.Node('items',{'node':'http://jabber.org/protocol/tune'},[xmpp.Node('item',{'id':'current'},[xmpp.Node('tune',{'xmlns':'http://jabber.org/protocol/tune'},[])])])])])
-#cl.send(pep)
-
-game_over = None
+#sender(pep)
 
 thr(now_schedule,())
 

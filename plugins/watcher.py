@@ -13,7 +13,7 @@ def connect_watch():
 		watch_count += 1
 		iqid = str(randint(1,100000))
 		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
-		cl.send(i)
+		sender(i)
 		to, no_answ = watch_timeout, True
 		while to >= 0 and no_answ:
 			for aa in iq_answer:

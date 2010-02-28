@@ -8,7 +8,7 @@ def gsay(type, jid, nick, text):
 	for jjid in confbase: send_msg('groupchat', getRoom(jjid), '', text)
 
 def set_topic(type, jid, nick, text):
-	cl.send(Message(jid, subject=text, typ='groupchat'))
+	sender(Message(jid, subject=text, typ='groupchat'))
 	
 def juick_post(type, jid, nick, text):
 	send_msg('chat', 'juick@juick.com', '', text)

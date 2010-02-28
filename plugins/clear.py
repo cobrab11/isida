@@ -11,7 +11,7 @@ def hidden_clear(type, jid, nick, text):
 	send_msg(type, jid, nick, L('Clean by %s messages in approximately %s sec.') % (str(cntr),str(int(cntr*clear_delay))))
 	time.sleep(clear_delay)
 	for tmp in range(0,cntr):
-		cl.send(xmpp.Message(jid, '', "groupchat"))
+		sender(xmpp.Message(jid, '', "groupchat"))
 		time.sleep(clear_delay)
 	send_msg(type, jid, nick, L('Cleaned!'))
 
