@@ -33,7 +33,8 @@ def log_execute(proc, params):
 
 def sender(item):
 	global last_stream
-	last_stream.append(item)
+	if last_stream != []: last_stream.append(item)
+	else: cl.send(item)
 	
 def sender_stack():
 	global last_stream
