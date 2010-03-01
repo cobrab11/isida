@@ -419,15 +419,14 @@ def messageCB(sess,mess):
 	if type == 'headline': to_scrobble(room,mess)
 	text=unicode(mess.getBody())
 	if text == 'None' or text == '': return
+	if mess.getTimestamp() != None: return
 	nick=mess.getFrom().getResource()
 	if nick == None: nick = ''
 	else: nick = unicode(nick)
 	type=unicode(mess.getType())
 	towh=unicode(mess.getTo().getStripped())
-	stamp=unicode(mess.getTimestamp())
 	lprefix = get_local_prefix(room)
 	back_text = text
-#	print '---\n', 'room:',parser(room),'\nnick:',parser(nick),'\ntext:',parser(text),'\ntype:', parser(type),'\ntowh:',parser(towh),'\nstamp:', parser(stamp)
 	rn = room+"/"+nick
 	text=unicode(text)
 	ft = text
