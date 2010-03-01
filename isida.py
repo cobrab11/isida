@@ -49,6 +49,7 @@ def sender_stack():
 				sleep(timeout_diff)
 			last_stream.remove(tmp)
 			cl.send(tmp)
+		else: sleep(1)
 
 def readfile(filename):
 	fp = file(filename)
