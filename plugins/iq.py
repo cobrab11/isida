@@ -29,9 +29,11 @@ def iq_vcard(type, jid, nick, text):
 				break
 		sleep(0.05)
 		to -= 0.05
+	try: er_code = is_answ[1]
+	except: er_code = None
 	if to > 0:
-		isa = is_answ[0]
-		if isa == None: msg = L('I can\'t do it')
+		if is_answ[0] == None: msg = L('I can\'t do it')
+		elif er_code == 'error': msg = is_answ[0]
 		else:
 			while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 			if args.lower() == 'show':
@@ -84,7 +86,10 @@ def iq_uptime(type, jid, nick, text):
 		to -= 0.05
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
-	if to > 0:
+	try: er_code = is_answ[1]
+	except: er_code = None
+	if er_code == 'error': msg = is_answ[0]
+	elif to > 0:
 		if iiqq == ['None']: msg = L('I can\'t do it')
 		else:
 			try: msg = L('Uptime: %s') % un_unix(int(iiqq[0].split('seconds="')[1].split('"')[0]))
@@ -121,15 +126,18 @@ def ping(type, jid, nick, text):
 		sleep(0.001)
 		to -= 0.001
 	ct = time.time()
+	try: er_code = is_answ[1]
+	except: er_code = None
 	iiqq = []
 	for iiq in is_answ:
 		if iiq != None: iiqq.append(iiq)
 		else: iiqq.append('None')
-	if to > 0:
+	if er_code == 'error': msg = is_answ[0]
+	elif to > 0:
 		if iiqq == ['None']: msg = L('I can\'t do it')
 		else:
 			tpi = ct-lt
-			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10000))
+			tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*100))
 			if sping: msg = L('Ping from you %s sec.') % tpi
 			else: msg = L('Ping from %s %s sec.') % (text, tpi)
 	else: msg = L('Timeout %s sec.') % str(timeout)
@@ -167,7 +175,10 @@ def iq_time_get(type, jid, nick, text, mode):
 		to -= 0.5
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
-	if to > 0:
+	try: er_code = is_answ[1]
+	except: er_code = None
+	if er_code == 'error': msg = is_answ[0]
+	elif to > 0:
 		if len(iiqq) == 3:
 			msg = iiqq[0]
 			if mode: msg += ', Raw time: '+iiqq[1]+', TimeZone: '+iiqq[2]
@@ -203,7 +214,10 @@ def iq_version(type, jid, nick, text):
 		to -= 0.5
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
-	if to > 0:
+	try: er_code = is_answ[1]
+	except: er_code = None
+	if er_code == 'error': msg = is_answ[0]
+	elif to > 0:
 		if len(iiqq) == 3: msg = iiqq[0]+' '+iiqq[1]+' // '+iiqq[2]
 		else:
 			msg = ''
@@ -232,7 +246,10 @@ def iq_stats(type, jid, nick, text):
 		sleep(0.25)
 		to -= 0.25
 	iiqq = unicode(is_answ)
-	if to > 0: 
+	try: er_code = is_answ[1]
+	except: er_code = None
+	if er_code == 'error': msg = is_answ[0]
+	elif to > 0:
 		if iiqq == 'None': ans = [0,0]
 		else:
 			try: ans = [get_subtag(iiqq.split('stat ')[1],'value'),get_subtag(iiqq.split('stat ')[2],'value')]

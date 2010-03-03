@@ -273,8 +273,14 @@ def iqCB(sess,iq):
 	query = iq.getTag('query')
 
 	if iq.getType()=='error':
-		try: iq_answer.append((id,get_tag_item(unicode(iq),'error','code')+':'+iq.getTag('error').getTagData(tag='text')))
-		except: iq_answer.append((id,L('Unknown error!')))
+		try: iq_answer.append((id,get_tag_item(unicode(iq),'error','code')+':'+iq.getTag('error').getTagData(tag='text'),'error'))
+		except:
+			try: 
+				uiq = unicode(iq)
+				er_tag = get_tag(uiq,'error')
+				er_name = L('Error!') + ' %s/%s! %s' % (get_tag_item(uiq,'error','code'),get_tag_item(uiq,'error','type'),er_tag[1:er_tag.find(' ')])
+				iq_answer.append((id,er_name,'error'))
+			except: iq_answer.append((id,L('Unknown error!'),'error'))
 
 	elif iq.getType()=='result':
 		cparse = unicode(iq)
@@ -543,8 +549,11 @@ def presenceCB(sess,mess):
 #	print jid, caps_node, caps_ver
 
 	if type=='error':
-		try: iq_answer.append((id,get_tag_item(unicode(mess),'error','code')+':'+mess.getTag('error').getTagData(tag='text')))
-		except: iq_answer.append((id,L('Unknown error!')))
+		try: iq_answer.append((id,get_tag_item(unicode(mess),'error','code')+': '+mess.getTag('error').getTagData(tag='text')))
+		except:
+			try: 
+				iq_answer.append((id,get_tag_item(unicode(mess),'error','code')+': '+mess.getTag('error')))
+			except: iq_answer.append((id,L('Unknown error!')))
 	elif id != None: iq_answer.append((id,None))
 	if jid == 'None': jid = get_access(room,nick)[1]
 	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
