@@ -38,7 +38,6 @@ def sender(item):
 	
 def sender_stack():
 	global last_stream
-	timeout_match = 1.2
 	timeout_diff = 0.1
 	last_item = ''
 	while not game_over:
@@ -347,20 +346,36 @@ def iqCB(sess,iq):
 			sender(i)
 			raise xmpp.NodeProcessed
 
+def remove_ignore(jid):
+	global ignorebase
+	sleep(180)
+	ignorebase.remove(jid)
+
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
-	no_comm = 1
+	global last_command, ignorebase
+	if type == 'chat':
+		if access_mode == 0 and last_command[1:7] == [nowname, type, room, nick, text, jid] and time.time() < last_command[7]+10:
+			jjid = getRoom(jid)
+			ignorebase.append(jjid)
+			print ignorebase
+			pprint('!!! DDOS Detect: %s %s %s %s %s %s' % (access_mode, nowname, room, nick, text, jid))
+			thr(remove_ignore,(jjid,))
+			return None
+		else: last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
+	else: last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
+	no_comm = True
 	cof = getFile(conoff,[])
 	for parse in comms:
 		if access_mode >= parse[0] and nick != nowname:
-			not_offed = 1
+			not_offed = True
 			if access_mode != 2:
 				for co in cof:
 					if co[0]==room and co[1]==text.lower()[:len(co[1])]:
-						not_offed = 0
+						not_offed = None
 						break
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-				no_comm = 0
+				no_comm = None
 				if not parse[3]: thr(parse[2],(type, room, nick, par))
 				elif parse[3] == 1: thr(parse[2],(type, room, nick))
 				elif parse[3] == 2: thr(parse[2],(type, room, nick, text[len(parse[1])+1:]))
@@ -742,6 +757,7 @@ thread_error_count = 0			# счётчик ошибок тредов
 reboot_time = 180				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
 bot_exit_type = None			# причина завершения бота
 last_stream = []
+last_command = []
 
 NS_STATS = 'http://jabber.org/protocol/stats'
 
