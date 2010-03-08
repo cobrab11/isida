@@ -9,8 +9,8 @@ def known(type, jid, nick, text):
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,text,text.lower())).fetchone()
 	if real_jid:
 		nicks = cu.execute('select nick from age where room=? and jid=?',(jid,real_jid[0])).fetchall()
-		if text == nick: msg = L('I know you as: ')
-		else: msg = L('I know %s as: ') % text
+		if text == nick: msg = L('I know you as:') + ' '
+		else: msg = L('I know %s as:') % text + ' '
 		for tmp in nicks:
 			msg += tmp[0] + ', '
 		msg = msg[:-2]

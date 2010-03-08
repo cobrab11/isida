@@ -35,6 +35,7 @@ def iq_vcard(type, jid, nick, text):
 		if is_answ[0] == None: msg = L('I can\'t do it')
 		elif er_code == 'error': msg = is_answ[0]
 		else:
+			isa = is_answ[0]
 			while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 			if args.lower() == 'show':
 				msg = L('vCard tags:') + ' '

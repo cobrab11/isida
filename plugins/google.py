@@ -63,7 +63,7 @@ def translate(type, jid, nick,text):
 			  'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
 			  'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese')}
 	if text.lower() == 'list':
-		msg = L('Available languages for translate: ')
+		msg = L('Available languages for translate:') + ' '
 		for tl in trlang: msg += tl+', '
 		msg = msg[:-2]
 	elif text[:4].lower() == 'info':

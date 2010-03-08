@@ -62,7 +62,7 @@ Only conference owner can disable commands!	Отключение команд д
 Disabled commands: %s	Отключены команды: %s
 Disabled commands not found!	Для данной конференции нет отключенных команд!
 leave this room.	покинул данную конференцию.
-I can't see %s here... 	Я могу ошибаться, но %s тут нету...
+I can't see %s here...	Я могу ошибаться, но %s тут нету...
 Last update:\n%s	Последнее обновление:\n%s
 File %s not found!	Файл %s не доступен!
 Mode %s not detected!	Режим %s не опознан!
@@ -244,7 +244,7 @@ I need an owner affiliation for restore settings!	Для восстановле�
 Restore completed.	Восстановление завершено.
 What do you want to restore?	Что будем восстанавливать?
 Backup/restore conference settings.\nbackup show|now|restore\nshow - show available copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервное копирование/восстановление конференций.\nbackup show|now|restore\nshow - показать доступные копии\nnow - сохранить текущую конференцию\nrestore название_конференции - восстановить конференцию в текущей.
-
+Copying completed!\nOwners:\t%s\nAdmins:\t%s\nMembers:\t%s\nBanned:\t%s	Копирование завершено!\nВладельцев:\t%s\nАдминов:\t%s\nУчастников:\t%s\nБаня:\t%s
 
 # bash.py
 Quote not found!	Цитата не найдена!
@@ -476,7 +476,7 @@ Czech	чешский
 Swedish	шведский
 Estonian	эстонский
 Japanese	японский
-Available languages for translate: 	Доступные языки для перевода: 
+Available languages for translate:	Доступные языки для перевода:
 Available languages: %s	Известные языки: %s
 I don't know this language	Я не знаю таких языков
 Incorrect language settings for translate. tr list - available languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
@@ -505,7 +505,7 @@ aries	овен
 taurus	телец
 gemini	близнецы
 cancer	рак
-leo 	лев
+leo	лев
 virgo	дева
 libra	весы
 scorpio	скорпион
@@ -587,7 +587,7 @@ Nicks without letters isn't true!	Ники без букв не Ъ!
 Valid of nick is - %s%s	Кошерность ника %s%s 
 Normal nick, but left symbols in fireplace.	Нормальный ник, а вот левые символы фтопку!
 Many caps - %s%s	Много капса - %s%s
-Dominate letters: 	Преобладают буквы: 
+Dominate letters:	Преобладают буквы:
 Cyrillic	Кириллица
 Latin	Латиница
 Eually	Поровну
@@ -648,8 +648,8 @@ Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnic
 
 
 # known.py
-I know you as: 	Я видела тебя как: 
-I know %s as: 	Я видела %s как: 
+I know you as:	Я видела тебя как:
+I know %s as:	Я видела %s как:
 Show user's nick changes.	Показ смены ников.
 
 
@@ -852,7 +852,7 @@ is not specified criterion tracking	не указан критерий слеж�
 incorrect digital parameter	не верно задан цифровой параметр
 Updated: %s	Обновлено: %s
 what do you want remove?	что удалить?
-Not found: 	Не найдено: %s
+Not found: %s	Не найдено: %s
 Monitoring conferences:	Слежение за конференциями:
 \nNext scanning across %s	\nСледующее сканирование через %s
 Leave conference because low activity	Выхожу в связи с низкой активностью конференции
@@ -891,7 +891,7 @@ day	день
 Error date format!	Ошибка формата команды!
 was %s %s ago	был %s %s назад
 will be in %s %s	будет через %s %s
-before the %s remained 	до %s осталось 
+before the %s remained	до %s осталось
 today	сегодня
 Calculate count of days for requested date, if the date is holiday, that returned title of holiday.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitters: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010	Рассчет количества дней от текущей даты до заданной, если на заданную дату выпадает праздник, то возвращается название праздника вместо запрашиваемой даты\nПоддерживаемые форматы даты: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПоддерживаемые разделители: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010
 Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitter: ,-.:/\\\ntodate 05.09 before New year remained\ntodate 5/9/2010 before New year remained	Рассчет количества дней от текущей даты до заданной, с возможностью вставки собственного текста\nПоддерживаемые форматы даты: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПоддерживаемые разделители: ,-.:/\\\ntodate 05.09 До дня победы осталось\ntodate 5/9/2010 До дня победы осталось

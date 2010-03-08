@@ -62,7 +62,7 @@ Only conference owner can disable commands!	Вимкнення команд до
 Disabled commands: %s	Вимкнені команди: %s
 Disabled commands not found!	Для даної конференції немає вимкнених команд!
 leave this room.	залишив цю конференцію.
-I can't see %s here... 	Я можу помилятися, але %s тут немає...
+I can't see %s here...	Я можу помилятися, але %s тут немає...
 Last update:\n%s	Останнє поновлення:\n%s
 File %s not found!	Файл %s недоступний!
 Mode %s not detected!	Режим %s не впізнан!
@@ -244,6 +244,7 @@ I need an owner affiliation for restore settings!	Для відновлення 
 Restore completed.	Відновлення завершено.
 What do you want to restore?	Що будемо відновлювати?
 Backup/restore conference settings.\nbackup show|now|restore\nshow - show available copies\nnow - backup current conference\nrestore name_conference - restore settings name_conference in current conference	Резервне копіювання/відновлення конференцій.\nbackup show|now|restore\nshow - показати доступні копії\nnow - зберегти поточну конференцію\nrestore назва_конференції - відновити конференцію в поточній.
+Copying completed!\nOwners:\t%s\nAdmins:\t%s\nMembers:\t%s\nBanned:\t%s	Копирование завершено!\nВладельцев:\t%s\nАдминов:\t%s\nУчастников:\t%s\nБаня:\t%s
 
 
 # bash.py
@@ -476,7 +477,7 @@ Czech	чеська
 Swedish	шведська
 Estonian	естонська
 Japanese	японська
-Available languages for translate: 	Доступні мови для перекладу: 
+Available languages for translate:	Доступні мови для перекладу:
 Available languages: %s	Відомі мови: %
 I don't know this language	Я не знаю таких мов
 Incorrect language settings for translate. tr list - available languages.	Неправильно вказана мова або немає тексту для переводу. tr list - доступні мови
@@ -505,7 +506,7 @@ aries	овен
 taurus	телець
 gemini	близнюки
 cancer	рак
-leo 	лев
+leo	лев
 virgo	діва
 libra	терези
 scorpio	скорпіон
@@ -587,7 +588,7 @@ Nicks without letters isn't true!	Ніки без літер не Ъ!
 Valid of nick is - %s%s	Кошерність ніка %s%s 
 Normal nick, but left symbols in fireplace.	Нормальний нік, а ліві символи фтопку!
 Many caps - %s%s	Багато капсу - %s%s
-Dominate letters: 	Переважають літери: 
+Dominate letters:	Переважають літери:
 Cyrillic	Кирилиця
 Latin	Латиниця
 Eually	Порівну
@@ -648,8 +649,8 @@ Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnic
 
 
 # known.py
-I know you as: 	Я бачив тебе як: 
-I know %s as: 	Я бачив %s як: 
+I know you as:	Я бачив тебе як:
+I know %s as:	Я бачив %s як:
 Show user's nick changes.	Показ зміни ніків.
 
 
@@ -852,7 +853,7 @@ is not specified criterion tracking	не вказан критерій спос�
 incorrect digital parameter	невірно заданий цифровий параметр
 Updated: %s	Поновлено: %s
 what do you want remove?	що видалити?
-Not found: 	Не знайдено: %s
+Not found: %s	Не знайдено: %s
 Monitoring conferences:	Спостереження за конференціями:
 \nNext scanning across %s	\nНаступне сканування через %s
 Leave conference because low activity	Виходжу у зв'язку з низькою активністю конференції
@@ -891,7 +892,7 @@ day	день
 Error date format!	Помилка формату команди!
 was %s %s ago	був %s %s тому
 will be in %s %s	буде через %s %s
-before the %s remained 	до %s залишилось 
+before the %s remained	до %s залишилось
 today	сьогодні
 Calculate count of days for requested date, if the date is holiday, that returned title of holiday.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitters: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010	Розрахунок кількості днів від поточної дати до заданої, якщо на задану дату выпадає свято, то повертається назва свята замість запитуваної дати\nПідтримувані формати дати: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПідтримувані роздільники: ,-.:/\\\ntodate 05.09\ntodate 5/9/2010
 Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitter: ,-.:/\\\ntodate 05.09 before New year remained\ntodate 5/9/2010 before New year remained	Розрахунок кількості днів від поточної дати до заданої з можливістю вставки власного тексту\nПідтримувані формати дати: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПідтримувані роздільники: ,-.:/\\\ntodate 05.09 До Дня Перемоги залишилось\ntodate 5/9/2010 До Дня Перемоги залишилось

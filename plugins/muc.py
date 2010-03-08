@@ -105,8 +105,8 @@ def muc_tempo_ban2(type, jid, nick,text):
 				if who.count('.'):
 					msg = L('I don\'n know %s, and use as is!') % who
 					whojid = who
-				else: msg = L('I don\'t know %s') % who
-		else: msg = L('Time format error!')
+				else: msg, skip = L('I don\'t know %s') % who , True
+		else: msg, skip = L('Time format error!'), True
 	else: msg, skip = L('What?'), True
 
 	if skip: send_msg(type, jid, nick, msg)

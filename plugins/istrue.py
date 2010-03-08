@@ -19,7 +19,7 @@ def is_valid(type, jid, nick, text):
 	else: msg = L('Valid of nick is - %s%s ') % (str(int(float(ru_lit+en_lit)/lt*100-int(idx*100))), '%')
 	if float(caps_lit)/lt > 0.5: msg += L('Many caps - %s%s ') % (str(int(float(caps_lit)/lt*100)), '%')
 
-	msg += L('Dominate letters: ')
+	msg += L('Dominate letters:') + ' '
 	if hl == 1: msg += L('Latin')
 	elif hl == 2: msg += L('Cyrillic')
 	else: msg += L('Equally')
