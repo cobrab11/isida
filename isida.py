@@ -348,13 +348,13 @@ def iqCB(sess,iq):
 
 def remove_ignore(jid):
 	global ignorebase
-	sleep(180)
+	sleep(300)
 	ignorebase.remove(jid)
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	global last_command, ignorebase
 	if type == 'chat':
-		if access_mode == 0 and last_command[1:7] == [nowname, type, room, nick, text, jid] and time.time() < last_command[7]+10:
+		if access_mode != 2 and last_command[1:7] == [nowname, type, room, nick, text, jid] and time.time() < last_command[7]+10:
 			jjid = getRoom(jid)
 			ignorebase.append(jjid)
 			print ignorebase
