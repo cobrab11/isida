@@ -306,18 +306,18 @@ def decrease_alist_role():
 def muc_afind(type, jid, nick, text):
 	skip = None
 	if len(text):
-			who = text
-			mdb = sqlite3.connect(agestatbase)
-			cu = mdb.cursor()
-			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), None
-			elif len(fnd) > 1:
-				whojid = getRoom(get_access(jid,who)[1])
-				if whojid != 'None': whonick, msg, skip = who, L('done'), None
-				else: msg = L('I seen some peoples with this nick. Get more info!')
-			else: msg = L('I don\'t know %s') % who
+		who = text
+		mdb = sqlite3.connect(agestatbase)
+		cu = mdb.cursor()
+		fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
+		if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), True
+		elif len(fnd) > 1:
+			whojid = getRoom(get_access(jid,who)[1])
+			if whojid != 'None': whonick, msg, skip = who, L('done'), True
+			else: msg = L('I seen some peoples with this nick. Get more info!')
+		else: msg = L('I don\'t know %s') % who
 	else: msg = L('What?')
-	if not skip:
+	if skip:
 		alist_role = getFile(ro_alist,[])
 		not_found = 1
 		for tmp in alist_role:
