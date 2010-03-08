@@ -151,6 +151,7 @@ Bad url or rss/atom not found at %s - %s	Ошибка url или новости 
 Can't find in schedule: %s	Не могу найти в расписании: %s
 Delete feed from schedule: %s	Удалено из расписания: %s
 New feeds not found!	Нет новых новостей!
+Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.	Внимание! Превышен лимит отправки одинаковых сообщений. Вы блокированы на срок %s сек.
 
 # --------------- перевод хелпов main.py ---------------
 Help system. Helps without commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ

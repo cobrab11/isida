@@ -348,7 +348,7 @@ def iqCB(sess,iq):
 
 def remove_ignore(jid):
 	global ignorebase
-	sleep(300)
+	sleep(ddos_limit)
 	ignorebase.remove(jid)
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
@@ -357,12 +357,10 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 		if access_mode != 2 and last_command[1:7] == [nowname, type, room, nick, text, jid] and time.time() < last_command[7]+10:
 			jjid = getRoom(jid)
 			ignorebase.append(jjid)
-			print ignorebase
 			pprint('!!! DDOS Detect: %s %s %s %s %s %s' % (access_mode, nowname, room, nick, text, jid))
 			thr(remove_ignore,(jjid,))
+			send_msg(type, room, nick, L('Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.') % ddos_limit)
 			return None
-		else: last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
-	else: last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
 	no_comm = True
 	cof = getFile(conoff,[])
 	for parse in comms:
@@ -379,6 +377,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 				if not parse[3]: thr(parse[2],(type, room, nick, par))
 				elif parse[3] == 1: thr(parse[2],(type, room, nick))
 				elif parse[3] == 2: thr(parse[2],(type, room, nick, text[len(parse[1])+1:]))
+				last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
 				break
 	return no_comm
 
@@ -758,6 +757,7 @@ reboot_time = 180				# таймаут рестарта бота при ошиб�
 bot_exit_type = None			# причина завершения бота
 last_stream = []
 last_command = []
+ddos_limit = 300
 
 NS_STATS = 'http://jabber.org/protocol/stats'
 
