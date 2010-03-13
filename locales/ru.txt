@@ -899,6 +899,13 @@ Calculate count of days for requested date, if the date is holiday, that returne
 Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nSupported splitter: ,-.:/\\\ntodate 05.09 before New year remained\ntodate 5/9/2010 before New year remained	Рассчет количества дней от текущей даты до заданной, с возможностью вставки собственного текста\nПоддерживаемые форматы даты: dd.mm.yyyy, dd.mm, dd.mm.yy, yyyy.mm.dd\nПоддерживаемые разделители: ,-.:/\\\ntodate 05.09 До дня победы осталось\ntodate 5/9/2010 До дня победы осталось
 
 
+#torrent.py
+Total results: %s \nTitle ::: Size ::: Peers [up/down]	Всего результатов: %s \nНазвание ::: Размер ::: Пиры [up/down]
+\nTorrent file: %s	\nTorrent файл: %s
+Incorrect tracker.	Неверно задан трекер.
+Search in bittorrent trackers\ntorrent rutor - search in RuTor.org\ntorrent os - search in OpenSharing.org\ntorrent tracker\nquery\ncount	Поиск по торрент трекерам\ntorrent rutor - поиск по RuTor.org\ntorrent os - поиск по OpenSharing.org\ntorrent tracker\nquery\ncount
+
+
 # turn.py
 qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
 QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ
