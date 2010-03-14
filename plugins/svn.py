@@ -15,10 +15,10 @@ def svn_get(type, jid, nick,text):
 					if text[1].lower().count('r'): revn = int(text[1][text[1].find('r')+1:])
 				except: revn = 0
 		else: url=text
-		if revn != 0: sh_exe = 'bash -c \"LANG=ru_RU.UTF8 svn log '+url+' -r'+str(revn)+'\"'
+		if revn != 0: sh_exe = 'sh -c \"LANG='+L('en_EN.UTF8')+' svn log '+url+' -r'+str(revn)+'\"'
 		else:
 			if count > 10: count = 10
-			sh_exe = 'bash -c \"LANG='+L('en_EN.UTF8')+' svn log '+url+' --limit '+str(count)+'\"'
+			sh_exe = 'sh -c \"LANG='+L('en_EN.UTF8')+' svn log '+url+' --limit '+str(count)+'\"'
 		msg = 'SVN from '+url+'\n'+shell_execute(sh_exe)
 	else: msg = L('Read user manual for commands...')
 	send_msg(type, jid, nick, msg)
