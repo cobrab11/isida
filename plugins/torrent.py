@@ -15,7 +15,7 @@ def GetTorrentInfo(request, tracker, link, count=3):
 		if len(tmp) == 6: tmp.remove(tmp[2])
 		output += u'\n' + str(n) + u'. ' + replacer(tmp[1]) + u' ::: ' + \
 			replacer(tmp[2]) + u' :::'+ rss_del_html(tmp[3]).replace('  ', '/')
-		output += u'\n  Torrent файл: %s' % tracker
+		output += L('\n  Torrent file: %s') % tracker
 		ttmp = tmp[1][tmp[1].find('/download'):]
 		ttmp = ttmp[:ttmp.find('">')]
 		if tracker == 'http://opensharing.org': ttmp = ttmp[:-1]
