@@ -810,7 +810,7 @@ This jid is here!	Даний jid знаходиться в конфі!
 I didn't see user with jid %s, but if he join here I convey your message.	Я не бачила людину з jid'ом %s, але якщо зайде - я передам.
 I didn't see user with nick %s. You can use jid.	Я не бачила %s в конференції. Ви можете вказати jid.
 What convey to?	Кому що передати?
-%s %s ago convey for you: %s	%s %s тому прохав передати: %s
+%s (%s ago) convey for you: %s	%s (%s тому) прохав передати: %s
 %s convey for you: %s	%s прохав передати: %s
 %s from conference %s convey message for you: %s	%s з конференції %s передав: %s
 "Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn't be send this message remove.	Команда "передати".\nsayto jid|nick message - при вході в конференцію jid'a або ніка відправить повідомлення "message". Повідомлення зберігаються 14 днів, після чого недоставлені повідомлення видаляються.

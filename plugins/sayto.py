@@ -85,7 +85,7 @@ def sayto_presence(room,jid,nick,type,text):
 			for cc in cm:
 				if cc[0].count('\n'):
 					zz = cc[0].split('\n')
-					send_msg('chat', room, nick, L('%s %s ago convey for you: %s') % (zz[0], '('+un_unix(time.time()-int(zz[1]))+')', cc[3]))
+					send_msg('chat', room, nick, L('%s (%s ago) convey for you: %s') % (zz[0], un_unix(time.time()-int(zz[1])), cc[3]))
 				else: send_msg('chat', room, nick, L('%s convey for you: %s') % (cc[3], cc[0]))
 			sdb.commit()
 
