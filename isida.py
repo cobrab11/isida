@@ -38,16 +38,11 @@ def sender(item):
 	
 def sender_stack():
 	global last_stream
-	timeout_diff = 0.1
-	last_item = ''
 	while not game_over:
 		if last_stream != []:
 			tmp = last_stream[0]
-			if unicode(tmp)[:3] == last_item: sleep(time_match)
-			else:
-				last_item = unicode(tmp[:3])
-				sleep(timeout_diff)
 			last_stream.remove(tmp)
+			sleep(0.05)
 			cl.send(tmp)
 		else: sleep(1)
 
@@ -176,7 +171,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
 				cnt += 1
 				sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
 				mmsg = mmsg[msg_limit:]
-				#sleep(1)
+				sleep(1)
 			tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
 			sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
 			if mtype == 'chat': no_send = None
