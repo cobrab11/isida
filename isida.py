@@ -38,11 +38,23 @@ def sender(item):
 	
 def sender_stack():
 	global last_stream
+	last_item = {}
+	time_limit = 1.2
+	time_nolimit = 0.05
 	while not game_over:
 		if last_stream != []:
+			time_tmp = time.time()
 			tmp = last_stream[0]
+			u_tmp = unicode(tmp)
+			to_tmp = get_tag(u_tmp,'to')
+			type_tmp = get_tag(u_tmp,'type')
+			if type_tmp == 'groupchat':
+				time_diff = time_tmp - last_item[to_tmp]
+				last_item[to_tmp] == time_tmp
+				if time_diff < time_limit: sleep(time_limit - time_diff)
+				else: sleep(time_limit)
+			else: sleep(time_nolimit)
 			last_stream.remove(tmp)
-			sleep(0.05)
 			cl.send(tmp)
 		else: sleep(1)
 
@@ -352,7 +364,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	if last_command[1:7] == [nowname, type, room, nick, text, jid] and time.time() < last_command[7]+ddos_diff[access_mode]:
 		jjid = getRoom(jid)
 		ignorebase.append(jjid)
-		pprint('!!! DDOS Detect: %s %s %s %s %s %s' % (access_mode, nowname, room, nick, text, jid))
+		pprint('!!! DDOS Detect: %s %s/%s %s %s' % (access_mode, room, nick, jid, text))
 		thr(remove_ignore,(jjid,access_mode))
 		send_msg(type, room, nick, L('Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.') % ddos_limit[access_mode])
 		return None
