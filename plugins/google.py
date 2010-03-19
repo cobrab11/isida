@@ -67,7 +67,7 @@ def translate(type, jid, nick,text):
 		for tl in trlang: msg += tl+', '
 		msg = msg[:-2]
 	elif text[:4].lower() == 'info':
-		text = text.split(' ')
+		text = text.lower().split(' ')
 		msg = ''
 		for tmp in text:
 			if tmp in trlang: msg += tmp+' - '+trlang[tmp]+', '
@@ -76,8 +76,8 @@ def translate(type, jid, nick,text):
 	else:
 		if text.count(' ') > 1:
 			text = text.split(' ',2)
-			if (text[0] in trlang) and (text[1] in trlang) and text[2] != '':
-				query = urllib.urlencode({'q' : text[2].encode("utf-8"),'langpair':text[0]+'|'+text[1]})
+			if (text[0].lower() in trlang) and (text[1].lower() in trlang) and text[2] != '':
+				query = urllib.urlencode({'q' : text[2].encode("utf-8"),'langpair':text[0].lower()+'|'+text[1].lower()})
 				url = 'http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&%s'.encode("utf-8") % (query)
 				search_results = urllib.urlopen(url)
 				json = simplejson.loads(search_results.read())
