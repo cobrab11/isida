@@ -68,25 +68,13 @@ class KThread(threading.Thread):
 
 	def kill(self): self.killed = True
 
-def thread_wt(func,name,param):
-        thr = KThread(group=None,target=func,name=name,args=param)
-        thr.start()
-        try:
-                ltm = thread_timeout
-                while thr.isAlive():
-                        sleep(1)
-                        ltm -= 1
-        except: logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
-        thr.kill()
-        thr = None
-
 def thr(func,param):
 	global th_cnt, thread_error_count
 	th_cnt += 1
 	try:
 		if thread_type:
 			with sema:
-				tmp_th = threading.Thread(group=None,target=func,name=str(th_cnt),args=param)
+				tmp_th = threading.KThread(group=None,target=func,name=str(th_cnt),args=param)
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
