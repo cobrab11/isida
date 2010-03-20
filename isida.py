@@ -74,7 +74,7 @@ def thr(func,param):
 	try:
 		if thread_type:
 			with sema:
-				tmp_th = threading.KThread(group=None,target=func,name=str(th_cnt),args=param)
+				tmp_th = KThread(group=None,target=func,name=str(th_cnt),args=param)
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
