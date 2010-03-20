@@ -15,14 +15,40 @@ from random import *
 from time import *
 from pdb import *
 from subprocess import Popen, PIPE, STDOUT
-import os, xmpp, time, sys, time, pdb, urllib, urllib2, re, logging, gc, hashlib
-import thread, operator, sqlite3, simplejson, chardet, socket, subprocess, atexit, htmlentitydefs
+
+import atexit
+import chardet
+import gc
+import hashlib
+import htmlentitydefs
+import logging
+import operator
+import os
+import pdb
+import re
+import simplejson
+import socket
+import sqlite3
+import subprocess
+import sys
+import thread
+import threading
+import time
+import urllib
+import urllib2
+import xmpp
+
 global execute, prefix, comms, hashlib, trace
+
+sema = threading.BoundedSemaphore(value=30)
 
 def thr(func,param):
 	global th_cnt, thread_error_count
 	th_cnt += 1
-	try: thread.start_new_thread(log_execute,(func,param))
+	try:
+		if thread_type:
+			with sema: threading.Thread(group=None,target=func,name=str(th_cnt),args=param).start()
+		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
 		if str(SM).lower().count('thread'): thread_error_count += 1
 		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
@@ -766,6 +792,7 @@ last_stream = []
 last_command = []
 ddos_limit = [600,300,5]		# время игнора при ddos'е в зависимости от уровня доступа
 ddos_diff = [15,10,5]			# промежуток между сообщениями
+thread_type = True				# тип тредов
 
 NS_STATS = 'http://jabber.org/protocol/stats'
 

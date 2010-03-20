@@ -49,10 +49,15 @@ msg_limit = 1000
 #debugmode = True
 
 # Debugging mode xmpppy
-dm = True
+#dm = True
 
 # Mode of show of operations of a bot in console
 #dm2 = True
 
 # logging commands of a bot
 CommandsLog = True
+
+# ------- System settings! -------
+
+# threads type thread/threading. default - threading
+#thread_type = None

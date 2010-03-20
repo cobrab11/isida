@@ -56,3 +56,8 @@ msg_limit = 1000
 
 # Логгирование команд бота
 CommandsLog = True
+
+# ------- Системные настройки! -------
+
+# тип тредов thread/threading. по умолчанию - threading
+#thread_type = None

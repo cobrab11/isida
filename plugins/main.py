@@ -1108,36 +1108,38 @@ def rss(type, jid, nick, text):
 				urlmode = None
 				msg += link+' '
 			msg += get_tag(feed[0],'title') + '\n'
-			mmsg = feed[1]
-			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
-			for dd in lastfeeds:
-				if dd[0] == link and dd[2] == jid:
-					lastfeeds.remove(dd)
-					break
-			lastfeeds.append([link,mmsg,jid])
-			writefile(lafeeds,str(lastfeeds))
-			mmsg = feed[1]
-			if is_rss_aton==1:
-				ttitle = get_tag(mmsg,'title')
-				tbody = get_tag(mmsg,'description')
-				turl = get_tag(mmsg,'link')
-			else:
-				ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
-				tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
-				tu1 = mmsg.index('<link')
-				tu2 = mmsg.find('href=\"',tu1)+6
-				tu3 = mmsg.find('\"',tu2)
-				turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
-			msg += u'—\n• '
-			if submode == 'full':
-				msg += ttitle+ '\n'
-				msg += tbody + '\n\n'
-			elif submode == 'body': msg += tbody + '\n'
-			elif submode[:4] == 'head': msg += ttitle + '\n'
-			else: return
-			if urlmode: msg += turl+'\n'
-			msg = replacer(msg)
+			try:
+				mmsg = feed[1]
+				if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
+				else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
+				for dd in lastfeeds:
+					if dd[0] == link and dd[2] == jid:
+						lastfeeds.remove(dd)
+						break
+				lastfeeds.append([link,mmsg,jid])
+				writefile(lafeeds,str(lastfeeds))
+				mmsg = feed[1]
+				if is_rss_aton==1:
+					ttitle = get_tag(mmsg,'title')
+					tbody = get_tag(mmsg,'description')
+					turl = get_tag(mmsg,'link')
+				else:
+					ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+					tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+					tu1 = mmsg.index('<link')
+					tu2 = mmsg.find('href=\"',tu1)+6
+					tu3 = mmsg.find('\"',tu2)
+					turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
+				msg += u'—\n• '
+				if submode == 'full':
+					msg += ttitle+ '\n'
+					msg += tbody + '\n\n'
+				elif submode == 'body': msg += tbody + '\n'
+				elif submode[:4] == 'head': msg += ttitle + '\n'
+				else: return
+				if urlmode: msg += turl+'\n'
+				msg = replacer(msg)
+			except: msg = L('Error!')
 		else:
 			if feed != L('Encoding error!'): title = get_tag(feed,'title')
 			else: title = feed
@@ -1187,46 +1189,48 @@ def rss(type, jid, nick, text):
 				msg += link+' '
 			tstop = ''
 			msg += get_tag(feed[0],'title') + '\n'
-			mmsg = feed[1]
-			if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-			else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
-			for dd in lastfeeds:
-				try:
-					if dd[0] == link and dd[2] == jid:
-						tstop = dd[1]
-						tstop = tstop[:-1]
-						lastfeeds.remove(dd)
-						break
-				except: lastfeeds.remove(dd)
-			lastfeeds.append([link,mmsg,jid])
-			writefile(lafeeds,str(lastfeeds))
-			for mmsg in feed[1:lng]:
-				if is_rss_aton == 1:
-					ttitle = get_tag(mmsg,'title')
-					tbody = get_tag(mmsg,'description')
-					turl = get_tag(mmsg,'link')
-				else:
-					ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
-					tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
-					tu1 = mmsg.index('<link')
-					tu2 = mmsg.find('href=\"',tu1)+6
-					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
+			try:
+				mmsg = feed[1]
+				if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
+				else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
+				for dd in lastfeeds:
+					try:
+						if dd[0] == link and dd[2] == jid:
+							tstop = dd[1]
+							tstop = tstop[:-1]
+							lastfeeds.remove(dd)
+							break
+					except: lastfeeds.remove(dd)
+				lastfeeds.append([link,mmsg,jid])
+				writefile(lafeeds,str(lastfeeds))
+				for mmsg in feed[1:lng]:
+					if is_rss_aton == 1:
+						ttitle = get_tag(mmsg,'title')
+						tbody = get_tag(mmsg,'description')
+						turl = get_tag(mmsg,'link')
+					else:
+						ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+						tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+						tu1 = mmsg.index('<link')
+						tu2 = mmsg.find('href=\"',tu1)+6
+						tu3 = mmsg.find('\"',tu2)
+						turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
+					if mode == 'new':
+						if ttitle == tstop: break
+					msg += u'—\n• '
+					if submode == 'full':
+						msg += ttitle + '\n'
+						msg += tbody + '\n\n'
+					elif submode == 'body': msg += tbody + '\n'
+					elif submode[:4] == 'head': msg += ttitle+ '\n'
+					else: return
+					if urlmode: msg += turl+'\n'
 				if mode == 'new':
-					if ttitle == tstop: break
-				msg += u'—\n• '
-				if submode == 'full':
-					msg += ttitle + '\n'
-					msg += tbody + '\n\n'
-				elif submode == 'body': msg += tbody + '\n'
-				elif submode[:4] == 'head': msg += ttitle+ '\n'
-				else: return
-				if urlmode: msg += turl+'\n'
-			if mode == 'new':
-				if mmsg == feed[1] and text[4] == 'silent': nosend = 1
-				elif mmsg == feed[1] and text[4] != 'silent': msg = L('New feeds not found!')
-			if submode == 'body' or submode == 'head': msg = msg[:-1]
-			msg = replacer(msg)
+					if mmsg == feed[1] and text[4] == 'silent': nosend = 1
+					elif mmsg == feed[1] and text[4] != 'silent': msg = L('New feeds not found!')
+				if submode == 'body' or submode == 'head': msg = msg[:-1]
+				msg = replacer(msg)
+			except: msg = L('Error!')
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
