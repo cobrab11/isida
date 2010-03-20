@@ -68,13 +68,13 @@ class KThread(threading.Thread):
 
 	def kill(self): self.killed = True
 
-def thr(func,param):
+def thr(func,param,name):
 	global th_cnt, thread_error_count
 	th_cnt += 1
 	try:
 		if thread_type:
 			with sema:
-				tmp_th = KThread(group=None,target=func,name=str(th_cnt),args=param)
+				tmp_th = KThread(group=None,target=func,name=str(th_cnt)+'_'+name,args=param)
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
@@ -303,7 +303,7 @@ def join(conference):
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	sender(j)
 	answered, Error, join_timeout = None, None, 3
-	while not answered and join_timeout:
+	while not answered and join_timeout and not game_over:
 		if is_start: cl.Process(1)
 		else:
 			sleep(1)
@@ -421,7 +421,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 		jjid = getRoom(jid)
 		ignorebase.append(jjid)
 		pprint('!!! DDOS Detect: %s %s/%s %s %s' % (access_mode, room, nick, jid, text))
-		thr(remove_ignore,(jjid,access_mode))
+		thr(remove_ignore,(jjid,access_mode),'ddos_remove')
 		send_msg(type, room, nick, L('Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.') % ddos_limit[access_mode])
 		return None
 	no_comm = True
@@ -437,9 +437,9 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
 				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 				no_comm = None
-				if not parse[3]: thr(parse[2],(type, room, nick, par))
-				elif parse[3] == 1: thr(parse[2],(type, room, nick))
-				elif parse[3] == 2: thr(parse[2],(type, room, nick, text[len(parse[1])+1:]))
+				if not parse[3]: thr(parse[2],(type, room, nick, par),parse[1])
+				elif parse[3] == 1: thr(parse[2],(type, room, nick),parse[1])
+				elif parse[3] == 2: thr(parse[2],(type, room, nick, text[len(parse[1])+1:]),parse[1])
 				last_command = [access_mode, nowname, type, room, nick, text, jid, time.time()]
 				break
 	return no_comm
@@ -558,8 +558,8 @@ def messageCB(sess,mess):
 		if len(text)>100: send_msg(type, room, nick, L('Too many letters!'))
 		else:
 			text = getAnswer(text,type)
-			thr(send_msg_human,(type, room, nick, text))
-	thr(msg_afterwork,(mess,room,jid,nick,type,back_text))
+			thr(send_msg_human,(type, room, nick, text),'msg_human')
+	thr(msg_afterwork,(mess,room,jid,nick,type,back_text),'msg_afterwork')
 			
 def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
@@ -693,7 +693,7 @@ def presenceCB(sess,mess):
 			else: cu.execute('update age set status=?, message=? where room=? and jid=? and nick=?', (0,ttext,room, jid, nick))
 	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,jid,tt,0,0,'',ttext))
 	mdb.commit()
-	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)))
+	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 	
 def onoff(msg):
 	if msg: return L('on').upper()
@@ -759,7 +759,6 @@ def talk_count(room,jid,nick,text):
 
 def disconnecter():
 	global bot_exit_type, game_over
-	close_age()
 	pprint('Restart by disconnect handler!')
 	game_over, bot_exit_type = True, 'restart'
 	sleep(2)
@@ -942,7 +941,7 @@ cl.sendInitPresence()
 pprint('Wait conference')
 sleep(0.5)
 game_over = None
-thr(sender_stack,())
+thr(sender_stack,(),'sender')
 cb = []
 is_start = True
 lastserver = getServer(confbase[0].lower())
@@ -968,7 +967,7 @@ pprint('Joined')
 #pep = xmpp.Message(to=selfjid, frm=getRoom(selfjid), payload=[xmpp.Node('event',{'xmlns':'http://jabber.org/protocol/pubsub#event'},[xmpp.Node('items',{'node':'http://jabber.org/protocol/tune'},[xmpp.Node('item',{'id':'current'},[xmpp.Node('tune',{'xmlns':'http://jabber.org/protocol/tune'},[])])])])])
 #sender(pep)
 
-thr(now_schedule,())
+thr(now_schedule,(),'schedule')
 
 while 1:
 	try:

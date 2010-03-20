@@ -3,8 +3,10 @@
 
 def thread_info(type, jid, nick):
 	if thread_type:
-		msg = ''
-		for tmp in threading.enumerate(): msg += '\n' + unicode(tmp).split('(',1)[1].split(')',1)[0]
+		msg,tmas = '',[]
+		for tmp in threading.enumerate(): tmas.append(unicode(tmp).split('(',1)[1].split(')',1)[0])
+		tmas.sort()
+		for tmp in tmas: msg += '\n' + tmp
 		msg = '\nActive: %s%s' % (threading.activeCount(),msg)
 	else: msg = ''
 	msg = L('Executed threads: %s | Error(s): %s') % (str(th_cnt),str(thread_error_count)) + msg
