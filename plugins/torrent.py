@@ -9,17 +9,19 @@ def GetTorrentInfo(request, tracker, link, count=3):
 	output = L('Total results: %s \nTitle ::: Size ::: Peers [up/down]') % \
 		str(len(body))
 	body = body[:count]	
-	for tmp in body:
-		n += 1
-		tmp = tmp.split('</td>')
-		if len(tmp) == 6: tmp.remove(tmp[2])
-		output += u'\n' + str(n) + u'. ' + replacer(tmp[1]) + u' ::: ' + \
-			replacer(tmp[2]) + u' :::'+ rss_del_html(tmp[3]).replace('  ', '/')
-		output += L('\n  Torrent file: %s') % tracker
-		ttmp = tmp[1][tmp[1].find('/download'):]
-		ttmp = ttmp[:ttmp.find('">')]
-		if tracker == 'http://opensharing.org': ttmp = ttmp[:-1]
-		output += ttmp
+	if len(body):
+		for tmp in body:
+			n += 1
+			tmp = tmp.split('</td>')
+			if len(tmp) == 6: tmp.remove(tmp[2])
+			output += u'\n' + str(n) + u'. ' + replacer(tmp[1]) + u' ::: ' + \
+				replacer(tmp[2]) + u' :::'+ rss_del_html(tmp[3]).replace('  ', '/')
+			output += L('\n  Torrent file: %s') % tracker
+			ttmp = tmp[1][tmp[1].find('/download'):]
+			ttmp = ttmp[:ttmp.find('">')]
+			if tracker == 'http://opensharing.org': ttmp = ttmp[:-1]
+			output += ttmp
+	else: output = L('Not found!')		
 	return output
 
 def torrent_main(type, jid, nick, text):
