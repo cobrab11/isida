@@ -43,6 +43,7 @@ def global_ban(type, jid, nick, text):
 					iqid = str(randint(1,100000))
 					i = Node('iq', {'id': iqid, 'type': 'set', 'to':getRoom(tmp)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(text)},[Node('reason',{},reason)])])])
 					sender(i)
+					sleep(0.1)
 			msg = L('jid %s has been banned in %s conferences.') % (text, str(len(confbase)-len(hr)))
 	send_msg(type, jid, nick, msg)
 

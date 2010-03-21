@@ -96,7 +96,7 @@ def sender_stack():
 	global last_stream
 	last_item = {}
 	time_limit = 1.2
-	time_nolimit = 0.05
+	time_nolimit = 0.1
 	while not game_over:
 		if last_stream != []:
 			time_tmp = time.time()
