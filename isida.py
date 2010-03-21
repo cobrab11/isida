@@ -973,6 +973,10 @@ while 1:
 	try:
 		while not game_over: cl.Process(1)
 		close_age()
+		if thread_type:
+			for tmp in threading.enumerate():
+				try: tmp.kill()
+				except: pass
 		sys.exit(bot_exit_type)
 
 	except KeyboardInterrupt:
