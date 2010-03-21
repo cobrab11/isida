@@ -1017,10 +1017,9 @@ def html_encode(body):
 			elif enc.count('\''): enc = enc[:enc.find('\'')]
 			elif enc.count('&'): enc = enc[:enc.find('&')]
 		else: enc = chardet.detect(body)['encoding']
-
 	if body == None: body = ''
 	if enc == None or enc == '' or enc.lower() == 'unicode': enc = 'utf-8'
-	try: return unicode(body,enc)
+	try: return smart_encode(body,enc)
 	except: return L('Encoding error!')
 
 #[room, nick, role, affiliation, jid]

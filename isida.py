@@ -177,7 +177,16 @@ def remove_sub_space(text):
 		if ord(tmp) >= 32 or tmp in es : tx += tmp
 		else: tx += '?'
 	return tx
-	
+
+def smart_encode(text,enc):
+	tx,splitter = '','|'
+	while text.count(splitter): splitter += '|'
+	ttext = text.replace('><','>'+splitter+'<').split(splitter)
+	for tmp in ttext:
+		try: tx += unicode(tmp,enc)
+		except: pass
+	return tx
+
 def tZ(val):
 	val = str(val)
 	if len(val) == 1: val = '0'+val
