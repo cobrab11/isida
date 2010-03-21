@@ -768,6 +768,12 @@ def L(text):
 	try: return locales[text]
 	except: return text
 
+def kill_all_threads():
+	if thread_type:
+		for tmp in threading.enumerate():
+			try: tmp.kill()
+			except: pass
+
 # --------------------- Иницилизация переменных ----------------------
 slog_folder = 'log/'					# папка системных логов
 LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
@@ -973,10 +979,7 @@ while 1:
 	try:
 		while not game_over: cl.Process(1)
 		close_age()
-		if thread_type:
-			for tmp in threading.enumerate():
-				try: tmp.kill()
-				except: pass
+		kill_all_threads()
 		sys.exit(bot_exit_type)
 
 	except KeyboardInterrupt:
@@ -985,6 +988,7 @@ while 1:
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
 		sleep(0.1)
+		kill_all_threads()
 		sys.exit('exit')
 
 	except Exception, SM:
@@ -992,6 +996,7 @@ while 1:
 		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
 		if str(SM).lower().count('parsing finished'):
 			close_age()
+			kill_all_threads()
 			sleep(300)
 			sys.exit('restart')
 		if debugmode: raise
