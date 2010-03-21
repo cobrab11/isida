@@ -11,8 +11,8 @@ def idle(type, jid, nick, text):
 		if tmp[0] == jid and tmp[1] == text:
 			if text == nick: msg = L('Your last activity was %s ago') % un_unix(int(time.time())-tmp[3])
 			else: msg = L('%s\'s last ativity was %s ago') % (text, un_unix(int(time.time())-tmp[3]))
-			if tmp[2] == 'm': msg += '('+L('message')+')'
-			else: msg += '('+L('presence')+')'
+			if tmp[2] == 'm': msg += ' ('+L('message')+')'
+			else: msg += ' ('+L('presence')+')'
 			break
 	send_msg(type, jid, nick, msg)
 
@@ -30,8 +30,7 @@ def remove_from_idle(room,jid,nick,type,text):
 		if tmp[0] == room and tmp[1] == nick:
 			idle_base.remove(tmp)
 			break
-	if type!='unavailable':
-		idle_base.append((room,nick,'p',int(time.time())))
+	if type != 'unavailable': idle_base.append((room,nick,'p',int(time.time())))
 
 global execute
 
