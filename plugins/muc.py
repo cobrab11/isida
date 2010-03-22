@@ -229,10 +229,10 @@ def muc_arole(type, jid, nick, text, role):
 				msg = L('Not found.')
 				alist_role = getFile(ro_alist,[])
 				for tmp in alist_role:
-					if tmp[0] == jid and (tmp[1] == text or tmp[2] == text):
+					if tmp[0] == jid and (tmp[2] == role or tmp[2] == text):
 						alist_role.remove(tmp)
 						writefile(ro_alist,str(alist_role))
-						msg = L('Removed: %s') % tmp[1]
+						msg = L('Removed: %s') % tmp[2]
 						break
 		elif text.lower() == 'clear':
 			alist_role = getFile(ro_alist,[])
