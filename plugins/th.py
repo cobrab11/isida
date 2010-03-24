@@ -9,7 +9,7 @@ def thread_info(type, jid, nick):
 		for tmp in tmas: msg += '\n' + tmp
 		msg = '\nActive: %s%s' % (threading.activeCount(),msg)
 	else: msg = ''
-	msg = L('Executed threads: %s | Error(s): %s') % (str(th_cnt),str(thread_error_count)) + msg
+	msg = L('Executed threads: %s | Error(s): %s') % (th_cnt,thread_error_count) + msg
 	send_msg(type, jid, nick, msg)
 
 global execute

@@ -87,16 +87,25 @@ def log_execute(proc, params):
 	try: proc(*params)
 	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
 
+def send_count(item):
+	global message_out, presence_out, iq_out, unknown_out
+	cl.send(item)
+	itm = unicode(item)[:2]
+	if itm == '<m': message_out += 1
+	elif itm == '<p': presence_out += 1
+	elif itm == '<i': iq_out += 1
+	else: unknown_out += 1
+	
 def sender(item):
 	global last_stream
 	if last_stream != []: last_stream.append(item)
-	else: cl.send(item)
+	else:
+		sleep(time_nolimit)
+		send_count(item)
 	
 def sender_stack():
 	global last_stream
 	last_item = {}
-	time_limit = 1.2
-	time_nolimit = 0.1
 	while not game_over:
 		if last_stream != []:
 			time_tmp = time.time()
@@ -110,8 +119,8 @@ def sender_stack():
 				if time_diff < time_limit: sleep(time_limit - time_diff)
 				else: sleep(time_limit)
 			else: sleep(time_nolimit)
-			last_stream.remove(tmp)
-			cl.send(tmp)
+			last_stream = last_stream[1:]
+			send_count(tmp)
 		else: sleep(1)
 
 def readfile(filename):
@@ -337,9 +346,10 @@ def timeZero(val):
 	return rval
 
 def iqCB(sess,iq):
+	global timeofset, banbase, iq_answer, raw_iq, iq_in
+	iq_in += 1
 	id = iq.getID()
 	if id == None: return None
-	global timeofset, banbase, iq_answer, raw_iq
 	nick = unicode(iq.getFrom())
 	query = iq.getTag('query')
 
@@ -505,7 +515,8 @@ def messageCB(sess,mess):
 	#print '*'*20
 	#pprint(unicode(mess))
 	global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
-	global ignorebase, ignores
+	global ignorebase, ignores, message_in
+	message_in += 1
 	type=unicode(mess.getType())
 	room=unicode(mess.getFrom().getStripped())
 	if type == 'headline': to_scrobble(room,mess)
@@ -609,7 +620,8 @@ def get_valid_tag(body,tag):
 	else: return 'None'
 	
 def presenceCB(sess,mess):
-	global megabase, ownerbase, iq_answer, confs, confbase, cu_age
+	global megabase, ownerbase, iq_answer, confs, confbase, cu_age, presence_in
+	presence_in += 1
 	room=unicode(mess.getFrom().getStripped())
 	nick=unicode(mess.getFrom().getResource())
 	text=unicode(mess.getStatus())
@@ -768,7 +780,12 @@ def talk_count(room,jid,nick,text):
 
 def disconnecter():
 	global bot_exit_type, game_over
-	pprint('Restart by disconnect handler!')
+	pprint('--- Restart by disconnect handler! ---')
+	pprint('Executed threads: %s | Error(s): %s' % (th_cnt,thread_error_count))
+	pprint('Message in %s | out %s' % (message_in,message_out))
+	pprint('Presence in %s | out %s' % (presence_in,presence_out))
+	pprint('Iq in %s | out %s' % (iq_in,iq_out))
+	pprint('Unknown out %s' % unknown_out)
 	game_over, bot_exit_type = True, 'restart'
 	sleep(2)
 
@@ -787,7 +804,7 @@ def kill_all_threads():
 slog_folder = 'log/'					# папка системных логов
 LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
 set_folder = 'settings/'				# папка настроек
-back_folder = 'backup/'					# папка хронения резервных копий
+back_folder = 'backup/'					# папка хранения резервных копий
 preffile = set_folder+'prefix'			# префиксы
 ver_file = set_folder+'version'			# версия бота
 configname = set_folder+'config.py'		# конфиг бота
@@ -824,19 +841,28 @@ msg_limit = 1000				# лимит размера сообщений
 botName = 'Isida-Bot'			# название бота
 botVersion = 'v1.91'			# версия бота
 capsVersion = botVersion[1:]	# версия для капса
-banbase = []
-iq_answer = []
+banbase = []					# результаты muc запросов
+iq_answer = []					# результаты iq запросов
 th_cnt = 0						# счётчик тредов
 timeout = 300					# таймаут в секундах на iq запросы
 schedule_time = 10				# время проверки расписания
 thread_error_count = 0			# счётчик ошибок тредов
 reboot_time = 180				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
 bot_exit_type = None			# причина завершения бота
-last_stream = []
-last_command = []
+last_stream = []				# очередь станз к отправке
+last_command = []				# последняя исполненная ботом команда
 ddos_limit = [600,300,5]		# время игнора при ddos'е в зависимости от уровня доступа
 ddos_diff = [15,10,5]			# промежуток между сообщениями
 thread_type = True				# тип тредов
+time_limit = 1.2				# максимальная задержка между посылкой станз с одинаковым типом в groupchat
+time_nolimit = 0.1				# задержка между посылкой станз с разными типами
+message_in = 0
+message_out = 0
+iq_in = 0
+iq_out = 0
+presence_in = 0
+presence_out = 0
+unknown_out = 0
 
 NS_STATS = 'http://jabber.org/protocol/stats'
 
@@ -970,7 +996,7 @@ for tocon in confbase:
 		tocon += '_'
 		zz = joinconf(tocon, domain)
 	cb.append(tocon)
-	pprint(tocon)
+	pprint('>>> %s' % tocon)
 #	j = Presence(tocon, show=CommStatus, status=StatusMessage, priority=Priority)
 #	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 #	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
