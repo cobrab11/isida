@@ -760,7 +760,12 @@ def check_rss():
 		elif timetype == 'm': ofset *= 60
 		try: ll_hl = int(fd[3])
 		except: ll_hl = 0
-		if ll_hl + ofset <= l_hl:
+		in_room = None
+		for tmp in confbase:
+			if getRoom(tmp) == fd[4]:
+				in_room = True
+				break
+		if in_room and ll_hl + ofset <= l_hl:
 			pprint('check rss: '+fd[0]+' in '+fd[4])
 			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
 			feedbase.remove(fd)
@@ -778,14 +783,16 @@ def talk_count(room,jid,nick,text):
 	else: cu.execute('insert into talkers values (?,?,?,?,?)', (room, jid, nick, wtext, 1))
 	mdb.commit()
 
-def disconnecter():
-	global bot_exit_type, game_over
-	pprint('--- Restart by disconnect handler! ---')
+def flush_stats():
 	pprint('Executed threads: %s | Error(s): %s' % (th_cnt,thread_error_count))
 	pprint('Message in %s | out %s' % (message_in,message_out))
 	pprint('Presence in %s | out %s' % (presence_in,presence_out))
 	pprint('Iq in %s | out %s' % (iq_in,iq_out))
 	pprint('Unknown out %s' % unknown_out)
+	
+def disconnecter():
+	global bot_exit_type, game_over
+	pprint('--- Restart by disconnect handler! ---')
 	game_over, bot_exit_type = True, 'restart'
 	sleep(2)
 
@@ -1015,6 +1022,7 @@ while 1:
 		while not game_over: cl.Process(1)
 		close_age()
 		kill_all_threads()
+		flush_stats()
 		sys.exit(bot_exit_type)
 
 	except KeyboardInterrupt:
@@ -1024,6 +1032,7 @@ while 1:
 		send_presence_all(StatusMessage)
 		sleep(0.1)
 		kill_all_threads()
+		flush_stats()
 		sys.exit('exit')
 
 	except Exception, SM:
@@ -1032,6 +1041,7 @@ while 1:
 		if str(SM).lower().count('parsing finished'):
 			close_age()
 			kill_all_threads()
+			flush_stats()
 			sleep(300)
 			sys.exit('restart')
 		if debugmode: raise
