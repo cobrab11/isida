@@ -78,10 +78,11 @@ def thr(func,param,name):
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
-		if str(SM).lower().count('thread'):
-			if thread_type: tmp_th.kill()
-			thread_error_count += 1
+		if str(SM).lower().count('thread'): thread_error_count += 1
 		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
+		if thread_type:
+			try: tmp_th.kill()
+			except: pass
 
 def log_execute(proc, params):
 	try: proc(*params)

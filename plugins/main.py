@@ -1138,7 +1138,9 @@ def rss(type, jid, nick, text):
 				else: return
 				if urlmode: msg += turl+'\n'
 				msg = replacer(msg)
-			except: msg = L('Error!')
+			except:
+				if text[4] == 'silent': nosend = 1
+				else: msg = L('Error!')
 		else:
 			if feed != L('Encoding error!'): title = get_tag(feed,'title')
 			else: title = feed
@@ -1229,7 +1231,9 @@ def rss(type, jid, nick, text):
 					elif mmsg == feed[1] and text[4] != 'silent': msg = L('New feeds not found!')
 				if submode == 'body' or submode == 'head': msg = msg[:-1]
 				msg = replacer(msg)
-			except: msg = L('Error!')
+			except:
+				if text[4] == 'silent': nosend = 1
+				else: msg = L('Error!')
 		else:
 			if text[4] == 'silent': nosend = 1
 			else:
