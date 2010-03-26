@@ -36,7 +36,7 @@ def handler_horoscope(type, jid, nick, parameters):
       target = html_encode(r.read())
       od = re.search('<div id="tm_today">',target)
       message = target[od.end():]
-      message = message[:re.search('<script type="text/javascript">',message).start()]
+      message = message[:re.search('<div class="mb2">',message).start()]
       message = rss_del_html(message)
       message = rss_del_nn(message)
       message = rss_replace(message)
