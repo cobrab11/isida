@@ -586,7 +586,7 @@ Server or jid uptime.	Аптайм jabber сервера или jid'а
 #istrue.py
 100% True-nick!	100% Ъ-ник!
 Nicks without letters isn't true!	Ники без букв не Ъ!
-Valid of nick is - %s%s	Кошерность ника %s%s 
+Valid of nick is - %s%s 	Кошерность ника %s%s 
 Normal nick, but left symbols in fireplace.	Нормальный ник, а вот левые символы фтопку!
 Many caps - %s%s	Много капса - %s%s
 Dominate letters:	Преобладают буквы:
