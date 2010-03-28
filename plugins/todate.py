@@ -78,7 +78,7 @@ def todate(type, jid, nick, text):
 			if text.count(' '): ddate, msg = text.split(' ', 1)[0], text.split(' ', 1)[1]
 			else: ddate = text
 			spl = [spl for spl in splitters if ddate.count(spl)][0]
-			if len(msg) == 0: msg = L('before the %s remained') % ddate.replace(spl, '.') + ' '
+			if len(msg) == 0: msg = L('before the %s remained') % ddate.replace(spl, '.')
 			sdate = parse_date_string(ddate, spl)
 			if sdate[0] == 1900: sdate[0] = list(localtime())[0]
 			year = sdate.pop(0)
