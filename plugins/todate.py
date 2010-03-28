@@ -80,7 +80,7 @@ def todate(type, jid, nick, text):
 			spl = [spl for spl in splitters if ddate.count(spl)][0]
 			if len(msg) == 0: msg = L('before the %s remained') % ddate.replace(spl, '.') + ' '
 			sdate = parse_date_string(ddate, spl)
-			if sdate[0] < tuple(localtime())[0]: sdate[0] = list(localtime())[0]
+			if sdate[0] == 1900: sdate[0] = list(localtime())[0]
 			year = sdate.pop(0)
 			month, day = sdate
 			days_remain = (datetime.date(year, month, day) - datetime.date.today()).days
@@ -88,7 +88,7 @@ def todate(type, jid, nick, text):
 				dmass = (L('days'),L('days'),L('days'),L('days'),
 					L('days'),L('days'),L('days'),L('days'),
 					L('days'),L('days'))
-			if days_remain < 0: msg = L('Error date format!')
+			if days_remain < 0: msg = L('Date has already in past!')
 			else: msg += ' ' + str(days_remain) + ' ' + dmass[int(str(days_remain)[-1])]
 		except: msg = L('Error in parameters. Read the help about command.')
 	else: msg = L('Error in parameters. Read the help about command.')
