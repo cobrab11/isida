@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-import os, time
+import os, sys, time
+pid_file = 'isida.pid'
 
 def readfile(filename):
 	fp = file(filename)
@@ -28,12 +29,27 @@ def printlog(text):
 	fl.write(fbody.encode('utf-8'))
 	fl.close()
 
+def crash(text):
+	printlog(text)
+	sys.exit()
+
 if os.name == 'nt': printlog('Warning! Correct work only on *NIX system!')
 
 try: writefile('settings/starttime',str(int(time.time())))
 except:
 	printlog('\n'+'*'*50+'\n Isida is crashed! Incorrent launch!\n'+'*'*50+'\n')
 	raise
+
+if os.path.isfile(pid_file):
+	try: last_pid = int(readfile(pid_file))
+	except: crash('Unable get information from %s' % pid_file)
+	try:
+		os.getsid(last_pid)
+		crash('Multilaunch detected! Kill pid %s before launch bot again!' % last_pid)
+	except Exception, SM:
+		if not str(SM).lower().count('no such process'): crash('Unknown exception!\n%s' % SM)
+	
+writefile(pid_file,str(os.getpid()))
 
 while 1:
 	try: execfile('isida.py')
