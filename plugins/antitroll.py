@@ -22,4 +22,4 @@ global execute, timer
 
 timer = []
 
-execute = [(2, 'troll', troll, 2, L('Repeat messagte to private.\ntroll nick\n[text]\n[number]'))]
+execute = [(2, 'troll', troll, 2, L('Repeat message to private.\ntroll nick\n[text]\n[number]'))]
