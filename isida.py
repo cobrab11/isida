@@ -245,9 +245,60 @@ def arr_del_semi_find(array, string):
 	pos = arr_semi_find(array, string)
 	if pos >= 0: array = arr_del_by_pos(array,pos)
 	return array
+
+def get_joke(text):
+	from random import randint
+
+	def joke_blond(text):
+		b = ''
+		cnt = randint(0,1)
+		for tmp in text.lower():
+			if cnt: b += tmp.upper()
+			else: b += tmp
+			cnt = not cnt
+		return b
+
+	def joke_swap(text):
+		a = text.split(' ')
+		b = []
+		for tmp in a:
+			lt = len(tmp)
+			if lt >= 4:
+				tt = []
+				for i in tmp: tt.append(i)
+				tm = tt[0]
+				tt = tt[1:]
+				while len(tt) > 1:
+					rn = randint(0,len(tt)-2)
+					tm += tt[rn]
+					tt = tt[:rn]+tt[rn+1:]
+				tm += tt[0]
+				b.append(tm)
+			else: b.append(tmp)
+		return ' '.join(b)
+
+	def joke_reverse(text):
+		a = text.split(' ')
+		b = []
+		for tmp in a:
+			lt = len(tmp)
+			if lt >= 4:
+				tt = []
+				for i in tmp: tt.append(i)
+				tt.reverse()
+				tm = tt[lt-1] + ''.join(tt[1:lt-1]) + tt[0]
+				b.append(tm)
+			else: b.append(tmp)
+		return ' '.join(b)
+
+	def no_joke(text): return text
+
+	jokes = [joke_blond,joke_swap,joke_reverse,no_joke]
+	return jokes[randint(0,3)](text)
 	
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
+		if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
 		no_send = True
 		if len(mmessage) > msg_limit:
 			cnt = 0
