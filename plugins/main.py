@@ -1068,8 +1068,8 @@ def rss(type, jid, nick, text):
 					msg += u'\n'+rs[0]+u' ('+rs[1]+u') '+rs[2]
 					try: msg += u' - '+time.ctime(rs[3])
 					except: msg += u' - Unknown'
-			if len(msg): L('Schedule feeds for %s:%s') % (jid,msg)
-			else: L('Schedule feeds for %s not found!') % jid
+			if len(msg): msg = L('Schedule feeds for %s:%s') % (jid,msg)
+			else: msg = L('Schedule feeds for %s not found!') % jid
 	elif mode == 'add':
 		mdd = ['full','body','head','full-url','body-url','head-url']
 		if text[3] not in mdd: 
