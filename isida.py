@@ -257,44 +257,11 @@ def get_joke(text):
 			else: b += tmp
 			cnt = not cnt
 		return b
-
-	def joke_swap(text):
-		a = text.split(' ')
-		b = []
-		for tmp in a:
-			lt = len(tmp)
-			if lt >= 4:
-				tt = []
-				for i in tmp: tt.append(i)
-				tm = tt[0]
-				tt = tt[1:]
-				while len(tt) > 1:
-					rn = randint(0,len(tt)-2)
-					tm += tt[rn]
-					tt = tt[:rn]+tt[rn+1:]
-				tm += tt[0]
-				b.append(tm)
-			else: b.append(tmp)
-		return ' '.join(b)
-
-	def joke_reverse(text):
-		a = text.split(' ')
-		b = []
-		for tmp in a:
-			lt = len(tmp)
-			if lt >= 4:
-				tt = []
-				for i in tmp: tt.append(i)
-				tt.reverse()
-				tm = tt[lt-1] + ''.join(tt[1:lt-1]) + tt[0]
-				b.append(tm)
-			else: b.append(tmp)
-		return ' '.join(b)
-
+		
 	def no_joke(text): return text
 
-	jokes = [joke_blond,joke_swap,joke_reverse,no_joke]
-	return jokes[randint(0,3)](text)
+	jokes = [joke_blond,no_joke]
+	return jokes[randint(0,1)](text)
 	
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
