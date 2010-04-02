@@ -4,6 +4,7 @@
 wzbase = set_folder+'wz.db'
 
 def check_wz(text):
+	if not len(text): return True
 	for tm in text:
 		if ord(tm)<33 or ord(tm)>127: return True
 	return None
@@ -98,8 +99,23 @@ def weather_raw(type, jid, nick, text):
 		if msg.count('Not Found'): msg = L('City not found!')
 	send_msg(type, jid, nick, msg)
 
+def weather_search(type, jid, nick, text):
+	if len(text):
+		cbb = sqlite3.connect(wzbase)
+		cu = cbb.cursor()
+		wzc = cu.execute('select code,city,counry from wz where code like ? or city like ? or counry like ?',(text,text,text)).fetchall()
+		cbb.close()
+		if not wzc: msg = msg = L('City not found!')
+		else:
+			msg = ''
+			for tmp in wzc: msg += '\n%s - %s (%s)' % tmp
+			msg = L('Found: %s') % msg
+	else: msg = L('What?')
+	send_msg(type, jid, nick, msg)
+	
 global execute
 
 execute = [(0, 'wzz', weather_raw, 2, L('Weather by airport code. Full version.')),
 	 (0, 'wzs', weather_short, 2, L('Weather by airport code. Short version.')),
-	 (0, 'wz', weather, 2, L('Weather by airport code. Optimized version.'))]
+	 (0, 'wz', weather, 2, L('Weather by airport code. Optimized version.')),
+	 (0, 'wzsearch', weather_search, 2, L('Search weather by code, city, country.'))]

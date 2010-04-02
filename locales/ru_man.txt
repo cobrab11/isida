@@ -963,6 +963,7 @@ City not found!	Город не найден!
 Weather by airport code. Full version.	Погода по коду аэропорта. Не оптимизированный вариант.
 Weather by airport code. Short version.	Погода по коду аэропорта. Укороченный вариант.
 Weather by airport code. Optimized version.	Погода по коду аэропорта. Оптимизированный вариант.
+Search weather by code, city, country.	Поиск погоды по коду города, городу, стране.
 
 
 # youtube.ru
