@@ -1027,7 +1027,7 @@ def html_encode(body):
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds, lafeeds
 	msg = u'rss show|add|del|clear|new|get'
-	nosend = 0
+	nosend = None
 	text = text.split(' ')
 	tl = len(text)
 	if tl < 5: text.append('!')
@@ -1071,8 +1071,8 @@ def rss(type, jid, nick, text):
 			if len(msg): msg = L('Schedule feeds for %s:%s') % (jid,msg)
 			else: msg = L('Schedule feeds for %s not found!') % jid
 	elif mode == 'add':
-		mdd = ['full','body','head','full-url','body-url','head-url']
-		if text[3] not in mdd: 
+		mdd = ['full','body','head']
+		if text[3].split('-')[0] not in mdd: 
 			send_msg(type, jid, nick, L('Mode %s not detected!') % text[3])
 			return
 		feedbase = getFile(feeds,[])
@@ -1086,65 +1086,7 @@ def rss(type, jid, nick, text):
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
 		send_msg(type, jid, nick, msg)
-		try: feed = urllib.urlopen(link).read()
-		except: return
-		is_rss_aton = 0
-		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
-		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
-		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
-		feed = html_encode(feed)
-		if is_rss_aton and feed != L('Encoding error!'):
-			if feed.count('<items>'): feed = get_tag(feed,'items')
-			if is_rss_aton == 1: feed = feed.split('<item')
-			else: feed = feed.split('<entry>')
-			if len(text) > 3: submode = text[3]
-			else: submode = 'full'
-			msg = L('Feeds for')+' '
-			if submode[-4:] == '-url':
-				submode = submode[:-4]
-				urlmode = True
-			else:
-				urlmode = None
-				msg += link+' '
-			msg += get_tag(feed[0],'title') + '\n'
-			try:
-				mmsg = feed[1]
-				if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-				else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
-				for dd in lastfeeds:
-					if dd[0] == link and dd[2] == jid:
-						lastfeeds.remove(dd)
-						break
-				lastfeeds.append([link,mmsg,jid])
-				writefile(lafeeds,str(lastfeeds))
-				mmsg = feed[1]
-				if is_rss_aton==1:
-					ttitle = get_tag(mmsg,'title')
-					tbody = get_tag(mmsg,'description')
-					turl = get_tag(mmsg,'link')
-				else:
-					ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
-					tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
-					tu1 = mmsg.index('<link')
-					tu2 = mmsg.find('href=\"',tu1)+6
-					tu3 = mmsg.find('\"',tu2)
-					turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
-				msg += u'—\n• '
-				if submode == 'full':
-					msg += ttitle+ '\n'
-					msg += tbody + '\n\n'
-				elif submode == 'body': msg += tbody + '\n'
-				elif submode[:4] == 'head': msg += ttitle + '\n'
-				else: return
-				if urlmode: msg += turl+'\n'
-				msg = replacer(msg)
-			except:
-				if text[4] == 'silent': nosend = 1
-				else: msg = L('Error!')
-		else:
-			if feed != L('Encoding error!'): title = get_tag(feed,'title')
-			else: title = feed
-			msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
+		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])
 		link = text[1]
@@ -1182,14 +1124,12 @@ def rss(type, jid, nick, text):
 			if len(text) > 3: submode = text[3]
 			else: submode = 'full'
 			msg = L('Feeds for')+' '
-			if submode[-4:] == '-url':
-				submode = submode[:-4]
-				urlmode = True
+			if 'url' in submode.split('-'): submode,urlmode = submode.split('-')[0],True
 			else:
 				urlmode = None
 				msg += link+' '
 			tstop = ''
-			msg += get_tag(feed[0],'title') + '\n'
+			msg += get_tag(feed[0],'title')
 			try:
 				mmsg = feed[1]
 				if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
@@ -1204,6 +1144,7 @@ def rss(type, jid, nick, text):
 					except: lastfeeds.remove(dd)
 				lastfeeds.append([link,mmsg,jid])
 				writefile(lafeeds,str(lastfeeds))
+				t_msg = []
 				for mmsg in feed[1:lng]:
 					if is_rss_aton == 1:
 						ttitle = get_tag(mmsg,'title')
@@ -1216,26 +1157,40 @@ def rss(type, jid, nick, text):
 						tu2 = mmsg.find('href=\"',tu1)+6
 						tu3 = mmsg.find('\"',tu2)
 						turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
-					if mode == 'new':
-						if ttitle == tstop: break
-					msg += u'—\n• '
-					if submode == 'full':
-						msg += ttitle + '\n'
-						msg += tbody + '\n\n'
-					elif submode == 'body': msg += tbody + '\n'
-					elif submode[:4] == 'head': msg += ttitle+ '\n'
+					if mode == 'new' and ttitle == tstop: break
+					tsubj,tmsg,tlink = '','',''
+					if submode == 'full': tsubj,tmsg = replacer(ttitle),replacer(tbody)
+					elif submode == 'body': tmsg = replacer(tbody)
+					elif submode == 'head': tsubj = replacer(ttitle)
 					else: return
-					if urlmode: msg += turl+'\n'
-				if mode == 'new':
-					if mmsg == feed[1] and text[4] == 'silent': nosend = 1
-					elif mmsg == feed[1] and text[4] != 'silent': msg = L('New feeds not found!')
-				if submode == 'body' or submode == 'head': msg = msg[:-1]
-				msg = replacer(msg)
+					if urlmode: tlink = turl
+					t_msg.append((tsubj,tmsg,tlink))
+				t_msg.reverse()
+				tmp = ''
+				for tm in t_msg: tmp += '!'.join(tm)
+				if len(tmp+msg)+len(t_msg)*12 >= msg_limit:
+					over = (len(tmp+msg)+len(t_msg)*12.0 - msg_limit) / msg_limit * 100 # overflow in persent
+					tt_msg = []
+					for tm in t_msg:
+						tsubj,tmsg,tlink = tm
+						if len(tmsg): tmsg = tmsg[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
+						else: tsubj = tsubj[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
+						tt_msg.append((tsubj,tmsg,tlink))
+				tmp = ''
+				for tm in tt_msg:
+					if submode == 'full': tmp += u'\n\n• %s\n%s' % tm[0:2]
+					elif submode == 'body': tmp += u'\n\n• %s' % tm[1]
+					elif submode == 'head': tmp += u'\n\n• %s' % tm[0]
+					if len(tm[2]): tmp += '\n'+tm[2]
+				msg += tmp
+				if mode == 'new' and mmsg == feed[1]:
+					if text[4] == 'silent': nosend = True
+					else: msg = L('New feeds not found!')
 			except:
-				if text[4] == 'silent': nosend = 1
+				if text[4] == 'silent': nosend = True
 				else: msg = L('Error!')
 		else:
-			if text[4] == 'silent': nosend = 1
+			if text[4] == 'silent': nosend = True
 			else:
 				if feed != L('Encoding error!'): title = get_tag(feed,'title')
 				else: title = feed
