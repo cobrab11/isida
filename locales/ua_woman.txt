@@ -585,13 +585,13 @@ Server or jid uptime.	Аптайм jabber-сервера або jid'а
 #istrue.py
 100% True-nick!	100% Ъ-нік!
 Nicks without letters isn't true!	Ніки без літер не Ъ!
-Valid of nick is - %s%s	Кошерність ніка %s%s 
+Valid of nick is - %s%s	Кошерність ніка %s%s
 Normal nick, but left symbols in fireplace.	Нормальний нік, а ліві символи фтопку!
 Many caps - %s%s	Багато капсу - %s%s
 Dominate letters:	Переважають літери:
 Cyrillic	Кирилиця
 Latin	Латиниця
-Eually	Порівну
+Equally	Порівну
 And?	Ну і?
 Expression is true for %s%s	Ймовірність того, что вираз вірний - %s%s
 Check truth of expession.	Перевірка виразу на правдивість.
