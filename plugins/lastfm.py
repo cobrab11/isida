@@ -4,6 +4,10 @@ global execute, lf_api, lfm_url, lfm_api, timer
 
 lfm_url = 'http://ws.audioscrobbler.com/2.0/'
 
+def reduce_spaces_last(text):
+	while text.count('  '): text = text.replace('  ',' ')
+	return reduce_spaces(text)
+
 def last_time_short(tm):
 	tm = time.localtime(tm)
 	tnow = time.localtime()
@@ -28,7 +32,7 @@ def lastonetrack(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lf_api(method, user, splitter):
-	user = user.lower().encode('utf-8').replace('\\x','%').replace(' ','%20')
+	user = reduce_spaces_last(user.lower().encode('utf-8').replace('\\x','%')).replace(' ','%20')
 	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+lfm_api
 	f = urllib.urlopen(link)
 	lfxml = f.read()
@@ -36,7 +40,7 @@ def lf_api(method, user, splitter):
 	return rss_replace(html_encode(lfxml)).split(splitter)
 
 def lasttracks(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -56,7 +60,7 @@ def lastfriends(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastloved(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -68,7 +72,7 @@ def lastloved(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -80,7 +84,7 @@ def lastneighbours(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastplaylist(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 2
@@ -92,7 +96,7 @@ def lastplaylist(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def topalbums(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -104,7 +108,7 @@ def topalbums(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def topartists(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -116,7 +120,7 @@ def topartists(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def toptags(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -128,7 +132,7 @@ def toptags(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def toptracks(type, jid, nick, text):
-	text = text.split(' ')
+	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
 	cnt += 1
@@ -142,7 +146,7 @@ def toptracks(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def tasteometer(type, jid, nick, text):
-	text = text.lower().encode('utf-8').replace('\\x','%').split(' ')
+	text = reduce_spaces_last(text.lower().encode('utf-8').replace('\\x','%')).split(' ')
 	try:
 		user1 = text[0]
 		user2 = text[1]
