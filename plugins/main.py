@@ -1176,8 +1176,9 @@ def rss(type, jid, nick, text):
 						if len(tmsg): tmsg = tmsg[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
 						else: tsubj = tsubj[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
 						tt_msg.append((tsubj,tmsg,tlink))
+					t_msg = tt_msg
 				tmp = ''
-				for tm in tt_msg:
+				for tm in t_msg:
 					if submode == 'full': tmp += u'\n\n• %s\n%s' % tm[0:2]
 					elif submode == 'body': tmp += u'\n\n• %s' % tm[1]
 					elif submode == 'head': tmp += u'\n\n• %s' % tm[0]
@@ -1186,9 +1187,9 @@ def rss(type, jid, nick, text):
 				if mode == 'new' and mmsg == feed[1]:
 					if text[4] == 'silent': nosend = True
 					else: msg = L('New feeds not found!')
-			except:
+			except Exception,SM:
 				if text[4] == 'silent': nosend = True
-				else: msg = L('Error!')
+				else: msg = L('Error! %s' % SM)
 		else:
 			if text[4] == 'silent': nosend = True
 			else:
