@@ -1114,8 +1114,9 @@ def rss(type, jid, nick, text):
 		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 		feed = html_encode(feed)
 		if is_rss_aton and feed != L('Encoding error!'):
-			if feed.count('<items>'): feed = get_tag(feed,'<items>')
-			if is_rss_aton == 1: feed = feed.split('<item')
+			if is_rss_aton == 1:
+				if feed.count('<item>'): feed = feed.split('<item>')
+				else: feed = feed.split('<item ')
 			else: feed = feed.split('<entry>')
 			if len(text) > 2: lng = int(text[2])+1
 			else: lng = len(feed)
