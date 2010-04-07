@@ -829,9 +829,9 @@ Shutdown	Завершение работы
 Restart	Перезапуск
 Autoupdate	Автообновление
 %s by command from %s	%s по команде от %s
-Shutting down the bot. You cat set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
-Restart the bot. You cat set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
-Autoupdate from SVN.	Самообновление бота из SVN.
+Shutting down the bot. You can set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
+Restart the bot. You can set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
+Autoupdate from SVN. You can set reason.	Самообновление бота из SVN. Можно указать параметр, который будет показан в статусе бота при выходе.
 
 
 # shell.py
