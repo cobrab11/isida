@@ -27,8 +27,8 @@ def iq_vcard(type, jid, nick, text):
 				iq_answer.remove(aa)
 				no_answ = 0
 				break
-		sleep(0.05)
-		to -= 0.05
+		sleep(0.5)
+		to -= 0.5
 	try: er_code = is_answ[1]
 	except: er_code = None
 	if to > 0:
@@ -83,8 +83,8 @@ def iq_uptime(type, jid, nick, text):
 				iq_answer.remove(aa)
 				no_answ = 0
 				break
-		sleep(0.05)
-		to -= 0.05
+		sleep(0.5)
+		to -= 0.5
 	iiqq = []
 	for iiq in is_answ: iiqq.append(unicode(iiq))
 	try: er_code = is_answ[1]
@@ -244,8 +244,8 @@ def iq_stats(type, jid, nick, text):
 				iq_answer.remove(aa)
 				no_answ = 0
 				break
-		sleep(0.25)
-		to -= 0.25
+		sleep(0.5)
+		to -= 0.5
 	iiqq = unicode(is_answ)
 	try: er_code = is_answ[1]
 	except: er_code = None

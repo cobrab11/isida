@@ -2,6 +2,7 @@
 # -*- coding: utf -*-
 
 def disco(type, jid, nick, text):
+	global iq_answer
 	text = reduce_spaces(text)
 	if text == '':
 		send_msg(type, jid, nick, L('What?'))
@@ -90,6 +91,7 @@ def disco(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def whereis(type, jid, nick, text):
+	global iq_answer
 	if len(text):
 		text = text.split(' ')
 		who = text[0]

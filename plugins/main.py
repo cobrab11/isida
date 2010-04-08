@@ -883,6 +883,12 @@ def info(type, jid, nick):
 	floods = getFile(fld,[(getRoom(jid),0)])
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
 	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(int((getRoom(jid),1) in smiles)),onoff(int((getRoom(jid),1) in floods)),onoff(int((getRoom(jid),1) in gl_censor)),get_prefix(get_local_prefix(jid)))
+	msg += L('\nExecuted threads: %s | Error(s): %s') % (th_cnt,thread_error_count)
+	msg += L('\nMessage in %s | out %s') % (message_in,message_out)
+	msg += L('\nPresence in %s | out %s') % (presence_in,presence_out)
+	msg += L('\nIq in %s | out %s') % (iq_in,iq_out)
+	msg += L('\nUnknown out %s') % unknown_out
+	msg += L('\nCycles used %s | unused %s') % (cycles_used,cycles_unused)
 	send_msg(type, jid, nick, msg)
 
 # 0 - конфа

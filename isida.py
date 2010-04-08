@@ -265,7 +265,7 @@ def get_joke(text):
 	
 def send_msg(mtype, mjid, mnick, mmessage):
 	if len(mmessage):
-		if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
+		# 1st april joke :) # if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
 		no_send = True
 		if len(mmessage) > msg_limit:
 			cnt = 0
@@ -330,18 +330,19 @@ def leaveconf(conference, server, sm):
 	sleep(0.1)
 
 def join(conference):
-	global iq_answer
+	global iq_answer,cycles_used,cycles_unused
 	id = str(randint(1,100000))
 	j = Node('presence', {'id': id, 'to': conference}, payload = [Node('show', {},[CommStatus]), \
 																  Node('status', {},[StatusMessage]), \
 																  Node('priority', {},[Priority])])
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-	if len(psw): j.getTag('x').setTagData('password', psw)
 	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	sender(j)
 	answered, Error, join_timeout = None, None, 3
 	while not answered and join_timeout and not game_over:
-		if is_start: cl.Process(1)
+		if is_start:
+			if int(cl.Process(1)): cycles_used += 1
+			else: cycles_unused += 1
 		else:
 			sleep(1)
 			join_timeout -= 1
@@ -535,7 +536,7 @@ def to_scrobble(room,mess):
 def messageCB(sess,mess):
 	#print '*'*20
 	#pprint(unicode(mess))
-	global otakeRes, mainRes, psw, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
+	global otakeRes, mainRes, lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
 	global ignorebase, ignores, message_in
 	message_in += 1
 	type=unicode(mess.getType())
@@ -810,6 +811,7 @@ def flush_stats():
 	pprint('Presence in %s | out %s' % (presence_in,presence_out))
 	pprint('Iq in %s | out %s' % (iq_in,iq_out))
 	pprint('Unknown out %s' % unknown_out)
+	pprint('Cycles used %s | unused %s' % (cycles_used,cycles_unused))
 	
 def disconnecter():
 	global bot_exit_type, game_over
@@ -879,18 +881,16 @@ reboot_time = 180				# таймаут рестарта бота при ошиб�
 bot_exit_type = None			# причина завершения бота
 last_stream = []				# очередь станз к отправке
 last_command = []				# последняя исполненная ботом команда
-ddos_limit = [600,300,5]		# время игнора при ddos'е в зависимости от уровня доступа
-ddos_diff = [15,10,5]			# промежуток между сообщениями
+ddos_limit = [600,300,0]		# время игнора при ddos'е в зависимости от уровня доступа
+ddos_diff = [15,10,0]			# промежуток между сообщениями
 thread_type = True				# тип тредов
 time_limit = 1.2				# максимальная задержка между посылкой станз с одинаковым типом в groupchat
 time_nolimit = 0.1				# задержка между посылкой станз с разными типами
-message_in = 0
-message_out = 0
-iq_in = 0
-iq_out = 0
-presence_in = 0
-presence_out = 0
-unknown_out = 0
+message_in,message_out = 0,0	# статистика сообщений
+iq_in,iq_out = 0,0				# статистика iq запросов
+presence_in,presence_out = 0,0	# статистика презенсов
+unknown_out = 0					# статистика ошибочных отправок
+cycles_used,cycles_unused = 0,0	# статистика циклов
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -983,7 +983,6 @@ lastnick = nickname
 jid = JID(node=node, domain=domain, resource=mainRes)
 selfjid = jid
 pprint('bot jid: '+unicode(jid))
-psw = ''
 raw_iq = []
 
 try:
@@ -1038,7 +1037,9 @@ thr(now_schedule,(),'schedule')
 
 while 1:
 	try:
-		while not game_over: cl.Process(1)
+		while not game_over:
+			if int(cl.Process(1)): cycles_used += 1
+			else: cycles_unused += 1
 		close_age()
 		kill_all_threads()
 		flush_stats()
