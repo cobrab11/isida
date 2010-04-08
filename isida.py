@@ -401,9 +401,11 @@ def iqCB(sess,iq):
 			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
 			elif nspace == NS_VERSION: iq_answer.append((id, iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os')))
 			elif nspace == NS_TIME: iq_answer.append((id, iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz')))
-			elif nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
-			elif nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
-			elif nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
+			#elif nspace == NS_DISCO_ITEMS: iq_answer.append((id, unicode(iq)))
+			#elif nspace == NS_LAST: iq_answer.append((id, unicode(iq)))
+			#elif nspace == NS_STATS: iq_answer.append((id, unicode(iq)))
+			#elif nspace == NS_PING: iq_answer.append((id, unicode(iq)))
+			else: iq_answer.append((id, unicode(iq)))
 
 	elif iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
@@ -889,8 +891,6 @@ iq_out = 0
 presence_in = 0
 presence_out = 0
 unknown_out = 0
-
-NS_STATS = 'http://jabber.org/protocol/stats'
 
 gt=gmtime()
 lt=tuple(localtime())

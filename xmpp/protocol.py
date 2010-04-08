@@ -134,6 +134,9 @@ NS_WAITINGLIST      ='http://jabber.org/protocol/waitinglist'               # XE
 NS_XHTML_IM         ='http://jabber.org/protocol/xhtml-im'                  # XEP-0071
 NS_XMPP_STREAMS     ='urn:ietf:params:xml:ns:xmpp-streams'                  # RFC 3920
 
+NS_STATS            = 'http://jabber.org/protocol/stats'                    # XEP-0039
+NS_PING             = 'urn:xmpp:ping'                                       # XEP-0199
+
 xmpp_stream_error_conditions="""
 bad-format --  --  -- The entity has sent XML that cannot be processed.
 bad-namespace-prefix --  --  -- The entity has sent a namespace prefix that is unsupported, or has sent no namespace prefix on an element that requires such a prefix.

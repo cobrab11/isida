@@ -124,8 +124,8 @@ def ping(type, jid, nick, text):
 				iq_answer.remove(aa)
 				no_answ = 0
 				break
-		sleep(0.001)
-		to -= 0.001
+		sleep(0.01)
+		to -= 0.01
 	ct = time.time()
 	try: er_code = is_answ[1]
 	except: er_code = None
