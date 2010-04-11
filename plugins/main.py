@@ -728,7 +728,7 @@ def bot_leave(type, jid, nick, text):
 			send_msg(type, jid, nick, L('Leave room %s') % text)
 			sm = L('Leave room by %s') % nick
 			leaveconf(getRoom(text), domain, sm)
-		else: send_msg(type, jid, nick, L('I never be in %s') % lroom)
+		else: send_msg(type, jid, nick, L('I have never been in %s') % lroom)
 
 def conf_limit(type, jid, nick, text):
 	global msg_limit
