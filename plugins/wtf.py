@@ -12,7 +12,6 @@ def wtfsearch(type, jid, nick, text):
 		for www in ww: msg += www[4]+', '
 		if len(msg): msg = L('Some matches in definitions: %s') % msg[:-2]
 		else: msg = L('No matches.')
-
 	send_msg(type, jid, nick, msg)
 
 def wtfrand(type, jid, nick):
@@ -92,10 +91,9 @@ def wtf_get(ff,type, jid, nick, text):
 def dfn(type, jid, nick, text):
 	global wbase, wtfbase
 	if len(text) and text.count('='):
-
-		ta = get_access(jid,nick)
-
+		ta = get_level(jid,nick)
 		realjid =ta[1]
+		al = ta[0]
 
 		ti = text.index('=')
 		what = del_space_end(text[:ti])
@@ -103,24 +101,23 @@ def dfn(type, jid, nick, text):
 
 		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
-		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
-		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
-		
-		if tlen:
-			for aa in cu: ww=aa
-			if ww[1] == 'global':
-				msg = L('This is global definition and not allowed to change!')
-				text = ''
+		matches = cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=? order by lim',(jid,'global','import',what)).fetchone()
+		if matches:
+			if matches[7] > al:
+				msg,text = L('Not enough rights!'),''
+				try: msg += ' ' + unlevltxt[unlevlnum[matches[7]]] % unlevl[matches[7]]
+				except: pass
+			elif matches[1] == 'global': msg, text = L('This is global definition and not allowed to change!'), ''
+			elif text == '':
+				msg = L('Definition removed!')
+				cu.execute('delete from wtf where wtfword=? and room=?',(what,jid))
 			else:
-				if text == '': msg = L('Definition removed!')
-				else: msg = L('Definition updated!')
-				cu.execute('delete from wtf where wtfword=?',(what,))
-			idx = ww[0]
-		else:
-			msg = L('Definition saved!')
-			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
-
-		if text != '': cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(tuple(localtime()))))
+				msg = L('Definition updated!')
+				cu.execute('delete from wtf where wtfword=? and room=?',(what,jid))
+		elif text == '': msg = L('Nothing to remove!')
+		else: msg = L('Definition saved!')
+		idx = len(cu.execute('select * from wtf where 1=1').fetchall())
+		if text != '': cu.execute('insert into wtf values (?,?,?,?,?,?,?,?)', (idx, jid, realjid, nick, what, text, timeadd(tuple(localtime())),al))
 		mdb.commit()
 	else: msg = L('What need to remember?')
 	send_msg(type, jid, nick, msg)
@@ -128,8 +125,9 @@ def dfn(type, jid, nick, text):
 def gdfn(type, jid, nick, text):
 	global wbase, wtfbase
 	if len(text) and text.count('='):
-		ta = get_access(jid,nick)
+		ta = get_level(jid,nick)
 		realjid =ta[1]
+		al = ta[0]
 
 		ti = text.index('=')
 		what = del_space_end(text[:ti])
@@ -137,20 +135,22 @@ def gdfn(type, jid, nick, text):
 
 		mdb = sqlite3.connect(wtfbase)
 		cu = mdb.cursor()
-		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what)).fetchall())
-		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',what))
-		
-		if tlen:
-			for aa in cu: ww=aa
-			if text == '': msg = L('Definition removed!')
-			else: msg = L('Definition updated!')
-			cu.execute('delete from wtf where wtfword=?',(what,))
-			idx = ww[0]
-		else:
-			msg = L('Definition saved!')
-			idx = len(cu.execute('select * from wtf where 1=1').fetchall())
-
-		if text != '': cu.execute('insert into wtf values (?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(tuple(localtime()))))
+		matches = cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=? order by lim',(jid,'global','import',what)).fetchone()
+		if matches:
+			if matches[7] > al: 
+				msg,text = L('Not enough rights!'),''
+				try: msg += ' ' + unlevltxt[unlevlnum[matches[7]]] % unlevl[matches[7]]
+				except: pass
+			elif text == '':
+				msg = L('Definition removed!')
+				cu.execute('delete from wtf where wtfword=?',(what,))
+			else:
+				msg = L('Definition updated!')
+				cu.execute('delete from wtf where wtfword=?',(what,))
+		elif text == '': msg = L('Nothing to remove!')
+		else: msg = L('Definition saved!')
+		idx = len(cu.execute('select * from wtf where 1=1').fetchall())
+		if text != '': cu.execute('insert into wtf values (?,?,?,?,?,?,?,?)', (idx, 'global', realjid, nick, what, text, timeadd(tuple(localtime())),al))
 		mdb.commit()
 	else: msg = L('What need to remember?')
 	send_msg(type, jid, nick, msg)
@@ -165,5 +165,5 @@ execute = [(0, 'wtfrand', wtfrand, 1, L('Random definition from base.')),
 	 (0, 'wtff', wtff, 2, L('Show definition with nick and date.')),
 	 (0, 'wtfp', wtfp, 2, L('Show definition in private.\nwtfp word\n[nick]')),
 	 (0, 'wtf', wtf, 2, L('Show definition.')),
-	 (1, 'dfn', dfn, 2, L('Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word')),
-	 (2, 'gdfn', gdfn, 2, L('Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word'))]
+	 (0, 'dfn', dfn, 2, L('Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word')),
+	 (0, 'gdfn', gdfn, 2, L('Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word'))]

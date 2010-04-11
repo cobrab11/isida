@@ -2,62 +2,25 @@
 
 #------------------------------------------------
 #             Isida-bot Config file
-#                  v1.2beta
+#                    v1.3ru
 #------------------------------------------------
 
+Settings = {
+'nickname': 		u'<пишем сюда ник бота>',					# Ник бота в конференциях
+'jid':				u'isida-jabber-bot@domain.tld/isida-bot',	# Jid бота
+'password':			u'********',								# Пароль
+'status':			u'online',									# Статус бота chat|online|away|xa|dnd
+'priority':			0,											# Приоритет
+'message':			u'Йа аццкое железко!'}						# Статус-сообщение
 
-# ник бота. !!! нет проверки на занятость ника !!! регистрируем jid и ник, а потом заполняем!
-# jid бота будет таким: name@domain/mainRes
-nickname = u'<пишем сюда ник бота>'
+SuperAdmin		=	u'aaa@bbb.ru'								# Jid владельца бота
+defaultConf		=	u'isida@conference.jabber.ru'				# Стартовая конференция
+prefix			=	u'_'										# Префикс комманд по умолчанию
+msg_limit		=	2048										# Лимит размера сообщений
 
-# логин бота
-name = u'isida-jabber-bot'
-
-# сервер бота
-domain = u'domain.tld'
-
-# рессурс бота в конфе
-mainRes = u'isida-bot'
-
-# пароль
-password = u'********'
-
-# jid владельца бота
-SuperAdmin = u'aaa@bbb.ru'
-
-# стартовая конференция
-defaultConf = u'isida@conference.jabber.ru'
-
-# статус бота chat|online|away|xa|dnd
-CommStatus = u'online'
-
-# статус-сообщение
-StatusMessage = u'Йа аццкое железко!'
-
-# приоритет
-Priority = 0
-
-# префикс комманд
-prefix = u'_'
-
-# Лимит размера сообщений
-msg_limit = 1000
-
-# ------- Отладка! -------
-
-# режим _не_игнорировать_ошибки_
-#debugmode = True
-
-# режим отладки xmpppy
-#dm = True
-
-# режим показа действий бота в консоле
-#dm2 = True
-
-# Логгирование команд бота
-CommandsLog = True
-
-# ------- Системные настройки! -------
-
-# тип тредов thread/threading. по умолчанию - threading
-#thread_type = None
+#ignore_owner	=	True										# не исполнять для владельца бота отключенные команды
+#debugmode		=	True										# режим _не_игнорировать_ошибки_
+#dm				=	True										# режим отладки xmpppy
+#dm2			=	True										# режим показа действий бота в консоле
+CommandsLog		=	True										# Логгирование команд бота
+#thread_type	=	None										# тип тредов thread/threading. по умолчанию - threading

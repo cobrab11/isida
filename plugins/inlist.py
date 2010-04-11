@@ -8,7 +8,7 @@ def inmember(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'member',
 	
 def inlist_raw(type, jid, nick, text, affil, message):
 	global banbase
-	iqid = str(randint(1,1000000))
+	iqid = get_id()
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	sender(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)

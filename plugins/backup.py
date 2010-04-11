@@ -3,7 +3,7 @@
 
 def getMucItems(jid,affil,ns):
 	global banbase,raw_iq
-	iqid = str(randint(1,100000))
+	iqid = get_id()
 	raw_iq = []
 	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
@@ -53,7 +53,7 @@ def conf_backup(type, jid, nick, text):
 				adminlist = getMucItems(jid,'admin',ns)
 				ownerlist = getMucItems(jid,'owner',ns)
 				configlist = getMucItems(jid,'',NS_MUC_OWNER)
-				iqid = str(randint(1,100000))
+				iqid = get_id()
 				i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(str(selfjid))},[])])])
 				sender(i)
 
@@ -87,13 +87,13 @@ def conf_backup(type, jid, nick, text):
 					else:
 						raw_back=eval(readfile(back_folder+unicode(text[1])))
 						for zz in range(0,4):
-							iqid = str(randint(1,100000))
+							iqid = get_id()
 							end = raw_back[zz][raw_back[zz].find('<query'):]
 							beg = '<iq xmlns="jabber:client" to="'+unicode(jid)+'" from="'+unicode(selfjid)+'" id="'+unicode(iqid)+'" type="set">'
 							i = beg+end
 							sender(i)
 							sleep(i.count('<item')*0.02)
-						iqid = str(randint(1,100000))
+						iqid = get_id()
 						end = raw_back[4][raw_back[4].find('<query'):]
 						beg = '<iq to="'+unicode(jid)+'" id="'+unicode(iqid)+'" type="set">'
 						i = beg+end
@@ -106,7 +106,7 @@ def conf_backup(type, jid, nick, text):
 						i = i.replace('form','submit')
 						sender(i)
 						sleep(0.1)
-						iqid = str(randint(1,100000))
+						iqid = get_id()
 						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(unicode(selfjid))},[])])])
 						sleep(0.1)
 						sender(i)

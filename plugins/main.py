@@ -41,6 +41,38 @@ rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),
 		(u'⌈','&lceil;'),(u'⌉','&rceil;'),(u'⌊','&lfloor;'),(u'⌋','&rfloor'),(u'◊','&loz;'),(u'♠','&spades;'),(u'♣','&clubs;'),
 		(u'♥','&hearts;'),(u'♦','&diams;'))
 
+levl = {'no|limit':0,'visitor|none':1,'visitor|member':2,'participant|none':3,'participant|member':4,
+		'moderator|none':5,'moderator|member':6,'moderator|admin':7,'moderator|owner':8,'bot|owner':9}
+
+unlevl = [L('no limit'),L('visitor/none'),L('visitor/member'), L('participant/none'),L('participant/member'),
+		  L('moderator/none'),L('moderator/member'),L('moderator/admin'),L('moderator/owner'),L('bot owner')]
+		  
+unlevltxt = [L('You should be at least %s to do it.'),L('You must be a %s to do it.')]
+
+unlevlnum = [0,0,0,0,0,0,0,0,0,1]
+		
+def get_level(cjid, cnick):
+	access_mode = -2
+	jid = 'None'
+	for base in megabase:
+		if base[1].count(cnick) and base[0].lower()==cjid:
+			jid = base[4]
+			if base[2]+'|'+base[3] in levl:
+				access_mode = levl[base[2]+'|'+base[3]]
+				break
+	for iib in ignorebase:
+		grj = getRoom(jid.lower())
+		if iib.lower() == grj:
+			access_mode = -1
+			break
+		if not (iib.count('.')+iib.count('@')) and grj.count(iib.lower()):
+			access_mode = -1
+			break
+	rjid = getRoom(jid)
+	if ownerbase.count(rjid): access_mode = 9
+	if jid == 'None' and ownerbase.count(getRoom(cjid)): access_mode = 9
+	return (access_mode, jid)
+
 def get_scrobble(type, room, nick, text):
 	def last_time_short(tm):
 		tm = time.localtime(tm)
@@ -533,7 +565,7 @@ def get_access(cjid, cnick):
 			break
 	rjid = getRoom(jid)
 	if ownerbase.count(rjid): access_mode = 2
-	if jid == 'None' and ownerbase.count(getRoom(cjid)): access_mode = 2
+	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(cjid)): access_mode = 2
 	return (access_mode, jid)
 
 def info_whois(type, jid, nick, text):
@@ -612,7 +644,6 @@ def bot_rejoin(type, jid, nick, text):
 	lastnick = getResourse(text)
 	lroom = text
 	if arr_semi_find(confbase, getRoom(lroom)) >= 0:
-		pprint('rejoin '+text+' by '+nick)
 		sm = L('Rejoin by %s') % nick
 		leaveconf(text, domain, sm)
 		sleep(1)
@@ -627,9 +658,7 @@ def bot_rejoin(type, jid, nick, text):
 			confbase = remove_by_half(confbase, getRoom(lroom))
 			confbase.append(text)
 			writefile(confs,str(confbase))
-	else:
-		send_msg(type, jid, nick, L('I have never been in %s') % getRoom(lroom))
-		pprint('never be in '+text)
+	else: send_msg(type, jid, nick, L('I have never been in %s') % getRoom(lroom))
 		
 def remove_by_half(cb,rm):
 	for tmp in cb:
@@ -657,33 +686,25 @@ def bot_join(type, jid, nick, text):
 					sleep(1)
 					text += '_'
 					zz = joinconf(text, domain)
-				if zz != None:
-					send_msg(type, jid, nick, L('Error! %s') % zz)
-					pprint(u'*** Error join to '+text+' '+zz)
+				if zz != None: send_msg(type, jid, nick, L('Error! %s') % zz)
 				else:
 					confbase.append(text)
 					writefile(confs,str(confbase))
 					send_msg(type, jid, nick, L('Joined to %s') % text)
-					pprint(u'join to '+text)
-			elif confbase.count(text):
-				send_msg(type, jid, nick, L('I\'m already in %s with nick %s') % (lroom,lastnick))
-				pprint('already in '+text)
+			elif confbase.count(text): send_msg(type, jid, nick, L('I\'m already in %s with nick %s') % (lroom,lastnick))
 			else:
 				zz = joinconf(text, domain)
 				while unicode(zz)[:3] == '409':
 					sleep(0.1)
 					text += '_'
 					zz = joinconf(text, domain)
-				if zz != None:
-					send_msg(type, jid, nick, L('Error! %s') % zz)
-					pprint(u'*** Error join to '+text+' '+zz)
+				if zz != None: send_msg(type, jid, nick, L('Error! %s') % zz)
 				else:
 					confbase = remove_by_half(confbase, lroom)
 					confbase.append(text)
-					sleep(1)
-					send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,getResourse(text)))
+					#sleep(1)
+					#send_msg(type, jid, nick, L('Changed nick in %s to %s') % (lroom,getResourse(text)))
 					writefile(confs,str(confbase))
-					pprint(u'change nick '+text)
 
 def bot_leave(type, jid, nick, text):
 	global confs, confbase, lastserver, lastnick
@@ -704,10 +725,7 @@ def bot_leave(type, jid, nick, text):
 			send_msg(type, jid, nick, L('Leave room %s') % text)
 			sm = L('Leave room by %s') % nick
 			leaveconf(getRoom(text), domain, sm)
-			pprint(u'leave '+text+' by '+nick)
-		else:
-			send_msg(type, jid, nick, L('I never be in %s') % lroom)
-			pprint(u'never be in '+text)
+		else: send_msg(type, jid, nick, L('I never be in %s') % lroom)
 
 def conf_limit(type, jid, nick, text):
 	global msg_limit
@@ -723,11 +741,14 @@ def bot_plugin(type, jid, nick, text):
 	nnick = ''
 	if len(text)>0: do = text[0]
 	if len(text)>1: nnick = text[1]+'.py'
-	pprint('plugin '+do+' '+nnick)
 	msg = ''
 	if do == 'add':
-		if not plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
-			plugins.append(nnick)
+		if os.path.isfile('plugins/'+nnick):
+			pl_ignore = getFile(pliname,[])
+			if nnick in pl_ignore:
+				pl_ignore.remove(nnick)
+				writefile(pliname,str(pl_ignore))
+			if not nnick in plugins: plugins.append(nnick)
 			presence_control = []
 			message_control = []
 			iq_control = []
@@ -741,9 +762,14 @@ def bot_plugin(type, jid, nick, text):
 			for tmr in timer: gtimer.append(tmr)
 			for tmp in presence_control: gpresence.append(tmp)
 			for tmp in message_control: gmessage.append(tmp)
+				
 	elif do == 'del':
-		if plugins.count(nnick) and os.path.isfile('plugins/'+nnick):
-			plugins.remove(nnick)
+		if os.path.isfile('plugins/'+nnick):
+			pl_ignore = getFile(pliname,[])
+			if not nnick in pl_ignore:
+				pl_ignore.append(nnick)
+				writefile(pliname,str(pl_ignore))
+			if nnick in plugins: plugins.remove(nnick)
 			presence_control = []
 			message_control = []
 			iq_control = []
@@ -763,15 +789,24 @@ def bot_plugin(type, jid, nick, text):
 		b = []
 		for c in a:
 			if c[-3:] == u'.py' and c != 'main.py': b.append(c[:-3].decode('utf-8'))
-		msg = ''
-		for c in b: msg += c+', '
-		msg = L('Available plugins: %s') % msg[:-2]
+		msg = L('Available plugins: %s') % ', '.join(b)
+		pl_ignore = getFile(pliname,[])
+		if len(pl_ignore):
+			b = []
+			for tmp in pl_ignore: b.append(tmp[:-3])
+			msg += L('\nIgnored plugins: %s') % ', '.join(b)
 	elif do == 'show':
 		msg = ''
 		for jjid in plugins: msg += jjid[:-3]+', '
 		msg = L('Active plugins: %s') % msg[:-2]
+		pl_ignore = getFile(pliname,[])
+		if len(pl_ignore):
+			b = []
+			for tmp in pl_ignore: b.append(tmp[:-3])
+			msg += L('\nIgnored plugins: %s') % ', '.join(b)
 	else: msg = L('Wrong arguments!')
-	writefile(plname,str(plugins))
+	plugins.sort()
+	writefile(plname,unicode(plugins))
 	send_msg(type, jid, nick, msg)
 
 def owner(type, jid, nick, text):
@@ -782,12 +817,14 @@ def owner(type, jid, nick, text):
 	except:
 		if do != 'show':
 			send_msg(type, jid, nick, L('Wrong arguments!'))
-			return
-	pprint('owner '+text)
+			return	
 	if do == 'add':
 		if not ownerbase.count(nnick):
 			if nnick.count('@') and nnick.count('.'):
 				ownerbase.append(nnick)
+				j = Presence(nnick, 'subscribed')
+				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+				sender(j)
 				j = Presence(nnick, 'subscribe')
 				j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 				sender(j)
@@ -797,6 +834,9 @@ def owner(type, jid, nick, text):
 	elif do == 'del':
 		if ownerbase.count(nnick) and nnick != god:
 			ownerbase.remove(nnick)
+			j = Presence(nnick, 'unsubscribe')
+			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+			sender(j)
 			j = Presence(nnick, 'unsubscribed')
 			j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 			sender(j)
@@ -819,7 +859,6 @@ def ignore(type, jid, nick, text):
 		if do != 'show':
 			send_msg(type, jid, nick, L('Wrong arguments!'))
 			return
-	pprint('ignore '+text)
 	if do == 'add':
 		if not ignorebase.count(nnick):
 			ignorebase.append(nnick)
@@ -884,11 +923,11 @@ def info(type, jid, nick):
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
 	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(int((getRoom(jid),1) in smiles)),onoff(int((getRoom(jid),1) in floods)),onoff(int((getRoom(jid),1) in gl_censor)),get_prefix(get_local_prefix(jid)))
 	msg += L('\nExecuted threads: %s | Error(s): %s') % (th_cnt,thread_error_count)
-	msg += L('\nMessage in %s | out %s') % (message_in,message_out)
-	msg += L('\nPresence in %s | out %s') % (presence_in,presence_out)
-	msg += L('\nIq in %s | out %s') % (iq_in,iq_out)
-	msg += L('\nUnknown out %s') % unknown_out
-	msg += L('\nCycles used %s | unused %s') % (cycles_used,cycles_unused)
+	msg += L('\nMessage in: %s | out: %s') % (message_in,message_out)
+	msg += L('\nPresence in: %s | out: %s') % (presence_in,presence_out)
+	msg += L('\nIq in: %s | out: %s') % (iq_in,iq_out)
+	msg += L('\nUnknown out: %s') % unknown_out
+	msg += L('\nCycles used: %s | unused: %s') % (cycles_used,cycles_unused)
 	send_msg(type, jid, nick, msg)
 
 # 0 - конфа

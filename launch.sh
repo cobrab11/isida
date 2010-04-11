@@ -7,4 +7,4 @@ svn up
 echo `svnversion` > settings/version
 
 #launch bot
-python start.py
+python isida.py

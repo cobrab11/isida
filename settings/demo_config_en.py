@@ -2,62 +2,25 @@
 
 #------------------------------------------------
 #             Isida-bot Config file
-#                  v1.2beta
+#                    v1.3en
 #------------------------------------------------
 
+Settings = {
+'nickname': 		u'<write here bot nick>',					# bot nick in conferences
+'jid':				u'isida-jabber-bot@domain.tld/isida-bot',	# bot jid
+'password':			u'********',								# password
+'status':			u'online',									# bot status chat|online|away|xa|dnd
+'priority':			0,											# priority
+'message':			u'…а аццкое железко!'}						# status-message
 
-# nick a bot.!!! There is no check on employment nick!!! We register jid and nick, and then we fill!
-# jid a bot will be such: name@domain/mainRes
-nickname = u'<write here bot nick>'
+SuperAdmin 		=	u'aaa@bbb.ru'								# bot owner jid
+defaultConf		=	u'isida@conference.jabber.ru'				# start conference
+prefix			=	u'_'										# command prefix
+msg_limit		= 	2048										# limit of the size of messages
 
-# bot login
-name = u'isida-jabber-bot'
-
-# bot server
-domain = u'domain.tld'
-
-# Bot resource in conference
-mainRes = u'isida-bot'
-
-# password
-password = u'********'
-
-# bot owner jid
-SuperAdmin = u'aaa@bbb.ru'
-
-# start conference
-defaultConf = u'isida@conference.jabber.ru'
-
-# bot status chat|online|away|xa|dnd
-CommStatus = u'online'
-
-# status-message
-StatusMessage = u'i am isida bot'
-
-# priority
-Priority = 0
-
-# command prefix
-prefix = u'_'
-
-# Limit of the size of messages
-msg_limit = 1000
-
-# ------- debugging! -------
-
-# Mode _not_to_ignore_an_error_
-#debugmode = True
-
-# Debugging mode xmpppy
-#dm = True
-
-# Mode of show of operations of a bot in console
-#dm2 = True
-
-# logging commands of a bot
-CommandsLog = True
-
-# ------- System settings! -------
-
-# threads type thread/threading. default - threading
-#thread_type = None
+#ignore_owner	=	True										# don't allow execute offered commands for bot owner
+#debugmode		=	True										# mode _not_to_ignore_an_error_
+#dm				=	True										# debugging mode xmpppy
+#dm2			=	True										# mode of show of operations of a bot in console
+CommandsLog		=	True										# logging commands of a bot
+#thread_type	=	None										# threads type thread/threading. default - threading

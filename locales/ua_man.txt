@@ -151,6 +151,19 @@ Bad url or rss/atom not found at %s - %s	Помилка url або новини 
 Can't find in schedule: %s	Не можу знайти в розкладі: %s
 Delete feed from schedule: %s	Видалено з розкладу: %s
 New feeds not found!	Немає новин!
+no limit	без обмежень 
+visitor/none	гість без повноважень 
+visitor/member	гість і постійний учасник 
+participant/none	відвідувач без повноважень 
+participant/member	постійний учасник 
+moderator/none	модератор без повноважень 
+moderator/member	модератор і постійний учасник 
+moderator/admin	модератор і адміністратор 
+moderator/owner	власник конференції 
+bot owner	власник бота 
+You should be at least %s to do it.	Для цієї дії ти ваності мати статус не нижче: %s 
+You must be a %s to do it.	Для цього треба мати статус: %s
+\nIgnored plugins: %s	\nІгноріруемие плагіни: %s
 
 # --------------- перевод хелпов main.py ---------------
 Help system. Helps without commands: about, donation, access	Показує поточні розділи довідкової системи. Розділи довідки без команд: about, donation, доступ
@@ -945,6 +958,8 @@ Information about definition commiter.	Показ інформації про т
 Show definition with nick and date.	Показ визначення разом з ніком і датою.
 Show definition in private.\nwtfp word\n[nick]	Показ визначення в приват. Не залежить від того, звідки прийшла команда.\nwtfp word - показати визначення word собі в приват\nwtfp word\nnick - показати визначення word в приват nick
 Show definition.	Показ визначення.
+Nothing to remove!	Досить бухати! Я такого не знаю!
+Not enough rights!	Ти ще малий і дурний для цього!
 Set definition.\ndfn word=definition - remember definition as word\ndfn word= - remove definition word	Установка визначення.\ndfn word=definition - запам'ятовуэ definition як визначення word\ndfn word= - видаляє визначення word
 Set global definition.\ngdfn word=definition - remember definition as word\ngdfn word= - remove definition word	Установка глобального визначення.\ngdfn word=definition - запам'ятовуэ definition як визначення word\ngdfn word= - видаляє визначення word
 

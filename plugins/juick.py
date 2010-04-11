@@ -99,7 +99,7 @@ def juick_msg(type, jid, nick, text):
 				post = 0
 				link = 'http://juick.com/'+text.split(' ')[0]
 			try: repl_limit = int(text.split(' ')[1])
-			except: repl_limit = 3
+			except: repl_limit = 0
 			body = urllib.urlopen(link).read()
 			body = html_encode(body.replace('<div><a href','<div><a '))
 			if body.count('<h1>Page Not Found</h1>'): msg = L('Message #%s not found') % text

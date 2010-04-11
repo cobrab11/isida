@@ -8,11 +8,11 @@ set_folder = u'settings/'		# папка настроек
 agestat = set_folder+u'agestat.db'	# статистика возрастов
 jidbase = set_folder+u'jidbase.db'	# статистика jid'ов
 talkers = set_folder+u'talkers.db'	# статистика болтунов
-wtfbase = set_folder+u'wtfbase.db'	# определения
+wtfbase = set_folder+u'wtfbase2.db'	# определения
 answers = set_folder+u'answers.db'	# ответы бота
 saytobase = set_folder+u'sayto.db'	# база команды "передать"
 
-print 'Databases creator for Isida Jabber Bot v1.8 and higher'
+print 'Databases creator for Isida Jabber Bot v2.00 and higher'
 print '(c) Disabler Production Lab.'
 
 print 'Create new bases'
@@ -48,7 +48,7 @@ stb = os.path.isfile(wtfbase)
 wtfst = sqlite3.connect(wtfbase)
 cu_wtfst = wtfst.cursor()
 if not stb:
-	cu_wtfst.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text)''')
+	cu_wtfst.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text, lim integer)''')
 	wtfst.commit()
 else: print wtfbase, 'was skiped!'
 wtfst.close()

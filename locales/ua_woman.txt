@@ -151,6 +151,19 @@ Bad url or rss/atom not found at %s - %s	Помилка url або новини 
 Can't find in schedule: %s	Не можу знайти в розкладі: %s
 Delete feed from schedule: %s	Видалено з розкладу: %s
 New feeds not found!	Немає новин!
+no limit	без обмежень 
+visitor/none	гість без повноважень 
+visitor/member	гість і постійний учасник 
+participant/none	відвідувач без повноважень 
+participant/member	постійний учасник 
+moderator/none	модератор без повноважень 
+moderator/member	модератор і постійний учасник 
+moderator/admin	модератор і адміністратор 
+moderator/owner	власник конференції 
+bot owner	власник бота 
+You should be at least %s to do it.	Для цієї дії ти ваності мати статус не нижче: %s 
+You must be a %s to do it.	Для цього треба мати статус: %s
+\nIgnored plugins: %s	\nІгноріруемие плагіни: %s
 
 # --------------- перевод хелпов main.py ---------------
 Help system. Helps without commands: about, donation, access	Показує поточні розділи довідкової системи. Розділи довідки без команд: about, donation, доступ
@@ -936,6 +949,8 @@ Definition removed!	Шкода, що таку корисну фігенцію п
 Definition updated!	Боян, але я запам'ятаю!
 Definition saved!	Ммм.. Щось новеньке, зараз запам'ятаю!
 What need to remember?	Що ж потрібно запам'ятати?
+Nothing to remove!	Досить бухати! Я такого не знаю!
+Not enough rights!	Ти ще малий і дурний для цього!
 # - help -
 Random definition from base.	Показ випадкового визначення з бази слів.
 List of definitions in conference.\nwtfnames [all|global|import]	Показ списку визначень в конференції.\nwtfnames [all|global|import]

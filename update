@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# updater for 1.7 to 1.8
+# updater for 1.8 - 1.91 to 2.00
 
 svn up
 
-python update7to8.py
+python update1_91to2_00.py
 
 
