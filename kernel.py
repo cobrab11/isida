@@ -454,6 +454,15 @@ def iqCB(sess,iq):
 # is_answ = time_lim,some[:]
 #else: msg = L('Timeout %s sec.') % str(timeout)
 
+def iq_async_clean():
+	global iq_reques
+	while not game_over:
+		sleep(timeout)
+		if len(iq_request):
+			for tmp in iq_request.keys():
+				if iq_request[tmp][0] + timeout < time.time(): iq_request.pop[tmp]
+				break
+
 def iq_async(*answ):
 	global iq_request
 	req = iq_request.pop(answ[0])
@@ -1058,6 +1067,7 @@ pprint('Joined')
 #sender(pep)
 
 thr(now_schedule,(),'schedule')
+thr(iq_async_clean,(),'async_clean')
 
 while 1:
 	try:
