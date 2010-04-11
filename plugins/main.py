@@ -636,6 +636,7 @@ def helpme(type, jid, nick, text):
 def bot_rejoin(type, jid, nick, text):
 	global lastserver, lastnick, confbase
 	text=unicode(text)
+	domain = getServer(Settings['jid'])
 	if len(text): text=unicode(text)
 	else: text=jid
 	if not text.count('@'): text+='@'+lastserver
@@ -670,6 +671,7 @@ def remove_by_half(cb,rm):
 def bot_join(type, jid, nick, text):
 	global lastserver, lastnick, confs, confbase, blacklist_base
 	text=unicode(text)
+	domain = getServer(Settings['jid'])
 	blklist = getFile(blacklist_base, [])
 	if text=='' or getRoom(text).count(' '): send_msg(type, jid, nick, L('Wrong arguments!'))
 	else:
@@ -708,6 +710,7 @@ def bot_join(type, jid, nick, text):
 
 def bot_leave(type, jid, nick, text):
 	global confs, confbase, lastserver, lastnick
+	domain = getServer(Settings['jid'])
 	if len(confbase) == 1: send_msg(type, jid, nick, L('I can\'t leave last room!'))
 	else:
 		if text == '': text = jid
