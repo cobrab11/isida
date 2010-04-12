@@ -1067,8 +1067,27 @@ def html_encode(body):
 		else: enc = chardet.detect(body)['encoding']
 	if body == None: body = ''
 	if enc == None or enc == '' or enc.lower() == 'unicode': enc = 'utf-8'
-	try: return smart_encode(body,enc)
-	except: return L('Encoding error!')
+	if enc == 'ISO-8859-2':
+		tx,splitter = '','|'
+		while body.count(splitter): splitter += '|'
+		tbody = body.replace('</','<'+splitter+'/').split(splitter)
+		cntr = 0
+		for tmp in tbody:
+			try:
+				enc = chardet.detect(tmp)['encoding']
+				if enc == None or enc == '' or enc.lower() == 'unicode': enc = 'utf-8'
+				tx += unicode(tmp,enc)
+			except:
+				ttext = ''
+				for tmp2 in tmp:
+					if (tmp2<='~'): ttext+=tmp2
+					else: ttext+='?'
+				tx += ttext
+			cntr += 1
+		return tx
+	else:
+		try: return smart_encode(body,enc)
+		except: return L('Encoding error!')
 
 #[room, nick, role, affiliation, jid]
 

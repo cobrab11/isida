@@ -169,16 +169,12 @@ def get_tag_full(body,tag):
 def get_tag_item(body,tag,item):
 	body = get_tag_full(body,tag)
 	return get_subtag(body,item)
-	
+
 def parser(text):
-	text = unicode(text)
-	ttext = ''
-	i = 0
-	while i<len(text):
-		if (text[i]<='~'): ttext+=text[i]
+	text,ttext = unicode(text),''
+	for tmp in text:
+		if (tmp<='~'): ttext+=tmp
 		else: ttext+='?'
-		i=i+1
-	ttext = unicode(ttext)
 	return ttext
 
 def remove_sub_space(text):
@@ -191,7 +187,7 @@ def remove_sub_space(text):
 def smart_encode(text,enc):
 	tx,splitter = '','|'
 	while text.count(splitter): splitter += '|'
-	ttext = text.replace('><','>'+splitter+'<').split(splitter)
+	ttext = text.replace('</','<'+splitter+'/').split(splitter)
 	for tmp in ttext:
 		try: tx += unicode(tmp,enc)
 		except: pass
