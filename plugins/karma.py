@@ -92,7 +92,7 @@ def karma_change(room,jid,nick,type,text,value):
 		k_aff = get_affiliation(room,nick)
 		k_acc = get_access(room,nick)[0]
 		if k_acc < 0: return
-		if k_aff != 'none' or k_acc > 0 or karma_get_access(room,jid):
+		if k_aff != 'none' or k_acc > 0 or karma_get_access(room,getRoom(jid)):
 			jid, karmajid = getRoom(jid), getRoom(get_access(room,text)[1])
 			if karmajid == getRoom(selfjid): return
 			elif karmajid == 'None': msg = L('You can\'t change karma in outdoor conference!')
