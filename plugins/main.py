@@ -1153,7 +1153,7 @@ def rss(type, jid, nick, text):
 		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
-		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
+		break_point = rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])
 		link = text[1]
@@ -1192,15 +1192,15 @@ def rss(type, jid, nick, text):
 				urlmode = None
 				msg += link+' '
 			msg += get_tag(feed[0],'title')
+			break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
 			try:
-				break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
 				feedbase = getFile(feeds,[])
 				for tmp in feedbase:
 					if tmp[4] == jid and tmp[0] == link:
 							try: tstop = tmp[5]
 							except: pass
 							break
-				t_msg = []
+				t_msg, new_count = [], 0
 				for mmsg in feed[1:lng]:
 					ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
 					if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
@@ -1217,6 +1217,7 @@ def rss(type, jid, nick, text):
 					else: return
 					if urlmode: tlink = turl
 					t_msg.append((tsubj,tmsg,tlink))
+					new_count += 1
 				t_msg.reverse()
 				tmp = ''
 				for tm in t_msg: tmp += '!'.join(tm)
@@ -1237,8 +1238,8 @@ def rss(type, jid, nick, text):
 					elif submode == 'body': tmp += u'\n• %s' % tm[1]
 					elif submode == 'head': tmp += u'\n• %s' % tm[0]
 					if len(tm[2]): tmp += '\n'+tm[2]
-				msg += tmp
-				if mode == 'new' and mmsg == feed[1]:
+				msg = unhtml(msg+tmp)
+				if mode == 'new' and not new_count:
 					if text[4] == 'silent': nosend = True
 					else: msg = L('New feeds not found!')
 			except Exception,SM:
