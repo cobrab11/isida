@@ -96,13 +96,18 @@ def send_count(item):
 	elif itm == '<p': presence_out += 1
 	elif itm == '<i': iq_out += 1
 	else: unknown_out += 1
-	
+
+'''	
 def sender(item):
 	global last_stream
 	if last_stream != []: last_stream.append(item)
 	else:
 		sleep(time_nolimit)
 		send_count(item)
+'''
+def sender(item):
+	sleep(time_nolimit)
+	send_count(item)
 	
 def sender_stack():
 	global last_stream
@@ -1045,7 +1050,7 @@ cl.sendInitPresence()
 pprint('Wait conference')
 sleep(0.5)
 game_over = None
-thr(sender_stack,(),'sender')
+#thr(sender_stack,(),'sender')
 cb = []
 is_start = True
 lastserver = getServer(confbase[0].lower())
@@ -1068,7 +1073,7 @@ pprint('Joined')
 #sender(pep)
 
 thr(now_schedule,(),'schedule')
-#thr(iq_async_clean,(),'async_clean')
+thr(iq_async_clean,(),'async_clean')
 
 while 1:
 	try:
