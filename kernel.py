@@ -603,9 +603,9 @@ def messageCB(sess,mess):
 			for parse in aliases:
 				if (btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ') and room == parse[0]:
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-					if parse[2].count('%'):
-						argz = btext[len(parse[1])+1:]
-						ppr = parse[2].replace('%*', argz)
+					argz = btext[len(parse[1])+1:]
+					ppr = parse[2].replace('%*', argz)
+					if ppr.count('%'):
 						cpar = re.findall('%([0-9]+)', ppr, re.S)
 						if len(cpar):
 							argz = argz.split()
