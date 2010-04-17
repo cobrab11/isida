@@ -702,6 +702,7 @@ def presenceCB(sess,mess):
 			try: 
 				pres_answer.append((id,get_tag_item(unicode(mess),'error','code')+': '+mess.getTag('error')))
 			except: pres_answer.append((id,L('Unknown error!')))
+		return
 	elif id != None: pres_answer.append((id,None))
 	if jid == 'None': jid = get_access(room,nick)[1]
 	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
