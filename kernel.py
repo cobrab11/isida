@@ -603,7 +603,15 @@ def messageCB(sess,mess):
 			for parse in aliases:
 				if (btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ') and room == parse[0]:
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
-					ppr = parse[2].replace('%*',btext[len(parse[1])+1:])
+					if parse[2].count('%'):
+						argz = btext[len(parse[1])+1:]
+						ppr = parse[2].replace('%*', argz)
+						cpar = re.findall('%([0-9]+)', ppr, re.S)
+						if len(cpar):
+							argz = argz.split()
+							for tmp in cpar:
+								try: ppr = ppr.replace('%'+tmp,argz[int(tmp)])
+								except: pass
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
