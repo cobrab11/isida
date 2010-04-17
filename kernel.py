@@ -1079,10 +1079,9 @@ while 1:
 	try:
 		while not game_over:
 			cyc = cl.Process(1)
-			try:
-				if int(cyc): cycles_used += 1
-				else: cycles_unused += 1
-			except: pass
+			if str(cyc) == 'None': cycles_unused += 1
+			elif int(str(cyc)): cycles_used += 1
+			else: cycles_unused += 1
 		close_age()
 		kill_all_threads()
 		flush_stats()
