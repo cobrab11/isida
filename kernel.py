@@ -820,9 +820,10 @@ def check_rss():
 				break
 		if in_room and ll_hl + ofset <= l_hl:
 			pprint('check rss: '+fd[0]+' in '+fd[4])
-			rss('groupchat', fd[4], 'RSS', 'new '+fd[0]+' 10 '+fd[2]+' silent')
+			break_point = rss('groupchat', fd[4], 'RSS', 'new %s 10 %s silent' % (fd[0],fd[2]))
+			if not break_point: break_point = fd[5]
 			feedbase.remove(fd)
-			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4]])
+			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4], break_point])
 			writefile(feeds,str(feedbase))
 			break
 
@@ -881,8 +882,7 @@ cns = set_folder+'censors'				# состояние цензора
 owners = set_folder+'owner'				# база владельцев
 ignores = set_folder+'ignore'			# черный список
 confs = set_folder+'conf'				# список активных конф
-feeds = set_folder+'feed'				# список rss каналов
-lafeeds = set_folder+'lastfeeds'		# последние новости по каждому каналу
+feeds = set_folder+'feed'				# список rss каналов + md5 последниx новостей по каждому каналу
 cens = set_folder+'censor.txt'			# список "запрещенных" слов для болтуна
 conoff = set_folder+'commonoff'			# список "запрещенных" команд для бота
 saytobase = set_folder+'sayto.db'		# база команды "передать"

@@ -88,7 +88,7 @@ def karma_change(room,jid,nick,type,text,value):
 		if (room,'karma') in cof: return
 		if text.count(': '): text = text.split(': ',1)[0]
 		elif text.count(', '): text = text.split(', ',1)[0]
-		else: text = text[:-4]
+		else: return
 		k_aff = get_affiliation(room,nick)
 		k_acc = get_access(room,nick)[0]
 		if k_acc < 0: return
@@ -113,12 +113,10 @@ def karma_change(room,jid,nick,type,text,value):
 						cu_karmabase.execute('delete from karma where room=? and jid=?',(room,karmajid)).fetchall()
 					else: stat = value
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
-					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') %\
-						(text,karma_val(stat),un_unix(karma_timeout[k_acc]))
+					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') % (text,karma_val(stat),un_unix(karma_timeout[k_acc]))
 					karma_base.commit()
 					pprint('karma change in '+room+' for '+text+' to '+str(stat))
-				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % \
-					(text,un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time))
+				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % (text,un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time))
 				karma_base.close()
 		else: msg = L('You can\'t change karma!')
 	send_msg(type, room, nick, msg)

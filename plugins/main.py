@@ -312,10 +312,9 @@ def del_space_both(t):
 def alias(type, jid, nick, text):
 	global aliases
 	aliases = getFile(alfile,[])
-	
 	text = text.strip()
 	while text.count('  '): text = text.replace('  ',' ')
-	mode = del_space_both(text.split(' ',1)[0])
+	mode = del_space_both(text.lower().split(' ',1)[0])
 	try: cmd = del_space_both(text.split(' ',1)[1].split('=',1)[0])
 	except: cmd = ''
 	try: cbody = del_space_both(text.split(' ',1)[1].split('=',1)[1])
@@ -330,13 +329,13 @@ def alias(type, jid, nick, text):
 		aliases.append([jid, cmd, cbody])
 		if fl: msg = L('Updated:')
 		else: msg = L('Added:')
-		msg += ' '+cmd+' == '+cbody
+		msg += ' '+cmd+'='+cbody
 	if mode=='del':
 		msg = L('Unable to remove %s') % cmd
 		for i in aliases:
 			if i[1] == cmd and i[0] == jid:
 				aliases.remove(i)
-				msg = L('Removed %s') % cmd
+				msg = L('Removed: %s') % cmd
 	if mode=='show':
 		msg = ''
 		if cmd == '':
@@ -365,7 +364,6 @@ def autoflood(type, jid, nick, text):
 	if text:
 		if text.lower() == L('on'): tmode = 2
 		elif text.lower() == L('off'): tmode = 1
-
 	floods = getFile(fld,[(getRoom(jid),0)])
 	is_found = 1
 	for sm in floods:
@@ -1092,18 +1090,18 @@ def html_encode(body):
 #[room, nick, role, affiliation, jid]
 
 def rss(type, jid, nick, text):
-	global feedbase, feeds,	lastfeeds, lafeeds
+	global feedbase, feeds,	lastfeeds
 	msg = u'rss show|add|del|clear|new|get'
-	nosend = None
+	nosend,break_point = None,None
 	text = text.split(' ')
 	tl = len(text)
 	if tl < 5: text.append('!')
 	mode = text[0].lower() # show | add | del | clear | new | get
-	if mode == 'add' and tl < 4: msg,mode = 'rss add [http://]url timeH|M [full|body|head]',''
+	if mode == 'add' and tl < 4: msg,mode = 'rss add [http://]url timeH|M [full|body|head][-url]',''
 	elif mode == 'del' and tl < 2: msg,mode = 'rss del [http://]url',''
-	elif mode == 'new' and tl < 4: msg,mode = 'rss new [http://]url max_feed_humber [full|body|head]',''
-	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head]',''
-	lastfeeds = getFile(lafeeds,[])
+	elif mode == 'new' and tl < 4: msg,mode = 'rss new [http://]url max_feed_humber [full|body|head][-url]',''
+	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head][-url]',''
+	#lastfeeds = getFile(lafeeds,[])
 	if mode == 'clear':
 		feedbase = getFile(feeds,[])
 		msg, tf = L('All RSS was cleared!'), []
@@ -1111,11 +1109,6 @@ def rss(type, jid, nick, text):
 			if taa[4] != jid: tf.append(taa)
 		feedbase = tf
 		writefile(feeds,str(feedbase))
-		tf = []
-		for taa in lastfeeds:
-			if taa[2] == jid: tf.append(taa)
-		lastfeeds = tf
-		writefile(lafeeds,str(lastfeeds))
 	elif mode == 'all':
 		feedbase = getFile(feeds,[])
 		msg = L('No RSS found!')
@@ -1152,7 +1145,7 @@ def rss(type, jid, nick, text):
 		feedbase.append([link, text[2], text[3], int(time.time()), getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
-		send_msg(type, jid, nick, msg)
+		#send_msg(type, jid, nick, msg)
 		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])
@@ -1164,11 +1157,6 @@ def rss(type, jid, nick, text):
 				feedbase.remove(rs)
 				msg = L('Delete feed from schedule: %s') % link
 				writefile(feeds,str(feedbase))
-				for rs in lastfeeds:
-					if rs[0] == link and rs[2] == jid:
-						lastfeeds.remove(rs)
-						writefile(lafeeds,str(lastfeeds))
-						break
 				break
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
@@ -1196,36 +1184,25 @@ def rss(type, jid, nick, text):
 			else:
 				urlmode = None
 				msg += link+' '
-			tstop = ''
 			msg += get_tag(feed[0],'title')
 			try:
-				mmsg = feed[1]
-				if is_rss_aton==1: mmsg = get_tag(mmsg,'title') + '\n'
-				else: mmsg = get_tag(mmsg,'content').replace('&lt;br&gt;','\n') + '\n'
-				for dd in lastfeeds:
-					try:
-						if dd[0] == link and dd[2] == jid:
-							tstop = dd[1]
-							tstop = tstop[:-1]
-							lastfeeds.remove(dd)
+				break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
+				feedbase = getFile(feeds,[])
+				for tmp in feedbase:
+					if tmp[4] == jid and tmp[0] == link:
+							try: tstop = tmp[5]
+							except: pass
 							break
-					except: lastfeeds.remove(dd)
-				lastfeeds.append([link,mmsg,jid])
-				writefile(lafeeds,str(lastfeeds))
 				t_msg = []
 				for mmsg in feed[1:lng]:
-					if is_rss_aton == 1:
-						ttitle = get_tag(mmsg,'title')
-						tbody = get_tag(mmsg,'description')
-						turl = get_tag(mmsg,'link')
+					ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+					if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
 					else:
-						ttitle = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
-						tbody = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
-						tu1 = mmsg.index('<link')
-						tu2 = mmsg.find('href=\"',tu1)+6
-						tu3 = mmsg.find('\"',tu2)
-						turl = mmsg[tu2:tu3].replace('&lt;br&gt;','\n')
-					if mode == 'new' and ttitle == tstop: break
+						tbody = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+						tu1 = mmsg.find('href=\"',mmsg.index('<link'))+6
+						tu2 = mmsg.find('\"',tu1)
+						turl = mmsg[tu1:tu2].replace('&lt;br&gt;','\n')
+					if mode == 'new' and hashlib.md5(ttitle.encode('utf-8')).hexdigest() == tstop: break
 					tsubj,tmsg,tlink = '','',''
 					if submode == 'full': tsubj,tmsg = replacer(ttitle),replacer(tbody)
 					elif submode == 'body': tmsg = replacer(tbody)
@@ -1237,19 +1214,21 @@ def rss(type, jid, nick, text):
 				tmp = ''
 				for tm in t_msg: tmp += '!'.join(tm)
 				if len(tmp+msg)+len(t_msg)*12 >= msg_limit:
-					over = (len(tmp+msg)+len(t_msg)*12.0 - msg_limit) / msg_limit * 100 # overflow in persent
+					over = 100 * msg_limit / (len(tmp+msg)+len(t_msg)*12.0) # overflow in persent
 					tt_msg = []
 					for tm in t_msg:
 						tsubj,tmsg,tlink = tm
-						if len(tmsg): tmsg = tmsg[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
-						else: tsubj = tsubj[:-int(len(tsubj+tmsg+tlink)/100*over+1)]+'[...]'
+						cut = int(len(tsubj+tmsg+tlink)/100*over)						
+						if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[…]','',''
+						elif cut < len(tsubj+tlink): tsubj,tmsg = tsubj[:cut-len(tlink)]+u'[…]',''
+						else: tmsg = tmsg[:cut-len(tlink+tsubj)]+u'[…]'
 						tt_msg.append((tsubj,tmsg,tlink))
 					t_msg = tt_msg
 				tmp = ''
 				for tm in t_msg:
-					if submode == 'full': tmp += u'\n\n• %s\n%s' % tm[0:2]
-					elif submode == 'body': tmp += u'\n\n• %s' % tm[1]
-					elif submode == 'head': tmp += u'\n\n• %s' % tm[0]
+					if submode == 'full': tmp += u'\n• %s\n%s' % tm[0:2]
+					elif submode == 'body': tmp += u'\n• %s' % tm[1]
+					elif submode == 'head': tmp += u'\n• %s' % tm[0]
 					if len(tm[2]): tmp += '\n'+tm[2]
 				msg += tmp
 				if mode == 'new' and mmsg == feed[1]:
@@ -1265,6 +1244,7 @@ def rss(type, jid, nick, text):
 				else: title = feed
 				msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	if not nosend: send_msg(type, jid, nick, msg)
+	return break_point
 
 #------------------------------------------------
 
