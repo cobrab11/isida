@@ -1092,7 +1092,7 @@ def html_encode(body):
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds
 	msg = u'rss show|add|del|clear|new|get'
-	nosend,break_point = None,None
+	nosend = None
 	text = text.split(' ')
 	tl = len(text)
 	if tl < 5: text.append('!')
@@ -1152,8 +1152,8 @@ def rss(type, jid, nick, text):
 		else: timetype = str(ofset)+timetype
 		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
-		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
-		break_point = rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
+		msg = L('Add feed to schedule: %s (%s) %s') % (link,timetype,text[3])
+		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])
 		link = text[1]
@@ -1199,6 +1199,9 @@ def rss(type, jid, nick, text):
 					if tmp[4] == jid and tmp[0] == link:
 							try: tstop = tmp[5]
 							except: pass
+							feedbase.remove(tmp)
+							feedbase.append([tmp[0], tmp[1], tmp[2], int(time.time()), tmp[4], break_point])
+							writefile(feeds,str(feedbase))
 							break
 				t_msg, new_count = [], 0
 				for mmsg in feed[1:lng]:
@@ -1252,18 +1255,6 @@ def rss(type, jid, nick, text):
 				else: title = feed
 				msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	if not nosend: send_msg(type, jid, nick, msg)
-	return break_point
-
-#------------------------------------------------
-
-# в начале
-# 0 - всем
-# 1 - админам\овнерам
-# 2 - владельцу бота
-
-# в конце
-# 1 - ничего не передавать
-# 2 - передавать остаток текста
 
 comms = [
 	 (0, u'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),

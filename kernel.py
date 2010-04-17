@@ -818,14 +818,10 @@ def check_rss():
 			if getRoom(tmp) == fd[4]:
 				in_room = True
 				break
-		if ofset < 600: ltime,ofset = '10m',600
+		if ofset < 600: ofset = 600
 		if in_room and ll_hl + ofset <= l_hl:
 			pprint('check rss: '+fd[0]+' in '+fd[4])
-			break_point = rss('groupchat', fd[4], 'RSS', 'new %s 10 %s silent' % (fd[0],fd[2]))
-			if not break_point: break_point = fd[5]
-			feedbase.remove(fd)
-			feedbase.append([fd[0], ltime, fd[2], l_hl, fd[4], break_point])
-			writefile(feeds,str(feedbase))
+			rss('groupchat', fd[4], 'RSS', 'new %s 10 %s silent' % (fd[0],fd[2]))
 			break
 
 def talk_count(room,jid,nick,text):
