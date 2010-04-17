@@ -1103,10 +1103,12 @@ def rss(type, jid, nick, text):
 	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head][-url]',''
 	#lastfeeds = getFile(lafeeds,[])
 	if mode == 'clear':
+		if get_access(jid,nick)[0] == 2 and tl > 1: tjid = text[1]
+		else: tjid = jid
 		feedbase = getFile(feeds,[])
 		msg, tf = L('All RSS was cleared!'), []
 		for taa in feedbase:
-			if taa[4] != jid: tf.append(taa)
+			if taa[4] != tjid: tf.append(taa)
 		feedbase = tf
 		writefile(feeds,str(feedbase))
 	elif mode == 'all':
@@ -1142,10 +1144,15 @@ def rss(type, jid, nick, text):
 			if dd[0] == link and dd[4] == jid:
 				feedbase.remove(dd)
 				break
-		feedbase.append([link, text[2], text[3], int(time.time()), getRoom(jid)]) # url time mode
+		timetype = text[2][-1:].lower()
+		if not timetype in ('h','m'): timetype = 'h'
+		try: ofset = int(text[2][:-1])
+		except: ofset = 4
+		if timetype == 'm' and ofset < 10: timetype = '10m'
+		else: timetype = str(ofset)+timetype
+		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid)]) # url time mode
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,text[2],text[3])
-		#send_msg(type, jid, nick, msg)
 		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
 	elif mode == 'del':
 		feedbase = getFile(feeds,[])

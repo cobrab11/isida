@@ -806,7 +806,7 @@ def check_rss():
 	for fd in feedbase:
 		ltime = fd[1]
 		timetype = ltime[-1:].lower()
-		if not (timetype == 'h' or timetype == 'm'): timetype = 'h'
+		if not timetype in ('h','m'): timetype = 'h'
 		try: ofset = int(ltime[:-1])
 		except: ofset = 4
 		if timetype == 'h': ofset *= 3600
@@ -818,12 +818,13 @@ def check_rss():
 			if getRoom(tmp) == fd[4]:
 				in_room = True
 				break
+		if ofset < 600: ltime,ofset = '10m',600
 		if in_room and ll_hl + ofset <= l_hl:
 			pprint('check rss: '+fd[0]+' in '+fd[4])
 			break_point = rss('groupchat', fd[4], 'RSS', 'new %s 10 %s silent' % (fd[0],fd[2]))
 			if not break_point: break_point = fd[5]
 			feedbase.remove(fd)
-			feedbase.append([fd[0], fd[1], fd[2], l_hl, fd[4], break_point])
+			feedbase.append([fd[0], ltime, fd[2], l_hl, fd[4], break_point])
 			writefile(feeds,str(feedbase))
 			break
 
