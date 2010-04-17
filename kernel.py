@@ -1068,7 +1068,7 @@ pprint('Joined')
 #sender(pep)
 
 thr(now_schedule,(),'schedule')
-thr(iq_async_clean,(),'async_clean')
+#thr(iq_async_clean,(),'async_clean')
 
 while 1:
 	try:
