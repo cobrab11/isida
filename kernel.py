@@ -74,7 +74,7 @@ def thr(func,param,name):
 	try:
 		if thread_type:
 			with sema:
-				tmp_th = KThread(group=None,target=func,name=str(th_cnt)+'_'+name,args=param)
+				tmp_th = KThread(group=None,target=log_execute,name=str(th_cnt)+'_'+name,args=(func,param))
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
@@ -879,10 +879,11 @@ def get_id():
 	return 'request_%s' % id_count
 
 # --------------------- Иницилизация переменных ----------------------
-slog_folder = 'log/'					# папка системных логов
-LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
-set_folder = 'settings/'				# папка настроек
+slog_folder = 'log/'					# папка логов
+set_folder 	= 'settings/'				# папка настроек
 back_folder = 'backup/'					# папка хранения резервных копий
+loc_folder 	= 'locales/'				# папка локализаций
+LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
 preffile = set_folder+'prefix'			# префиксы
 ver_file = set_folder+'version'			# версия бота
 configname = set_folder+'config.py'		# конфиг бота
@@ -903,9 +904,6 @@ wtfbase = set_folder+'wtfbase2.db'		# определения
 answersbase = set_folder+'answers.db'	# ответы бота
 scrobblebase = set_folder+'scrobble.db'	# база PEP скробблера
 loc_file = set_folder+'locale'			# файл локализации
-loc_folder = 'locales/'					# папка локализаций
-
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)		# включение логгирования
 
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
 ul = 'update.log'				# лог последнего обновление
@@ -942,6 +940,8 @@ cycles_used,cycles_unused = 0,0	# статистика циклов
 id_count = 0					# номер запроса
 megabase = []					# главная временная база с полной информацией из презенсов
 ignore_owner = None				# исполнять отключенные команды для владельца бота
+
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)	# включение логгирования
 
 gt=gmtime()
 lt=tuple(localtime())
