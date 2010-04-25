@@ -1171,9 +1171,9 @@ def rss(type, jid, nick, text):
 		try: feed = urllib.urlopen(link).read()
 		except: return
 		is_rss_aton = 0
-		if feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
+		if feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
+		elif feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
 		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
-		elif feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
 		feed = html_encode(feed)
 		if is_rss_aton and feed != L('Encoding error!'):
 			if is_rss_aton == 1:
@@ -1192,8 +1192,8 @@ def rss(type, jid, nick, text):
 				urlmode = None
 				msg += link+' '
 			msg += get_tag(feed[0],'title')
-			break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
 			try:
+				break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
 				feedbase = getFile(feeds,[])
 				for tmp in feedbase:
 					if tmp[4] == jid and tmp[0] == link:
