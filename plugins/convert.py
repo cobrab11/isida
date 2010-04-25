@@ -4,7 +4,7 @@
 def currency_converter(type, jid, nick, text):
 	msg = L('Error in parameters. Read the help about command.')
 	if text.lower() == 'list': msg = L('Available values:\n%s') % 'ATS AUD RUR BEF BYR CAD CHF CNY DEM DKK EEK EGP ESP EUR FIM FRF GBP GRD IEP ISK ITL JPY KGS KWD KZT LTL NLG NOK PTE RUR SDR SEK SGD TRL TRY UAH USD XDR YUN'
-	elif text.count(' '):
+	else:
 		repl_curr = ((u'€','EUR'),(u'$','USD'),(u'¥','JPY'),(u'£','GBP'),('RUR','BASE'))
 		for tmp in repl_curr: text = text.upper().replace(tmp[0],' %s ' % tmp[1])
 		mt = re.findall('[a-zA-Z]|[0-9]|[ ]', text, re.S)
