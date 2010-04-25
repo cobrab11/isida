@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-def test(type, jid, nick):
-	2/0
-	send_msg(type, jid, nick, L('Passed!'))
+def test(type, jid, nick): send_msg(type, jid, nick, L('Passed!'))
 
 global execute
 
