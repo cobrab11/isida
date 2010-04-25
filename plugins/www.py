@@ -6,10 +6,21 @@ size_overflow = 262144	# лимит страницы в байтах для ко
 
 def netheader(type, jid, nick, text):
 	if len(text):
+		try:
+			regex = text.split('\n')[0].replace('*','*?')
+			text = text.split('\n')[1]
+		except: regex = None
 		if not text.count('://'): text = 'http://'+text
-		req = urllib2.Request(text)
+		req = urllib2.Request(text.encode('utf-8'))
 		req.add_header('User-Agent',user_agent)
-		try: body = str(urllib2.urlopen(req).headers)
+		try:
+			body = text + '\n' + str(urllib2.urlopen(req).headers)
+			if regex:
+				try:
+					mt = re.findall(regex, body, re.S)
+					if mt != []: body = ''.join(mt[0])
+					else: body = L('RegExp not found!')
+				except: body = L('Error in RegExp!')
 		except: body = L('I can\'t do it')
 	else: body = L('What?')
 	send_msg(type, jid, nick, body)	
@@ -20,7 +31,7 @@ def netwww(type, jid, nick, text):
 		text = text.split('\n')[1]
 	except: regex = None
 	if not text.count('://'): text = 'http://'+text
-	req = urllib2.Request(text)
+	req = urllib2.Request(text.encode('utf-8'))
 	req.add_header('User-Agent',user_agent)
 	try: body = str(urllib2.urlopen(req).info())
 	except: body = L('I can\'t do it')
