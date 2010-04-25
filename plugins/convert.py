@@ -2,23 +2,30 @@
 # -*- coding: utf-8 -*-
 
 def currency_converter(type, jid, nick, text):
-	if text == 'list':
-		#url = 'http://conv.rbc.ru/convert.shtml?mode=calc&source=cb.0&tid_from=EUR&commission=1&tid_to=BASE&summa=100&day=13&mon=10&year=2009'
-		#body = html_encode(urllib.urlopen(url).read())
-		#msg = u'Допустимые значения:\n'
-		#body = body.split('<TD><SELECT class=n name=tid_from>')[1].split('</SELECT></TD>')[0].replace('\t', '').split('<')
-		#for i in range(1, len(body)): msg += body[i].split('\"')[1]+' '
-		msg = L('Available values:\n%s') % 'ATS AUD BASE BEF BYR CAD CHF CNY DEM DKK EEK EGP ESP EUR FIM FRF GBP GRD IEP ISK ITL JPY KGS KWD KZT LTL NLG NOK PTE RUR SDR SEK SGD TRL TRY UAH USD XDR YUN'
+	msg = L('Error in parameters. Read the help about command.')
+	if text.lower() == 'list': msg = L('Available values:\n%s') % 'ATS AUD RUR BEF BYR CAD CHF CNY DEM DKK EEK EGP ESP EUR FIM FRF GBP GRD IEP ISK ITL JPY KGS KWD KZT LTL NLG NOK PTE RUR SDR SEK SGD TRL TRY UAH USD XDR YUN'
 	elif text.count(' '):
-		if text.lower().count('rur'): text = text.lower().replace('rur', 'base')
-		try:
-			text, date = text.split(' '), tuple(localtime())[:3]
-			url = 'http://conv.rbc.ru/convert.shtml?mode=calc&source=cb.0&tid_from='+text[0].upper()+'&commission=1&tid_to='+text[1].upper()+'&summa='+text[2].upper()+'&day='+str(date[2])+'&month='+str(date[1])+'&year='+str(date[0])
+		repl_curr = ((u'€','EUR'),(u'$','USD'),(u'¥','JPY'),(u'£','GBP'),('RUR','BASE'))
+		for tmp in repl_curr: text = text.upper().replace(tmp[0],' %s ' % tmp[1])
+		mt = re.findall('[a-zA-Z]|[0-9]|[ ]', text, re.S)
+		text = reduce_spaces(''.join(mt))
+		while text.count('  '): text = text.replace('  ',' ')
+		text,date,c_from,c_to,c_summ = text.split(),tuple(localtime())[:3],None,None,None
+		for tmp in text:
+			try:
+				c_summ = int(tmp)
+				text.remove(tmp)
+				break
+			except: pass
+		if len(text) > 1: (c_from,c_to) = text[:2]
+		if c_from and c_to and c_summ:
+			url = 'http://conv.rbc.ru/convert.shtml?mode=calc&source=cb.0&tid_from=%s&commission=1&tid_to=%s&summa=%s&day=%s&month=%s&year=%s' % (c_from,c_to,c_summ,date[2],date[1],date[0])
 			body = html_encode(urllib.urlopen(url).read())
-			body = body.split('<TABLE height=120 cellSpacing=1 cellPadding=4 width=300 border=0>')[1].split('</TR></TBODY></TABLE></TD>')[0]
-			msg = replacer(body).replace(':\n', ': ')
-		except: msg = L('Error in parameters. Read the help about command.')
-	else: msg = L('Error in parameters. Read the help about command.')
+			regex = '<TD class=background>.*?<TD class=background>.*?<TD he.*?>(.*?) </TD>.*?<B>(.*?)</B>.*?<B>(.*?)</B>.*?<TD he.*?>(.*?) </TD>.*?<B>(.*?)</B>'
+			mt = re.findall(regex, body, re.S)
+			if mt != []: 
+				msg = '%s %s (%s) = %s %s (%s) | 1 %s = %s %s' % (c_summ,c_from,mt[0][0],mt[0][4],c_to,mt[0][3],c_from,mt[0][2],c_to)
+				msg = msg.replace('BASE','RUR')
 	send_msg(type, jid, nick, msg)
 
 global execute

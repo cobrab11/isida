@@ -7,16 +7,19 @@ def inadmin(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'admin', L
 def inmember(type, jid, nick, text): inlist_raw(type, jid, nick, text, 'member', L('Total members: %s'))
 	
 def inlist_raw(type, jid, nick, text, affil, message):
-	global banbase
+	global banbase,iq_request
 	iqid = get_id()
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
+	iq_request[iqid]=(time.time(),'','')
 	sender(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
-	bb = []
-	for b in banbase:
-		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
+	iq_request.pop(iqid)
+	bb,cc = [],[]
+	for b in banbase: 
+		if b[2] == iqid:
+			if b[0] != 'TheEnd': bb.append(b)
+		else: cc.append(b)
+	banbase = cc
 	msg = message % str(len(bb))
 	if text != '':
 		msg += ', '

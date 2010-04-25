@@ -2,18 +2,21 @@
 # -*- coding: utf -*-
 
 def getMucItems(jid,affil,ns):
-	global banbase,raw_iq
+	global banbase,raw_iq,iq_request
 	iqid = get_id()
 	raw_iq = []
 	if ns == NS_MUC_ADMIN: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':affil})])])
 	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
+	iq_request[iqid]=(time.time(),'','')
 	sender(i)
 	while not banbase.count(('TheEnd', 'None', iqid)): sleep(0.1)
-	bb = []
+	iq_request.pop(iqid)
+	bb,cc = [],[]
 	for b in banbase: 
-		if b[2] == iqid and b[0] != 'TheEnd': bb.append(b)
-	for b in banbase:
-		if b[2] == iqid: banbase.remove(b)
+		if b[2] == iqid:
+			if b[0] != 'TheEnd': bb.append(b)
+		else: cc.append(b)
+	banbase = cc
 	return (bb,raw_iq)
 
 def conf_backup(type, jid, nick, text):

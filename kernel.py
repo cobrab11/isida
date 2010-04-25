@@ -401,9 +401,9 @@ def iqCB(sess,iq):
 					cjid = get_subtag(banm,'jid')
 					if banm.count('<reason />') or banm.count('<reason/>'): creason = ''#L('No reason')
 					else: creason=get_tag(banm,'reason')
-					banbase.append((cjid, creason, str(id)))
-				banbase.append(('TheEnd', 'None',str(id)))
-			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',str(id)))
+					banbase.append((cjid, creason, id))
+				banbase.append(('TheEnd','None',id))
+			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',id))
 			elif nspace == NS_VERSION: iq_async(id,time.time(), iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os'))
 			elif nspace == NS_TIME: iq_async(id,time.time(), iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz'))
 			else: iq_async(id,time.time(), unicode(iq))
@@ -461,7 +461,7 @@ def iq_async_clean():
 		sleep(timeout)
 		if len(iq_request):
 			for tmp in iq_request.keys():
-				if iq_request[tmp][0] + timeout < time.time(): iq_request.pop[tmp]
+				if iq_request[tmp][0] + timeout < time.time(): iq_request.pop(tmp)
 				break
 
 def iq_async(*answ):
@@ -933,7 +933,7 @@ ddos_limit = [600,300,0]		# время игнора при ddos'е в завис
 ddos_diff = [15,10,0]			# промежуток между сообщениями
 thread_type = True				# тип тредов
 time_limit = 1.2				# максимальная задержка между посылкой станз с одинаковым типом в groupchat
-time_nolimit = 0.1				# задержка между посылкой станз с разными типами
+time_nolimit = 0.05				# задержка между посылкой станз с разными типами
 message_in,message_out = 0,0	# статистика сообщений
 iq_in,iq_out = 0,0				# статистика iq запросов
 presence_in,presence_out = 0,0	# статистика презенсов
