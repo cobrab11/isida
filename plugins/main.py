@@ -1171,15 +1171,16 @@ def rss(type, jid, nick, text):
 		try: feed = urllib.urlopen(link).read()
 		except: return
 		is_rss_aton = 0
-		if feed[:256].count('http://www.w3.org/2005/Atom') and feed[:256].count('xml'): is_rss_aton = 2
-		elif feed[:256].count('rss') and feed[:256].count('xml'): is_rss_aton = 1
-		elif feed[:256].count('rss') and feed[:256].count('version=\"2.0\"'): is_rss_aton = 1
+		if feed[:256].count('<?xml version=') and feed[:256].count('<feed'): is_rss_aton = 2
+		elif feed[:256].count('<?xml version=') and feed[:256].count('<rss'): is_rss_aton = 1
 		feed = html_encode(feed)
 		if is_rss_aton and feed != L('Encoding error!'):
 			if is_rss_aton == 1:
 				if feed.count('<item>'): feed = feed.split('<item>')
 				else: feed = feed.split('<item ')
-			else: feed = feed.split('<entry>')
+			else: 
+				if feed.count('<entry>'): feed = feed.split('<entry>')
+				else: feed = feed.split('<entry ')
 			if len(text) > 2: lng = int(text[2])+1
 			else: lng = len(feed)
 			if len(feed) <= lng: lng = len(feed)
