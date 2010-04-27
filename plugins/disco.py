@@ -92,7 +92,7 @@ def disco_async(type, jid, nick, what, where, hm, is_answ):
 def whereis(type, jid, nick, text):
 	global iq_request,whereis_lock
 	if whereis_lock:
-		send_msg(type, jid, nick, L('I can\'t do it'))
+		send_msg(type, jid, nick, L('This command in use somewhere else. Please try later.'))
 	else:
 		whereis_lock = True
 		if len(text):

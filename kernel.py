@@ -378,14 +378,13 @@ def iqCB(sess,iq):
 	was_request = id in iq_request
 	
 	if iq.getType()=='error' and was_request:
-		try: iq_async(id,time.time(),get_tag_item(unicode(iq),'error','code')+':'+iq.getTag('error').getTagData(tag='text'),'error')
-		except:
-			try: 
-				uiq = unicode(iq)
-				er_tag = get_tag(uiq,'error')
-				er_name = L('Error!') + ' %s/%s! %s' % (get_tag_item(uiq,'error','code'),get_tag_item(uiq,'error','type'),er_tag[1:er_tag.find(' ')])
-				iq_async(id,time.time(),er_name,'error')
-			except: iq_async(id,time.time(),L('Unknown error!'),'error')
+		print unicode(iq)
+		iq_err,er_name = get_tag(unicode(iq),'error'),L('Unknown error!')
+		for tmp in iq_error.keys():
+			if iq_err.count(tmp):
+				er_name = '%s %s!' % (L('Error!'),iq_error[tmp])
+				break
+		iq_async(id,time.time(),er_name,'error')
 
 	elif iq.getType()=='result' and was_request:
 		cparse = unicode(iq)

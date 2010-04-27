@@ -316,6 +316,7 @@ Total: %s	Усього: %s
 "%s" not found	"%s" не знайдено
 Total: %s%s	Усього: %s%s
 I can't do it	Не виходить...
+This command in use somewhere else. Please try later.	Ця команда використовується в іншому місці. Будь ласка, спробуйте пізніше.
 Please wait. Result you will be receive in private message approximately %s %s	Чекайте, результат ви отримаете в приват приблизно через %s %s
 sec.	сек.
 matches with nick "%s": %s	збігів з ніком "%s": %s

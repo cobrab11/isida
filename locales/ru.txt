@@ -172,6 +172,30 @@ You must be a %s to do it.	Для этого надо иметь статус: %
 \nCycles used: %s | unused: %s	\nРабочих циклов: %s | холостых: %s
 \nIgnored plugins: %s	\nИгнорируемые плагины: %s
 
+# --- Ошибки ---
+Bad request	Кривой запрос
+Conflict	Конфликт
+Feature not implemented	Фича не реализована
+Forbidden	Запрещено
+Gone	Истелко
+Internal server error	Внутреняя ошибка сервера
+Item not found	Элемент не найден
+Jid malformed	Неправильный jid
+Not acceptable	Не приемлемо
+Not allowed	Не допустимо
+Not authorized	Не авторизован
+Payment required	Требуется оплата
+Recipient unavailable	Получатель недоступен
+Redirect	Переадресация
+Registration required	Требуется регистрация
+Remote server not found	Удалённый сервер не найден
+Remote server timeout	Таймаут удалённого сервера
+Resource constraint	Ограничение ресурсов
+Service unavailable	Сервис недоступен
+Subscription required	Требуется подписка
+Undefined condition	Неопределенное состояние
+Unexpected request	Неожиданный запрос
+
 # --------------- перевод хелпов main.py ---------------
 Help system. Helps without commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ
 Join conference.\njoin room[@conference.server.ru[/nick]]	Вход в конференцию:\njoin room@conference.server.ru/nick - вход вконференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.
@@ -323,6 +347,7 @@ Total: %s	Всего: %s
 "%s" not found	"%s" не найдено
 Total: %s%s	Всего: %s%s
 I can't do it	Не получается...
+This command in use somewhere else. Please try later.	Эта команда используется в другом месте. Пожалуйста, попробуйте позже.
 Please wait. Result you will be receive in private message approximately %s %s	Ожидайте, результат Вы получите в приват примерно через %s %s
 sec.	сек.
 matches with nick "%s": %s	совпадений с ником "%s": %s

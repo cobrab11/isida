@@ -50,6 +50,29 @@ unlevl = [L('no limit'),L('visitor/none'),L('visitor/member'), L('participant/no
 unlevltxt = [L('You should be at least %s to do it.'),L('You must be a %s to do it.')]
 
 unlevlnum = [0,0,0,0,0,0,0,0,0,1]
+
+iq_error = {'bad-request':L('Bad request'),
+			'conflict':L('Conflict'),
+			'feature-not-implemented':L('Feature not implemented'),
+			'forbidden':L('Forbidden'),
+			'gone':L('Gone'),
+			'internal-server-error':L('Internal server error'),
+			'item-not-found':L('Item not found'),
+			'jid-malformed':L('Jid malformed'),
+			'not-acceptable':L('Not acceptable'),
+			'not-allowed':L('Not allowed'),
+			'not-authorized':L('Not authorized'),
+			'payment-required':L('Payment required'),
+			'recipient-unavailable':L('Recipient unavailable'),
+			'redirect':L('Redirect'),
+			'registration-required':L('Registration required'),
+			'remote-server-not-found':L('Remote server not found'),
+			'remote-server-timeout':L('Remote server timeout'),
+			'resource-constraint':L('Resource constraint'),
+			'service-unavailable':L('Service unavailable'),
+			'subscription-required':L('Subscription required'),
+			'undefined-condition':L('Undefined condition'),
+			'unexpected-request':L('Unexpected request')}
 		
 def get_level(cjid, cnick):
 	access_mode = -2
