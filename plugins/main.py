@@ -1033,33 +1033,35 @@ def rss_replace(ms):
 	for tmp in rmass: ms = ms.replace(tmp[1],tmp[0])
 	return unescape(ms)
 
-def rss_repl_html(ms):
-	i=0
-	lms = len(ms)
-	while i < lms:
-		if ms[i] == '<':
-			for j in range(i, lms):
-				if ms[j] == '>':
-					break
-			ms = ms[:i] +' '+ ms[j+1:]
-			lms = len(ms)
-			i -= 1
-		i += 1
+def rss_repl_del_html(ms,item):
+	DS,SP,T = '<%s>','/%s',re.findall('<(.*?)>', ms, re.S)
+	if len(T):
+		for tmp in T:
+			if tmp[-1:] == '/':
+				pattern = DS % tmp
+				pos = ms.find(pattern)
+				ms = ms[:pos] + item + ms[pos+len(pattern):]
+	T = re.findall('<(.*?)>', ms, re.S)
+	if len(T):
+		for tmp in range(0,len(T)-1):
+			pos = None
+			TT = T[tmp].split(' ')[0]
+			if TT[0] != '/':
+				try: pos = T.index(SP % TT,tmp)
+				except: pass
+				if pos:
+					pat1,pat2 = DS % T[tmp],DS % T[pos]
+					pos1 = ms.find(pat1)
+					pos2 = ms.find(pat2,pos1)
+					ms = ms[:pos1] + item + ms[pos1+len(pat1):pos2] + item + ms[pos2+len(pat2):]
+	for tmp in ('hr','br','li','ul','img','dt','dd'):
+		T = re.findall('<%s.*?>' % tmp, ms, re.S)
+		for tmp1 in T: ms = ms.replace(tmp1,item,1)
 	return ms
 
-def rss_del_html(ms):
-	i=0
-	lms = len(ms)
-	while i < lms:
-		if ms[i] == '<':
-			for j in range(i, lms):
-				if ms[j] == '>':
-					break
-			ms = ms[:i] + ms[j+1:]
-			lms = len(ms)
-			i -= 1
-		i += 1
-	return ms
+def rss_repl_html(ms): return rss_repl_del_html(ms,' ')
+
+def rss_del_html(ms): return rss_repl_del_html(ms,'')
 
 def rss_del_nn(ms):
 	ms = ms.replace('\r',' ').replace('\t',' ')
@@ -1173,7 +1175,7 @@ def rss(type, jid, nick, text):
 		except: ofset = 4
 		if timetype == 'm' and ofset < 10: timetype = '10m'
 		else: timetype = str(ofset)+timetype
-		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid)]) # url time mode
+		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid),[]]) # url time mode
 		writefile(feeds,str(feedbase))
 		msg = L('Add feed to schedule: %s (%s) %s') % (link,timetype,text[3])
 		rss(type, jid, nick, 'get %s 1 %s' % (link,text[3]))
@@ -1218,7 +1220,8 @@ def rss(type, jid, nick, text):
 				msg += link+' '
 			msg += get_tag(feed[0],'title')
 			try:
-				break_point,tstop = hashlib.md5(get_tag(feed[1],'title').replace('&lt;br&gt;','\n').encode('utf-8')).hexdigest(),''
+				break_point,tstop = [],[]
+				for tmp in feed[1:]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
 				feedbase = getFile(feeds,[])
 				for tmp in feedbase:
 					if tmp[4] == jid and tmp[0] == link:
@@ -1237,15 +1240,17 @@ def rss(type, jid, nick, text):
 						tu1 = mmsg.find('href=\"',mmsg.index('<link'))+6
 						tu2 = mmsg.find('\"',tu1)
 						turl = mmsg[tu1:tu2].replace('&lt;br&gt;','\n')
-					if mode == 'new' and hashlib.md5(ttitle.encode('utf-8')).hexdigest() == tstop: break
-					tsubj,tmsg,tlink = '','',''
-					if submode == 'full': tsubj,tmsg = replacer(ttitle),replacer(tbody)
-					elif submode == 'body': tmsg = replacer(tbody)
-					elif submode == 'head': tsubj = replacer(ttitle)
-					else: return
-					if urlmode: tlink = turl
-					t_msg.append((tsubj,tmsg,tlink))
-					new_count += 1
+					if mode == 'new' and hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop: skip = True
+					else: skip = None
+					if not skip:
+						tsubj,tmsg,tlink = '','',''
+						if submode == 'full': tsubj,tmsg = replacer(ttitle.replace('\n','; ')),replacer(tbody)
+						elif submode == 'body': tmsg = replacer(tbody)
+						elif submode == 'head': tsubj = replacer(ttitle.replace('\n','; '))
+						else: return
+						if urlmode: tlink = turl
+						t_msg.append((tsubj,tmsg,tlink))
+						new_count += 1
 				t_msg.reverse()
 				tmp = ''
 				for tm in t_msg: tmp += '!'.join(tm)

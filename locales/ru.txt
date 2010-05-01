@@ -177,14 +177,14 @@ Bad request	Кривой запрос
 Conflict	Конфликт
 Feature not implemented	Фича не реализована
 Forbidden	Запрещено
-Gone	Истелко
+Gone	Истекло
 Internal server error	Внутреняя ошибка сервера
 Item not found	Элемент не найден
 Jid malformed	Неправильный jid
 Not acceptable	Не приемлемо
 Not allowed	Не допустимо
 Not authorized	Не авторизован
-Payment required	Требуется оплата
+Payment required	Запрещено внутренней политикой сервера
 Recipient unavailable	Получатель недоступен
 Redirect	Переадресация
 Registration required	Требуется регистрация
