@@ -4,6 +4,9 @@
 turn_base = []
 
 def turner(type, jid, nick, text):
+	if type != 'groupchat':
+		send_msg(type, jid, nick, L('Not allowed in private!'))
+		return
 	global turn_base
 	rtab = L('qwertyuiop[]asdfghjkl;\'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~')
 	ltab = L('QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;\'zxcvbnm,.`')
@@ -13,8 +16,7 @@ def turner(type, jid, nick, text):
 				turn_base.remove(tmp)
 				to_turn = tmp[2]
 				break
-	else:
-		to_turn = text
+	else: to_turn = text
 	if to_turn[:3] == '/me': msg, to_turn = '*'+nick, to_turn[3:]
 	elif to_turn.count(': '): msg, to_turn = to_turn.split(': ',1)[0]+': ', to_turn.split(': ',1)[1]
 	else: msg = ''
@@ -27,9 +29,8 @@ def turner(type, jid, nick, text):
 				break
 		if notur: msg += tex
 	gl_censor = getFile(cns,[(getRoom(jid),0)])
-	if int((getRoom(jid),1) in gl_censor):
-		msg = to_censore(msg)
-	send_msg(type, jid, '', msg)
+	if int((getRoom(jid),1) in gl_censor): msg = to_censore(msg)
+	send_msg('groupchat', jid, '', msg)
 
 def append_to_turner(room,jid,nick,type,text):
 	global turn_base
