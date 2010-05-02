@@ -15,12 +15,15 @@ def bash_org_ru(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def ibash_org_ru(type, jid, nick, text):
-	try: url = 'http://ibash.org.ru/quote.php?id='+str(int(text))
+	reg_title = '<div class="quothead">.*?<b>#(.*?)</b>'
+	reg_body = '<div class="quotbody">(.*?)</div>'
+	url_id = 'http://ibash.org.ru/quote.php?id='
+	try: url = url_id+str(int(text))
 	except: url = 'http://ibash.org.ru/random.php'
 	body = html_encode(urllib.urlopen(url).read())
-	msg = 'http://ibash.org.ru/quote.php?id='+replacer(body.split('<div class="quothead"><span>')[1].split('</a></span>')[0])[1:]
+	msg = url_id + re.findall(reg_title, body, re.S)[0]
 	if msg[-3:] == '???': msg = L('Quote not found!')
-	else: msg += '\n'+rss_replace(body.split('<div class="quotbody">')[1].split('</div>')[0])
+	else: msg += '\n'+rss_replace(re.findall(reg_body, body, re.S)[0])
 	send_msg(type, jid, nick, msg)
 
 global execute

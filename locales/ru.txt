@@ -903,7 +903,7 @@ Monitoring conferences:	Слежение за конференциями:
 \nNext scanning across %s	\nСледующее сканирование через %s
 Leave conference because low activity	Выхожу в связи с низкой активностью конференции
 I leave conference %s by condition spy plugin: %s	Конференция %s покинута по условию spy плагина: %s
-Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.	Проверка активности конференции\nspy add <conference>[ u<number>][ m<number>] - добавить конференцию в список мониторинга активности. u - среднее число участников, m - количество сообщение за сутки. При невыполнении хотябы одного условия - бот выйдет из конференции\nspy del <conference> - удалить конференцю из списка мониторинга\nspy show - показать активное слежение'
+Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.	Проверка активности конференции\nspy add <conference>[ u<number>][ m<number>] - добавить конференцию в список мониторинга активности. u - среднее число участников, m - количество сообщение за сутки. При невыполнении хотябы одного условия - бот выйдет из конференции\nspy del <conference> - удалить конференцю из списка мониторинга\nspy show - показать активное слежение
 
 
 # svn.py
