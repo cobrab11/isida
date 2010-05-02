@@ -16,7 +16,10 @@ def connect_watch():
 		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 		iq_request[iqid]=(time.time(),watcher_reset,['chat',god,'',''])
 		sender(i)
-		sleep(timeout-10)
+		to = timeout - 10
+		while to > 0 and not game_over::
+			to -= 1
+			sleep(1)
 		if watch_reset:
 			pprint('Restart by watcher\'s timeout!')
 			bot_exit_type, game_over = 'restart', True

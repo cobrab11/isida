@@ -457,7 +457,10 @@ def iqCB(sess,iq):
 def iq_async_clean():
 	global iq_reques
 	while not game_over:
-		sleep(timeout)
+		to = timeout
+		while to > 0 and not game_over::
+			to -= 1
+			sleep(1)
 		if len(iq_request):
 			for tmp in iq_request.keys():
 				if iq_request[tmp][0] + timeout < time.time(): iq_request.pop(tmp)
@@ -809,7 +812,10 @@ def getRoom(jid):
 
 def now_schedule():
 	while not game_over:
-		sleep(schedule_time)
+		to = schedule_time	
+		while to > 0 and not game_over:
+			to -= 1
+			sleep(1)
 		if not game_over:
 			for tmp in gtimer: log_execute(tmp,())
 
