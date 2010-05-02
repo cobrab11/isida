@@ -17,7 +17,7 @@ def connect_watch():
 		iq_request[iqid]=(time.time(),watcher_reset,['chat',god,'',''])
 		sender(i)
 		to = timeout - 10
-		while to > 0 and not game_over::
+		while to > 0 and not game_over:
 			to -= 1
 			sleep(1)
 		if watch_reset:

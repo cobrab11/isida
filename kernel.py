@@ -458,7 +458,7 @@ def iq_async_clean():
 	global iq_reques
 	while not game_over:
 		to = timeout
-		while to > 0 and not game_over::
+		while to > 0 and not game_over:
 			to -= 1
 			sleep(1)
 		if len(iq_request):
