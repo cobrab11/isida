@@ -1037,7 +1037,7 @@ def rss_repl_del_html(ms,item):
 	DS,SP,T = '<%s>','/%s',re.findall('<(.*?)>', ms, re.S)
 	if len(T):
 		for tmp in T:
-			if tmp[-1:] == '/':
+			if (tmp[:3] == '!--' and tmp[-2:] == '--') or tmp[-1:] == '/':
 				pattern = DS % tmp
 				pos = ms.find(pattern)
 				ms = ms[:pos] + item + ms[pos+len(pattern):]
@@ -1054,7 +1054,7 @@ def rss_repl_del_html(ms,item):
 					pos1 = ms.find(pat1)
 					pos2 = ms.find(pat2,pos1)
 					ms = ms[:pos1] + item + ms[pos1+len(pat1):pos2] + item + ms[pos2+len(pat2):]
-	for tmp in ('hr','br','li','ul','img','dt','dd'):
+	for tmp in ('hr','br','li','ul','img','dt','dd','p'):
 		T = re.findall('<%s.*?>' % tmp, ms, re.S)
 		for tmp1 in T: ms = ms.replace(tmp1,item,1)
 	return ms
@@ -1113,6 +1113,21 @@ def html_encode(body):
 		except: return L('Encoding error!')
 
 #[room, nick, role, affiliation, jid]
+
+def rss_flush(jid,link,break_point):
+	global feedbase, feeds
+	tstop = []
+	feedbase = getFile(feeds,[])
+	for tmp in feedbase:
+		if tmp[4] == jid and tmp[0] == link:
+			try: tstop = tmp[5]
+			except: pass
+			feedbase.remove(tmp)
+			if not break_point: break_point = tstop
+			feedbase.append([tmp[0], tmp[1], tmp[2], int(time.time()), tmp[4], break_point])
+			writefile(feeds,str(feedbase))
+			break
+	return tstop
 
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds
@@ -1220,29 +1235,19 @@ def rss(type, jid, nick, text):
 				msg += link+' '
 			msg += get_tag(feed[0],'title')
 			try:
-				break_point,tstop = [],[]
-				for tmp in feed[1:]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
-				feedbase = getFile(feeds,[])
-				for tmp in feedbase:
-					if tmp[4] == jid and tmp[0] == link:
-							try: tstop = tmp[5]
-							except: pass
-							feedbase.remove(tmp)
-							feedbase.append([tmp[0], tmp[1], tmp[2], int(time.time()), tmp[4], break_point])
-							writefile(feeds,str(feedbase))
-							break
+				break_point = []
+				for tmp in feed[1:]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())				
+				tstop = rss_flush(jid,link,break_point)
 				t_msg, new_count = [], 0
-				for mmsg in feed[1:lng]:
-					ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
-					if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
-					else:
-						tbody = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
-						tu1 = mmsg.find('href=\"',mmsg.index('<link'))+6
-						tu2 = mmsg.find('\"',tu1)
-						turl = mmsg[tu1:tu2].replace('&lt;br&gt;','\n')
-					if mode == 'new' and hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop: skip = True
-					else: skip = None
-					if not skip:
+				for mmsg in feed[1:]:
+					if not (mode == 'new' and hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop):
+						ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+						if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
+						else:
+							tbody = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
+							tu1 = mmsg.find('href=\"',mmsg.index('<link'))+6
+							tu2 = mmsg.find('\"',tu1)
+							turl = mmsg[tu1:tu2].replace('&lt;br&gt;','\n')
 						tsubj,tmsg,tlink = '','',''
 						if submode == 'full': tsubj,tmsg = replacer(ttitle.replace('\n','; ')),replacer(tbody)
 						elif submode == 'body': tmsg = replacer(tbody)
@@ -1251,34 +1256,38 @@ def rss(type, jid, nick, text):
 						if urlmode: tlink = turl
 						t_msg.append((tsubj,tmsg,tlink))
 						new_count += 1
-				t_msg.reverse()
-				tmp = ''
-				for tm in t_msg: tmp += '!'.join(tm)
-				if len(tmp+msg)+len(t_msg)*12 >= msg_limit:
-					over = 100 * msg_limit / (len(tmp+msg)+len(t_msg)*12.0) # overflow in persent
-					tt_msg = []
+						if new_count > lng: break
+				if new_count:
+					t_msg.reverse()
+					tmp = ''
+					for tm in t_msg: tmp += '!'.join(tm)
+					if len(tmp+msg)+len(t_msg)*12 >= msg_limit:
+						over = 100 * msg_limit / (len(tmp+msg)+len(t_msg)*12.0) # overflow in persent
+						tt_msg = []
+						for tm in t_msg:
+							tsubj,tmsg,tlink = tm
+							cut = int(len(tsubj+tmsg+tlink)/100*over)						
+							if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[…]','',''
+							elif cut < len(tsubj+tlink): tsubj,tmsg = tsubj[:cut-len(tlink)]+u'[…]',''
+							else: tmsg = tmsg[:cut-len(tlink+tsubj)]+u'[…]'
+							tt_msg.append((tsubj,tmsg,tlink))
+						t_msg = tt_msg
+					tmp = ''
 					for tm in t_msg:
-						tsubj,tmsg,tlink = tm
-						cut = int(len(tsubj+tmsg+tlink)/100*over)						
-						if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[…]','',''
-						elif cut < len(tsubj+tlink): tsubj,tmsg = tsubj[:cut-len(tlink)]+u'[…]',''
-						else: tmsg = tmsg[:cut-len(tlink+tsubj)]+u'[…]'
-						tt_msg.append((tsubj,tmsg,tlink))
-					t_msg = tt_msg
-				tmp = ''
-				for tm in t_msg:
-					if submode == 'full': tmp += u'\n• %s\n%s' % tm[0:2]
-					elif submode == 'body': tmp += u'\n• %s' % tm[1]
-					elif submode == 'head': tmp += u'\n• %s' % tm[0]
-					if len(tm[2]): tmp += '\n'+tm[2]
-				msg = unhtml(msg+tmp)
+						if submode == 'full': tmp += u'\n• %s\n%s' % tm[0:2]
+						elif submode == 'body': tmp += u'\n• %s' % tm[1]
+						elif submode == 'head': tmp += u'\n• %s' % tm[0]
+						if len(tm[2]): tmp += '\n'+tm[2]
+					msg = unhtml(msg+tmp)
 				if mode == 'new' and not new_count:
 					if text[4] == 'silent': nosend = True
 					else: msg = L('New feeds not found!')
 			except Exception,SM:
+				rss_flush(jid,link,None)
 				if text[4] == 'silent': nosend = True
 				else: msg = L('Error! %s' % SM)
 		else:
+			rss_flush(jid,link,None)
 			if text[4] == 'silent': nosend = True
 			else:
 				if feed != L('Encoding error!'): title = get_tag(feed,'title')
