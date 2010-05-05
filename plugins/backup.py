@@ -30,7 +30,7 @@ def conf_backup(type, jid, nick, text):
 			for c in a:
 				if c.count('conference'): b.append((c,os.path.getmtime(back_folder+c)))
 			if len(b):
-				msg = L('Available copies: ')
+				msg = L('Available copies:') + ' '
 				for c in b: msg += c[0]+' ('+un_unix(time.time()-c[1])+')'+', '
 				msg = msg[:-2]
 			else: msg = L('Backup copies not found.')

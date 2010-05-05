@@ -73,7 +73,9 @@ iq_error = {'bad-request':L('Bad request'),
 			'subscription-required':L('Subscription required'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
-		
+
+rss_max_feed_limit = 10
+
 def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -1222,10 +1224,11 @@ def rss(type, jid, nick, text):
 			else: 
 				if feed.count('<entry>'): feed = feed.split('<entry>')
 				else: feed = feed.split('<entry ')
-			if len(text) > 2: lng = int(text[2])+1
+			if len(text) > 2: lng = int(text[2])
 			else: lng = len(feed)
 			if len(feed) <= lng: lng = len(feed)
-			if lng>=11: lng = 11
+			if lng > rss_max_feed_limit: lng = rss_max_feed_limit
+			elif len < 1: lng = 1
 			if len(text) > 3: submode = text[3]
 			else: submode = 'full'
 			msg = L('Feeds for')+' '
@@ -1236,11 +1239,11 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title')
 			try:
 				break_point = []
-				for tmp in feed[1:]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())				
+				for tmp in feed[1:rss_max_feed_limit+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())				
 				tstop = rss_flush(jid,link,break_point)
 				t_msg, new_count = [], 0
-				for mmsg in feed[1:]:
-					if not (mode == 'new' and hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop):
+				for mmsg in feed[1:rss_max_feed_limit+1]:
+					if mode == 'get' or not (hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop):
 						ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
 						if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
 						else:
@@ -1256,7 +1259,7 @@ def rss(type, jid, nick, text):
 						if urlmode: tlink = turl
 						t_msg.append((tsubj,tmsg,tlink))
 						new_count += 1
-						if new_count > lng: break
+						if new_count >= lng: break
 				if new_count:
 					t_msg.reverse()
 					tmp = ''
@@ -1279,7 +1282,7 @@ def rss(type, jid, nick, text):
 						elif submode == 'head': tmp += u'\n• %s' % tm[0]
 						if len(tm[2]): tmp += '\n'+tm[2]
 					msg = unhtml(msg+tmp)
-				if mode == 'new' and not new_count:
+				elif mode == 'new':
 					if text[4] == 'silent': nosend = True
 					else: msg = L('New feeds not found!')
 			except Exception,SM:
