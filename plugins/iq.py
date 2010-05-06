@@ -23,7 +23,6 @@ def vcard_async(type, jid, nick, text, args, is_answ):
 	isa = is_answ[1][0]
 	while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
 	while isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
-	print isa
 	if args.lower() == 'show':
 		msg = L('vCard tags:') + ' '
 		for i in range(0,len(isa)):
