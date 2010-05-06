@@ -612,14 +612,23 @@ def messageCB(sess,mess):
 				if (btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ') and room == parse[0]:
 					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
 					argz = btext[len(parse[1])+1:]
-					ppr = parse[2].replace('%*', argz)
-					if ppr.count('%'):
+					if not argz:
+						ppr = parse[2].replace('%*', '')
 						cpar = re.findall('%([0-9]+)', ppr, re.S)
 						if len(cpar):
-							argz = argz.split()
 							for tmp in cpar:
-								try: ppr = ppr.replace('%'+tmp,argz[int(tmp)])
+								try: ppr = ppr.replace('%'+tmp,'')
 								except: pass
+					else:
+						ppr = parse[2].replace('%*', argz)
+						if ppr.count('%'):
+							cpar = re.findall('%([0-9]+)', ppr, re.S)
+							if len(cpar):
+								argz = argz.split()
+								for tmp in cpar:
+									try: ppr = ppr.replace('%'+tmp,argz[int(tmp)])
+									except: pass
+					if len(ppr) == ppr.count(' '): ppr = ''
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
