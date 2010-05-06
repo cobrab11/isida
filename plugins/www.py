@@ -49,12 +49,12 @@ def netwww(type, jid, nick, text):
 			if regex:
 				try:
 					mt = re.findall(regex, page, re.S)
-					if mt != []: msg = unhtml(''.join(mt[0]))
+					if mt != []: msg = unhtml_hard(''.join(mt[0]))
 					else: msg = L('RegExp not found!')
 				except: msg = L('Error in RegExp!')
 			else:
-				if page.count('<title'): msg = get_tag(page,'title')+'\n'+unhtml(page)
-				else: msg = unhtml(page)
+				if page.count('<title'): msg = get_tag(page,'title')+'\n'+unhtml_hard(page)
+				else: msg = unhtml_hard(page)
 		except Exception, SM: msg = unicode(SM)
 	send_msg(type, jid, nick, msg[:msg_limit])
 

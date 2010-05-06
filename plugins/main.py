@@ -315,7 +315,7 @@ def svn_info(type, jid, nick):
 	else: msg = L('File %s not found!') % ul
 	send_msg(type, jid, nick, msg)
 
-def unhtml(page):
+def unhtml_raw(page,mode):
 	for a in range(0,page.count('<style')):
 		ttag = get_tag_full(page,'style')
 		page = page.replace(ttag,'')
@@ -325,11 +325,16 @@ def unhtml(page):
 		page = page.replace(ttag,'')
 
 	page = rss_replace(page)
-	page = rss_repl_html(page)
+	if mode: page = replace_ltgt(page)
+	else: page = rss_repl_html(page)
 	page = rss_replace(page)
 	page = rss_del_nn(page)
 	page = page.replace('\n ','')
 	return page
+
+def unhtml(page): return unhtml_raw(page,None)
+	
+def unhtml_hard(page): return unhtml_raw(page,True)
 
 def del_space_both(t):
 	return del_space_end(del_space_begin(t))
@@ -1064,6 +1069,15 @@ def rss_repl_del_html(ms,item):
 def rss_repl_html(ms): return rss_repl_del_html(ms,' ')
 
 def rss_del_html(ms): return rss_repl_del_html(ms,'')
+
+def remove_replace_ltgt(text,item):
+	T = re.findall('<.*?>', text, re.S)
+	for tmp in T: text = text.replace(tmp,item,1)
+	return text
+	
+def remove_ltgt(text): return remove_replace_ltgt(text,'')
+	
+def replace_ltgt(text): return remove_replace_ltgt(text,' ')
 
 def rss_del_nn(ms):
 	ms = ms.replace('\r',' ').replace('\t',' ')
