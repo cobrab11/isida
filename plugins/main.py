@@ -1233,14 +1233,18 @@ def rss(type, jid, nick, text):
 		feed = html_encode(feed)
 		if is_rss_aton and feed != L('Encoding error!'):
 			if is_rss_aton == 1:
-				if feed.count('<item>'): feed = feed.split('<item>')
-				else: feed = feed.split('<item ')
+				if feed.count('<item>'): fd = feed.split('<item>')
+				else: fd = feed.split('<item ')
+				feed = [fd[0]]
+				for tmp in fd[1:]: feed.append(tmp.split('</item>')[0])
 			else: 
-				if feed.count('<entry>'): feed = feed.split('<entry>')
-				else: feed = feed.split('<entry ')
+				if feed.count('<entry>'): fd = feed.split('<entry>')
+				else: fd = feed.split('<entry ')
+				feed = [fd[0]]
+				for tmp in fd[1:]: feed.append(tmp.split('</entry>')[0])
 			if len(text) > 2: lng = int(text[2])
-			else: lng = len(feed)
-			if len(feed) <= lng: lng = len(feed)
+			else: lng = len(feed)-1
+			if len(feed)-1 <= lng: lng = len(feed)-1
 			if lng > rss_max_feed_limit: lng = rss_max_feed_limit
 			elif len < 1: lng = 1
 			if len(text) > 3: submode = text[3]
@@ -1253,7 +1257,7 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title')
 			try:
 				break_point = []
-				for tmp in feed[1:rss_max_feed_limit+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())				
+				for tmp in feed[1:rss_max_feed_limit+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
 				tstop = rss_flush(jid,link,break_point)
 				t_msg, new_count = [], 0
 				for mmsg in feed[1:rss_max_feed_limit+1]:
@@ -1266,12 +1270,12 @@ def rss(type, jid, nick, text):
 							tu2 = mmsg.find('\"',tu1)
 							turl = mmsg[tu1:tu2].replace('&lt;br&gt;','\n')
 						tsubj,tmsg,tlink = '','',''
-						if submode == 'full': tsubj,tmsg = replacer(ttitle.replace('\n','; ')),replacer(tbody)
+						if submode == 'full': tsubj,tmsg = replacer(ttitle),replacer(tbody)
 						elif submode == 'body': tmsg = replacer(tbody)
-						elif submode == 'head': tsubj = replacer(ttitle.replace('\n','; '))
+						elif submode == 'head': tsubj = replacer(ttitle)
 						else: return
 						if urlmode: tlink = turl
-						t_msg.append((tsubj,tmsg,tlink))
+						t_msg.append((tsubj.replace('\n','; '),tmsg,tlink))
 						new_count += 1
 						if new_count >= lng: break
 				if new_count:
