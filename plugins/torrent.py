@@ -4,23 +4,25 @@
 def GetTorrentInfo(request, tracker, link, count=3):
 	url, n = link + urllib.quote(request.encode('utf-8')), 0
 	body = html_encode(urllib.urlopen(url).read())
-	body = body.split('<table width="100%">')[1].split('</table>')[0]
-	body = body.replace('&nbsp;', ' ').split('<td>')[1:]
+	body = body.split('<table width="100%">')[1].split('</table>')[0].split('<td>')[1:]
+	regexp_name = '.*<a href="/torrent/.*">(.*) </a>'
+	regexp_size = '</td>.*<td align="right">(.*?)</td>'
+	regexp_peers_up = '<img src="http://.*" alt="S|seeders" />&nbsp;(.*)</span>&nbsp;'
+	regexp_peers_dn = '<span class="red">&nbsp;(.*)</span>'
+	regexp_link = '<a class="downgif" href="(.*?)"><img src'
 	output = L('Total results: %s \nTitle ::: Size ::: Peers [up/down]') % \
 		str(len(body))
 	body = body[:count]	
 	if len(body):
-		for tmp in body:
+		for bbody in body:
 			n += 1
-			tmp = tmp.split('</td>')
-			if len(tmp) == 6: tmp.remove(tmp[2])
-			output += u'\n' + str(n) + u'. ' + replacer(tmp[1]) + u' ::: ' + \
-				replacer(tmp[2]) + u' :::'+ rss_del_html(tmp[3]).replace('  ', '/')
-			output += L('\n  Torrent file: %s') % tracker
-			ttmp = tmp[1][tmp[1].find('/download'):]
-			ttmp = ttmp[:ttmp.find('">')]
-			if tracker == 'http://opensharing.org': ttmp = ttmp[:-1]
-			output += ttmp
+			name = re.findall(regexp_name, bbody, re.S)[0]
+			size = re.findall(regexp_size, bbody, re.S)[0].replace('&nbsp;', ' ')
+			peers_up = re.findall(regexp_peers_up, bbody, re.S)[0]
+			peers_dn = re.findall(regexp_peers_dn, bbody, re.S)[0]
+			link = re.findall(regexp_link, bbody, re.S)[0]
+			output += L('\n%s. %s ::: %s ::: %s/%s\n  Torrent file: %s%s') % \
+				(str(n), name, size, peers_up,peers_dn, tracker, link)
 	else: output = L('Not found!')		
 	return output
 

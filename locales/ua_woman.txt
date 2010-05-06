@@ -916,7 +916,7 @@ Calculate count of days for requested date.\nSupported date formats: dd.mm.yyyy,
 
 #torrent.py
 Total results: %s \nTitle ::: Size ::: Peers [up/down]	Всього результатів: %s \nНазва ::: Розмір ::: Пiри [up/down]
-\n  Torrent file: %s	\n  Torrent файл: %s
+\n%s. %s ::: %s ::: %s/%s\n  Torrent file: %s%s	\n%s. %s ::: %s ::: %s/%s\n  Torrent файл: %s%s
 Incorrect tracker.	Невірно заданий трекер.
 Search in bittorrent trackers\ntorrent rutor - search in RuTor.org\ntorrent os - search in OpenSharing.org\ntorrent tracker\nquery\ncount	Пошук по Torrent трекерах\ntorrent rutor - пошук по RuTor.org\ntorrent os - пошук по OpenSharing.org\ntorrent tracker\nquery\ncount
 
