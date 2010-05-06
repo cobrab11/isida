@@ -7,6 +7,13 @@ lfm_url = 'http://ws.audioscrobbler.com/2.0/'
 def reduce_spaces_last(text):
 	while text.count('  '): text = text.replace('  ',' ')
 	return reduce_spaces(text)
+	
+def last_check_ascii(type, jid, nick, text):
+	for tmp in text:
+		if tmp > '~':
+			send_msg(type, jid, nick, L('Error!'))
+			return True
+	return None
 
 def last_time_short(tm):
 	tm = time.localtime(tm)
@@ -34,12 +41,10 @@ def lastonetrack(type, jid, nick, text):
 def lf_api(method, user, splitter):
 	user = reduce_spaces_last(user.lower().encode('utf-8').replace('\\x','%')).replace(' ','%20')
 	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+lfm_api
-	f = urllib.urlopen(link)
-	lfxml = f.read()
-	f.close()
-	return rss_replace(html_encode(lfxml)).split(splitter)
+	return rss_replace(html_encode(urllib.urlopen(link).read())).split(splitter)
 
 def lasttracks(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -52,6 +57,7 @@ def lasttracks(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastfriends(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	ms = lf_api('user.getfriends',text, '<user')
 	msg = L('Loved tracks %s:') % text
 	for a in ms[1:]:
@@ -60,6 +66,7 @@ def lastfriends(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastloved(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -72,6 +79,7 @@ def lastloved(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastneighbours(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -84,6 +92,7 @@ def lastneighbours(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def lastplaylist(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -96,6 +105,7 @@ def lastplaylist(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def topalbums(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -108,6 +118,7 @@ def topalbums(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def topartists(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -120,6 +131,7 @@ def topartists(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def toptags(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -132,6 +144,7 @@ def toptags(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def toptracks(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
 	except: cnt = 10
@@ -146,18 +159,14 @@ def toptracks(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def tasteometer(type, jid, nick, text):
-	text = reduce_spaces_last(text.lower().encode('utf-8').replace('\\x','%')).split(' ')
-	try:
-		user1 = text[0]
-		user2 = text[1]
+	if last_check_ascii(type, jid, nick, text): return
+	text = reduce_spaces_last(text.lower().encode('utf-8').replace('\\x','%')).split(' ',1)
+	try: (user1,user2) = text
 	except:
 		send_msg(type, jid, nick, L('Need two users'))
 		return
 	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+lfm_api
-	f = urllib.urlopen(link)
-	lfxml = f.read()
-	f.close()
-	lfxml = html_encode(lfxml)
+	lfxml = html_encode(urllib.urlopen(link).read())
 	scor = get_tag(lfxml,'score')
 	try: scor = float(scor)
 	except: scor = 0

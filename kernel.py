@@ -380,7 +380,6 @@ def iqCB(sess,iq):
 	was_request = id in iq_request
 	
 	if iq.getType()=='error' and was_request:
-		print unicode(iq)
 		iq_err,er_name = get_tag(unicode(iq),'error'),L('Unknown error!')
 		for tmp in iq_error.keys():
 			if iq_err.count(tmp):
