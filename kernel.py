@@ -160,16 +160,22 @@ def getFile(filename,default):
 	return filebody
 
 def get_subtag(body,tag):
-	beg = body.find('\"',body.find(tag))+1
-	return body[beg:body.find('\"',beg)]
+	T = re.findall('%s=\"(.*?)\"' % tag,body,re.S)
+	if T: return T[0]
+	else: return ''
 
 def get_tag(body,tag):
-	return body[body.find('>',body.find('<'+tag))+1:body.find('</'+tag+'>')]
+	T = re.findall('<%s.*?>(.*?)</%s>' % (tag,tag),body,re.S)
+	if T: return T[0]
+	else: return ''
 
 def get_tag_full(body,tag):
-	tmp_body = body[body.find('<'+tag):body.find(tag+'>',body.find('<'+tag)+2)+len(tag)+1]
-	if len(tmp_body): return tmp_body
-	return body[body.find('<'+tag):body.find('/>',body.find('<'+tag)+2)+2]
+	T = re.findall('<%s.*?>(.*?)</%s>' % (tag,tag),body,re.S)
+	if T: return T[0]
+	else:
+		T = re.findall('(<%s[\ ]?.*?/>)' % tag,body,re.S)
+		if T: return T[0]
+		else: return ''
 
 def get_tag_item(body,tag,item):
 	body = get_tag_full(body,tag)

@@ -22,6 +22,8 @@ def iq_vcard(type, jid, nick, text):
 def vcard_async(type, jid, nick, text, args, is_answ):
 	isa = is_answ[1][0]
 	while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
+	while isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
+	print isa
 	if args.lower() == 'show':
 		msg = L('vCard tags:') + ' '
 		for i in range(0,len(isa)):
@@ -35,11 +37,11 @@ def vcard_async(type, jid, nick, text, args, is_answ):
 			if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
 			else: tname,ttag = tmp,tmp
 			tt = get_tag(isa,ttag.upper())
-			if tt != '': msg += '\n'+tname+': '+rss_del_nn(rss_del_html(tt.replace('><','> <').replace('>\n<','> <')))
+			if tt != '': msg += '\n'+tname+': '+rss_del_nn(remove_ltgt(tt.replace('><','> <').replace('>\n<','> <')))
 	else:
 		msg = ''
 		for tmp in [(L('Nick'),'NICKNAME'),(L('Name'),'FN'),(L('About'),'DESC'),(L('URL'),'URL')]:
-			tt = get_tag(isa,tmp[1])
+			tt = remove_ltgt(get_tag(isa,tmp[1]))
 			if len(tt): msg += '\n'+tmp[0]+': '+tt
 		if len(msg): msg = L('vCard:') + msg
 		else: msg = L('Пусто!')
