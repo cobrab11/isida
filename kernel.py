@@ -160,7 +160,7 @@ def getFile(filename,default):
 	return filebody
 
 def get_subtag(body,tag):
-	T = re.findall('%s=\"(.*?)\"' % tag,body,re.S)
+	T = re.findall('%s.*?\"(.*?)\"' % tag,body,re.S)
 	if T: return T[0]
 	else: return ''
 
@@ -170,10 +170,10 @@ def get_tag(body,tag):
 	else: return ''
 
 def get_tag_full(body,tag):
-	T = re.findall('<%s.*?>(.*?)</%s>' % (tag,tag),body,re.S)
+	T = re.findall('(<%s.*?>.*?</%s>)' % (tag,tag),body,re.S)
 	if T: return T[0]
 	else:
-		T = re.findall('(<%s[\ ]?.*?/>)' % tag,body,re.S)
+		T = re.findall('(<%s.*?/>)' % tag,body,re.S)
 		if T: return T[0]
 		else: return ''
 
