@@ -7,13 +7,14 @@ def currency_converter(type, jid, nick, text):
 	else:
 		repl_curr = ((u'€','EUR'),(u'$','USD'),(u'¥','JPY'),(u'£','GBP'),('RUR','BASE'))
 		for tmp in repl_curr: text = text.upper().replace(tmp[0],' %s ' % tmp[1])
-		mt = re.findall('[a-zA-Z]|[0-9]|[ ]', text, re.S)
+		mt = re.findall('[a-zA-Z]|[0-9]|[.,]|[ ]', text, re.S)
 		text = reduce_spaces(''.join(mt))
 		while text.count('  '): text = text.replace('  ',' ')
 		text,date,c_from,c_to,c_summ = text.split(),tuple(localtime())[:3],None,None,None
 		for tmp in text:
 			try:
-				c_summ = int(tmp)
+				c_summ = float(tmp.replace(',','.'))
+				if int(c_summ) == c_summ: c_summ = int(c_summ)
 				text.remove(tmp)
 				break
 			except: pass
