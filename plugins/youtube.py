@@ -8,6 +8,7 @@ def youtube(type, jid, nick, text):
 		if lim > 10: lim = 10
 		if lim < 1: lim = 1
 		text = text.split('\n',1)[0]
+	else: lim = 3
 	size_overflow = 131072
 	text = text.lower().encode('utf-8').replace(' ','%20')
 	regex = '<a href="(/watch.*?)".*?<strong class="hovercard-title" >(.*?)</strong>.*?<span class="hovercard-duration">(.*?)</span>.*?<span class="hovercard-upload-date">(.*?)</span>'
