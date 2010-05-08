@@ -1,18 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+youtube_max_videos 		= 10		# максимальное количество ссылок при показе
+youtube_default_videos 	= 3			# количество ссылок по умолчанию
+youtube_max_page_size 	= 131072	# лимит размера страницы при загрузке
+youtube_default_lang 	= 'ru'		# язык по умолчанию
+
 def youtube(type, jid, nick, text):
 	if text.count('\n'):
 		try: lim = int(text.split('\n',1)[1])
-		except: lim = 3
-		if lim > 10: lim = 10
+		except: lim = youtube_default_videos
+		if lim > youtube_max_videos: lim = youtube_max_videos
 		if lim < 1: lim = 1
 		text = text.split('\n',1)[0]
-	else: lim = 3
-	size_overflow = 131072
+	else: lim = youtube_default_videos
+	size_overflow = youtube_max_page_size
 	text = text.lower().encode('utf-8').replace(' ','%20')
 	regex = '<a href="(/watch.*?)".*?<strong class="hovercard-title" >(.*?)</strong>.*?<span class="hovercard-duration">(.*?)</span>.*?<span class="hovercard-upload-date">(.*?)</span>'
-	req = urllib2.Request('http://www.youtube.com/results?search_type=&search_query='+text+'&aq=f')
+	req = urllib2.Request('http://www.youtube.com/results?search_type=&search_query=%s&aq=f&hl=%s' % (text,youtube_default_lang))
 	req.add_header('User-Agent',user_agent)
 	try: body = str(urllib2.urlopen(req).info())
 	except: body = L('I can\'t do it')
@@ -21,7 +26,7 @@ def youtube(type, jid, nick, text):
 	if mt != []:
 		try:
 			c_size = int(''.join(mt[0]))
-			if c_size > size_overflow: msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (str(c_size/1024),str(size_overflow/1024))
+			if c_size > size_overflow: msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (c_size/1024,size_overflow/1024)
 		except: c_size = size_overflow
 	else: c_size = size_overflow
 	if not msg:
