@@ -1,10 +1,10 @@
 #!/usr/bin/python
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 
-youtube_max_videos 		= 10		# максимальное количество ссылок при показе
-youtube_default_videos 	= 3			# количество ссылок по умолчанию
-youtube_max_page_size 	= 131072	# лимит размера страницы при загрузке
-youtube_default_lang 	= 'ru'		# язык по умолчанию
+youtube_max_videos 		= 10		# РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСЃС‹Р»РѕРє РїСЂРё РїРѕРєР°Р·Рµ
+youtube_default_videos 	= 3			# РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСЃС‹Р»РѕРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+youtube_max_page_size 	= 131072	# Р»РёРјРёС‚ СЂР°Р·РјРµСЂР° СЃС‚СЂР°РЅРёС†С‹ РїСЂРё Р·Р°РіСЂСѓР·РєРµ
+youtube_default_lang 	= 'ru'		# СЏР·С‹Рє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
 def youtube(type, jid, nick, text):
 	if text.count('\n'):
