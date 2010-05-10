@@ -24,8 +24,7 @@ def last_time_short(tm):
 	return str(time.strftime(form,tm))
 
 def last_date_now(body):
-	ldate = get_tag(body,'date')
-	if ldate.count('nowplaying=\"true\"'): return 'now'
+	if body.count('nowplaying=\"true\"'): return 'now'
 	else: 
 		try: return last_time_short(int(get_subtag(get_tag_full(body,'date'),'uts')))
 		except: return 'Unknown'
