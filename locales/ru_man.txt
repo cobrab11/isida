@@ -650,9 +650,9 @@ Show information about conference from jc.jabber.ru.\njc [address]	Показы�
 # jidcatcher.py
 What I must find?	Чего искать-то будем?
 Total resources: %s	Всего ресурсов: %s
-Found resources: %s\n	Найдено ресурсов: %s\n
+Found resources: %s	Найдено ресурсов: %s
 Total servers: %s	Всего серверов: %s
-Found servers: %s\n	Найдено серверов: %s\n
+Found servers: %s	Найдено серверов: %s
 Max count of members: %s %s	Максимальное количество участников: %s %s
 Statistic not found!	Статистика не найдена!
 Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.	Без параметра показывает топ10 рессурсов по всем конференциям, где находится бот.\nС параметром - поиск по базе рессурсов.\nЧисла - количество рессурсов.

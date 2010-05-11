@@ -35,7 +35,7 @@ def info_res(type, jid, nick, text):
 	if not tlen: msg = L('\'%s\' not found!') % text
 	else:
 		if text == '': msg = L('Total resources: %s') % str(tlen)
-		else: msg = L('Found resources: %s\n') % str(tlen)
+		else: msg = L('Found resources: %s') % str(tlen)
 		if len(jidbase):
 			msg += '\n'
 			cnt = 1
@@ -59,7 +59,8 @@ def info_serv(type, jid, nick, text):
 	if not tlen: msg = L('\'%s\' not found!') % text
 	else:
 		if text == '': msg = L('Total servers: %s') % str(tlen)
-		else: msg = L('Found servers: %s\n') % str(tlen)
+		else: msg = L('Found servers: %s') % str(tlen)
+		msg += '\n'
 		if len(jidbase):
 			for jj in jidbase: msg += jj[0]+':'+str(jj[1])+' | '
 			msg = msg[:-2]

@@ -42,19 +42,11 @@ def gettcode(text):
 		else: return L('Your search returns no results.')
 	
 def getdefcode(text):
-	ddef = text[1:4]
-	dnumber = text[4:]
-	link = 'http://www.mtt.ru/info/def/index.wbp?def='+ddef+'&number='+dnumber+'&region=&standard=&date=&operator='
-	f = urllib.urlopen(link)
-	msg = f.read()
-	f.close()
-	encidx = msg.find('charset=')
-	if encidx >= 0:
-		enc = msg[encidx+8:encidx+30]
-		enc = enc[:enc.index('\">')]
-		enc = enc.upper()
-	else: enc = 'UTF-8'
-	msg = unicode(msg, enc)
+	try: text = ''.join(re.findall('[0-9+]+', text, re.S))
+	except: text = ''
+	if len(text) <= 3: return L('Error!')
+	try: msg = unicode(urllib.urlopen('http://www.mtt.ru/info/def/index.wbp?def=%s&number=%s' % (text[1:4],text[4:])).read(), 'windows-1251')
+	except: return L('Error!')
 	mbeg = msg.find('<INPUT TYPE=\"submit\" CLASS=\"submit\"')
 	msg = msg[mbeg:msg.find('</table>',mbeg)]
 	msg = msg.split('<tr')
@@ -78,6 +70,7 @@ def phonecode(type, jid, nick, text):
 		else:
 			try: msg = gettelcode(str(int(text)))
 			except: msg = gettcode(text)
+		msg = remove_ltgt(msg)
 	else: msg = L('What?')
    	send_msg(type, jid, nick, msg)
 		
