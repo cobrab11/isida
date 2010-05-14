@@ -601,7 +601,7 @@ def messageCB(sess,mess):
 		gl_censor = getFile(cns,[(getRoom(room),0)])
 		if (getRoom(room),1) in gl_censor: send_msg(type,room,nick,L('Censored!'))
 	no_comm = 1
-	if (text != 'None') and (len(text)>=1) and access_mode >= 0:
+	if (text != 'None') and (len(text)>=1) and access_mode >= 0 and not mess.getSubject():
 		no_comm = 1
 		is_par = 0
 		if text[:len(nowname)] == nowname:
