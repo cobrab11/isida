@@ -1145,6 +1145,16 @@ def rss_flush(jid,link,break_point):
 			break
 	return tstop
 
+def smart_concat(text):
+	#while text.count(' \n'): text = text.replace(' \n','\n')
+	#while text.count('\n '): text = text.replace('\n ','\n')
+	text = [' ']+text.split('\n')
+	tmp = 1
+	while tmp < len(text):
+		if not text[tmp].count(' '): text = text[:tmp-1]+[text[tmp-1]+' '+text[tmp]]+text[tmp+1:]
+		else: tmp += 1
+	return '\n'.join(text)
+	
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds
 	msg = u'rss show|add|del|clear|new|get'
@@ -1275,7 +1285,7 @@ def rss(type, jid, nick, text):
 						elif submode == 'head': tsubj = replacer(ttitle)
 						else: return
 						if urlmode: tlink = turl
-						t_msg.append((tsubj.replace('\n','; '),tmsg,tlink))
+						t_msg.append((tsubj.replace('\n','; '),smart_concat(tmsg),tlink))
 						new_count += 1
 						if new_count >= lng: break
 				if new_count:
