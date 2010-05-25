@@ -1151,7 +1151,7 @@ def smart_concat(text):
 	text = [' ']+text.split('\n')
 	tmp = 1
 	while tmp < len(text):
-		if not text[tmp].count(' '): text = text[:tmp-1]+[text[tmp-1]+' '+text[tmp]]+text[tmp+1:]
+		if not (text[tmp].count(' ') or text[tmp].count('/') or text[tmp].count('.') or text[tmp].count('\\')): text = text[:tmp-1]+[text[tmp-1]+' '+text[tmp]]+text[tmp+1:]
 		else: tmp += 1
 	return '\n'.join(text)
 	
