@@ -6,6 +6,16 @@ if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log) and syslogs_enable: os.mkdir(system_log)
 
 log_header = ['','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link href="%s" rel="stylesheet" type="text/css" /><title>\n' % logs_css_path][html_logs_enable]
+def initial_log_users(room,ott):
+	txt = []
+	for tmp in megabase:
+		if tmp[0] == room: txt.append(tmp[1])
+	txt.sort()
+	log_body = ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable]
+	log_body += ['*** ','<span class="status">'][html_logs_enable]
+	log_body += L('Users: %s (%s)') % (', '.join(txt),len(txt))
+	log_body += ['','</span></p>'][html_logs_enable] + '\n'
+	return log_body
 
 def append_message_to_log(room,jid,nick,type,text):
 	global public_log, system_log
@@ -33,6 +43,8 @@ def msg_logger(room,jid,nick,type,text,logfile):
 		else: log_body += ['%s: %s','<span class="nick">%s:&nbsp;</span><span class="text">%s</span></p>\n'][html_logs_enable] % (nick,text)
 	lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
 	log_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,log_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][html_logs_enable]
+	try: log_he += initial_log_users(room,ott) + ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable] + ['*** %s\n','<span class="topic">%s</span></p>'][html_logs_enable] % [topics[room],html_escape(topics[room]).replace('\n','<br>')][html_logs_enable]
+	except: pass
 	if not os.path.isfile(curr_file):
 		fl = open(curr_file, 'a')
 		fl.write(log_he.encode('utf-8'))
@@ -93,6 +105,8 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			log_body += ['','</span></p>'][html_logs_enable] + '\n'
 		lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
 		log_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,log_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][html_logs_enable]
+		try: log_he += initial_log_users(room,ott) + ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable] + ['*** %s\n','<span class="topic">%s</span></p>'][html_logs_enable] % [topics[room],html_escape(topics[room]).replace('\n','<br>')][html_logs_enable]
+		except: pass
 		if not os.path.isfile(curr_file):
 			fl = open(curr_file, 'a')
 			fl.write(log_he.encode('utf-8'))

@@ -10,6 +10,9 @@ cns = set_folder+'censors'
 
 config = {}
 
+print 'Updater for Isida Jabber Bot from 2.00 to 2.10'
+print '(c) Disabler Production Lab.'
+
 def readfile(filename): return file(filename).read()
 def writefile(filename, data): file(filename, 'w').write(data)
 def getFile(filename,default):
@@ -43,9 +46,6 @@ for tmp in tempo:
 	tname = 'prefix'
 	try: t = config[tmp[0]]
 	except: config[tmp[0]] = {}
-	#try: t = config[tmp[0]][tname]
-	#except: config[tmp[0]][tname] = []
-	#config[tmp[0]][tname].append(tmp[1])
 	config[tmp[0]][tname] = tmp[1]
 
 tempo = getFile(sml,[])
@@ -61,10 +61,5 @@ for tmp in tempo:
 	try: t = config[tmp[0]]
 	except: config[tmp[0]] = {}
 	config[tmp[0]][tname] = tmp[1]
-
-print config['isida@conference.jabber.ru']['flood']
-print config['support@conference.isida-bot.com']['prefix']
-print config['isida@conference.jabber.ru']['smile']
-print config['isida@conference.jabber.ru']['censor']
 
 writefile(set_folder+'conference.config',str(config))

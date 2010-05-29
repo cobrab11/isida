@@ -660,12 +660,16 @@ def messageCB(sess,mess):
 	thr(msg_afterwork,(mess,room,jid,nick,type,back_text),'msg_afterwork')
 			
 def msg_afterwork(mess,room,jid,nick,type,back_text):
+	global topics
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
 		if subj != 'None' and back_text == 'None':
 			if subj.count('\n'): subj = '\n'+subj
 			tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
-		else: tmp(room,jid,nick,type,back_text)
+			topics[room] = subj
+		else:
+			tmp(room,jid,nick,type,back_text)
+			if nick == '': topics[room] = back_text
 
 def send_msg_human(type, room, nick, text):
 	if text: sleep(len(text)/4+randint(0,10))
@@ -688,10 +692,12 @@ def getAnswer(tx,type):
 	return anscom
 
 def to_censore(text):
+	wca = None
 	for c in censor:
 		cn = re.findall(c,' '+text+' ',re.S)
-		for tmp in cn: text = text.replace(tmp,'[censored]')
-	return del_space_both(text)
+		for tmp in cn: text,wca = text.replace(tmp,'[censored]'),True
+	if wca: text = del_space_both(text)
+	return text
 
 def get_valid_tag(body,tag):
 	if body.count(tag): return get_subtag(body,tag)
@@ -919,7 +925,7 @@ CommandsLog = None					# логгирование команд
 prefix = '_'						# префикс комманд
 msg_limit = 1000					# лимит размера сообщений
 botName = 'Isida-Bot'				# название бота
-botVersion = 'v2.10'					# версия бота
+botVersion = 'v2.10'				# версия бота
 capsVersion = botVersion[1:]		# версия для капса
 banbase = []						# результаты muc запросов
 pres_answer = []					# результаты посылки презенсов
@@ -941,6 +947,7 @@ id_count = 0						# номер запроса
 megabase = []						# главная временная база с полной информацией из презенсов
 ignore_owner = None					# исполнять отключенные команды для владельца бота
 configname = 'settings/config.py'	# конфиг бота
+topics = {}							# временное хранение топиков
 
 gt=gmtime()
 lt=tuple(localtime())

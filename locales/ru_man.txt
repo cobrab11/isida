@@ -181,6 +181,7 @@ Censor visitor %s	Лишение голоса по цензору %s
 Revoke voice for members	Забирать голос у постоянных участников
 Censor kick %s	Выгонять по цензору %s
 Kick participants	Выгонять участников
+Url title is %s	Показ заголовков ссылок %s
 
 
 # --- Ошибки ---
@@ -749,6 +750,7 @@ Music tastes	Музыкальная совместимость
 now is	теперь
 leave	вышел
 join as	зашел как
+Users: %s (%s)	Пользователи: %s (%s)
 Logged conferences:	Я веду логи в:
 Logs are turned off in all conferences.	Логи не включены ни в одной конференции.
 Logs for %s already enabled.	Я уже веду логи конфы %s
