@@ -3,7 +3,7 @@
 
 def get_tld(type, jid, nick, text):
 	if len(text) >= 2:
-		tld = readfile('tld/tld.list').decode('utf-8')
+		tld = readfile(tld_list).decode('utf-8')
 		tld = tld.split('\n')
 		msg = L('Not found!')
 		for tl in tld:

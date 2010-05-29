@@ -15,16 +15,13 @@ def anek(type, jid, nick):
 		message = message.strip()
 		message = rss_replace(unicode(message,'windows-1251'))
 		if type=='groupchat':
-			if len(message)<500:
-				send_msg(type, jid, nick, message)
+			if len(message)<anek_private_limit: send_msg(type, jid, nick, message)
 			else:
 				send_msg(type, jid, nick, L('Send for you in private'))
 				send_msg('chat', jid, nick, message)
 				return
-		else:
-			send_msg(type, jid, nick, message)
-	except:
-		send_msg(type, jid, nick, L('Something broken.'))
+		else: send_msg(type, jid, nick, message)
+	except: send_msg(type, jid, nick, L('Something broken.'))
 
 global execute
 

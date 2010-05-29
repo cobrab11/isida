@@ -74,8 +74,6 @@ iq_error = {'bad-request':L('Bad request'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
 
-rss_max_feed_limit = 10
-
 def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -114,7 +112,7 @@ def get_scrobble(type, room, nick, text):
 		except: pass
 	text = text[0]
 	if csize < 1: csize = 1
-	elif csize > 10: csize = 10
+	elif csize > pep_scrobbler_max_count: csize = pep_scrobbler_max_count
 	jid = getRoom(get_access(room,text)[1])
 	if jid == 'None': jid = room
 	stb = os.path.isfile(scrobblebase)
@@ -181,10 +179,7 @@ def shell_execute(cmd):
 		else: return L('ok')
 	except Exception, SM: return L('I can\'t execute it! Error: %s') % str(SM)
 	
-def concat(list):
-	result = ''
-	for tmp in list: result += tmp
-	return result
+def concat(list): return ''.join(list)
 
 def get_affiliation(jid,nick):
 	xtype = ''
@@ -254,29 +249,6 @@ def reduce_spaces(text):
 		while text[0] == ' ': text = text[1:]
 		while text[-1:] == ' ': text = text[:-1]
 	return text
-
-def censor_status(type, jid, nick, text):
-	tmode = 0
-	if text:
-		if text.lower() == L('on'): tmode = 2
-		elif text.lower() == L('off'): tmode = 1
-
-	gl_censor = getFile(cns,[(getRoom(jid),0)])
-	is_found = 1
-	for sm in gl_censor:
-		if sm[0] == getRoom(jid):
-			if tmode: tsm = (sm[0],tmode-1)
-			else: tsm = (sm[0],int(not sm[1]))
-			gl_censor.remove(sm)
-			gl_censor.append(tsm)
-			is_found = 0
-			ssta = tsm[1]
-	if is_found:
-		gl_censor.append((getRoom(jid),1))
-		ssta = 1
-	msg = L('Censor is %s') % onoff(ssta)
-	writefile(cns,str(gl_censor))
-	send_msg(type, jid, nick, msg)
 
 def status(type, jid, nick, text):
 	if text == '': text = nick
@@ -389,28 +361,6 @@ def fspace(mass):
 		bdd.append(b)
 	return bdd
 
-def autoflood(type, jid, nick, text):
-	tmode = 0
-	if text:
-		if text.lower() == L('on'): tmode = 2
-		elif text.lower() == L('off'): tmode = 1
-	floods = getFile(fld,[(getRoom(jid),0)])
-	is_found = 1
-	for sm in floods:
-		if sm[0] == getRoom(jid):
-			if tmode: tsm = (sm[0],tmode-1)
-			else: tsm = (sm[0],int(not sm[1]))
-			floods.remove(sm)
-			floods.append(tsm)
-			is_found = 0
-			ssta = tsm[1]
-	if is_found:
-		floods.append((getRoom(jid),1))
-		ssta = 1
-	msg = L('Flood is %s') % onoff(ssta)
-	writefile(fld,str(floods))
-	send_msg(type, jid, nick, msg)
-
 def del_space_begin(text):
 	if len(text):
 		while text[:1] == ' ': text = text[1:]
@@ -487,62 +437,22 @@ def sfind(mass,stri):
 	return ''
 
 def get_local_prefix(jid):
-	lprefix = prefix
-	if os.path.isfile(preffile):
-		pref = eval(readfile(preffile))
-		for pp in pref:
-			if pp[0] == getRoom(jid):
-				lprefix = pp[1]
-				break
-	return lprefix
+	lprefix = get_config(getRoom(jid),'prefix')
+	if lprefix: return lprefix
+	return prefix
 
-def get_prefix(prefix):
-	if prefix != '': return prefix
-	else: return L('absent')
+def get_prefix(lprefix):
+	if lprefix=='': return L('absent')
+	elif not lprefix: return prefix
+	else: return lprefix
 
 def set_prefix(type, jid, nick, text):
-	global preffile, prefix
-
-	if text != '': lprefix = text
+	lprefix = get_config(getRoom(jid),'prefix')
 	if text.lower() == 'none': lprefix = ''
-	if text.lower() == 'del': lprefix = prefix
-
-	if len(text):
-		if os.path.isfile(preffile):
-			pref = eval(readfile(preffile))
-			for pp in pref:
-				if pp[0] == getRoom(jid):
-					pref.remove(pp)
-					break
-			pref.append((getRoom(jid),lprefix))
-			writefile(preffile,str(pref))
-		else:
-			pref = [(getRoom(jid),lprefix)]
-			writefile(preffile,str(pref))
-	else: lprefix = get_local_prefix(jid)
+	elif text.lower() == 'del': lprefix = prefix
+	elif text != '': lprefix = text
+	put_config(getRoom(jid),'prefix',lprefix)
 	msg = L('Command prefix: %s') % get_prefix(lprefix)
-	send_msg(type, jid, nick, msg)
-
-def smile(type, jid, nick, text):
-	tmode = 0
-	if text:
-		if text.lower() == L('on'): tmode = 2
-		elif text.lower() == L('off'): tmode = 1
-	smiles = getFile(sml,[(getRoom(jid),0)])
-	is_found = 1
-	for sm in smiles:
-		if sm[0] == getRoom(jid):
-			if tmode: tsm = (sm[0],tmode-1)
-			else: tsm = (sm[0],int(not sm[1]))
-			smiles.remove(sm)
-			smiles.append(tsm)
-			is_found = 0
-			ssta = tsm[1]
-	if is_found:
-		smiles.append((getRoom(jid),1))
-		ssta = 1
-	msg = L('Smiles is %s') % onoff(ssta)
-	writefile(sml,str(smiles))
 	send_msg(type, jid, nick, msg)
 
 def uptime(type, jid, nick):
@@ -762,7 +672,7 @@ def conf_limit(type, jid, nick, text):
 	global msg_limit
 	if text!='':
 		try: msg_limit = int(text)
-		except: msg_limit = 1000
+		except: msg_limit = default_msg_limit
 	send_msg(type, jid, nick, L('Temporary message size limit %s') % str(msg_limit))
 
 def bot_plugin(type, jid, nick, text):
@@ -949,10 +859,10 @@ def info(type, jid, nick):
 	msg += L('Message size limit: %s\n') % str(msg_limit)
 	msg += L('Local time: %s\n') % timeadd(tuple(localtime()))
 	msg += L('Uptime: %s, Last session: %s') % (get_uptime_str(), un_unix(int(time.time())-sesstime))
-	smiles = getFile(sml,[(getRoom(jid),0)])
-	floods = getFile(fld,[(getRoom(jid),0)])
-	gl_censor = getFile(cns,[(getRoom(jid),0)])
-	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(int((getRoom(jid),1) in smiles)),onoff(int((getRoom(jid),1) in floods)),onoff(int((getRoom(jid),1) in gl_censor)),get_prefix(get_local_prefix(jid)))
+	smiles = get_config(getRoom(jid),'smile')
+	floods = get_config(getRoom(jid),'flood')
+	censors = get_config(getRoom(jid),'censor')
+	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(smiles),onoff(floods),onoff(censors),get_prefix(get_local_prefix(jid)))
 	msg += L('\nExecuted threads: %s | Error(s): %s') % (th_cnt,thread_error_count)
 	msg += L('\nMessage in: %s | out: %s') % (message_in,message_out)
 	msg += L('\nPresence in: %s | out: %s') % (presence_in,presence_out)
@@ -1214,7 +1124,7 @@ def rss(type, jid, nick, text):
 		if not timetype in ('h','m'): timetype = 'h'
 		try: ofset = int(text[2][:-1])
 		except: ofset = 4
-		if timetype == 'm' and ofset < 10: timetype = '10m'
+		if timetype == 'm' and ofset < rss_min_time_limit: timetype = '%sm' % rss_min_time_limit
 		else: timetype = str(ofset)+timetype
 		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid),[]]) # url time mode
 		writefile(feeds,str(feedbase))
@@ -1326,33 +1236,75 @@ def rss(type, jid, nick, text):
 				msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	if not nosend: send_msg(type, jid, nick, msg)
 
+def configure(type, jid, nick, text):
+	text = text.lower().replace('\n',' ').replace('\r',' ').replace('\t',' ')
+	while text.count('  '): text = text.replace('  ',' ')
+	text = text.split(' ',1)
+	to_conf = text[0]
+	try: param = text[1]
+	except: param = ''
+	if to_conf == 'show':
+		if param == 'status':
+			tmp = config_prefs.keys()
+			tmp.sort()
+			msg = ''
+			for t in tmp: msg += config_prefs[t][0] % onoff(get_config(getRoom(jid),t)) + ' | '
+			msg = L('Current status: %s') % msg[:-2]
+		elif param in config_prefs: msg = config_prefs[param][0] % onoff(get_config(getRoom(jid),param))
+		else:
+			tmp = config_prefs.keys()
+			tmp.sort()
+			msg = L('Available items: %s') % ', '.join(tmp)
+	elif to_conf == 'help':
+		if param in config_prefs: msg = config_prefs[param][1]
+		elif param == '':
+			tmp = config_prefs.keys()
+			tmp.sort()
+			msg = L('Available items: %s') % ', '.join(tmp)
+		else: msg = L('Help for %s not found!') % param
+	elif to_conf in config_prefs:
+		ssta = get_config(getRoom(jid),to_conf)
+		if param.lower() == L('on') or param.lower() == 'on': ssta = True
+		elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
+		else: ssta = not ssta
+		put_config(getRoom(jid),to_conf,ssta)
+		msg = config_prefs[to_conf][0] % onoff(ssta)
+	else: msg = L('Unknown item!')
+	send_msg(type, jid, nick, msg)
+
+config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference')],
+				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change')],
+				'flood': [L('Flood is %s'), L('Autoanswer')],
+				'censor': [L('Censor is %s'), L('Censor')],
+				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher')],
+				'censor_visitor': [L('Censor visitor %s'), L('Revoke voice for members')],
+				'censor_kick': [L('Censor kick %s'), L('Kick participants')]}
+	
 comms = [
-	 (0, u'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
-	 (2, u'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),
-	 (2, u'leave', bot_leave, 2, L('Leave conference.\nleave room[@conference.server.ru[/nick]]')),
-	 (2, u'rejoin', bot_rejoin, 2, L('Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]')),
-	 (2, u'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
-	 (2, u'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
-	 (1, u'where', info_where, 1, L('Show conferences.')),
-	 (0, u'inbase', info_base, 1, L('Your identification in global base.')),
-	 (2, u'look', real_search, 2, L('Search user in conferences where the bot is.')),
-	 (2, u'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
-	 (1, u'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
-	 (1, u'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
-	 (0, u'commands', info_comm, 1, L('Show commands list.')),
-	 (1, u'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
-	 (0, u'bot_uptime', uptime, 1, L('Show bot uptime.')),
-	 (1, u'info', info, 1, L('Misc information about bot.')),
-	 (0, u'new', svn_info, 1, L('Last svn update log')),
-	 (1, u'smile', smile, 2, L('Smile action for role/affiliation change\nsmile [on|off]')),
-	 (1, u'flood', autoflood, 2, L('Autoanswer\nflood [on|off]')),
-	 (1, u'censor', censor_status, 2, L('Censor notification\ncensor [on|off]')),
-	 (2, u'limit', conf_limit, 2, L('Set temporary message limit.')),
-	 (2, u'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
-	 (2, u'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
-	 (0, u'whoami', info_access, 1, L('Your identification.')),
-	 (0, u'whois', info_whois, 2, L('Identification.')),
-	 (0, u'status', status, 2, L('Show status.')),
-	 (1, u'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disabler prefix')),
-	 (2, u'set_locale', set_locale, 2, u'Change bot localization.\nset_locale ru|en'),
-	 (2, u'tune', get_scrobble, 2, u'PEP Scrobbler. Test version')]
+	 (0, 'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
+	 (2, 'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),
+	 (2, 'leave', bot_leave, 2, L('Leave conference.\nleave room[@conference.server.ru[/nick]]')),
+	 (2, 'rejoin', bot_rejoin, 2, L('Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]')),
+	 (2, 'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
+	 (2, 'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
+	 (1, 'where', info_where, 1, L('Show conferences.')),
+	 (0, 'inbase', info_base, 1, L('Your identification in global base.')),
+	 (2, 'look', real_search, 2, L('Search user in conferences where the bot is.')),
+	 (2, 'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
+	 (1, 'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
+	 (1, 'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
+	 (0, 'commands', info_comm, 1, L('Show commands list.')),
+	 (1, 'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
+	 (0, 'bot_uptime', uptime, 1, L('Show bot uptime.')),
+	 (1, 'info', info, 1, L('Misc information about bot.')),
+	 (0, 'new', svn_info, 1, L('Last svn update log')),
+	 (2, 'limit', conf_limit, 2, L('Set temporary message limit.')),
+	 (2, 'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
+	 (2, 'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
+	 (0, 'whoami', info_access, 1, L('Your identification.')),
+	 (0, 'whois', info_whois, 2, L('Identification.')),
+	 (0, 'status', status, 2, L('Show status.')),
+	 (1, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disabler prefix')),
+	 (2, 'set_locale', set_locale, 2, 'Change bot localization.\nset_locale ru|en'),
+	 (2, 'tune', get_scrobble, 2, L('PEP Scrobbler. Test version')),
+	 (1, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]'))]

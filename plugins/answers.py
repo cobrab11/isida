@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-answers_file = 'answers.txt'
-
 def answers_ie(type, jid, nick, text):
 	if text.lower().strip().split(' ',1)[0] == 'export':
 		try: fname = text.lower().split(' ',1)[1]

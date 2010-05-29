@@ -2,7 +2,7 @@
 
 #------------------------------------------------
 #             Isida-bot Config file
-#                    v1.3ru
+#                    v1.4ru
 #------------------------------------------------
 
 Settings = {
@@ -24,3 +24,112 @@ msg_limit		=	2048										# Лимит размера сообщений
 #dm2			=	True										# режим показа действий бота в консоле
 CommandsLog		=	True										# Логгирование команд бота
 #thread_type	=	None										# тип тредов thread/threading. по умолчанию - threading
+
+# --- Файлы ---
+slog_folder = 'log/'					# папка системных логов
+set_folder 	= 'settings/'				# папка настроек
+back_folder = 'backup/'					# папка хранения резервных копий
+loc_folder 	= 'locales/'				# папка локализаций
+log_folder 	= 'logs/'					# папка логов конференций
+LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
+preffile = set_folder+'prefix'			# префиксы
+ver_file = set_folder+'version'			# версия бота
+alfile = set_folder+'aliases'			# сокращения
+fld = set_folder+'flood'				# автоответчик
+sml = set_folder+'smile'				# смайлы на роли
+cns = set_folder+'censors'				# состояние цензора
+owners = set_folder+'owner'				# база владельцев
+ignores = set_folder+'ignore'			# черный список
+confs = set_folder+'conf'				# список активных конф
+feeds = set_folder+'feed'				# список rss каналов + md5 последниx новостей по каждому каналу
+cens = set_folder+'censor.txt'			# список "запрещенных" слов для болтуна
+conoff = set_folder+'commonoff'			# список "запрещенных" команд для бота
+saytobase = set_folder+'sayto.db'		# база команды "передать"
+agestatbase = set_folder+'agestat.db'	# статистика возрастов
+talkersbase = set_folder+'talkers.db'	# статистика болтунов
+wtfbase = set_folder+'wtfbase2.db'		# определения
+answersbase = set_folder+'answers.db'	# ответы бота
+scrobblebase = set_folder+'scrobble.db'	# база PEP скробблера
+loc_file = set_folder+'locale'			# файл локализации
+time_limit_base = set_folder+'saytoowner.db'	# файл ограничений команды msgtoadmin
+wzbase = set_folder+'wz.db'				# база кодов для команд wz*
+gisbase = set_folder+'gis.db'			# база кодов для команд gis*
+hide_conf = set_folder+'hidenroom.db'	# файл скрытых конференций
+jid_base = set_folder+'jidbase.db'		# статистика jid'ов
+top_base = set_folder+'topbase.db'		# активность конференции
+blacklist_base = set_folder + 'blacklist.db'	# черный список конференций
+karmabase = set_folder+'karma.db'		# база кармы
+log_conf = set_folder+'logroom.db'		# список конференций с логами
+tban = set_folder+'temporary.ban'		# лог временного бана
+af_alist = set_folder+'alist.aff'		# alist аффиляций
+ro_alist = set_folder+'alist.rol'		# alist ролей
+ignoreban = set_folder+'ignoreban.db'	# список игнора при глобальном бане
+spy_base = set_folder+'spy.db'			# база слежения
+public_log = log_folder+'chatlogs'		# папка для записи публичных логов конференций
+system_log = log_folder+'syslogs'		# папка для записи системных логов конференций
+logs_css_path = '../../../.css/isida.css'	# путь к css файлу для логов
+tld_list = 'tld/tld.list'				# список tld кодов
+poke_file = 'plugins/poke.txt'			# список ответов для команды poke
+answers_file = 'answers.txt'			# имя файла по умолчанию для импорта/экспорта ответов
+date_file = 'plugins/date.txt'			# список праздников
+
+# --- Переменные ---
+syslogs_enable = True				# Включение системных логов
+status_logs_enable = True			# Запись в логи смены статусов
+aff_role_logs_enable = True			# Запись в логи смены аффиляций и ролей
+html_logs_enable = True				# Тип логов True = html, False = text
+karma_limit = 5						# минимальная карма при которой изменение доступно не постоянным участникам
+karma_timeout = [86400, 3600, 5]	# время, через которое можно менять карму в зависимости от уровня доступа
+karma_show_default_limit = 10		# количество участников по умолчанию для команды karma top+/-
+karma_show_max_limit = 20			# максимальное количество участников для команды karma top+/-
+amsg_limit = [86400,3600,60] 		# лимит времени следующей посылки сообщения для команды msgtoadmin
+watch_size = 900					# период запросов в секундах для плагина watcher
+user_agent = 'Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'	# user agent для большинства web запросов
+size_overflow = 262144				# лимит страницы в байтах для команды www.
+youtube_max_videos 		= 10		# максимальное количество ссылок при показе
+youtube_default_videos 	= 3			# количество ссылок по умолчанию
+youtube_max_page_size 	= 131072	# лимит размера страницы при загрузке
+youtube_default_lang 	= 'ru'		# язык по умолчанию
+age_default_limit = 10				# количество участников по умолчанию для команд плагина age
+age_max_limit = 100					# максимальное количество участников для команд плагина age
+anek_private_limit = 500			# размер, свыше которого анекдот будет посылаться в приват
+troll_default_limit = 10			# Количество сообщений для команды troll
+troll_max_limit = 100				# Максимальное количество сообщений для команды troll
+troll_sleep_time = 0.05				# Задержка отправки сообщений для команды troll
+backup_sleep_time = 0.1				# Задержки при запросах команды backup
+calendar_default_splitter = '_'		# Разделитель по умолчаню для календаря
+clear_delay = 1.3					# Задержка между сообщениями при команде clear
+clear_default_count = 20			# Количество сообщений для команды clear
+clear_max_count = 100				# Максимальное количество сообщений для команды clear
+inlist_sleep_time = 0.1				# Время проверки ответов на запросы плагина inlist
+ping_type = NS_VERSION				# Тип iq запроса для пинга
+ping_digits = 3						# Количество знаков после запятой при пинге
+lfm_api = 'xxxxxxxxxxxxxxxx'		# Api для работы плагина lastfm
+lastfm_max_limit = 10				# Количество ответов для команд плагина lastfm
+ddos_limit = [600,300,0]			# Время игнора при ddos'е в зависимости от уровня доступа
+ddos_diff = [15,10,0]				# Промежуток между сообщениями для включения анти-ddos
+reboot_time = 180					# Таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
+timeout = 600						# Таймаут в секундах на iq запросы
+schedule_time = 10					# Время проверки расписания
+sayto_timeout = 1209600				# Время жизни сообщения, которое бот не смог передать по команде sayto
+sayto_cleanup_time = 86400			# Время через которое производятся зачистки sayto базы
+scan_time = 1800					# Интервал сканирования для команды spy
+spy_action_time = 86400				# Интервал реакции на сканирование для команды spy
+torrent_default_count = 3			# Количество ответов для команды torrent
+rss_max_feed_limit = 10				# Максимальное количество новостей
+rss_min_time_limit = 10				# Минимальное время проверки rss в минутах
+default_msg_limit = msg_limit		# Размер сообщений по умолчанию
+pep_scrobbler_max_count = 10		# Максимальное количество ответов для pep скробблера
+whereis_timeout = 10				# Таймаут ожидания ответа для команды whereis
+whereis_time_dec = 0.1				# Частота проверки ответа для команды whereis
+disco_max_limit = 10				# Максимальное количество ответов для команды disco
+juick_user_post_limit = 3			# Количество постов при запросе по пользователю
+juick_user_post_size = 50			# Количество символов в посте при запросе по пользователю
+juick_tag_user_limit = 5			# Количество пользователей при запросе по тегу
+juick_tag_user_max = 20				# Максимальное количество пользователей при запросе по тегу
+juick_msg_answers_default = 0		# Количество ответов при запросе но номеру сообщения
+juick_tag_post_limit = 3			# Количество постов при запросе по тегу
+juick_tag_post_size = 120			# Количество символов в посте при запросе по тегу
+iq_time_enable = True				# Разрешение отвечать на запрос времени бота
+iq_uptime_enable = True				# Разрешение отвечать на запрос аптайма бота
+iq_version_enable = True			# Разрешение отвечать на запрос версии бота

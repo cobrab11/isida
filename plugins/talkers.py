@@ -1,7 +1,6 @@
 #!/usr/bin/python
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 
-# Поиск по глобальной базе "болтунов"
 def gtalkers(type, jid, nick, text):
 	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
@@ -9,11 +8,6 @@ def gtalkers(type, jid, nick, text):
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from talkers where (jid like ? or nick like ? or room like ?) order by -words',(ttext,ttext,ttext)).fetchmany(10)
 	else: tma = cu.execute('select * from talkers order by -words').fetchmany(10)
-
-	wtext = text.split(' ')
-	wtext = len(wtext)
-	beadd = 1
-
 	if len(tma):
 		msg = L('Talkers:\nNick\t\tWords\tPhrases\tEffect\tConference')
 		cnd = 1
@@ -22,9 +16,7 @@ def gtalkers(type, jid, nick, text):
 			cnd += 1
 	else: msg = text +' '+L('Not found!')
 	send_msg(type, jid, nick, msg)
-	
 
-# Поиск по базе "блтунов" в пределах одной конференции
 def talkers(type, jid, nick, text):
 	mdb = sqlite3.connect(talkersbase)
 	cu = mdb.cursor()
@@ -32,11 +24,6 @@ def talkers(type, jid, nick, text):
 		ttext = '%'+text+'%'
 		tma = cu.execute('select * from talkers where room=? and (jid like ? or nick like ?) order by -words',(jid,ttext,ttext)).fetchmany(10)
 	else: tma = cu.execute('select * from talkers where room=? order by -words',(jid,)).fetchmany(10)
-
-	wtext = text.split(' ')
-	wtext = len(wtext)
-	beadd = 1
-
 	if len(tma):
 		msg = L('Talkers:\nNick\t\tWords\tPhrases\tEffect')
 		cnd = 1

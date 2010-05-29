@@ -5,7 +5,6 @@ def jc(type, jid, nick, text):
 	if not len(text): text = getName(jid)
 	try:	
 		url = 'http://jc.jabber.ru/search.html?%s'.encode("utf-8") % (urllib.urlencode({'search': text.encode("utf-8")}))
-		user_agent='Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'
 		req = urllib2.Request(url)
 		req.add_header('User-Agent',user_agent)
 		body = urllib2.urlopen(req).read()

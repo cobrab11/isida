@@ -13,10 +13,10 @@ def true_age_raw(type, jid, nick, text, xtype):
 	llim = 10
 	if len(text)>=2:
 		try: llim = int(text[1])
-		except: llim = 10
+		except: llim = age_default_limit
 	text = text[0]
 	if text == '': text = nick
-	if llim > 100: llim = 100
+	if llim > age_max_limit: llim = age_max_limit
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
@@ -60,13 +60,13 @@ def seen_split(type, jid, nick, text):
 def seen_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split('\n')
-	llim = 10
+	llim = age_default_limit
 	if len(text)>=2:
 		try: llim = int(text[1])
-		except: llim = 10
+		except: llim = age_default_limit
 	text = text[0]
 	if text == '': text = nick
-	if llim > 100: llim = 100
+	if llim > age_max_limit: llim = age_max_limit
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
@@ -108,14 +108,14 @@ def seenjid_split(type, jid, nick, text):
 def seenjid_raw(type, jid, nick, text, xtype):
 	while text[-1:] == ' ': text = text[:-1]
 	text = text.split('\n')
-	llim = 10
+	llim = age_default_limit
 	if len(text)>=2:
 		try: llim = int(text[1])
-		except: llim = 10
+		except: llim = age_default_limit
 	text = text[0]
 	ztype = None
 	if text == '': text = nick
-	if llim > 100: llim = 100
+	if llim > age_max_limit: llim = age_max_limit
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid order by -time,-status',(jid,text,text.lower())).fetchall()

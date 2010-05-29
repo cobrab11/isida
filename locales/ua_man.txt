@@ -582,6 +582,7 @@ Nick	Ник
 Name	Ім'я
 About	Про себе
 URL	URL
+Empty!	Пусто!
 Timeout %s sec.	Вийшов час очікування - %s сек.
 Uptime: %s	Аптайм: %s
 Ping from you %s sec.	Пінг від тебе - %s сек.
@@ -684,7 +685,7 @@ Need two users	Потрібно вказати двох користувачів
 Tastes of %s and %s - soo different!	Сумісність %s и %s - нульова!
 Match tastes of %s and %s - %s	Збіжність смаків %s і %s - %s
 Artists: %s	Виконавці: %s
-Not found file LastFM.api	Не знайден файл LastFM.api
+Not found LastFM api	Не знайден LastFM api
 # - help -
 Last scrobled tracks	Останні скроблені треки
 Last scrobled track	Останній скроблений трек

@@ -43,7 +43,7 @@ def vcard_async(type, jid, nick, text, args, is_answ):
 			tt = remove_ltgt(get_tag(isa,tmp[1]))
 			if len(tt): msg += '\n'+tmp[0]+': '+tt
 		if len(msg): msg = L('vCard:') + msg
-		else: msg = L('Пусто!')
+		else: msg = L('Empty!')
 	send_msg(type, jid, nick, msg)
 
 def iq_uptime(type, jid, nick, text):
@@ -76,13 +76,13 @@ def ping(type, jid, nick, text):
 				who = getRoom(jid)+'/'+text
 				break
 	iqid = get_id()
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': ping_type},[])])
 	iq_request[iqid]=(time.time(),ping_async,[type, jid, nick, text])
 	sender(i)
 	
 def ping_async(type, jid, nick, text, is_answ):
 	tpi = float(is_answ[0])-time_nolimit
-	tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*1000))
+	tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10**ping_digits))
 	if text == '': msg = L('Ping from you %s sec.') % tpi
 	else: msg = L('Ping from %s %s sec.') % (text, tpi)
 	send_msg(type, jid, nick, msg)

@@ -16,7 +16,6 @@ def to_poke(type, jid, nick, text):
 			L('gave NICK strawberry poison'),
 			L('jumped around with a tambourine NICK'),
 			L('sticking NICK with the words "buy ice cream, you creep!"')]
-	poke_file = 'plugins/poke.txt'
 	ta = get_access(jid,nick)
 	access_mode = ta[0]
 	dpoke = getFile(poke_file,predef_poke)

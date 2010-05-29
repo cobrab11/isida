@@ -1,11 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-youtube_max_videos 		= 10		# максимальное количество ссылок при показе
-youtube_default_videos 	= 3			# количество ссылок по умолчанию
-youtube_max_page_size 	= 131072	# лимит размера страницы при загрузке
-youtube_default_lang 	= 'ru'		# язык по умолчанию
-
 def youtube(type, jid, nick, text):
 	if text.count('\n'):
 		try: lim = int(text.split('\n',1)[1])

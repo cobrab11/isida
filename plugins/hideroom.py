@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-hide_conf = set_folder+'hidenroom.db'
-
 def hide_room(type, jid, nick, text):
 	if type == 'groupchat': msg = L('This command available only in private!')
 	else:

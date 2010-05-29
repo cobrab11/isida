@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-blacklist_base = set_folder + 'blacklist.db'
-
 def leave_room(rjid, reason):
 	global confbase, confs
 	msg = ''

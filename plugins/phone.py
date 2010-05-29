@@ -3,11 +3,7 @@
 
 def gettelcode(text):
 	query = urllib.urlencode({'text' : text.encode("windows-1251")})
-	url = 'http://www.telcode.ru/mob/select.asp?%s'.encode("utf-8") % (query)
-	f = urllib.urlopen(url)
-	body = f.read()
-	f.close()
-	body = html_encode(body)
+	body = html_encode(urllib.urlopen('http://www.telcode.ru/mob/select.asp?%s'.encode("utf-8") % (query)).read())
 	if body.count(u'Не найдено записей'): return L('Not found!')
 	else:
 		msg = rss_del_html(get_tag(body,'h3'))+' ... '
@@ -24,7 +20,6 @@ def gettcode(text):
 	text = text.split('\n')[0]
 	try: url = 'http://www.btk-online.ru/phcode/?srchCId=1&srchTName=&srchCCode=&srchTCode='+str(int(text))
 	except: url = 'http://www.btk-online.ru/phcode/?srchCId=1&%s'.encode("utf-8") % (urllib.urlencode({'srchTName': text.encode("windows-1251")}))
-	user_agent='Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent',user_agent)
 	body = urllib2.urlopen(req).read()

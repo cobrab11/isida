@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import calendar
-
 def add_space_to_number(num):
 	if num<10: return ' '+str(num)
 	else: return str(num)
@@ -14,7 +12,7 @@ def month_cal(type, jid, nick, text):
 	try: year = int(text[1])
 	except: year = tuple(localtime())[0]
 	try: smbl = text[2]
-	except: smbl = ' '
+	except: smbl = calendar_default_splitter
 	try:
 		msg = L('\nMon Tue Wed Thu Fri Sat Sun\n')
 		for tmp in calendar.monthcalendar(year, month):

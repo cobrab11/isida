@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-clear_delay = 1.3
-
 def hidden_clear(type, jid, nick, text):
 	try: cntr = int(text)
-	except: cntr = 20
-	if cntr < 1 or cntr > 100: cntr = 20
+	except: cntr = clear_default_count
+	if cntr > clear_max_count: cntr = clear_max_count
+	elif cntr < 2: cntr = 2
 	pprint('clear: '+unicode(jid)+' by: '+unicode(nick))
 	send_msg(type, jid, nick, L('Clean by %s messages in approximately %s sec.') % (str(cntr),str(int(cntr*clear_delay))))
 	time.sleep(clear_delay)

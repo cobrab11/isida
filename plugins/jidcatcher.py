@@ -1,9 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-jid_base = set_folder+'jidbase.db'		# статистика jid'ов
-top_base = set_folder+'topbase.db'		# активность конференции
-
 def info_search(type, jid, nick, text):
 	msg = L('What I must find?')
 	if text != '':

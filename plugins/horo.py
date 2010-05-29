@@ -3,11 +3,6 @@
 
 # Author ferym
 
-import urllib2,re
-import string
-
-
-global horodb
 horodb={L('aries'): '/aries/today', L('taurus'): '/taurus/today', L('gemini'): '/gemini/today', L('cancer'): '/cancer/today', L('leo'): '/leo/today', L('virgo'): '/virgo/today', L('libra'): '/libra/today', L('scorpio'): '/scorpio/today', L('sagittarius'): '/sagittarius/today', L('capricorn'): '/capricorn/today', L('aquarius'): '/aquarius/today', L('pisces'): '/pisces/today'}
 
 def handler_horoscope(type, jid, nick, parameters):

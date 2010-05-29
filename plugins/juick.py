@@ -12,10 +12,6 @@ def juick(type, jid, nick, text):
 def juick_user_info(type, jid, nick, text):
 	text = text.replace('@','')
 	if len(text):
-		try: mlen = int(text.split(' ')[1])
-		except: mlen = 3
-		try: mlim = int(text.split(' ')[2])
-		except: mlim = 50
 		text = text.split(' ')[0]
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/friends'
 		body = urllib.urlopen(link).read()
@@ -63,9 +59,9 @@ def juick_user(type, jid, nick, text):
 	text = text.replace('@','')
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = 3
+		except: mlen = juick_user_post_limit
 		try: mlim = int(text.split(' ')[2])
-		except: mlim = 50
+		except: mlim = juick_user_post_size
 		text = text.split(' ')[0]
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
@@ -92,14 +88,10 @@ def juick_msg(type, jid, nick, text):
 	if len(text):
 		try:
 			text = text.replace('#','')
-			if text.count('/'):
-				link = 'http://juick.com/'+text.split('/')[0]
-				post = int(text.split('/')[1])
-			else: 
-				post = 0
-				link = 'http://juick.com/'+text.split(' ')[0]
+			if text.count('/'): link,post = 'http://juick.com/'+text.split('/')[0],int(text.split('/')[1])
+			else: link,post = 'http://juick.com/'+text.split(' ')[0],0
 			try: repl_limit = int(text.split(' ')[1])
-			except: repl_limit = 0
+			except: repl_limit = juick_msg_answers_default
 			body = urllib.urlopen(link).read()
 			body = html_encode(body.replace('<div><a href','<div><a '))
 			if body.count('<h1>Page Not Found</h1>'): msg = L('Message #%s not found') % text
@@ -126,7 +118,10 @@ def juick_msg(type, jid, nick, text):
 						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp,'a')+': '+get_tag(rp,'div')
 						cnt += 1
 				else: msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
-			msg = rss_replace(rss_del_html(msg.replace('<a href="http','<a>http').replace('" rel',' <')))
+			remove = re.findall(r'" rel="nofollow">.*?</a>', msg, re.S)
+			for tmp in remove: msg = msg.replace(tmp,' ')
+			msg = rss_replace(rss_del_html(msg.replace('<a href="http','http'))).replace('<small>','\n')
+			while msg.count('  '): msg = msg.replace('  ',' ')
 		except: msg = L('Invalid message number')
 	else: msg = L('What message do you want to find?')
 	send_msg(type, jid, nick, msg)
@@ -134,9 +129,9 @@ def juick_msg(type, jid, nick, text):
 def juick_tag_user(type, jid, nick, text):
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = 5
+		except: mlen = juick_tag_user_limit
 		text = text.split(' ')[0]
-		if mlen > 20: mlen = 20
+		if mlen > juick_tag_user_msx: mlen = juick_tag_user_max
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
@@ -154,9 +149,9 @@ def juick_tag_user(type, jid, nick, text):
 def juick_tag_msg(type, jid, nick, text):
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = 3
+		except: mlen = juick_tag_post_limit
 		try: mlim = int(text.split(' ')[2])
-		except: mlim = 120
+		except: mlim = juick_tag_post_size
 		text = text.split(' ')[0]
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()

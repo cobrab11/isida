@@ -1,10 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-spy_base = set_folder+'spy.db'		# база слежения
 spy_stat_time = int(time.time())	# время последнего сканирования
-scan_time = 1800					# интервал сканирования
-spy_action_time = 86400				# интервал реакции на сканирование
 
 #conf hrs usrs msgs action
 def spy_add(text):

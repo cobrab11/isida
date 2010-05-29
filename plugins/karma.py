@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-karmabase = set_folder+'karma.db'	# база кармы
-karma_limit = 5						# минимум кармы для изменения
-karma_timeout = [86400, 3600, 5]	# время, через которое можно менять карму
-
 karmabasefile = os.path.isfile(karmabase)
 karma_base = sqlite3.connect(karmabase)
 cu_karmabase = karma_base.cursor()
@@ -25,12 +21,12 @@ def karma(type, jid, nick, text):
 	elif arg[0].lower() == 'moderator': msg = karma_moderator(type, jid, nick, arg1)
 	else: msg = karma_show(type, jid, nick, arg[0])
 	send_msg(type, jid, nick, msg)
-
+	
 def karma_top(type, jid, nick, text, order):
 	try: lim = int(text)
-	except: lim = 10
+	except: lim = karma_show_default_limit
 	if lim < 1: lim = 1
-	elif lim > 20: lim = 20
+	elif lim > karma_show_max_limit: lim = karma_show_max_limit
 	karma_base = sqlite3.connect(karmabase)
 	cu_karmabase = karma_base.cursor()
 	if order: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by karma',(jid,)).fetchall()
@@ -46,8 +42,7 @@ def karma_top(type, jid, nick, text, order):
 		if cnt >= lim: break
 	if len(msg): return L('Top karma: %s') % msg
 	else: return L('Karma for members is present not changed!')
-		
-	
+
 def karma_show(type, jid, nick, text):
 	if text == None or text == '' or text == nick: text, atext = nick, L('Your')
 	else: atext = text
@@ -66,7 +61,7 @@ def karma_ban(type, jid, nick, text):
 
 def karma_moderator(type, jid, nick, text):
 	return L('I can\'t!')
-	
+
 def karma_get_access(room,jid):
 	karma_base = sqlite3.connect(karmabase)
 	cu_karmabase = karma_base.cursor()
@@ -75,12 +70,12 @@ def karma_get_access(room,jid):
 	if stat == None: return None
 	if int(stat[0]) < karma_limit: return None
 	return True
-	
+
 def karma_val(val):
 	if val == 0: return '0'
 	elif val < 0: return str(val)
 	else: return '+'+str(val)
-	
+
 def karma_change(room,jid,nick,type,text,value):
 	if type == 'chat': msg = L('You can\'t change karma in private!')
 	else:
@@ -127,7 +122,7 @@ def karma_check(room,jid,nick,type,text):
 	while len(text) and text[-1:] == ' ': text = text[:-1]
 	if text[-3:] == ' +1': karma_change(room,jid,nick,type,text,1)
 	elif text[-3:] == ' -1': karma_change(room,jid,nick,type,text,-1)
-	
+
 global execute, message_control
 
 message_control = [karma_check]

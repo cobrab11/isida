@@ -14,7 +14,6 @@ def to_drink(type, jid, nick, text):
 	wday = [L('monday'),L('tuesday'),L('wendesday'),L('thirsday'),L('friday'),L('saturday'),L('sunday')]
 	lday = [L('last').lower(),L('last').lower(),L('Last').lower(),
 		L('last').lower(),L('Last').lower(),L('Last').lower(),L('lAst').lower()]
-	date_file = 'plugins/date.txt'
 	if os.path.isfile(date_file):
 		ddate = readfile(date_file).decode('UTF')
 		week1 = ''

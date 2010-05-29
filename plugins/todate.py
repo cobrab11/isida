@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-import datetime
-
 def get_holiday(sdate):
 
 	''' Function get holiday from file plugins/date.txt and return title of
@@ -12,7 +10,6 @@ def get_holiday(sdate):
 	:[month, day]:'''
 
 	result = ''
-	date_file = 'plugins/date.txt'
 	date_base = readfile(date_file).decode('UTF').split('\n')
 	for ddate in date_base:
 		if ddate != '\n' or ddate != '':

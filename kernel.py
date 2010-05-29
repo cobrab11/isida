@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
-#                               version 2.00
+#                               version 2.10
 #
 # --------------------------------------------------------------------
 #                  (c) 2oo9-2o1o Disabler Production Lab.
@@ -17,7 +17,9 @@ from pdb import *
 from subprocess import Popen, PIPE, STDOUT
 
 import atexit
+import calendar
 import chardet
+import datetime
 import gc
 import hashlib
 import htmlentitydefs
@@ -30,6 +32,7 @@ import simplejson
 import socket
 import sqlite3
 import subprocess
+import string
 import sys
 import thread
 import threading
@@ -129,16 +132,9 @@ def sender_stack():
 			send_count(tmp)
 		else: sleep(1)
 
-def readfile(filename):
-	fp = file(filename)
-	data = fp.read()
-	fp.close()
-	return data
+def readfile(filename): return file(filename).read()
 
-def writefile(filename, data):
-	fp = file(filename, 'w')
-	fp.write(data)
-	fp.close()
+def writefile(filename, data): file(filename, 'w').write(data)
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
@@ -159,6 +155,18 @@ def getFile(filename,default):
 	writefile(filename+'.back',str(filebody))
 	return filebody
 
+def get_config(room,item):
+	setup = getFile(c_file,{})
+	try: return setup[room][item]
+	except: return None
+	
+def put_config(room,item,value):
+	setup = getFile(c_file,{})
+	try: t = setup[room]
+	except: setup[room] = {}
+	setup[room][item] = value
+	writefile(c_file,str(setup))
+	
 def get_subtag(body,tag):
 	T = re.findall('%s.*?\"(.*?)\"' % tag,body,re.S)
 	if T: return T[0]
@@ -415,7 +423,7 @@ def iqCB(sess,iq):
 			else: iq_async(id,time.time(), unicode(iq))
 
 	elif iq.getType()=='get':
-		if iq.getTag(name='query', namespace=xmpp.NS_VERSION):
+		if iq.getTag(name='query', namespace=xmpp.NS_VERSION) and iq_version_enable:
 			pprint('*** iq:version from '+unicode(nick))
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
@@ -426,7 +434,7 @@ def iqCB(sess,iq):
 			sender(i)
 			raise xmpp.NodeProcessed
 
-		elif iq.getTag(name='query', namespace=xmpp.NS_TIME):
+		elif iq.getTag(name='query', namespace=xmpp.NS_TIME) and iq_time_enable:
 			pprint('*** iq:time from '+unicode(nick))
 			gt=timeZero(gmtime())
 			t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
@@ -448,7 +456,7 @@ def iqCB(sess,iq):
 			sender(i)
 			raise xmpp.NodeProcessed
 
-		elif iq.getTag(name='query', namespace=xmpp.NS_LAST):
+		elif iq.getTag(name='query', namespace=xmpp.NS_LAST) and iq_uptime_enable:
 			pprint('*** iq:uptime from '+unicode(nick))
 			i=xmpp.Iq(to=nick, typ='result')
 			i.setAttr(key='id', val=id)
@@ -576,7 +584,7 @@ def messageCB(sess,mess):
 	room=unicode(mess.getFrom().getStripped())
 	if type == 'headline': to_scrobble(room,mess)
 	text=unicode(mess.getBody())
-	if text == 'None' or text == '': return
+	if (text == 'None' or text == '') and not mess.getSubject(): return
 	if mess.getTimestamp() != None: return
 	nick=mess.getFrom().getResource()
 	if nick == None: nick = ''
@@ -597,9 +605,12 @@ def messageCB(sess,mess):
 		if nowname == '': nowname = Settings['nickname']
 	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 2
 	if type == 'groupchat' and nick != '' and jid != 'None': talk_count(room,jid,nick,text)
-	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0:
-		gl_censor = getFile(cns,[(getRoom(room),0)])
-		if (getRoom(room),1) in gl_censor: send_msg(type,room,nick,L('Censored!'))
+	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
+		cens_text = L('Censored!') + ' ' + to_censore(text)
+		lvl = get_level(room,nick)[0]
+		if lvl >= 5 and get_config(getRoom(room),'censor_warning'): send_msg(type,room,nick,cens_text)
+		elif lvl == 4 and get_config(getRoom(room),'censor_visitor'): sender(Node('iq', {'id': get_id(), 'type': 'set', 'to':room}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'visitor', 'nick':nick},[Node('reason',{},cens_text)])])]))
+		elif lvl < 4 and get_config(getRoom(room),'censor_kick'): sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'none', 'nick':nick},[Node('reason',{},cens_text)])])]))
 	no_comm = 1
 	if (text != 'None') and (len(text)>=1) and access_mode >= 0 and not mess.getSubject():
 		no_comm = 1
@@ -638,10 +649,8 @@ def messageCB(sess,mess):
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
-	if room != selfjid:
-		floods = getFile(fld,[(getRoom(room),0)])
-		is_flood = (getRoom(room),1) in floods
-	else: is_flood = 0
+	if room != selfjid: is_flood = get_config(getRoom(room),'flood')
+	else: is_flood = None
 
 	if selfjid != jid and no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 		if len(text)>100: send_msg(type, room, nick, L('Too many letters!'))
@@ -653,7 +662,9 @@ def messageCB(sess,mess):
 def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None': tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
+		if subj != 'None' and back_text == 'None':
+			if subj.count('\n'): subj = '\n'+subj
+			tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
 		else: tmp(room,jid,nick,type,back_text)
 
 def send_msg_human(type, room, nick, text):
@@ -678,11 +689,9 @@ def getAnswer(tx,type):
 
 def to_censore(text):
 	for c in censor:
-		matcher = re.compile(r'.*'+c.lower()+r'.*')
-		if matcher.match(r' '+text.lower()+r' '):
-			text = '*censored*'
-			break
-	return text
+		cn = re.findall(c,' '+text+' ',re.S)
+		for tmp in cn: text = text.replace(tmp,'[censored]')
+	return del_space_both(text)
 
 def get_valid_tag(body,tag):
 	if body.count(tag): return get_subtag(body,tag)
@@ -749,8 +758,8 @@ def presenceCB(sess,mess):
 		if nowname == '': nowname = Settings['nickname']
 
 	if room != selfjid and nick == nowname:
-		smiles = getFile(sml,[(getRoom(room),0)])
-		if (getRoom(room),1) in smiles:
+		smiles = get_config(getRoom(room),'smile')
+		if smiles:
 			smile_action = {'participantnone':' :-|', 'participantmember':' :-)', 'moderatormember':' :-"','moderatoradmin':' :-D', 'moderatorowner':' 8-D'}
 			try: send_msg('groupchat', room, '', smile_action[role+affiliation])
 			except: pass
@@ -802,8 +811,8 @@ def presenceCB(sess,mess):
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 	
 def onoff(msg):
-	if msg: return L('on').upper()
-	return L('off').upper()
+	if msg: return L('on').capitalize()
+	return L('off').capitalize()
 
 def getName(jid):
 	jid = unicode(jid)
@@ -900,69 +909,38 @@ def get_id():
 	return 'request_%s' % id_count
 
 # --------------------- Иницилизация переменных ----------------------
-slog_folder = 'log/'					# папка логов
-set_folder 	= 'settings/'				# папка настроек
-back_folder = 'backup/'					# папка хранения резервных копий
-loc_folder 	= 'locales/'				# папка локализаций
-LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
-preffile = set_folder+'prefix'			# префиксы
-ver_file = set_folder+'version'			# версия бота
-configname = set_folder+'config.py'		# конфиг бота
-alfile = set_folder+'aliases'			# сокращения
-fld = set_folder+'flood'				# автоответчик
-sml = set_folder+'smile'				# смайлы на роли
-cns = set_folder+'censors'				# состояние цензора
-owners = set_folder+'owner'				# база владельцев
-ignores = set_folder+'ignore'			# черный список
-confs = set_folder+'conf'				# список активных конф
-feeds = set_folder+'feed'				# список rss каналов + md5 последниx новостей по каждому каналу
-cens = set_folder+'censor.txt'			# список "запрещенных" слов для болтуна
-conoff = set_folder+'commonoff'			# список "запрещенных" команд для бота
-saytobase = set_folder+'sayto.db'		# база команды "передать"
-agestatbase = set_folder+'agestat.db'	# статистика возрастов
-talkersbase = set_folder+'talkers.db'	# статистика болтунов
-wtfbase = set_folder+'wtfbase2.db'		# определения
-answersbase = set_folder+'answers.db'	# ответы бота
-scrobblebase = set_folder+'scrobble.db'	# база PEP скробблера
-loc_file = set_folder+'locale'			# файл локализации
 
 nmbrs = ['0','1','2','3','4','5','6','7','8','9','.']
-ul = 'update.log'				# лог последнего обновление
-debugmode = None				# остановка на ошибках
-dm = None						# отладка xmpppy
-dm2 = None						# отладка действий бота
-CommandsLog = None				# логгирование команд
-prefix = '_'					# префикс комманд
-msg_limit = 1000				# лимит размера сообщений
-botName = 'Isida-Bot'			# название бота
-botVersion = 'v2.00'			# версия бота
-capsVersion = botVersion[1:]	# версия для капса
-banbase = []					# результаты muc запросов
-pres_answer = []				# результаты посылки презенсов
-iq_request = {}					# iq запросы
-th_cnt = 0						# счётчик тредов
-timeout = 600					# таймаут в секундах на iq запросы
-schedule_time = 10				# время проверки расписания
-thread_error_count = 0			# счётчик ошибок тредов
-reboot_time = 180				# таймаут рестарта бота при ошибке не стадии подключения (нет инета, ошибка авторизации)
-bot_exit_type = None			# причина завершения бота
-last_stream = []				# очередь станз к отправке
-last_command = []				# последняя исполненная ботом команда
-ddos_limit = [600,300,0]		# время игнора при ddos'е в зависимости от уровня доступа
-ddos_diff = [15,10,0]			# промежуток между сообщениями
-thread_type = True				# тип тредов
-time_limit = 1.2				# максимальная задержка между посылкой станз с одинаковым типом в groupchat
-time_nolimit = 0.05				# задержка между посылкой станз с разными типами
-message_in,message_out = 0,0	# статистика сообщений
-iq_in,iq_out = 0,0				# статистика iq запросов
-presence_in,presence_out = 0,0	# статистика презенсов
-unknown_out = 0					# статистика ошибочных отправок
-cycles_used,cycles_unused = 0,0	# статистика циклов
-id_count = 0					# номер запроса
-megabase = []					# главная временная база с полной информацией из презенсов
-ignore_owner = None				# исполнять отключенные команды для владельца бота
-
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)	# включение логгирования
+ul = 'update.log'					# лог последнего обновление
+debugmode = None					# остановка на ошибках
+dm = None							# отладка xmpppy
+dm2 = None							# отладка действий бота
+CommandsLog = None					# логгирование команд
+prefix = '_'						# префикс комманд
+msg_limit = 1000					# лимит размера сообщений
+botName = 'Isida-Bot'				# название бота
+botVersion = 'v2.10'					# версия бота
+capsVersion = botVersion[1:]		# версия для капса
+banbase = []						# результаты muc запросов
+pres_answer = []					# результаты посылки презенсов
+iq_request = {}						# iq запросы
+th_cnt = 0							# счётчик тредов
+thread_error_count = 0				# счётчик ошибок тредов
+bot_exit_type = None				# причина завершения бота
+last_stream = []					# очередь станз к отправке
+last_command = []					# последняя исполненная ботом команда
+thread_type = True					# тип тредов
+time_limit = 1.2					# максимальная задержка между посылкой станз с одинаковым типом в groupchat
+time_nolimit = 0.05					# задержка между посылкой станз с разными типами
+message_in,message_out = 0,0		# статистика сообщений
+iq_in,iq_out = 0,0					# статистика iq запросов
+presence_in,presence_out = 0,0		# статистика презенсов
+unknown_out = 0						# статистика ошибочных отправок
+cycles_used,cycles_unused = 0,0		# статистика циклов
+id_count = 0						# номер запроса
+megabase = []						# главная временная база с полной информацией из презенсов
+ignore_owner = None					# исполнять отключенные команды для владельца бота
+configname = 'settings/config.py'	# конфиг бота
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -970,13 +948,16 @@ if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])
 elif lt[0:3] > gt[0:3]: timeofset = int(lt[3])-int(gt[3]) + 24
 else: timeofset = int(gt[3])-int(lt[3]) + 24
 
+if os.path.isfile(configname): execfile(configname)
+else: errorHandler(configname+' is missed.')
+
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
-botOs = os_version()
+try: tmp = botOs
+except: botOs = os_version()
 
-if os.path.isfile(configname): execfile(configname)
-else: errorHandler(configname+' is missed.')
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG,)	# включение логгирования
 capsNode = 'http://isida-bot.com'
 god = SuperAdmin
 pprint('-'*50)

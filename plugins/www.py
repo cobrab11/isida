@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-user_agent = 'Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'
-size_overflow = 262144	# лимит страницы в байтах для команды просмотра.
+last_url_watch = ''
 
 def netheader(type, jid, nick, text):
 	if len(text):
@@ -58,7 +57,24 @@ def netwww(type, jid, nick, text):
 		except Exception, SM: msg = unicode(SM)
 	send_msg(type, jid, nick, msg[:msg_limit])
 
+def parse_url_in_message(room,jid,nick,type,text):
+	global last_url_watch
+	if type != 'groupchat' or text == 'None' or nick == '' or getRoom(jid) == getRoom(selfjid): return
+	if not get_config(getRoom(room),'url_title'): return
+	try: link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
+	except: return
+	if link and last_url_watch != link:
+		last_url_watch = link
+		req = urllib2.Request(link.encode('utf-8'))
+		req.add_header('User-Agent',user_agent)
+		page = remove_sub_space(html_encode(urllib2.urlopen(req).read(2048)))
+		text = get_tag(page,'title').replace('\n',' ').replace('\r',' ').replace('\t',' ')
+		while text.count('  '): text = text.replace('  ',' ')
+		if text: send_msg(type, room, nick, L('Title: %s') % text)
+
 global execute
+
+message_control = [parse_url_in_message]
 
 execute = [(0, 'www', netwww, 2, L('Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags')),
 		   (0, 'header',netheader,2, L('Show net header'))]

@@ -4,9 +4,6 @@
 # written by dr.Schmurge
 # fixed by Disabler
 
-time_limit_base = set_folder+'saytoowner.db'
-amsg_limit = [86400,3600,60] # лимит времени следующей посылки сообщения
-
 def adminmail(type, jid, nick, text):
 	if len(text):
 		if len(text) > amsg_limit: text = text[:amsg_limit]+'[...]'

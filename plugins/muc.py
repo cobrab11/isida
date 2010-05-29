@@ -1,11 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-tban = set_folder+'temporary.ban'		# лог временного бана
-af_alist = set_folder+'alist.aff'		# alist аффиляций
-ro_alist = set_folder+'alist.rol'		# alist ролей
-ignoreban = set_folder+'ignoreban.db'	# список игнора при глобальном бане
-
 # -------------- affiliation -----------------
 
 def global_ban(type, jid, nick, text):
@@ -163,10 +158,10 @@ def muc_affiliation(type, jid, nick, text, aff):
 
 # -------------- role -----------------
 
-def muc_kick(type, jid, nick,text): muc_role(type, jid, nick, text, 'none')
-def muc_participant(type, jid, nick,text): muc_role(type, jid, nick, text, 'participant')
-def muc_visitor(type, jid, nick,text): muc_role(type, jid, nick, text, 'visitor')
-def muc_moderator(type, jid, nick,text): muc_role(type, jid, nick, text, 'moderator')
+def muc_kick(type, jid, nick, text): muc_role(type, jid, nick, text, 'none')
+def muc_participant(type, jid, nick, text): muc_role(type, jid, nick, text, 'participant')
+def muc_visitor(type, jid, nick, text): muc_role(type, jid, nick, text, 'visitor')
+def muc_moderator(type, jid, nick, text): muc_role(type, jid, nick, text, 'moderator')
 
 def muc_role(type, jid, nick, text, role):
 	skip = None

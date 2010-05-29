@@ -2,7 +2,6 @@
 # -*- coding: utf -*-
 
 last_cleanup_sayto_base = 0
-sayto_timeout = 1209600
 
 def sayto(type, jid, nick, text):
 	if text.split(' ')[0] == 'show':
@@ -92,7 +91,7 @@ def sayto_presence(room,jid,nick,type,text):
 def cleanup_sayto_base():
 	global last_cleanup_sayto_base
 	ctime = int(time.time())
-	if ctime-last_cleanup_sayto_base > 86400:
+	if ctime-last_cleanup_sayto_base > sayto_cleanup_time:
 		last_cleanup_sayto_base = ctime
 		sdb = sqlite3.connect(saytobase)
 		cu = sdb.cursor()

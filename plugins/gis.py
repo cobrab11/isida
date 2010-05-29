@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-gisbase = set_folder+'gis.db'
-
 def gweather_raw(type, jid, nick, text, fully):
 	def get_date(body):
 		tmp = get_tag_item(body,'FORECAST','day')+'.'+get_tag_item(body,'FORECAST','month')

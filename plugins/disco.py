@@ -3,7 +3,6 @@
 
 whereis_requests = []
 whereis_answers	 = []
-whereis_timeout  = 10
 whereis_checks   = {}
 whereis_lock	 = None
 
@@ -18,7 +17,7 @@ def disco(type, jid, nick, text):
 	try: what = text[1]
 	except: what = ''
 	try: hm = int(text[2])
-	except: hm = 10
+	except: hm = disco_max_limit
 	iqid = get_id()
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
 	iq_request[iqid]=(time.time(),disco_async,[type, jid, nick, what, where, hm])
@@ -129,8 +128,8 @@ def whereis_async(type, jid, nick, who, where, is_answ):
 		cnt = whereis_timeout
 		while cnt > 0:
 			if (curr_id,iqid,tt) in whereis_requests:
-				sleep(0.1)
-				cnt -= 0.1
+				sleep(whereis_time_dec)
+				cnt -= whereis_time_dec
 			else: break
 		if not cnt:
 			whereis_requests.remove((curr_id,iqid,tt))

@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-wzbase = set_folder+'wz.db'
-
 def check_wz(text):
 	if not len(text): return True
 	for tm in text:

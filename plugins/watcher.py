@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-watch_size = 900		# период запросов в секундах
 watch_time = time.time()
 watch_count = 0
 watch_reset = True
