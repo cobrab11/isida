@@ -32,12 +32,9 @@ back_folder = 'backup/'					# папка хранения резервных к�
 loc_folder 	= 'locales/'				# папка локализаций
 log_folder 	= 'logs/'					# папка логов конференций
 LOG_FILENAME = slog_folder+'error.txt'	# логи ошибок
-preffile = set_folder+'prefix'			# префиксы
+c_file = set_folder+'conference.config' # конфиг конференции
 ver_file = set_folder+'version'			# версия бота
 alfile = set_folder+'aliases'			# сокращения
-fld = set_folder+'flood'				# автоответчик
-sml = set_folder+'smile'				# смайлы на роли
-cns = set_folder+'censors'				# состояние цензора
 owners = set_folder+'owner'				# база владельцев
 ignores = set_folder+'ignore'			# черный список
 confs = set_folder+'conf'				# список активных конф
@@ -72,6 +69,7 @@ tld_list = 'tld/tld.list'				# список tld кодов
 poke_file = 'plugins/poke.txt'			# список ответов для команды poke
 answers_file = 'answers.txt'			# имя файла по умолчанию для импорта/экспорта ответов
 date_file = 'plugins/date.txt'			# список праздников
+
 
 # --- Переменные ---
 syslogs_enable = True				# Включение системных логов
