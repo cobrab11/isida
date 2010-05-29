@@ -1064,7 +1064,12 @@ game_over = None
 cb = []
 is_start = True
 lastserver = getServer(confbase[0].lower())
+setup = getFile(c_file,{})
 for tocon in confbase:
+	try: t = setup[getRoom(tocon)]
+	except: 
+		setup[getRoom(tocon)] = {}
+		writefile(c_file,str(setup))
 	baseArg = unicode(tocon)
 	if not tocon.count('/'): baseArg += '/'+unicode(Settings['nickname'])
 	conf = JID(baseArg)
@@ -1074,7 +1079,7 @@ for tocon in confbase:
 		tocon += '_'
 		zz = joinconf(tocon, getServer(Settings['jid']))
 	cb.append(tocon)
-	pprint('--> %s' % tocon)
+	pprint('--> %s' % tocon)		
 confbase = cb
 is_start = None
 pprint('Joined')
