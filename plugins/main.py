@@ -438,19 +438,19 @@ def sfind(mass,stri):
 
 def get_local_prefix(jid):
 	lprefix = get_config(getRoom(jid),'prefix')
-	if lprefix: return lprefix
-	return prefix
+	if lprefix == None: return prefix
+	return lprefix
 
 def get_prefix(lprefix):
-	if lprefix=='': return L('absent')
-	elif not lprefix: return prefix
-	else: return lprefix
+	if lprefix != '': return lprefix
+	else: return L('absent')
 
 def set_prefix(type, jid, nick, text):
 	lprefix = get_config(getRoom(jid),'prefix')
 	if text.lower() == 'none': lprefix = ''
 	elif text.lower() == 'del': lprefix = prefix
 	elif text != '': lprefix = text
+	if lprefix == None: lprefix = prefix
 	put_config(getRoom(jid),'prefix',lprefix)
 	msg = L('Command prefix: %s') % get_prefix(lprefix)
 	send_msg(type, jid, nick, msg)
@@ -1304,7 +1304,7 @@ comms = [
 	 (0, 'whoami', info_access, 1, L('Your identification.')),
 	 (0, 'whois', info_whois, 2, L('Identification.')),
 	 (0, 'status', status, 2, L('Show status.')),
-	 (1, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disabler prefix')),
+	 (1, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disable prefix')),
 	 (2, 'set_locale', set_locale, 2, 'Change bot localization.\nset_locale ru|en'),
 	 (2, 'tune', get_scrobble, 2, L('PEP Scrobbler. Test version')),
 	 (1, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]'))]
