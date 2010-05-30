@@ -61,16 +61,17 @@ def parse_url_in_message(room,jid,nick,type,text):
 	global last_url_watch
 	if type != 'groupchat' or text == 'None' or nick == '' or getRoom(jid) == getRoom(selfjid): return
 	if not get_config(getRoom(room),'url_title'): return
-	try: link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
-	except: return
-	if link and last_url_watch != link:
-		last_url_watch = link
-		req = urllib2.Request(link.encode('utf-8'))
-		req.add_header('User-Agent',user_agent)
-		page = remove_sub_space(html_encode(urllib2.urlopen(req).read(2048)))
-		text = get_tag(page,'title').replace('\n',' ').replace('\r',' ').replace('\t',' ')
-		while text.count('  '): text = text.replace('  ',' ')
-		if text: send_msg(type, room, nick, L('Title: %s') % text)
+	try: 
+		link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
+		if link and last_url_watch != link:
+			last_url_watch = link
+			req = urllib2.Request(link.encode('utf-8'))
+			req.add_header('User-Agent',user_agent)
+			page = remove_sub_space(html_encode(urllib2.urlopen(req).read(2048)))
+			text = get_tag(page,'title').replace('\n',' ').replace('\r',' ').replace('\t',' ')
+			while text.count('  '): text = text.replace('  ',' ')
+			if text: send_msg(type, room, nick, L('Title: %s') % text)
+	except: pass
 
 global execute
 
