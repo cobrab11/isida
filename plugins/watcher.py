@@ -32,6 +32,6 @@ def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s
 
 global execute, timer
 
-timer = [connect_watch]
+if iq_version_enable: timer = [connect_watch]
 
 execute = [(0,'watcher',c_watcher,1,L('Connection activity control.'))]
