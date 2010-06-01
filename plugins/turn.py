@@ -28,8 +28,7 @@ def turner(type, jid, nick, text):
 				notur = 0
 				break
 		if notur: msg += tex
-	gl_censor = getFile(cns,[(getRoom(jid),0)])
-	if int((getRoom(jid),1) in gl_censor): msg = to_censore(msg)
+	if get_config(getRoom(room),'censor'): msg = to_censore(msg)
 	send_msg('groupchat', jid, '', msg)
 
 def append_to_turner(room,jid,nick,type,text):
