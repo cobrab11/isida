@@ -512,7 +512,17 @@ def iqCB(sess,iq):
 				if ownerbase.count(getRoom(jid)): pass
 				elif get_config(getRoom(room),'muc_filter'):
 					body = get_tag(msg,'body')
-					if get_config(getRoom(room),'muc_filter_repeat') != 'off':
+					if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= muc_filter_large_message_size:
+						act = get_config(getRoom(room),'muc_filter_large')
+						if act == 'paste' or act == 'truncate':
+							url = paste_text(body,room,jid)
+							if act == 'truncate': body = u'%s[…] %s' % (body[:muc_filter_large_message_size],url)
+							else: body = L(u'Large message… %s') % url
+							msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
+						elif act == 'mute': mute = True
+						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
+						pprint('MUC-Filter large message (%s): %s [%s] %s' % (act,jid,room,body))
+					if get_config(getRoom(room),'muc_filter_repeat') != 'off' and msg and not mute:
 						try: lm = last_msg_base[getRoom(jid)]
 						except: lm = None
 						if lm:
@@ -557,16 +567,6 @@ def iqCB(sess,iq):
 							elif act == 'mute': mute = True
 							else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 							pprint('MUC-Filter adblock (%s): %s [%s] %s' % (act,jid,room,body))
-					if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= muc_filter_large_message_size and msg and not mute:
-						act = get_config(getRoom(room),'muc_filter_large')
-						if act == 'paste' or act == 'truncate':
-							url = paste_text(body,room,jid)
-							if act == 'truncate': body = u'%s[…] %s' % (body[:muc_filter_large_message_size],url)
-							else: body = L(u'Large message… %s') % url
-							msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
-						elif act == 'mute': mute = True
-						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
-						pprint('MUC-Filter large message (%s): %s [%s] %s' % (act,jid,room,body))
 					if get_config(getRoom(room),'muc_filter_censor') != 'off' and body != to_censore(body) and msg and not mute:
 						act = get_config(getRoom(room),'muc_filter_censor')
 						if act == 'replace': msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % to_censore(body))
