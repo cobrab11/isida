@@ -38,7 +38,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_file = curr_path + '/'+tZ(lt[2])+['.txt','.html'][html_logs_enable]
 	ott = onlytimeadd(tuple(localtime()))
-	if html_logs_enable: text = correct_html(text)
+	#if html_logs_enable: text = correct_html(text)
 	log_body = ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable]
 	if nick == '': log_body += ['*** %s\n','<span class="topic">%s</span></p>'][html_logs_enable] % text
 	else:
@@ -79,7 +79,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	role,affiliation = [mass[1],html_escape(mass[1])][html_logs_enable], [mass[2],html_escape(mass[2])][html_logs_enable]
 	if nick[:11] != '<temporary>' and role != 'None' and affiliation != 'None':
 		text,exit_type = [mass[0],html_escape(mass[0])][html_logs_enable],mass[3]
-		if html_logs_enable: text = correct_html(text)
+		#if html_logs_enable: text = correct_html(text)
 		exit_message,show = [mass[4],html_escape(mass[4])][html_logs_enable], [mass[5],html_escape(mass[5])][html_logs_enable]
 		priority,not_found = mass[6],mass[7]
 		if not_found == 1 and not aff_role_logs_enable: return

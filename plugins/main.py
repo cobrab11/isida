@@ -76,7 +76,7 @@ iq_error = {'bad-request':L('Bad request'),
 
 
 def correct_html(text):
-	text = text.replace('<','&lt;').replace('>','&gt;').replace('\n','<br>')
+	text = text.replace('<','&lt;').replace('>','&gt;')
 	link = re.findall(u'(http[s]?://[a-zA-Z\.\-\_0-9а-яА-Я\/]+)',text)
 	link_tmp = []
 	for tmp in link:
@@ -87,8 +87,7 @@ def correct_html(text):
 	for tmp in link:
 		if not link_tmp.count(tmp): link_tmp.append(tmp)
 	for tmp in link_tmp: text = text.replace(tmp,'<a href="mailto:%s">%s</a>' % (tmp,tmp))
-
-	return text
+	return text.replace('\n','<br>')
 			
 def get_level(cjid, cnick):
 	access_mode = -2
