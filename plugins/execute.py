@@ -28,5 +28,5 @@ def calc(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'calc', calc, 2, L('Calculator.')),
-	 (2, 'exec', exec_ute, 2, L('Execution of external code.'))]
+execute = [(3, 'calc', calc, 2, L('Calculator.')),
+	 (9, 'exec', exec_ute, 2, L('Execution of external code.'))]

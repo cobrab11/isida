@@ -7,11 +7,11 @@ def global_ban(type, jid, nick, text):
 	text = text.lower()
 	hroom = getRoom(jid)
 	hr = getFile(ignoreban,[])
-	al = get_access(jid,nick)[0]
-	if al == 2: af = 'owner'
+	al = get_level(jid,nick)[0]
+	if al == 9: af = 'owner'
 	else: af = get_affiliation(jid,nick)
 	if af != 'owner': msg = L('This command available only for conference owner!')
-	elif text == 'show' and al == 2:
+	elif text == 'show' and al == 9:
 		if len(hr):
 			msg = L('Global ban is off in:')
 			for tmp in hr: msg += '\n'+tmp
@@ -92,7 +92,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1: msg, whojid = L('done'), getRoom(unicode(fnd[0][0]))
 			elif len(fnd) > 1:
-				whojid = getRoom(get_access(jid,who)[1])
+				whojid = getRoom(get_level(jid,who)[1])
 				if whojid != 'None': msg = L('done')
 				else: msg, skip = L('I seen some peoples with this nick. Get more info!'), True
 			else:
@@ -143,7 +143,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1: msg, whojid = L('done'), getRoom(unicode(fnd[0][0]))
 		elif len(fnd) > 1:
-			whojid = getRoom(get_access(jid,who)[1])
+			whojid = getRoom(get_level(jid,who)[1])
 			if whojid != 'None': msg = L('done')
 			else: msg, skip = L('I seen some peoples with this nick. Get more info!'), True
 		else:
@@ -173,7 +173,7 @@ def muc_role(type, jid, nick, text, role):
 		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1: whonick, msg = unicode(fnd[0][0]), L('done')
 		elif len(fnd) > 1:
-			wj = getRoom(get_access(jid,who)[1])
+			wj = getRoom(get_level(jid,who)[1])
 			if wj != 'None': whonick, msg = who, L('done')
 			else: msg, skip = L('I seen some peoples with this nick. Get more info!'), True
 		else: 
@@ -251,7 +251,7 @@ def muc_arole(type, jid, nick, text, role):
 			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1: whonick, whojid, skip, msg = unicode(fnd[0][0]), unicode(fnd[0][1]), None, L('done')
 			elif len(fnd) > 1:
-				whojid = getRoom(get_access(jid,who)[1])
+				whojid = getRoom(get_level(jid,who)[1])
 				if whojid != 'None': whonick, msg, skip = who, L('done'), None
 				else: msg = L('I seen some peoples with this nick. Get more info!')
 			else: msg = L('I don\'t know %s') % who
@@ -301,7 +301,7 @@ def muc_afind(type, jid, nick, text):
 		fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), True
 		elif len(fnd) > 1:
-			whojid = getRoom(get_access(jid,who)[1])
+			whojid = getRoom(get_level(jid,who)[1])
 			if whojid != 'None': whonick, msg, skip = who, L('done'), True
 			else: msg = L('I seen some peoples with this nick. Get more info!')
 		else: msg = L('I don\'t know %s') % who
@@ -343,19 +343,19 @@ timer = [check_unban,decrease_alist_role]
 presence_control = [alist_role_presence]
 #message_control = [alist_message]
 
-execute = [(1, 'ban', muc_ban, 2, L('Ban user.')),
-	   (1, 'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
-	   (1, 'none', muc_none, 2, L('Delete user affiliation.')),
-	   (1, 'member', muc_member, 2, L('Get member affiliation.')),
-#	   (1, 'admin', muc_admin, 2, ''),
-#	   (1, 'owner', muc_owner, 2, ''),
-	   (1, 'afind', muc_afind, 2, L('Search in alist.')),
-	   (1, 'kick', muc_kick, 2, L('Kick user.')),
-	   (1, 'participant', muc_participant, 2, L('Give participant.')),
-	   (1, 'visitor', muc_visitor, 2, L('Give visitor.')),
-	   (1, 'moderator', muc_moderator, 2, L('Give role moderator.')),
-	   (1, 'akick', muc_akick, 2, L('Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.')),
-	   (1, 'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
-	   (1, 'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
-	   (1, 'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
-	   (1, 'global_ban', global_ban, 2, L('Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]
+execute = [(7, 'ban', muc_ban, 2, L('Ban user.')),
+	   (7, 'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
+	   (7, 'none', muc_none, 2, L('Delete user affiliation.')),
+	   (7, 'member', muc_member, 2, L('Get member affiliation.')),
+#	   (7, 'admin', muc_admin, 2, ''),
+#	   (7, 'owner', muc_owner, 2, ''),
+	   (7, 'afind', muc_afind, 2, L('Search in alist.')),
+	   (7, 'kick', muc_kick, 2, L('Kick user.')),
+	   (7, 'participant', muc_participant, 2, L('Give participant.')),
+	   (7, 'visitor', muc_visitor, 2, L('Give visitor.')),
+	   (7, 'moderator', muc_moderator, 2, L('Give role moderator.')),
+	   (7, 'akick', muc_akick, 2, L('Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.')),
+	   (7, 'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
+	   (7, 'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
+	   (7, 'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
+	   (8, 'global_ban', global_ban, 2, L('Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]

@@ -63,9 +63,16 @@ message_control = [empty_message] # реакция на сообщение
 # описание команд
 execute = [(0, 'empty', empty_command, 1, L('command decription'))]
 # 1. уровень доступа:
-#		0 - всем
-#		1 - админам\владельцам
-#		2 - владельцу бота
+#		0 - без ограничений
+#		1 - не ниже visitor|none
+#		2 - не ниже visitor|member
+#		3 - не ниже participant|none
+#		4 - не ниже participant|member
+#		5 - не ниже moderator|none
+#		6 - не ниже moderator|member
+#		7 - не ниже moderator|admin
+#		8 - не ниже moderator|owner
+#		9 - владелeц бота
 # 2. название команды на которую бот будет реагировать
 # 3. название функции, которая вызывается командой
 # 4. тип передачи параметров:
@@ -90,5 +97,5 @@ execute = [(0, 'empty', empty_command, 1, L('command decription'))]
 # getRoom(jid) - взять NAME@SERVER.TLD/resource
 # shell_execute(cmd) - выполнить shell команду
 # get_affiliation(room,nick) - возвращает аффиляцию
-# get_access(room,nick) - возвращает (уровень_доступа, jid)
+# get_level(room,nick) - возвращает (уровень_доступа, jid)
 # html_encode(body) - определение кодировки и декодирование body в unicode

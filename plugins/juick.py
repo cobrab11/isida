@@ -173,4 +173,4 @@ def juick_tag_msg(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]
+execute = [(3, 'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]

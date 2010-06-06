@@ -8,7 +8,7 @@ def to_public(type, room, nick, text):
 	raw_redirect('groupchat', room, nick, text)
 	
 def raw_redirect(type, room, nick, text):
-	ta = get_access(room,nick)
+	ta = get_level(room,nick)
 	access_mode = ta[0]
 	jid =ta[1]
 	tmppos = arr_semi_find(confbase, room)
@@ -20,5 +20,5 @@ def raw_redirect(type, room, nick, text):
 
 global execute
 
-execute = [(0, 'private', to_private, 2, L('Redirect command output in private.')),
-		   (0, 'public', to_public, 2, L('Redirect command output in groupchat.'))]
+execute = [(3, 'private', to_private, 2, L('Redirect command output in private.')),
+		   (3, 'public', to_public, 2, L('Redirect command output in groupchat.'))]

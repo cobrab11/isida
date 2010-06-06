@@ -71,4 +71,4 @@ def phonecode(type, jid, nick, text):
 		
 global execute
 
-execute = [(0, 'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]
+execute = [(3, 'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]

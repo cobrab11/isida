@@ -7,8 +7,8 @@ def sayto(type, jid, nick, text):
 	if text.split(' ')[0] == 'show':
 		try: text = text.split(' ',1)[1]
 		except: text = ''
-		ga = get_access(jid, nick)
-		if ga[0] != 2: msg = L('You access level is to low!')
+		ga = get_level(jid, nick)
+		if ga[0] != 9: msg = L('You access level is to low!')
 		else:
 			sdb = sqlite3.connect(saytobase)
 			cu = sdb.cursor()
@@ -121,5 +121,5 @@ global execute, timer, presence_control
 
 timer = [cleanup_sayto_base]
 presence_control = [sayto_presence]
-execute = [(0, 'sayto', sayto, 2, L('"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn\'t be send this message remove.')),
-			(1, 'sayjid', sayjid, 2, L('Send message to jid\n sayjid jid message.'))]
+execute = [(3, 'sayto', sayto, 2, L('"Say to" command.\nsayto jid|nick message - if jid or nick join in conference, bot send "message". Messages saves 14 days, after if message didn\'t be send this message remove.')),
+			(7, 'sayjid', sayjid, 2, L('Send message to jid\n sayjid jid message.'))]

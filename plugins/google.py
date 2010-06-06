@@ -88,7 +88,7 @@ def translate(type, jid, nick,text):
 
 global execute
 
-execute = [(0, 'tr', translate, 2, L('Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction')),
-	 (0, 'google', google, 2, L('Search in google')),
-	 (0, 'xep', xep_show, 2, L('Search XEP')),
-	 (0, 'wiki', wiki_search, 2, L('Search in en.wikipedia.org'))]
+execute = [(3, 'tr', translate, 2, L('Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction')),
+	 (3, 'google', google, 2, L('Search in google')),
+	 (3, 'xep', xep_show, 2, L('Search XEP')),
+	 (3, 'wiki', wiki_search, 2, L('Search in en.wikipedia.org'))]

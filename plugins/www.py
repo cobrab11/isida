@@ -61,7 +61,7 @@ def parse_url_in_message(room,jid,nick,type,text):
 	global last_url_watch
 	if type != 'groupchat' or text == 'None' or nick == '' or getRoom(jid) == getRoom(selfjid): return
 	if not get_config(getRoom(room),'url_title'): return
-	if get_access(room,nick)[0] < 0: return
+	if get_level(room,nick)[0] < 0: return
 	try: 
 		link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
 		if link and last_url_watch != link:
@@ -74,12 +74,12 @@ def parse_url_in_message(room,jid,nick,type,text):
 			else: return
 			text = get_tag(page,tag).replace('\n',' ').replace('\r',' ').replace('\t',' ')
 			while text.count('  '): text = text.replace('  ',' ')
-			if text: send_msg(type, room, nick, L('Title: %s') % text)
+			if text: send_msg(type, room, '', L('Title: %s') % text)
 	except: pass
 
 global execute
 
 message_control = [parse_url_in_message]
 
-execute = [(0, 'www', netwww, 2, L('Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags')),
-		   (0, 'header',netheader,2, L('Show net header'))]
+execute = [(3, 'www', netwww, 2, L('Show web page.\nwww regexp\n[http://]url - page after regexp\nwww [http://]url - without html tags')),
+		   (3, 'header',netheader,2, L('Show net header'))]

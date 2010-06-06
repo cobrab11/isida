@@ -47,5 +47,5 @@ def bizinfo(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'price', price, 2, L('Show estimated value of domain | Author: ferym')),
-           (0, 'bizinfo', bizinfo, 2, L('Show estimated value of domain | Author: Disabler'))]
+execute = [(3, 'price', price, 2, L('Show estimated value of domain | Author: ferym')),
+           (3, 'bizinfo', bizinfo, 2, L('Show estimated value of domain | Author: Disabler'))]

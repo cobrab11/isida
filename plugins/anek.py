@@ -25,4 +25,4 @@ def anek(type, jid, nick):
 
 global execute
 
-execute = [(0, 'anek', anek, 1, L('Show random anecdote | Author: ferym'))]
+execute = [(3, 'anek', anek, 1, L('Show random anecdote | Author: ferym'))]

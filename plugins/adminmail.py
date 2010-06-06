@@ -8,7 +8,7 @@ def adminmail(type, jid, nick, text):
 	if len(text):
 		if len(text) > amsg_limit: text = text[:amsg_limit]+'[...]'
 		timesent = getFile(time_limit_base, {})
-		ga = get_access(jid, nick)
+		ga = get_level(jid, nick)
 		fjid = getRoom(ga[1])
 		tmp_lim = amsg_limit[ga[0]]
 		if timesent.has_key(fjid):
@@ -26,4 +26,4 @@ def adminmail(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'msgtoadmin', adminmail, 2, L('Send message to bot\'s owner\nmsgtoadmin text'))]
+execute = [(4, 'msgtoadmin', adminmail, 2, L('Send message to bot\'s owner\nmsgtoadmin text'))]

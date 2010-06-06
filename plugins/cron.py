@@ -36,4 +36,4 @@ global execute, timer
 
 timer = [cron_action]
 
-execute = [(2, 'cron', time_cron, 2, '...')]
+execute = [(9, 'cron', time_cron, 2, '...')]

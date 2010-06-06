@@ -35,7 +35,7 @@ def inlist_raw(type, jid, nick, text, affil, message):
 
 global execute
 
-execute = [(1, 'inban', inban, 2, L('Search in outcast list of conference.')),
-	 (1, 'inmember', inmember, 2, L('Search in members list of conference.')),
-	 (1, 'inadmin', inadmin, 2, L('Search in admins list of conference.')),
-	 (1, 'inowner', inowner, 2, L('Search in owners list of conference.'))]
+execute = [(7, 'inban', inban, 2, L('Search in outcast list of conference.')),
+	 (7, 'inmember', inmember, 2, L('Search in members list of conference.')),
+	 (7, 'inadmin', inadmin, 2, L('Search in admins list of conference.')),
+	 (7, 'inowner', inowner, 2, L('Search in owners list of conference.'))]

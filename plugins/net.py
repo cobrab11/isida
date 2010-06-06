@@ -35,5 +35,5 @@ def get_dns(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'dns', get_dns, 2, L('DNS resolver.')),
-	 (0, 'tld', get_tld, 2, L('Search domain zones TLD.'))]
+execute = [(3, 'dns', get_dns, 2, L('DNS resolver.')),
+	 (3, 'tld', get_tld, 2, L('Search domain zones TLD.'))]

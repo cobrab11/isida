@@ -8,4 +8,4 @@ def md5body(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'md5', md5body, 2, L('Calculate phrase md5 sum.'))]
+execute = [(3, 'md5', md5body, 2, L('Calculate phrase md5 sum.'))]

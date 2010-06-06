@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def set_nickname(type, jid, nick, text):
-	if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+	if get_affiliation(jid,nick) == 'owner' or get_level(jid,nick)[0] == 9:
 		msg = None
 		if text == '': text = jid+'/'+nickname
 		else: text = jid+'/'+text
@@ -12,4 +12,4 @@ def set_nickname(type, jid, nick, text):
 
 global execute
 
-execute = [(1, 'setnick', set_nickname, 2, L('Change bot nick. Available only for conference owner.'))]
+execute = [(8, 'setnick', set_nickname, 2, L('Change bot nick. Available only for conference owner.'))]

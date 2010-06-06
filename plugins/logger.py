@@ -5,6 +5,8 @@ if not os.path.exists(log_folder): os.mkdir(log_folder)
 if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log) and syslogs_enable: os.mkdir(system_log)
 
+last_log_file = {}
+
 log_header = ['','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link href="%s" rel="stylesheet" type="text/css" /><title>\n' % logs_css_path][html_logs_enable]
 def initial_log_users(room,ott):
 	txt = []
@@ -25,7 +27,7 @@ def append_message_to_log(room,jid,nick,type,text):
 		if type == 'groupchat' and text != 'None': msg_logger(room,jid,nick,type,text,public_log)
 		if type == 'chat' and text != 'None': nick = 'chat | '+nick
 		if text != 'None' and syslogs_enable: msg_logger(room,jid,nick,type,text,system_log)
-
+		
 def msg_logger(room,jid,nick,type,text,logfile):
 	lt = tuple(time.localtime())
 	curr_path = logfile+'/'+room
@@ -36,6 +38,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_file = curr_path + '/'+tZ(lt[2])+['.txt','.html'][html_logs_enable]
 	ott = onlytimeadd(tuple(localtime()))
+	if html_logs_enable: text = correct_html(text)
 	log_body = ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable]
 	if nick == '': log_body += ['*** %s\n','<span class="topic">%s</span></p>'][html_logs_enable] % text
 	else:
@@ -52,8 +55,16 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	else:
 		fl = open(curr_file, 'a')
 		fl.write(log_body.encode('utf-8'))
-	ender = ['','</div></div></body></html>'][html_logs_enable]
 	fl.close()
+	
+	try: ll = last_log_file[logfile]
+	except: ll = curr_file
+	if ll != curr_file:
+		ender = ['\n','</div></div></body></html>'][html_logs_enable]
+		fl = open(curr_file, 'a')
+		fl.write(ender.encode('utf-8'))
+		fl.close()
+	last_log_file[logfile] = curr_file
 
 def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
@@ -67,7 +78,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	role,affiliation = [mass[1],html_escape(mass[1])][html_logs_enable], [mass[2],html_escape(mass[2])][html_logs_enable]
 	if nick[:11] != '<temporary>' and role != 'None' and affiliation != 'None':
 		text,exit_type = [mass[0],html_escape(mass[0])][html_logs_enable],mass[3]
-		if html_logs_enable: text = text.replace('\n','<br>')
+		if html_logs_enable: text = correct_html(text)
 		exit_message,show = [mass[4],html_escape(mass[4])][html_logs_enable], [mass[5],html_escape(mass[5])][html_logs_enable]
 		priority,not_found = mass[6],mass[7]
 		if not_found == 1 and not aff_role_logs_enable: return
@@ -114,8 +125,17 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		else:
 			fl = open(curr_file, 'a')
 			fl.write(log_body.encode('utf-8'))
-		ender = '</div></div></body></html>'
 		fl.close()
+		
+		try: ll = last_log_file[logfile]
+		except: ll = curr_file
+		if ll != curr_file:
+			ender = ['\n','</div></div></body></html>'][html_logs_enable]
+			fl = open(curr_file, 'a')
+			fl.write(ender.encode('utf-8'))
+			fl.close()
+		last_log_file[logfile] = curr_file
+
 
 global execute
 
@@ -150,4 +170,4 @@ def log_room(type, jid, nick, text):
 		else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
-execute = [(2, 'log', log_room, 2, L('Logging history conference.\nlog [add|del|show][ room@conference.server.tld]'))]
+execute = [(9, 'log', log_room, 2, L('Logging history conference.\nlog [add|del|show][ room@conference.server.tld]'))]

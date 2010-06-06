@@ -58,4 +58,4 @@ def to_drink(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'drink', to_drink, 2, L('Find holiday\ndrink [name_holiday/date]'))]
+execute = [(3, 'drink', to_drink, 2, L('Find holiday\ndrink [name_holiday/date]'))]

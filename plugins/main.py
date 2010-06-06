@@ -74,6 +74,22 @@ iq_error = {'bad-request':L('Bad request'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
 
+
+def correct_html(text):
+	text = text.replace('<','&lt;').replace('>','&gt;').replace('\n','<br>')
+	link = re.findall(u'(http[s]?://[a-zA-Z\.\-\_0-9а-яА-Я\/]+)',text)
+	link_tmp = []
+	for tmp in link:
+		if not link_tmp.count(tmp): link_tmp.append(tmp)
+	for tmp in link_tmp: text = text.replace(tmp,'<a href="%s">%s</a>' % (tmp,tmp))
+	link = re.findall(u'([a-zA-Z\.\-\_0-9\?\:а-яА-Я]+@[a-zA-Z\.\-\_0-9а-яА-Я\/\?\:]+)',text)
+	link_tmp = []
+	for tmp in link:
+		if not link_tmp.count(tmp): link_tmp.append(tmp)
+	for tmp in link_tmp: text = text.replace(tmp,'<a href="mailto:%s">%s</a>' % (tmp,tmp))
+
+	return text
+			
 def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -113,7 +129,7 @@ def get_scrobble(type, room, nick, text):
 	text = text[0]
 	if csize < 1: csize = 1
 	elif csize > pep_scrobbler_max_count: csize = pep_scrobbler_max_count
-	jid = getRoom(get_access(room,text)[1])
+	jid = getRoom(get_level(room,text)[1])
 	if jid == 'None': jid = room
 	stb = os.path.isfile(scrobblebase)
 	scrobbase = sqlite3.connect(scrobblebase)
@@ -196,7 +212,7 @@ def comm_on_off(type, jid, nick, text):
 			text = text[3:].lower()
 			if len(text):
 				if cof.count((jid,text)):
-					if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+					if get_affiliation(jid,nick) == 'owner' or get_level(jid,nick)[0] == 9:
 						cof.remove((jid,text))
 						writefile(conoff, str(cof))
 						msg = L('Enabled: %s') % text
@@ -204,7 +220,7 @@ def comm_on_off(type, jid, nick, text):
 				else: msg = L('Command %s is not disabled!') % text
 			else: msg = L('What enable?')
 		if text[:4] == 'off ':
-			if get_affiliation(jid,nick) == 'owner' or get_access(jid,nick)[0] == 2:
+			if get_affiliation(jid,nick) == 'owner' or get_level(jid,nick)[0] == 9:
 				text = text[4:].lower()
 				if len(text):
 					text = text.split(' ')
@@ -249,6 +265,12 @@ def reduce_spaces(text):
 		while text[0] == ' ': text = text[1:]
 		while text[-1:] == ' ': text = text[:-1]
 	return text
+	
+def reduce_spaces_all(text):
+	while text.count('  '): text = text.replace('  ',' ')
+	if text[0] == ' ': text = text[1:]
+	if text[-1:] == ' ': text = text[:-1]
+	return text
 
 def status(type, jid, nick, text):
 	if text == '': text = nick
@@ -258,7 +280,7 @@ def status(type, jid, nick, text):
 			is_found = True
 			break
 	if is_found:
-		realjid = getRoom(get_access(jid,text)[1])
+		realjid = getRoom(get_level(jid,text)[1])
 		mdb = sqlite3.connect(agestatbase)
 		cu = mdb.cursor()
 		stat = cu.execute('select message,status from age where jid=? and room=? and nick=?',(realjid,jid,text)).fetchone()
@@ -480,7 +502,12 @@ def get_nick_by_jid(room, jid):
 	for tmp in megabase:
 		if tmp[0] == room and getRoom(tmp[4]) == jid: return tmp[1]
 	return None
-	
+
+def get_nick_by_jid_res(room, jid):
+	for tmp in megabase:
+		if tmp[0] == room and tmp[4] == jid: return tmp[1]
+	return None
+
 def get_access(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -516,22 +543,19 @@ def info_access(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 
 def raw_who(room,nick):
-	ta = get_access(room,nick)
-	access_mode = ta[0]
+	access_mode = get_level(room,nick)[0]
 	if access_mode == -2: msg = L('Who do you need?')
 	else:
-		realjid = ta[1]
-		msg = L('Access level: %s') % str(access_mode)
-		tb = [L('Ignored'),L('Minimal'),L('Admin/Owner'),L('Bot\'s owner')]
-		msg += ', ' + tb[access_mode+1]
+		realjid = get_level(room,nick)[1]
+		msg = L('Access level: %s') % access_mode
+		msg += ', ' + [L('Ignored'),L('Minimal'),L('Visitor'),L('Visitor and Member'),L('Participant'),L('Member'), L('Moderator'),L('Moderator and member'),L('Admin'),L('Owner'),L('Bot\'s owner')][access_mode+1]
 		if realjid != 'None': msg = L('%s, jid detected') % msg
-		msg = L('%s, Prefix: %s') % (msg,get_prefix(get_local_prefix(room)))
 	return msg
 
 def info_comm(type, jid, nick):
 	global comms
 	msg = ''
-	ta = get_access(jid,nick)
+	ta = get_level(jid,nick)
 	access_mode = ta[0]
 	tmp = sqlite3.connect(':memory:')
 	cu = tmp.cursor()
@@ -540,9 +564,10 @@ def info_comm(type, jid, nick):
 		if access_mode >= i[0]: cu.execute('insert into tempo values (?,?)', (unicode(i[1]),i[0]))
 	for j in range(0,access_mode+1):
 		cm = cu.execute('select * from tempo where am=? order by comm',(j,)).fetchall()
-		msg += u'\n• '+str(j)+' ... '
-		for i in cm: msg += i[0] +', '
-		msg = msg[:-2]
+		if cm:
+			msg += u'\n• '+str(j)+u' … '
+			for i in cm: msg += i[0] +', '
+			msg = msg[:-2]
 	msg = L('Total commands: %s | Prefix: %s | Your access level: %s | Available commands: %s%s') % (str(len(comms)), get_prefix(get_local_prefix(jid)), str(access_mode), str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall())), msg)
 	tmp.close()
 	send_msg(type, jid, nick, msg)
@@ -1079,7 +1104,7 @@ def rss(type, jid, nick, text):
 	elif mode == 'get' and tl < 4: msg,mode = 'rss get [http://]url max_feed_humber [full|body|head][-url]',''
 	#lastfeeds = getFile(lafeeds,[])
 	if mode == 'clear':
-		if get_access(jid,nick)[0] == 2 and tl > 1: tjid = text[1]
+		if get_level(jid,nick)[0] == 9 and tl > 1: tjid = text[1]
 		else: tjid = jid
 		feedbase = getFile(feeds,[])
 		msg, tf = L('All RSS was cleared!'), []
@@ -1208,7 +1233,7 @@ def rss(type, jid, nick, text):
 						for tm in t_msg:
 							tsubj,tmsg,tlink = tm
 							cut = int(len(tsubj+tmsg+tlink)/100*over)						
-							if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[…]','',''
+							if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[]','',''
 							elif cut < len(tsubj+tlink): tsubj,tmsg = tsubj[:cut-len(tlink)]+u'[…]',''
 							else: tmsg = tmsg[:cut-len(tlink+tsubj)]+u'[…]'
 							tt_msg.append((tsubj,tmsg,tlink))
@@ -1263,48 +1288,59 @@ def configure(type, jid, nick, text):
 			msg = L('Available items: %s') % ', '.join(tmp)
 		else: msg = L('Help for %s not found!') % param
 	elif to_conf in config_prefs:
-		ssta = get_config(getRoom(jid),to_conf)
-		if param.lower() == L('on') or param.lower() == 'on': ssta = True
-		elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
-		else: ssta = not ssta
-		put_config(getRoom(jid),to_conf,ssta)
-		msg = config_prefs[to_conf][0] % onoff(ssta)
+		if param.lower() == 'items':
+			msg = ''
+			for tmp in config_prefs[to_conf][2]: msg += '%s, ' % onoff(tmp)
+			msg = L('Available items: %s') % msg[:-2]
+		else:
+			ssta = get_config(getRoom(jid),to_conf)
+			if param.lower() in config_prefs[to_conf][2]: ssta = param.lower()
+			elif param.lower() == L('on') or param.lower() == 'on': ssta = True
+			elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
+			put_config(getRoom(jid),to_conf,ssta)
+			msg = config_prefs[to_conf][0] % onoff(ssta)
 	else: msg = L('Unknown item!')
 	send_msg(type, jid, nick, msg)
 
-config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference')],
-				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change')],
-				'flood': [L('Flood is %s'), L('Autoanswer')],
-				'censor': [L('Censor is %s'), L('Censor')],
-				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher')],
-				'censor_visitor': [L('Censor visitor %s'), L('Revoke voice for members')],
-				'censor_kick': [L('Censor kick %s'), L('Kick participants')]}
-	
+config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference'), [True,False], False],
+				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change'), [True,False], False],
+				'flood': [L('Flood is %s'), L('Autoanswer'), [True,False], False],
+				'censor': [L('Censor is %s'), L('Censor'), [True,False], False],
+				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],
+				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
+				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
+				'muc_filter': [L('Muc filter is %s'), L('Message filter for participants'), [True,False], False],
+				'muc_filter_adblock': [L('Adblock muc filter is %s'), L('Adblock filter'), ['off','visitor','kick','ban','replace','mute'], 'off'],
+				'muc_filter_repeat': [L('Repeat muc filter is %s'), L('Repeat same messages filter'), ['off','visitor','kick','ban','mute'], 'off'],
+				'muc_filter_match': [L('Match muc filter is %s'), L('Repeat text in message filter'), ['off','visitor','kick','ban','mute'], 'off'],
+				'muc_filter_large': [L('Large muc filter is %s'), L('Large message filter'), ['off','visitor','kick','ban','paste','truncate','mute'], 'off'],
+				'muc_filter_censor': [L('Censor muc filter is %s'), L('Censor filter'), ['off','visitor','kick','ban','replace','mute'], 'off']}
+
 comms = [
 	 (0, 'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
-	 (2, 'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),
-	 (2, 'leave', bot_leave, 2, L('Leave conference.\nleave room[@conference.server.ru[/nick]]')),
-	 (2, 'rejoin', bot_rejoin, 2, L('Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]')),
-	 (2, 'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
-	 (2, 'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
-	 (1, 'where', info_where, 1, L('Show conferences.')),
+	 (9, 'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),
+	 (9, 'leave', bot_leave, 2, L('Leave conference.\nleave room[@conference.server.ru[/nick]]')),
+	 (9, 'rejoin', bot_rejoin, 2, L('Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]')),
+	 (9, 'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
+	 (9, 'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
+	 (6, 'where', info_where, 1, L('Show conferences.')),
 	 (0, 'inbase', info_base, 1, L('Your identification in global base.')),
-	 (2, 'look', real_search, 2, L('Search user in conferences where the bot is.')),
-	 (2, 'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
-	 (1, 'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
-	 (1, 'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
+	 (9, 'look', real_search, 2, L('Search user in conferences where the bot is.')),
+	 (9, 'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
+	 (7, 'rss', rss, 2, L('News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.')),
+	 (7, 'alias', alias, 2, L('Aliases.\nalias add new=old\nalias del|show text')),
 	 (0, 'commands', info_comm, 1, L('Show commands list.')),
-	 (1, 'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
+	 (8, 'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
 	 (0, 'bot_uptime', uptime, 1, L('Show bot uptime.')),
-	 (1, 'info', info, 1, L('Misc information about bot.')),
+	 (6, 'info', info, 1, L('Misc information about bot.')),
 	 (0, 'new', svn_info, 1, L('Last svn update log')),
-	 (2, 'limit', conf_limit, 2, L('Set temporary message limit.')),
-	 (2, 'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
-	 (2, 'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
+	 (9, 'limit', conf_limit, 2, L('Set temporary message limit.')),
+	 (9, 'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
+	 (9, 'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
 	 (0, 'whoami', info_access, 1, L('Your identification.')),
 	 (0, 'whois', info_whois, 2, L('Identification.')),
 	 (0, 'status', status, 2, L('Show status.')),
-	 (1, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disable prefix')),
-	 (2, 'set_locale', set_locale, 2, 'Change bot localization.\nset_locale ru|en'),
-	 (2, 'tune', get_scrobble, 2, L('PEP Scrobbler. Test version')),
-	 (1, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]'))]
+	 (7, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disable prefix')),
+	 (9, 'set_locale', set_locale, 2, 'Change bot localization.\nset_locale ru|en'),
+	 (9, 'tune', get_scrobble, 2, L('PEP Scrobbler. Test version')),
+	 (7, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]'))]

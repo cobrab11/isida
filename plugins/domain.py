@@ -13,4 +13,4 @@ def domaininfo(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'domain_info', domaininfo, 2, L('Domain/IP address whois info.'))]
+execute = [(3, 'domain_info', domaininfo, 2, L('Domain/IP address whois info.'))]

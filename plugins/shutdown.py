@@ -19,6 +19,6 @@ def bot_update(type, jid, nick, text):
 
 global execute
 
-execute = [(2, 'quit', bot_exit, 2, L('Shutting down the bot. You can set reason.')),
-	 (2, 'restart', bot_restart, 2, L('Restart the bot. You can set reason.')),
-	 (2, 'update', bot_update, 2, L('Autoupdate from SVN. You can set reason.'))]
+execute = [(9, 'quit', bot_exit, 2, L('Shutting down the bot. You can set reason.')),
+	 (9, 'restart', bot_restart, 2, L('Restart the bot. You can set reason.')),
+	 (9, 'update', bot_update, 2, L('Autoupdate from SVN. You can set reason.'))]

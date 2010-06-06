@@ -48,4 +48,4 @@ def torrent_main(type, jid, nick, text):
 
 global execute
 
-execute = [(0, u'torrent', torrent_main, 2, L('Search in bittorrent trackers\ntorrent rutor - search in RuTor.org\ntorrent os - search in OpenSharing.org\ntorrent tracker\nquery\ncount'))]
+execute = [(3, u'torrent', torrent_main, 2, L('Search in bittorrent trackers\ntorrent rutor - search in RuTor.org\ntorrent os - search in OpenSharing.org\ntorrent tracker\nquery\ncount'))]

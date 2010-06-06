@@ -136,6 +136,7 @@ NS_XMPP_STREAMS     ='urn:ietf:params:xml:ns:xmpp-streams'                  # RF
 
 NS_STATS            = 'http://jabber.org/protocol/stats'                    # XEP-0039
 NS_PING             = 'urn:xmpp:ping'                                       # XEP-0199
+NS_MUC_FILTER		= 'http://jabber.ru/muc-filter'
 
 xmpp_stream_error_conditions="""
 bad-format --  --  -- The entity has sent XML that cannot be processed.

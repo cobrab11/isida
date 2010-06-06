@@ -33,7 +33,7 @@ def chkserver(type, jid, nick, text):
 
 global execute
 
-execute = [(1, 'nslookup', srv_nslookup, 2, L('Command nslookup')),
-		   (1, 'host', srv_host, 2, L('Command host')),
-		   (1, 'dig', srv_dig, 2, L('Command dig')),
-		   (0, 'port', chkserver, 2, L('Check port activity\nport server:port [1..5]'))]
+execute = [(6, 'nslookup', srv_nslookup, 2, L('Command nslookup')),
+		   (6, 'host', srv_host, 2, L('Command host')),
+		   (6, 'dig', srv_dig, 2, L('Command dig')),
+		   (3, 'port', chkserver, 2, L('Check port activity\nport server:port [1..5]'))]

@@ -156,10 +156,10 @@ def stats_async(type, jid, nick, text, is_answ):
 	
 global execute
 
-execute = [(0, u'ver', iq_version, 2, L('Client version.')),
-	 (0, u'ping', ping, 2, L('Ping - reply time. You can ping nick in room, jid, server or transport.')),
-	 (0, u'time', iq_time, 2, L('Client side time.')),
-	 (0, u'time_raw', iq_time_raw, 2, L('Client side time + raw time format.')),
-	 (0, u'stats', iq_stats, 2, L('Users server statistic.')),
-	 (0, u'vcard_raw', iq_vcard, 2, L('vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show available fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.')),
-	 (0, u'uptime', iq_uptime, 2, L('Server or jid uptime.'))]
+execute = [(3, u'ver', iq_version, 2, L('Client version.')),
+	 (3, u'ping', ping, 2, L('Ping - reply time. You can ping nick in room, jid, server or transport.')),
+	 (3, u'time', iq_time, 2, L('Client side time.')),
+	 (3, u'time_raw', iq_time_raw, 2, L('Client side time + raw time format.')),
+	 (3, u'stats', iq_stats, 2, L('Users server statistic.')),
+	 (3, u'vcard_raw', iq_vcard, 2, L('vCard query. Recomends make command base alias for query needs info.\nvcard_raw [nick] - query generic info\nvcard_raw nick\nshow - show available fields\nvcard_raw nick\n[field:name|field:name] - show requested fields from vcard.')),
+	 (3, u'uptime', iq_uptime, 2, L('Server or jid uptime.'))]

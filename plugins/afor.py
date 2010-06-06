@@ -15,4 +15,4 @@ def afor(type, jid, nick):
 
 global execute
 
-execute = [(0, 'afor', afor, 1, L('Show random aphorism from skio.ru | Author: ferym'))]
+execute = [(3, 'afor', afor, 1, L('Show random aphorism from skio.ru | Author: ferym'))]

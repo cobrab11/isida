@@ -40,4 +40,4 @@ def call_body(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'invite', call_body, 2, L('Invite to conference.\ninvite nick|jid\n[reason]'))]
+execute = [(4, 'invite', call_body, 2, L('Invite to conference.\ninvite nick|jid\n[reason]'))]

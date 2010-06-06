@@ -34,4 +34,4 @@ global execute, timer
 
 if iq_version_enable: timer = [connect_watch]
 
-execute = [(0,'watcher',c_watcher,1,L('Connection activity control.'))]
+execute = [(6,'watcher',c_watcher,1,L('Connection activity control.'))]

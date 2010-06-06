@@ -19,4 +19,4 @@ def known(type, jid, nick, text):
 
 global execute
 
-execute = [(0, 'known', known, 2, L('Show user\'s nick changes.'))]
+execute = [(3, 'known', known, 2, L('Show user\'s nick changes.'))]

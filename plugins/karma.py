@@ -46,7 +46,7 @@ def karma_top(type, jid, nick, text, order):
 def karma_show(type, jid, nick, text):
 	if text == None or text == '' or text == nick: text, atext = nick, L('Your')
 	else: atext = text
-	karmajid = getRoom(get_access(jid,text)[1])
+	karmajid = getRoom(get_level(jid,text)[1])
 	if karmajid == 'None': return L('I\'m not sure, but %s not is here.') % atext
 	else:
 		karma_base = sqlite3.connect(karmabase)
@@ -84,11 +84,10 @@ def karma_change(room,jid,nick,type,text,value):
 		if text.count(': '): text = text.split(': ',1)[0]
 		elif text.count(', '): text = text.split(', ',1)[0]
 		else: return
-		k_aff = get_affiliation(room,nick)
-		k_acc = get_access(room,nick)[0]
+		k_acc = get_level(room,nick)[0]
 		if k_acc < 0: return
-		if k_aff != 'none' or k_acc > 0 or karma_get_access(room,getRoom(jid)):
-			jid, karmajid = getRoom(jid), getRoom(get_access(room,text)[1])
+		if k_acc >= 4 or karma_get_access(room,getRoom(jid)):
+			jid, karmajid = getRoom(jid), getRoom(get_level(room,text)[1])
 			if karmajid == getRoom(selfjid): return
 			elif karmajid == 'None': msg = L('You can\'t change karma in outdoor conference!')
 			elif karmajid == jid: msg = L('You can\'t change own karma!')
@@ -127,4 +126,4 @@ global execute, message_control
 
 message_control = [karma_check]
 
-execute = [(0, 'karma', karma, 2, L('Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1'))]
+execute = [(3, 'karma', karma, 2, L('Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1'))]

@@ -112,7 +112,7 @@ global execute, presence_control
 
 presence_control = [jidcatcher_presence]
 
-execute = [(0, 'res', info_res, 2, L('Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.')),
-		   (1, 'serv', info_serv, 2, L('Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.')),
-		   (2, 'search', info_search, 2, L('Search in internal jids base.')),
-		   (0, 'top', info_top, 2, L('Conference\'s activity.'))]
+execute = [(4, 'res', info_res, 2, L('Without parameters show top10 resources for all conferences, where bot is present.\nwith parameters - search in resources base\ncount - number of results.')),
+		   (6, 'serv', info_serv, 2, L('Wihtout parameters show all servers freom where joined in rooms, where bot is present\nwith parameters - search on servers base\ncount - show number of results.')),
+		   (9, 'search', info_search, 2, L('Search in internal jids base.')),
+		   (2, 'top', info_top, 2, L('Conference\'s activity.'))]

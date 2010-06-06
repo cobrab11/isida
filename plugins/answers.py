@@ -36,4 +36,4 @@ def answers_ie(type, jid, nick, text):
 
 global execute
 
-execute = [(2, 'answers', answers_ie, 2, L('Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file'))]
+execute = [(9, 'answers', answers_ie, 2, L('Import/Export answers base.\nanswers import [filename] - import from file\nanswers export [filename] - export to file'))]
