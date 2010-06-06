@@ -1154,7 +1154,7 @@ cu_age = []
 close_age_null()
 confbase = getFile(confs,[defaultConf.lower()+'/'+Settings['nickname']])
 if os.path.isfile(cens):
-	censor = readfile(cens).decode('UTF').split('\n')
+	censor = readfile(cens).decode('UTF').replace('\r','').split('\n')
 	cn = []
 	for c in censor:
 		if (not c.count('#')) and len(c): cn.append(c)
