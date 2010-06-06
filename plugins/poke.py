@@ -3,7 +3,7 @@
 
 def to_poke(type, jid, nick, text):
 	if len(text): text = reduce_spaces(text)
-	if type == 'chat' and get_level(jid,nick)[0] < 1:
+	if type == 'chat' and get_level(jid,nick)[0] < 7:
 		send_msg(type, jid, nick, L('For members this command not available in private!'))
 		return
 	predef_poke = [L('gave NICK ... just gave ... :-\"'),
@@ -19,7 +19,7 @@ def to_poke(type, jid, nick, text):
 	ta = get_level(jid,nick)
 	access_mode = ta[0]
 	dpoke = getFile(poke_file,predef_poke)
-	if text == 'show' and access_mode == 2:
+	if text == 'show' and access_mode == 9:
 		if type == 'groupchat':
 			send_msg(type, jid, nick, L('Sent in private message'))
 			type = 'chat'
@@ -28,7 +28,7 @@ def to_poke(type, jid, nick, text):
 		for tmp in dpoke:
 			msg += '\n'+str(cnt)+'. '+tmp
 			cnt += 1
-	elif text[:4] == 'del ' and access_mode == 2:
+	elif text[:4] == 'del ' and access_mode == 9:
 		text = text[4:]
 		try: pos = int(text)-1
 		except: pos = len(dpoke)+1
@@ -39,7 +39,7 @@ def to_poke(type, jid, nick, text):
 			writefile(poke_file, str(dpoke))
 			msg = L('Removed: %s') % remove_body
 
-	elif text[:4] == 'add ' and access_mode == 2:
+	elif text[:4] == 'add ' and access_mode == 9:
 		text = text[4:]
 		if text.count('NICK'):
 			dpoke.append(text)
