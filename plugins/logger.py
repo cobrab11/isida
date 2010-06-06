@@ -56,7 +56,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 		fl = open(curr_file, 'a')
 		fl.write(log_body.encode('utf-8'))
 	fl.close()
-	
+	'''
 	try: ll = last_log_file[logfile]
 	except: ll = curr_file
 	if ll != curr_file:
@@ -65,6 +65,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 		fl.write(ender.encode('utf-8'))
 		fl.close()
 	last_log_file[logfile] = curr_file
+	'''
 
 def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
@@ -126,7 +127,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			fl = open(curr_file, 'a')
 			fl.write(log_body.encode('utf-8'))
 		fl.close()
-		
+		'''
 		try: ll = last_log_file[logfile]
 		except: ll = curr_file
 		if ll != curr_file:
@@ -135,7 +136,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			fl.write(ender.encode('utf-8'))
 			fl.close()
 		last_log_file[logfile] = curr_file
-
+		'''
 
 global execute
 

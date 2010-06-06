@@ -636,7 +636,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	for parse in comms:
 		if access_mode >= parse[0] and nick != nowname:
 			not_offed = True
-			if access_mode != 2 or ignore_owner:
+			if access_mode != 9 or ignore_owner:
 				for co in cof:
 					if co[0]==room and co[1]==text.lower()[:len(co[1])]:
 						not_offed = None
@@ -726,7 +726,7 @@ def messageCB(sess,mess):
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
-	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 2
+	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 9
 	if type == 'groupchat' and nick != '' and jid != 'None': talk_count(room,jid,nick,text)
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
 		cens_text = L('Censored!') + ' ' + to_censore(text)

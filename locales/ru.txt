@@ -46,7 +46,7 @@ Oct	Окт
 Nov	Ноя
 Dec	Дек
 Censor is %s	Цензор %s
-Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоле...
+Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоли...
 Command execution error.	Ошибка выполнения команды.
 ok	ок
 I can't execute it! Error: %s	Я не могу это исполнить! Ошибка: %s
