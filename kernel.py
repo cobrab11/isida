@@ -429,9 +429,7 @@ def iqCB(sess,iq):
 	if id == None: return None
 	room = unicode(iq.getFrom())
 	query = iq.getTag('query')
-	
 	was_request = id in iq_request
-	
 	if iq.getType()=='error' and was_request:
 		iq_err,er_name = get_tag(unicode(iq),'error'),L('Unknown error!')
 		for tmp in iq_error.keys():
@@ -540,7 +538,7 @@ def iqCB(sess,iq):
 								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
 								pprint('MUC-Filter repeat (%s): %s [%s] %s' % (act,jid,room,body))
 						last_msg_base[getRoom(jid)] = body
-					if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute:
+					if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= muc_filter_match_view:
 						tbody,warn_match,warn_space = body.split(),0,0
 						for tmp in tbody:
 							cnt = 0
@@ -580,12 +578,14 @@ def iqCB(sess,iq):
 					i=xmpp.Iq(to=room, typ='result')
 					i.setAttr(key='id', val=id)
 					i.setTag('query',namespace=xmpp.NS_MUC_FILTER).setTagData(tag='message', val='')
-					try: sender(unicode(i).replace('<message />',msg))
+					try:
+						sender(unicode(i).replace('<message />',msg))
+						raise xmpp.NodeProcessed
 					except: pass
 					#print unicode(iq)
 					#print unicode(i)
 				
-		raise xmpp.NodeProcessed
+		
 
 # iq_request = {id:(time,func,())}
 # func = (,is_answ)
@@ -740,7 +740,7 @@ def messageCB(sess,mess):
 			print cens_text
 			muc_filter_action(act,jid,room,cens_text)
 		elif lvl < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
-			act = get_config(getRoom(room),'censor_action_member')
+			act = get_config(getRoom(room),'censor_action_non_member')
 			muc_filter_action(act,jid,room,cens_text)
 		
 	no_comm = 1
@@ -828,7 +828,7 @@ def to_censore(text):
 	wca = None
 	for c in censor:
 		cn = re.findall(c,' '+text+' ',re.I+re.S+re.U)
-		for tmp in cn: text,wca = text.replace(tmp,censor_text),True
+		for tmp in cn: text,wca = text.replace(tmp,[censor_text*len(tmp),censor_text][len(censor_text)>1]),True
 	if wca: text = del_space_both(text)
 	return text
 

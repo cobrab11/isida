@@ -157,4 +157,6 @@ paste_css_path = '.css/isida.css'			# Путь к css
 muc_filter_match_count = 3					# счётчик одинаковых слов
 muc_filter_match_warning_match = 3			# привышение одинаковых слов
 muc_filter_match_warning_space = 5			# привышение пустых частей
+muc_filter_match_view = 512					# лимит размера сообщения на отработку
+
 muc_filter_match_warning_nn = 3				# количество переводов строк

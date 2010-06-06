@@ -1293,10 +1293,12 @@ def configure(type, jid, nick, text):
 			for tmp in config_prefs[to_conf][2]: msg += '%s, ' % onoff(tmp)
 			msg = L('Available items: %s') % msg[:-2]
 		else:
-			ssta = get_config(getRoom(jid),to_conf)
-			if param.lower() in config_prefs[to_conf][2]: ssta = param.lower()
-			elif param.lower() == L('on') or param.lower() == 'on': ssta = True
-			elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
+			if not config_prefs[to_conf][2]: ssta = param
+			else:
+				ssta = get_config(getRoom(jid),to_conf)
+				if param.lower() in config_prefs[to_conf][2]: ssta = param.lower()
+				elif param.lower() == L('on') or param.lower() == 'on': ssta = True
+				elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
 			put_config(getRoom(jid),to_conf,ssta)
 			msg = config_prefs[to_conf][0] % onoff(ssta)
 	else: msg = L('Unknown item!')
@@ -1306,6 +1308,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change'), [True,False], False],
 				'flood': [L('Flood is %s'), L('Autoanswer'), [True,False], False],
 				'censor': [L('Censor is %s'), L('Censor'), [True,False], False],
+				#'censor_message': [L('Censor message is %s'), L('Censor message'), None, censor_text],
 				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],
 				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
 				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
