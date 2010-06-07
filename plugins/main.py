@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-rlmas = ((u'&','&amp;'),(u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u'<','&lt;'),(u'>','&gt;'))
+rlmas = ((u'&','&amp;'),(u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u'<','&lt;'),(u'>','&gt;'),('\t','&nbsp;'*8))
 
-lmass = (('\n','<br>'),('\n','<br />'),('\n','<br/>'),('\n','\n\r'),('','<![CDATA['),('',']]>'),(u'','&nbsp;'),
+lmass = (('\n','<br>'),('\n','<br />'),('\n','<br/>'),('\n','\n\r'),('','<![CDATA['),('',']]>'),
 		(u'','&shy;'),(u'','&ensp;'),(u'','&emsp;'),(u'','&thinsp;'),(u'','&zwnj;'),(u'','&zwj;'))
 		
-rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),
+rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u' ','&nbsp;'),
 		(u'&','&amp;'),(u'<','&lt;'),(u'>','&gt;'),(u'¡','&iexcl;'),(u'¢','&cent;'),(u'£','&pound;'),
 		(u'¤','&curren;'),(u'¥','&yen;'),(u'¦','&brvbar;'),(u'§','&sect;'),(u'¨','&uml;'),(u'©','&copy;'),(u'ª','&ordf;'),
 		(u'«','&laquo;'),(u'¬','&not;'),(u'®','&reg;'),(u'¯','&macr;'),(u'°','&deg;'),(u'±','&plusmn;'),
@@ -73,21 +73,6 @@ iq_error = {'bad-request':L('Bad request'),
 			'subscription-required':L('Subscription required'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
-
-
-def correct_html(text):
-	text = text.replace('<','&lt;').replace('>','&gt;')
-	link = re.findall(u'(http[s]?://[a-zA-Z\.\-\_0-9а-яА-Я\/]+)',text)
-	link_tmp = []
-	for tmp in link:
-		if not link_tmp.count(tmp): link_tmp.append(tmp)
-	for tmp in link_tmp: text = text.replace(tmp,'<a href="%s">%s</a>' % (tmp,tmp))
-	link = re.findall(u'([a-zA-Z\.\-\_0-9\?\:а-яА-Я]+@[a-zA-Z\.\-\_0-9а-яА-Я\/\?\:]+)',text)
-	link_tmp = []
-	for tmp in link:
-		if not link_tmp.count(tmp): link_tmp.append(tmp)
-	for tmp in link_tmp: text = text.replace(tmp,'<a href="mailto:%s">%s</a>' % (tmp,tmp))
-	return text.replace('\n','<br>')
 			
 def get_level(cjid, cnick):
 	access_mode = -2
@@ -965,10 +950,25 @@ def unescape(text):
 		return text
 	return re.sub("&#?\w+;", fixup, text)	
 
-def html_escape(ms):
-	for tmp in rlmas: ms = ms.replace(tmp[0],tmp[1])
-	return ms
-	
+def html_escape(text):
+	link = re.findall(u'^(\ +)',text)
+	for tmp in link: text = text.replace(tmp,'&nbsp;'*len(tmp))
+	for tmp in rlmas: text = text.replace(tmp[0],tmp[1])
+	link = re.findall(u'(http[s]?://[a-zA-Z\.\-\_0-9а-яА-Я\/]+)',text)
+	link_tmp = []
+	for tmp in link:
+		if not link_tmp.count(tmp): link_tmp.append(tmp)
+	for tmp in link_tmp: text = text.replace(tmp,'<a href="%s">%s</a>' % (tmp,tmp))
+	link = re.findall(u'([a-zA-Z\.\-\_0-9\?\:а-яА-Я]+@[a-zA-Z\.\-\_0-9а-яА-Я\/\?\:]+)',text)
+	link_tmp = []
+	for tmp in link:
+		if not link_tmp.count(tmp): link_tmp.append(tmp)
+	for tmp in link_tmp: text = text.replace(tmp,'<a href="mailto:%s">%s</a>' % (tmp,tmp))
+	text = text.replace('\n','<br>')
+	link = re.findall(u'<br>(\ +)',text)
+	for tmp in link: text = text.replace(tmp,'&nbsp;'*len(tmp))
+	return text
+
 def rss_replace(ms):
 	for tmp in lmass: ms = ms.replace(tmp[1],tmp[0])
 	for tmp in rmass: ms = ms.replace(tmp[1],tmp[0])

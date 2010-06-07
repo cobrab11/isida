@@ -38,7 +38,6 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	if not os.path.exists(curr_path): os.mkdir(curr_path)
 	curr_file = curr_path + '/'+tZ(lt[2])+['.txt','.html'][html_logs_enable]
 	ott = onlytimeadd(tuple(localtime()))
-	#if html_logs_enable: text = correct_html(text)
 	log_body = ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][html_logs_enable]
 	if nick == '': log_body += ['*** %s\n','<span class="topic">%s</span></p>'][html_logs_enable] % text
 	else:
