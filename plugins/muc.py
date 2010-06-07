@@ -29,16 +29,18 @@ def global_ban(type, jid, nick, text):
 			writefile(ignoreban,str(hr))
 		else: msg = L('Conference %s already exist in global ban list!') % hroom
 	else:
-		if hroom in hr: msg = L('Your conference will be ignored for global ban!')
-		elif not text.count('@') or not text.count('.'): msg = L('I need jid!')
-		else:
-			reason = L('banned global by %s from %s') % (nick, jid)
-			for tmp in confbase:
-				if not (getRoom(tmp) in hr):
-					i = Node('iq', {'id': get_id(), 'type': 'set', 'to':getRoom(tmp)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(text)},[Node('reason',{},reason)])])])
-					sender(i)
-					sleep(0.1)
-			msg = L('jid %s has been banned in %s conferences.') % (text, str(len(confbase)-len(hr)))
+		if al == 9:
+			if hroom in hr: msg = L('Your conference will be ignored for global ban!')
+			elif not text.count('@') or not text.count('.'): msg = L('I need jid!')
+			else:
+				reason = L('banned global by %s from %s') % (nick, jid)
+				for tmp in confbase:
+					if not (getRoom(tmp) in hr):
+						i = Node('iq', {'id': get_id(), 'type': 'set', 'to':getRoom(tmp)}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':unicode(text)},[Node('reason',{},reason)])])])
+						sender(i)
+						sleep(0.1)
+				msg = L('jid %s has been banned in %s conferences.') % (text, str(len(confbase)-len(hr)))
+		else: msg = L('Command temporary blocked!')
 	send_msg(type, jid, nick, msg)
 
 def muc_tempo_ban(type, jid, nick,text):
