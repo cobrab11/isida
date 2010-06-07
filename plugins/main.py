@@ -1291,15 +1291,20 @@ def configure(type, jid, nick, text):
 			msg = ''
 			for tmp in config_prefs[to_conf][2]: msg += '%s, ' % onoff(tmp)
 			msg = L('Available items: %s') % msg[:-2]
+		elif param == '': msg = config_prefs[to_conf][0] % onoff(get_config(getRoom(jid),to_conf))
 		else:
 			if not config_prefs[to_conf][2]: ssta = param
 			else:
 				ssta = get_config(getRoom(jid),to_conf)
-				if param.lower() in config_prefs[to_conf][2]: ssta = param.lower()
-				elif param.lower() == L('on') or param.lower() == 'on': ssta = True
-				elif param.lower() == L('off') or param.lower() == 'off' : ssta = False
-			put_config(getRoom(jid),to_conf,ssta)
-			msg = config_prefs[to_conf][0] % onoff(ssta)
+				if (param.lower() == L('on') or param.lower() == 'on') and not param in config_prefs[to_conf][2]: param = True
+				elif (param.lower() == L('off') or param.lower() == 'off') and not param in config_prefs[to_conf][2]: param = False
+				else: param = param.lower()
+				if param in config_prefs[to_conf][2]: ssta = param
+				else: ssta = ''
+			if len(str(ssta)):
+				put_config(getRoom(jid),to_conf,ssta)
+				msg = config_prefs[to_conf][0] % onoff(ssta)
+			else: msg = L('Unknown item!')
 	else: msg = L('Unknown item!')
 	send_msg(type, jid, nick, msg)
 

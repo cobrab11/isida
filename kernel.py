@@ -560,7 +560,7 @@ def iqCB(sess,iq):
 						if f: 
 							act = get_config(getRoom(room),'muc_filter_adblock')
 							if act == 'replace':
-								for tmp in f: body = body.replace(tmp,censor_text)
+								for tmp in f: body = body.replace(tmp,[censor_text*len(tmp),censor_text][len(censor_text)>1])
 								msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
 							elif act == 'mute': mute = True
 							else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
