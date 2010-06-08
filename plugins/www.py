@@ -64,7 +64,7 @@ def parse_url_in_message(room,jid,nick,type,text):
 	if get_level(room,nick)[0] < 0: return
 	try: 
 		link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
-		if link and last_url_watch != link:
+		if link and last_url_watch != link and not link.count(pasteurl):
 			last_url_watch = link
 			req = urllib2.Request(link.encode('utf-8'))
 			req.add_header('User-Agent',user_agent)
