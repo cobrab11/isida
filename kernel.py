@@ -733,10 +733,6 @@ def messageCB(sess,mess):
 		if lvl >= 5 and get_config(getRoom(room),'censor_warning'): send_msg(type,room,nick,cens_text)
 		elif lvl == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
 			act = get_config(getRoom(room),'censor_action_member')
-			print act
-			print jid
-			print room
-			print cens_text
 			muc_filter_action(act,jid,room,cens_text)
 		elif lvl < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
 			act = get_config(getRoom(room),'censor_action_non_member')

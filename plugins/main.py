@@ -951,22 +951,15 @@ def unescape(text):
 	return re.sub("&#?\w+;", fixup, text)	
 
 def html_escape(text):
-	link = re.findall(u'^(\ +)',text)
-	for tmp in link: text = text.replace(tmp,'&nbsp;'*len(tmp))
+	def link(text): return '<a href="%s">%s</a>' % (text.group(0),text.group(0))
+	def email(text): return '<a href="mailto:%s">%s</a>' % (text.group(0),text.group(0))
+	def nbsp(text): return '&nbsp;' * len(text.group(0))
+	text = re.sub(u'^(\ +)',nbsp,text)	
 	for tmp in rlmas: text = text.replace(tmp[0],tmp[1])
-	link = re.findall(u'(http[s]?://[a-zA-Z\.\-\_0-9а-яА-Я\/]+)',text)
-	link_tmp = []
-	for tmp in link:
-		if not link_tmp.count(tmp): link_tmp.append(tmp)
-	for tmp in link_tmp: text = text.replace(tmp,'<a href="%s">%s</a>' % (tmp,tmp))
-	link = re.findall(u'([a-zA-Z\.\-\_0-9\?\:а-яА-Я]+@[a-zA-Z\.\-\_0-9а-яА-Я\/\?\:]+)',text)
-	link_tmp = []
-	for tmp in link:
-		if not link_tmp.count(tmp): link_tmp.append(tmp)
-	for tmp in link_tmp: text = text.replace(tmp,'<a href="mailto:%s">%s</a>' % (tmp,tmp))
+	text = re.sub(u'(http[s]?://[-a-zA-Z0-9а-яА-Я._/?&#=;]+)',link,text)
+	text = re.sub(u'([-a-zA-Z._0-9?:а-яА-Я]+@[-a-zA-Z._0-9а-яА-Я/?:]+)',email,text)
 	text = text.replace('\n','<br>')
-	link = re.findall(u'<br>(\ +)',text)
-	for tmp in link: text = text.replace(tmp,'&nbsp;'*len(tmp))
+	text = re.sub(u'<br>(\ +)',nbsp,text)
 	return text
 
 def rss_replace(ms):
@@ -1168,14 +1161,19 @@ def rss(type, jid, nick, text):
 	elif mode == 'new' or mode == 'get':
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
-		try: feed = urllib.urlopen(link).read()
-		except: return
+		try:
+			if int(''.join(sys.version.split()[0].split('.'))) >= 260:
+				req = urllib2.Request(link.encode('utf-8'))
+				req.add_header('User-Agent',user_agent)
+				feed = urllib2.urlopen(url=req,timeout=10).read(size_overflow)
+			else: feed = urllib.urlopen(link).read()
+		except: feed = L('Unable to access server!')
 		is_rss_aton,fc = 0,feed[:256]
 		if fc.count('<?xml version='):
 			if fc.count('<feed'): is_rss_aton = 2
 			elif fc.count('<rss') or fc.count('<rdf'): is_rss_aton = 1
 		feed = html_encode(feed)
-		if is_rss_aton and feed != L('Encoding error!'):
+		if is_rss_aton and feed != L('Encoding error!') and feed != L('Unable to access server!'):
 			if is_rss_aton == 1:
 				if feed.count('<item>'): fd = feed.split('<item>')
 				else: fd = feed.split('<item ')
@@ -1255,8 +1253,8 @@ def rss(type, jid, nick, text):
 			rss_flush(jid,link,None)
 			if text[4] == 'silent': nosend = True
 			else:
-				if feed != L('Encoding error!'): title = get_tag(feed,'title')
-				else: title = feed
+				if feed in [L('Encoding error!'),L('Unable to access server!')]: title = feed
+				else: title = get_tag(feed,'title')
 				msg = L('Bad url or rss/atom not found at %s - %s') % (link,title)
 	if not nosend: send_msg(type, jid, nick, msg)
 
