@@ -8,8 +8,9 @@
 acl_help = '''Actions list.
 acl show - show list
 acl del item - remove item from list
-acl [/time] msg|message|prg|presence|nick|jid|all [sub|exp] pattern command - execute command by condition
+acl [/time] msg|message|prg|presence|nick|jid|all [sub|exp|cexp] pattern command - execute command by condition
 allowed variables in commands: ${NICK}, ${JID}
+sub = substring, exp = regular expression, cexp = case sensitive regular expression
 time format is /number+identificator. s = second, m = minut, d = day, w = week, M = month, y = year. only one identificator allowed!'''
 
 acl_acts = ['msg','message','prs','presence','nick','jid','all']
@@ -53,10 +54,10 @@ def acl_add_del(jid,text,flag):
 	if not acl_cmd in acl_acts: msg = L('Items: %s') % '|'.join(acl_acts)
 	else:
 		#sub|exp .*|some visitor|kick|ban|participant|member|none|say
-		if text[0].lower() in ['sub','exp','=']: acl_sub_act,text = text[0].lower(),text[1:]
+		if text[0].lower() in ['sub','exp','cexp','=']: acl_sub_act,text = text[0].lower(),text[1:]
 		else: acl_sub_act = '='
 		text[0] = text[0].replace('%20','\ ')
-		if acl_sub_act == 'exp':
+		if acl_sub_act in ['exp','cexp']:
 			try: re.compile(text[0])
 			except: return L('Error in RegExp!')	
 		aclb,acur = open_acl_base()
@@ -110,10 +111,13 @@ def acl_message(room,jid,nick,type,text):
 			if tmp[1] == 'exp' and re.match(tmp[2],text,re.I+re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif tmp[1] == 'sub' and text.count(tmp[2]):
+			elif tmp[1] == 'cexp' and re.match(tmp[2],text,re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif text == tmp[2]:
+			elif tmp[1] == 'sub' and text.lower().count(tmp[2].lower()):
+				acl_action(tmp[3],nick,jid,room)
+				break
+			elif text.lower() == tmp[2].lower():
 				acl_action(tmp[3],nick,jid,room)
 				break
 	close_acl_base(aclb)			
@@ -133,10 +137,13 @@ def acl_presence(room,jid,nick,type,mass):
 			if tmp[1] == 'exp' and re.match(tmp[2],itm,re.I+re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif tmp[1] == 'sub' and itm.count(tmp[2]):
+			elif tmp[1] == 'cexp' and re.match(tmp[2],itm,re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif itm == tmp[2] or (tmp[0] == 'all' and tmp[2] in (jid,nick,mass[0])):
+			elif tmp[1] == 'sub' and itm.lower().count(tmp[2].lower()):
+				acl_action(tmp[3],nick,jid,room)
+				break
+			elif itm.lower() == tmp[2].lower() or (tmp[0] == 'all' and tmp[2].lower() in (jid.lower(),nick.lower(),mass[0].lower())):
 				acl_action(tmp[3],nick,jid,room)
 				break
 	close_acl_base(aclb)				
