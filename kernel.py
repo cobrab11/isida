@@ -728,7 +728,7 @@ def messageCB(sess,mess):
 	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 9
 	if type == 'groupchat' and nick != '' and jid != 'None': talk_count(room,jid,nick,text)
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
-		cens_text = L('Censored!') + ' ' + to_censore(text)
+		cens_text = L('Censored!')
 		lvl = get_level(room,nick)[0]
 		if lvl >= 5 and get_config(getRoom(room),'censor_warning'): send_msg(type,room,nick,cens_text)
 		elif lvl == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
@@ -737,7 +737,6 @@ def messageCB(sess,mess):
 		elif lvl < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
 			act = get_config(getRoom(room),'censor_action_non_member')
 			muc_filter_action(act,jid,room,cens_text)
-		
 	no_comm = 1
 	if (text != 'None') and (len(text)>=1) and access_mode >= 0 and not mess.getSubject():
 		no_comm = 1
