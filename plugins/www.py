@@ -74,7 +74,7 @@ def parse_url_in_message(room,jid,nick,type,text):
 			else: return
 			text = get_tag(page,tag).replace('\n',' ').replace('\r',' ').replace('\t',' ')
 			while text.count('  '): text = text.replace('  ',' ')
-			if text: send_msg(type, room, '', L('Title: %s') % text)
+			if text: send_msg(type, room, '', L('Title: %s') % rss_replace(text))
 	except: pass
 
 global execute
