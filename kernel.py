@@ -582,14 +582,6 @@ def iqCB(sess,iq):
 						sender(unicode(i).replace('<message />',msg))
 						raise xmpp.NodeProcessed
 					except: pass
-					#print unicode(iq)
-					#print unicode(i)
-			
-
-# iq_request = {id:(time,func,())}
-# func = (,is_answ)
-# is_answ = time_lim,some[:]
-#else: msg = L('Timeout %s sec.') % str(timeout)
 
 def iq_async_clean():
 	global iq_reques
@@ -700,7 +692,7 @@ def to_scrobble(room,mess):
 	
 def messageCB(sess,mess):
 	global lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
-	global ignorebase, ignores, message_in
+	global ignorebase, ignores, message_in, no_comm
 	message_in += 1
 	type=unicode(mess.getType())
 	room=unicode(mess.getFrom().getStripped())
@@ -737,18 +729,18 @@ def messageCB(sess,mess):
 		elif lvl < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
 			act = get_config(getRoom(room),'censor_action_non_member')
 			muc_filter_action(act,jid,room,cens_text)
-	no_comm = 1
+	no_comm = True
 	if (text != 'None') and (len(text)>=1) and access_mode >= 0 and not mess.getSubject():
-		no_comm = 1
-		is_par = 0
+		no_comm = True
+		is_par = False
 		if text[:len(nowname)] == nowname:
 			text = text[len(nowname)+2:]
-			is_par = 1
+			is_par = True
 		btext = text
 		if text[:len(lprefix)] == lprefix:
 			text = text[len(lprefix):]
-			is_par = 1
-		if type == 'chat': is_par = 1
+			is_par = True
+		if type == 'chat': is_par = True
 		if is_par: no_comm = com_parser(access_mode, nowname, type, room, nick, text, jid)
 		if no_comm:
 			for parse in aliases:
@@ -1077,6 +1069,7 @@ ignore_owner = None					# исполнять отключенные команд
 configname = 'settings/config.py'	# конфиг бота
 topics = {}							# временное хранение топиков
 last_msg_base = {}					# последние сообщения
+no_comm = True
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -1090,7 +1083,7 @@ else: errorHandler(configname+' is missed.')
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
 	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
-botVersion +='-rc0'
+botVersion +='-rc1'
 try: tmp = botOs
 except: botOs = os_version()
 
