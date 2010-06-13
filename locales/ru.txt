@@ -441,9 +441,9 @@ february	февраль
 march	март
 april	апрель
 may	май
-june июнь
+june	июнь
 july	июль
-august август
+august	август
 september	сентябрь
 october	октябрь
 november	ноябрь
@@ -453,7 +453,7 @@ February	февраля
 March	марта
 April	апреля
 May	мая
-June июня
+June	июня
 July	июля
 August августа
 September	сентября

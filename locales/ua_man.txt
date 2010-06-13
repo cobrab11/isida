@@ -373,9 +373,9 @@ february	лютий
 march	березень
 april	квітень
 may	травень
-june червень
+june	червень
 july	липень
-august серпень
+august	серпень
 september	вересень
 october	жовтень
 november	листопад
@@ -385,7 +385,7 @@ February	лютого
 March	березня
 April	квітня
 May	травня
-June червня
+June	червня
 July	липня
 August серпня
 September	вересня
