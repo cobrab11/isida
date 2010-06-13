@@ -513,7 +513,7 @@ def iqCB(sess,iq):
 					if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= muc_filter_large_message_size:
 						act = get_config(getRoom(room),'muc_filter_large')
 						if act == 'paste' or act == 'truncate':
-							url = paste_text(body,room,jid)
+							url = paste_text(rss_replace(body),room,jid)
 							if act == 'truncate': body = u'%s[…] %s' % (body[:muc_filter_large_message_size],url)
 							else: body = L(u'Large message… %s') % url
 							msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
