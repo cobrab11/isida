@@ -8,10 +8,10 @@
 acl_help = '''Actions list.
 acl show - show list
 acl del item - remove item from list
-acl [/time] msg|message|prg|presence|nick|jid|all [sub|exp|cexp] pattern command - execute command by condition
+acl [/time] msg|message|prs|presence|nick|jid|all [sub|exp|cexp] pattern command - execute command by condition
 allowed variables in commands: ${NICK}, ${JID}
 sub = substring, exp = regular expression, cexp = case sensitive regular expression
-time format is /number+identificator. s = second, m = minut, d = day, w = week, M = month, y = year. only one identificator allowed!'''
+time format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!'''
 
 acl_acts = ['msg','message','prs','presence','nick','jid','all']
 acl_actions = ['show','del'] + acl_acts
