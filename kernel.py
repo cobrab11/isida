@@ -77,19 +77,19 @@ def thr(func,param,name):
 	try:
 		if thread_type:
 			with sema:
-				tmp_th = KThread(group=None,target=log_execute,name=str(th_cnt)+'_'+name,args=(func,param))
+				tmp_th = KThread(group=None,target=log_execute,name='%s_%s' % (str(th_cnt),name),args=(func,param))
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
 		if str(SM).lower().count('thread'): thread_error_count += 1
-		else: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
+		else: logging.exception(' [%s] %s' % (timeadd(tuple(localtime())),unicode(proc)))
 		if thread_type:
 			try: tmp_th.kill()
 			except: pass
 
 def log_execute(proc, params):
 	try: proc(*params)
-	except: logging.exception(' ['+timeadd(tuple(localtime()))+'] '+str(proc))
+	except: logging.exception(' [%s] %s' % (timeadd(tuple(localtime())),unicode(proc)))
 
 def send_count(item):
 	global message_out, presence_out, iq_out, unknown_out
@@ -221,16 +221,15 @@ def remove_sub_space(text):
 def smart_encode(text,enc):
 	tx,splitter = '','|'
 	while text.count(splitter): splitter += '|'
-	ttext = text.replace('</','<'+splitter+'/').split(splitter)
+	ttext = text.replace('</','<%s/' % splitter).split(splitter)
 	for tmp in ttext:
 		try: tx += unicode(tmp,enc)
 		except: pass
 	return tx
 
 def tZ(val):
-	val = str(val)
-	if len(val) == 1: val = '0'+val
-	return val
+	if val < 10: return '0%s' % val
+	return str(val)
 
 def timeadd(lt): return '%s.%s.%s %s:%s:%s' % (tZ(lt[2]),tZ(lt[1]),tZ(lt[0]),tZ(lt[3]),tZ(lt[4]),tZ(lt[5]))
 
@@ -238,10 +237,9 @@ def onlytimeadd(lt): return '%s:%s:%s' % (tZ(lt[3]),tZ(lt[4]),tZ(lt[5]))
 
 def pprint(text):
 	lt = tuple(localtime())
-	zz = parser('['+onlytimeadd(lt)+'] '+text)
+	zz = parser('[%s] %s' % (onlytimeadd(lt),text))
 	if dm2: print zz
 	if CommandsLog:
-		fname = slog_folder+tZ(lt[0])+tZ(lt[1])+tZ(lt[2])+'.txt'
 		fname = '%s%s%s%s.txt' % (slog_folder,tZ(lt[0]),tZ(lt[1]),tZ(lt[2]))
 		fbody = '%s|%s\n' % (onlytimeadd(lt),text)
 		fl = open(fname, 'a')
@@ -303,19 +301,19 @@ def send_msg(mtype, mjid, mnick, mmessage):
 			maxcnt = len(mmessage)/msg_limit + 1
 			mmsg = mmessage
 			while len(mmsg) > msg_limit:
-				tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg[:msg_limit]+'[...]'
+				tmsg = '[%s/%s] %s[…]' % (cnt+1,maxcnt,mmsg[:msg_limit])
 				cnt += 1
-				sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+				sender(xmpp.Message('%s/%s' % (mjid,mnick), tmsg, 'chat'))
 				mmsg = mmsg[msg_limit:]
 				sleep(1)
-			tmsg = '['+str(cnt+1)+'/'+str(maxcnt)+'] '+mmsg
-			sender(xmpp.Message(mjid+'/'+mnick, tmsg, 'chat'))
+			tmsg = '[%s/%s] %s' % (cnt+1,maxcnt,mmsg)
+			sender(xmpp.Message('%s/%s' % (mjid,mnick), tmsg, 'chat'))
 			if mtype == 'chat': no_send = None
-			else: mmessage = mmessage[:msg_limit] + '[...]'
+			else: mmessage = mmessage[:msg_limit] + '[…]'
 		if no_send:
-			if mtype == 'groupchat' and mnick != '': mmessage = mnick+': '+mmessage
+			if mtype == 'groupchat' and mnick != '': mmessage = '%s: %s' % (mnick,mmessage)
 			else: mjid += '/' + mnick
-			while mmessage[-1:] == '\n' or mmessage[-1:] == '\t' or mmessage[-1:] == '\r' or mmessage[-1:] == ' ': mmessage = mmessage[:-1]
+			while mmessage[-1:] in ['\n','\t','\r',' ']: mmessage = mmessage[:-1]
 			if len(mmessage): sender(xmpp.Message(mjid, mmessage, mtype))
 
 def os_version():
@@ -324,7 +322,7 @@ def os_version():
 	isidaPyVer = sys.version.split(',')[0]+')'
 	if iOs == 'posix':
 		osInfo = os.uname()
-		isidaOs = osInfo[0]+' ('+osInfo[2]+'-'+osInfo[4]+') / Python v'+isidaPyVer
+		isidaOs = '%s (%s-%s) / Python v%s' % (osInfo[0],osInfo[2],osInfo[4],isidaPyVer)
 	elif iSys == 'win32':
 		def get_registry_value(key, subkey, value):
 			import _winreg
@@ -338,8 +336,8 @@ def os_version():
 		buildInfo = get("CurrentBuildNumber")
 		try:
 			spInfo = get("CSDVersion")
-			isidaOs = osInfo+' '+spInfo+' (Build: '+buildInfo+') / Python v'+isidaPyVer
-		except: isidaOs = osInfo+' (Build: '+buildInfo+') / Python v'+isidaPyVer
+			isidaOs = '%s %s (Build: %s) / Python v%s' % (osInfo,spInfo,buildInfo,isidaPyVer)
+		except: isidaOs = '%s (Build: %s) / Python v%s' % (osInfo,buildInfo,isidaPyVer)
 	else: isidaOs = 'unknown'
 	return isidaOs
 
@@ -394,7 +392,7 @@ def leave(conference, sm):
 def timeZero(val):
 	rval = []
 	for iv in range(0,len(val)):
-		if val[iv]<10: rval.append('0'+str(val[iv]))
+		if val[iv]<10: rval.append('0%s' % val[iv])
 		else: rval.append(str(val[iv]))
 	return rval
 
@@ -413,7 +411,7 @@ def paste_text(text,room,jid):
 	ott = onlytimeadd(tuple(localtime()))
 	paste_body = ['%s','<p><span class="text">%s</span></p>\n'][html_paste_enable] % (text)
 	lht = '%s [%s] - %s/%s/%s %s:%s:%s' % (nick,room,lt[0],lt[1],lt[2],lt[3],tZ(lt[4]),tZ(lt[5]))
-	paste_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,paste_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][html_paste_enable]
+	paste_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,'%s%s</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">%s</div></div><div class="container">\n' % (paste_header,lht,lht)][html_paste_enable]
 	fl = open(pastepath+url, 'a')
 	fl.write(paste_he.encode('utf-8'))
 	fl.write(paste_body.encode('utf-8'))
@@ -461,7 +459,7 @@ def iqCB(sess,iq):
 
 	elif iq.getType()=='get':
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION) and iq_version_enable:
-			pprint('*** iq:version from '+unicode(room))
+			pprint('*** iq:version from %s' % unicode(room))
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setQueryNS(namespace=xmpp.NS_VERSION)
@@ -472,18 +470,18 @@ def iqCB(sess,iq):
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_TIME) and iq_time_enable:
-			pprint('*** iq:time from '+unicode(room))
+			pprint('*** iq:time from %s' % unicode(room))
 			gt=timeZero(gmtime())
-			t_utc=gt[0]+gt[1]+gt[2]+'T'+gt[3]+':'+gt[4]+':'+gt[5]
+			t_utc='%s%s%sT%s:%s:%s' % (gt[0],gt[1],gt[2],gt[3],gt[4],gt[5])
 			lt=tuple(localtime())
 			ltt=timeZero(lt)
 			wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
 			wlight = [L('Winter time'),L('Summer time')]
 			wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
-			t_display = ltt[3]+':'+ltt[4]+':'+ltt[5]+', '+ltt[2]+'.'+wmonth[lt[1]-1]+'\''+ltt[0]+', '+wday[lt[6]]+', '
-			if timeofset < 0: t_tz = 'GMT'+str(timeofset)
-			else: t_tz = 'GMT+'+str(timeofset)
-			t_display += t_tz + ', ' +wlight[lt[8]]
+			t_display = '%s:%s:%s, %s.%s\'%s, %s, ' % (ltt[3],ltt[4],ltt[5],ltt[2],wmonth[lt[1]-1],ltt[0],wday[lt[6]])
+			if timeofset < 0: t_tz = 'GMT%s' % timeofset
+			else: t_tz = 'GMT+%s' % timeofset
+			t_display += '%s, %s' % (t_tz,wlight[lt[8]])
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setQueryNS(namespace=xmpp.NS_TIME)
@@ -494,7 +492,7 @@ def iqCB(sess,iq):
 			raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_LAST) and iq_uptime_enable:
-			pprint('*** iq:uptime from '+unicode(room))
+			pprint('*** iq:uptime from %s' % unicode(room))
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setTag('query',namespace=xmpp.NS_LAST,attrs={'seconds':str(int(time.time())-starttime)})
@@ -633,7 +631,7 @@ def com_parser(access_mode, nowname, type, room, nick, text, jid):
 						not_offed = None
 						break
 			if not_offed and (text.lower() == parse[1].lower() or text[:len(parse[1])+1].lower() == parse[1].lower()+' '):
-				pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+				pprint('%s %s/%s [%s] %s' % (jid,room,nick,access_mode,text))
 				no_comm = None
 				if not parse[3]: thr(parse[2],(type, room, nick, par),parse[1])
 				elif parse[3] == 1: thr(parse[2],(type, room, nick),parse[1])
@@ -706,7 +704,7 @@ def messageCB(sess,mess):
 	towh=unicode(mess.getTo().getStripped())
 	lprefix = get_local_prefix(room)
 	back_text = text
-	rn = room+"/"+nick
+	rn = '%s/%s' % (room,nick)
 	ft = text
 	ta = get_level(room,nick)
 	access_mode = ta[0]
@@ -745,7 +743,7 @@ def messageCB(sess,mess):
 		if no_comm:
 			for parse in aliases:
 				if (btext.lower() == parse[1].lower() or btext[:len(parse[1])+1].lower() == parse[1].lower()+' ') and room == parse[0]:
-					pprint(jid+' '+room+'/'+nick+' ['+str(access_mode)+'] '+text)
+					pprint('%s %s/%s [%s] %s' % (jid,room,nick,access_mode,text))
 					argz = btext[len(parse[1])+1:]
 					if not argz:
 						ppr = parse[2].replace('%*', '')
@@ -783,7 +781,7 @@ def msg_afterwork(mess,room,jid,nick,type,back_text):
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
 		if subj != 'None' and back_text == 'None':
-			if subj.count('\n'): subj = '\n'+subj
+			if subj.count('\n'): subj = '\n%s'  % subj
 			tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
 			topics[room] = subj
 		else:
@@ -813,7 +811,7 @@ def getAnswer(tx,type):
 def to_censore(text):
 	wca = None
 	for c in censor:
-		cn = re.findall(c,' '+text+' ',re.I+re.S+re.U)
+		cn = re.findall(c,' %s ' % text,re.I+re.S+re.U)
 		for tmp in cn: text,wca = text.replace(tmp,[censor_text*len(tmp),censor_text][len(censor_text)>1]),True
 	if wca: text = del_space_both(text)
 	return text
@@ -849,10 +847,10 @@ def presenceCB(sess,mess):
 	id = mess.getID()
 
 	if type=='error':
-		try: pres_answer.append((id,get_tag_item(unicode(mess),'error','code')+': '+mess.getTag('error').getTagData(tag='text')))
+		try: pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error').getTagData(tag='text'))))
 		except:
 			try: 
-				pres_answer.append((id,get_tag_item(unicode(mess),'error','code')+': '+mess.getTag('error')))
+				pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error'))))
 			except: pres_answer.append((id,L('Unknown error!')))
 		return
 	elif id != None: pres_answer.append((id,None))
@@ -899,7 +897,7 @@ def presenceCB(sess,mess):
 	if type=='unavailable' and nick != '':
 		for mmb in megabase:
 			if mmb[0]==room and mmb[1]==nick: megabase.remove(mmb)
-		if to == selfjid and (status=='307' or status=='301') and confbase.count(room+'/'+nick):
+		if to == selfjid and (status=='307' or status=='301') and confbase.count('%s/%s' % (room,nick)):
 			if os.path.isfile(confs):
 				confbase = eval(readfile(confs))
 				confbase = arr_del_semi_find(confbase,getRoom(room))
@@ -912,7 +910,7 @@ def presenceCB(sess,mess):
 				if role != mmb[2] or affiliation != mmb[3]: not_found = 1
 				else: not_found = 2
 		if not not_found: megabase.append([room, nick, role, affiliation, jid])
-	if jid == 'None': jid, jid2 = '<temporary>'+nick, 'None'
+	if jid == 'None': jid, jid2 = '<temporary>%s' % nick, 'None'
 	else: jid2, jid = jid, getRoom(jid.lower())
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
@@ -959,7 +957,7 @@ def getResourse(jid):
 def getRoom(jid):
 	jid = unicode(jid)
 	if jid == 'None': return jid
-	return getName(jid)+'@'+getServer(jid)
+	return '%s@%s' % (getName(jid),getServer(jid))
 
 def now_schedule():
 	while not game_over:
@@ -990,7 +988,7 @@ def check_rss():
 				break
 		if ofset < 600: ofset = 600
 		if in_room and ll_hl + ofset <= l_hl:
-			pprint('check rss: '+fd[0]+' in '+fd[4])
+			pprint('check rss: %s in %s' % (fd[0],fd[4]))
 			rss('groupchat', fd[4], 'RSS', 'new %s 10 %s silent' % (fd[0],fd[2]))
 			break
 
@@ -1082,7 +1080,7 @@ else: errorHandler(configname+' is missed.')
 
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))
-	if len(bvers[:-1]) > 1: botVersion +='.'+bvers[:-1]
+	if len(bvers[:-1]) > 1: botVersion +='.%s' % bvers[:-1]
 botVersion +='-rc1'
 try: tmp = botOs
 except: botOs = os_version()
@@ -1122,7 +1120,7 @@ for pl in plugins:
 		iq_control = []
 		timer = []
 		pprint('Append plugin: %s' % pl)
-		execfile('plugins/'+pl)
+		execfile('plugins/%s' % pl)
 		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (pl[:-3],cm[4])))
 		for tmr in timer: gtimer.append(tmr)
 		for tmp in presence_control: gpresence.append(tmp)
@@ -1139,7 +1137,7 @@ ownerbase = getFile(owners,[god])
 ignorebase = getFile(ignores,[])
 cu_age = []
 close_age_null()
-confbase = getFile(confs,[defaultConf.lower()+'/'+Settings['nickname']])
+confbase = getFile(confs,['%s/%s' % (defaultConf.lower(),Settings['nickname'])])
 if os.path.isfile(cens):
 	censor = readfile(cens).decode('UTF').replace('\r','').split('\n')
 	cn = []
@@ -1149,16 +1147,16 @@ if os.path.isfile(cens):
 else: censor = []
 
 pprint('*'*50)
-pprint('*** Bot Name: '+botName)
-pprint('*** Version '+botVersion)
-pprint('*** OS '+botOs)
+pprint('*** Name: %s' % botName)
+pprint('*** Version: %s' % botVersion)
+pprint('*** OS: %s ' % botOs)
 pprint('*'*50)
 pprint('*** (c) 2oo9-2o1o Disabler Production Lab.')
 
 lastnick = Settings['nickname']
 jid = JID(Settings['jid'])
 selfjid = jid
-pprint('bot jid: '+unicode(jid))
+pprint('JID: %s' % unicode(jid))
 raw_iq = []
 
 try:
@@ -1208,7 +1206,7 @@ for tocon in confbase:
 		setup[getRoom(tocon)] = {}
 		writefile(c_file,str(setup))
 	baseArg = unicode(tocon)
-	if not tocon.count('/'): baseArg += '/'+unicode(Settings['nickname'])
+	if not tocon.count('/'): baseArg += '/%s' % unicode(Settings['nickname'])
 	conf = JID(baseArg)
 	zz = joinconf(tocon, getServer(Settings['jid']))
 	while unicode(zz)[:3] == '409':
@@ -1250,8 +1248,8 @@ while 1:
 		sys.exit('exit')
 
 	except Exception, SM:
-		pprint('*** Error *** '+str(SM)+' ***')
-		logging.exception(' ['+timeadd(tuple(localtime()))+'] ')
+		pprint('*** Error *** %s ***' % unicode(SM))
+		logging.exception(' [%s] ' % timeadd(tuple(localtime())))
 		if str(SM).lower().count('parsing finished'):
 			close_age()
 			kill_all_threads()
