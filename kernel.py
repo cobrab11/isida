@@ -508,48 +508,8 @@ def iqCB(sess,iq):
 				if ownerbase.count(getRoom(jid)): pass
 				elif get_config(getRoom(room),'muc_filter'):
 					body = get_tag(msg,'body')
-					if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= muc_filter_large_message_size:
-						act = get_config(getRoom(room),'muc_filter_large')
-						if act == 'paste' or act == 'truncate':
-							url = paste_text(rss_replace(body),room,jid)
-							if act == 'truncate': body = u'%s[…] %s' % (body[:muc_filter_large_message_size],url)
-							else: body = L(u'Large message… %s') % url
-							msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
-						elif act == 'mute': mute = True
-						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
-						pprint('MUC-Filter large message (%s): %s [%s] %s' % (act,jid,room,body))
-					if get_config(getRoom(room),'muc_filter_repeat') != 'off' and msg and not mute:
-						try: lm = last_msg_base[getRoom(jid)]
-						except: lm = None
-						if lm:
-							m1,m2,watch_repeat = body.split(),lm.split(),0
-							for t1 in m1:
-								cnt = 0
-								for t2 in m2:
-									if t1 == t2: cnt += 1
-								if cnt > 2: watch_repeat += 1
-							ll = [len(m1),len(m2)][m1 > m2]
-							#print float(watch_repeat)/ll
-							if body in lm or lm in body:
-								act = get_config(getRoom(room),'muc_filter_repeat')
-								if act == 'mute': mute = True
-								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
-								pprint('MUC-Filter repeat (%s): %s [%s] %s' % (act,jid,room,body))
-						last_msg_base[getRoom(jid)] = body
-					if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= muc_filter_match_view:
-						tbody,warn_match,warn_space = body.split(),0,0
-						for tmp in tbody:
-							cnt = 0
-							for tmp2 in tbody:
-								if tmp2.count(tmp): cnt += 1							
-							if cnt > muc_filter_match_count: warn_match += 1
-							if not len(tmp): warn_space += 1
-						#print warn_match,warn_space
-						if warn_match > muc_filter_match_warning_match or warn_space > muc_filter_match_warning_space or body.count('\n'*muc_filter_match_warning_nn):
-							act = get_config(getRoom(room),'muc_filter_match')
-							if act == 'mute': mute = True
-							else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Match message block!'))
-							pprint('MUC-Filter matcher (%s): %s [%s] %s' % (act,jid,room,body))
+					
+					# AD-Block filter
 					if get_config(getRoom(room),'muc_filter_adblock') != 'off' and msg and not mute:
 						f = []
 						for reg in adblock_regexp: 
@@ -563,12 +523,54 @@ def iqCB(sess,iq):
 							elif act == 'mute': mute = True
 							else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 							pprint('MUC-Filter adblock (%s): %s [%s] %s' % (act,jid,room,body))
+
+					# Repeat message filter
+					if get_config(getRoom(room),'muc_filter_repeat') != 'off' and msg and not mute:
+						try: lm = last_msg_base[getRoom(jid)]
+						except: lm = None
+						if lm:
+							if body in lm or lm in body:
+								act = get_config(getRoom(room),'muc_filter_repeat')
+								if act == 'mute': mute = True
+								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
+								pprint('MUC-Filter repeat (%s): %s [%s] %s' % (act,jid,room,body))
+						last_msg_base[getRoom(jid)] = body
+						
+					# Match filter
+					if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= muc_filter_match_view:
+						tbody,warn_match,warn_space = body.split(),0,0
+						for tmp in tbody:
+							cnt = 0
+							for tmp2 in tbody:
+								if tmp2.count(tmp): cnt += 1							
+							if cnt > muc_filter_match_count: warn_match += 1
+							if not len(tmp): warn_space += 1
+						if warn_match > muc_filter_match_warning_match or warn_space > muc_filter_match_warning_space or body.count('\n'*muc_filter_match_warning_nn):
+							act = get_config(getRoom(room),'muc_filter_match')
+							if act == 'mute': mute = True
+							else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Match message block!'))
+							pprint('MUC-Filter matcher (%s): %s [%s] %s' % (act,jid,room,body))
+							
+					# Censor filter
 					if get_config(getRoom(room),'muc_filter_censor') != 'off' and body != to_censore(body) and msg and not mute:
 						act = get_config(getRoom(room),'muc_filter_censor')
 						if act == 'replace': msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % to_censore(body))
 						elif act == 'mute': mute = True
 						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Blocked by censor!'))
 						pprint('MUC-Filter censor (%s): %s [%s] %s' % (act,jid,room,body))
+
+					# Large message filter
+					if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= muc_filter_large_message_size and msg and not mute:
+						act = get_config(getRoom(room),'muc_filter_large')
+						if act == 'paste' or act == 'truncate':
+							url = paste_text(rss_replace(body),room,jid)
+							if act == 'truncate': body = u'%s[…] %s' % (body[:muc_filter_large_message_size],url)
+							else: body = L(u'Large message… %s') % url
+							msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
+						elif act == 'mute': mute = True
+						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
+						pprint('MUC-Filter large message (%s): %s [%s] %s' % (act,jid,room,body))
+
 				if mute:
 					nick = get_nick_by_jid_res(room,jid)
 					send_msg('chat', room, nick, L('Warning! Your message is blocked in connection with the policy of the room!'))
