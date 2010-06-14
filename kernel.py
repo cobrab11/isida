@@ -505,8 +505,15 @@ def iqCB(sess,iq):
 			msg,mute = get_tag_full(unicode(msg),'message'), None
 			if msg.count('<body>') and msg.count('</body>'):
 				jid = get_tag_item(msg,'message','from')
-				if ownerbase.count(getRoom(jid)): pass
-				elif get_config(getRoom(room),'muc_filter'):
+				skip_owner = ownerbase.count(getRoom(jid))
+				if get_tag_item(msg,'message','type') == 'chat' and not skip_owner:
+					tojid = getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1])
+					mbase,mcur = open_muc_base()
+					tmp = mcur.execute('select * from muc where room=? and jid=?', (room,tojid)).fetchall()
+					close_muc_base(mbase)
+					if tmp: mute = True
+				if skip_owner: pass
+				elif get_config(getRoom(room),'muc_filter') and not mute:
 					body = get_tag(msg,'body')
 					
 					# AD-Block filter

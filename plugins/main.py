@@ -1306,6 +1306,36 @@ def configure(type, jid, nick, text):
 	else: msg = L('Unknown item!')
 	send_msg(type, jid, nick, msg)
 
+muc_lock_base = set_folder+'muclock.db'
+
+def open_muc_base():
+	is_acl = os.path.isfile(muc_lock_base)
+	aclb = sqlite3.connect(muc_lock_base)
+	acur = aclb.cursor()
+	if not is_acl:
+		acur.execute('create table muc (room text, jid text)')
+	return aclb,acur
+
+def close_muc_base(base):
+	base.commit()
+	base.close()
+	
+def muc_filter_lock(type, jid, nick, text):
+	mbase,mcur = open_muc_base()
+	realjid = getRoom(get_level(jid,nick)[1])
+	tmp = mcur.execute('select * from muc where room=? and jid=?', (jid,realjid)).fetchall()
+	if text in ['on','off']:
+		if tmp: mcur.execute('delete from muc where room=? and jid=?', (jid,realjid)).fetchall()
+		if text == 'on':
+			mcur.execute('insert into muc values (?,?)', (jid, realjid))
+			st = L('on')
+		else: st = L('off')
+	elif tmp: st = L('on')
+	else: st = L('off')
+	msg = L('Ignore messages from unaffiliated participants in private - %s') % st
+	close_muc_base(mbase)
+	send_msg(type, jid, nick, msg)
+
 config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference'), [True,False], False],
 				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change'), [True,False], False],
 				'flood': [L('Flood is %s'), L('Autoanswer'), [True,False], False],
@@ -1348,4 +1378,5 @@ comms = [
 	 (7, 'prefix', set_prefix, 2, L('Set command prefix. Use \'none\' for disable prefix')),
 	 (9, 'set_locale', set_locale, 2, 'Change bot localization.\nset_locale ru|en'),
 	 (9, 'tune', get_scrobble, 2, L('PEP Scrobbler. Test version')),
-	 (7, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]'))]
+	 (7, 'config', configure, 2, L('Conference configure.\nconfig [show[ status]|help][ item]')),
+	 (4, 'pmlock', muc_filter_lock, 2, L('Allow recieve messages from unaffiliated participants in private'))]
