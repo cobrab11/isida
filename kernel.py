@@ -928,9 +928,9 @@ def presenceCB(sess,mess):
 		elif status=='301': exit_type,exit_message = L('Banned'),reason
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
+	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 	if is_start: append_age_base(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message)
 	else: thr(append_age_base,(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message),'agebase_update')
-	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 
 def append_age_base(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message):
 	mdb = sqlite3.connect(agestatbase)
