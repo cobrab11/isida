@@ -559,24 +559,24 @@ def info_comm(type, jid, nick):
 def helpme(type, jid, nick, text):
 	text = text.lower()
 	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
-	elif text == 'donation' or text == 'donations': msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
-	elif text == L('access'): msg = L('Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
+	elif text in ['donation','donations']: msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
+	elif text in [L('access'),'access']: msg = L('Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
 	elif text != '':
-		msg = L('Prefix: %s, Available help for commands:\n') % get_prefix(get_local_prefix(jid))
-		tmpbase = sqlite3.connect(':memory:')
-		cu = tmpbase.cursor()
-		cu.execute('''create table tempo (level integer, name text, body text)''')
-		for tmp in comms: cu.execute('insert into tempo values (?,?,?)', (tmp[0], tmp[1], tmp[4]))
-		cm = cu.execute('select level, body from tempo where name=?',(text,)).fetchone()
-		if cm: msg = L('Access level: %s. %s') % (str(cm[0]),cm[1])
+		tm,cm = [],[]
+		for tmp in comms:
+			if tmp[1] != text: tm.append((tmp[0], tmp[1], tmp[4]))
+			else:
+				cm = (tmp[0],tmp[4])
+				break
+		if cm: msg = L('Access level: %s. %s') % cm
 		else:
-			cm = cu.execute('select * from tempo order by name').fetchall()
-			tmpbase.close()
-       			for i in range(0,3):
-				msg += '['+str(i)+'] '
-				for tmp in cm:
-					if tmp[0] == i and tmp[2] != '': msg += tmp[1] + ', '
-				msg = msg[:-2]+'\n'
+			tm.sort()
+			msg = L('Prefix: %s, Available help for commands:\n') % get_prefix(get_local_prefix(jid))
+       			for i in range(0,10):
+					tmsg = []
+					for tmp in tm:
+						if tmp[0] == i and tmp[2] != '': tmsg.append(unicode(tmp[1]))
+					if len(tmsg): msg += u'[%s]…%s\n' % (i,', '.join(tmsg))
 	else: msg = L('%sInformation-referral bot%s Help for command: help command') % ('Isida Jabber Bot - ', u' | http://isida-bot.com | © 2oo9-2o1o Disabler Production Lab. | ')
 	send_msg(type, jid, nick, msg)
 

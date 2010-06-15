@@ -301,7 +301,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
 			maxcnt = len(mmessage)/msg_limit + 1
 			mmsg = mmessage
 			while len(mmsg) > msg_limit:
-				tmsg = '[%s/%s] %s[…]' % (cnt+1,maxcnt,mmsg[:msg_limit])
+				tmsg = u'[%s/%s] %s[…]' % (cnt+1,maxcnt,mmsg[:msg_limit])
 				cnt += 1
 				sender(xmpp.Message('%s/%s' % (mjid,mnick), tmsg, 'chat'))
 				mmsg = mmsg[msg_limit:]
@@ -309,7 +309,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
 			tmsg = '[%s/%s] %s' % (cnt+1,maxcnt,mmsg)
 			sender(xmpp.Message('%s/%s' % (mjid,mnick), tmsg, 'chat'))
 			if mtype == 'chat': no_send = None
-			else: mmessage = mmessage[:msg_limit] + '[…]'
+			else: mmessage = mmessage[:msg_limit] + u'[…]'
 		if no_send:
 			if mtype == 'groupchat' and mnick != '': mmessage = '%s: %s' % (mnick,mmessage)
 			else: mjid += '/' + mnick
@@ -921,26 +921,29 @@ def presenceCB(sess,mess):
 		if not not_found: megabase.append([room, nick, role, affiliation, jid])
 	if jid == 'None': jid, jid2 = '<temporary>%s' % nick, 'None'
 	else: jid2, jid = jid, getRoom(jid.lower())
+	exit_type = ''
+	exit_message = ''
+	if type=='unavailable':
+		if status=='307': exit_type,exit_message = L('Kicked'),reason
+		elif status=='301': exit_type,exit_message = L('Banned'),reason
+		else: exit_type,exit_message = L('Leave'),text
+		if exit_message == 'None': exit_message = ''
+	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
+	thr(append_age_base,(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message),'agebase_update')
+
+def append_age_base(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message):
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
 	tt = int(time.time())
 	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
-	exit_type = ''
-	exit_message = ''
 	if ab:
-		if type=='unavailable':
-			if status=='307': exit_type,exit_message = L('Kicked'),reason
-			elif status=='301': exit_type,exit_message = L('Banned'),reason
-			else: exit_type,exit_message = L('Leave'),text
-			if exit_message == 'None': exit_message = ''
-			cu.execute('update age set time=?, age=?, status=?, type=?, message=? where room=? and jid=? and nick=?', (tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message,room, jid, nick))
+		if type=='unavailable': cu.execute('update age set time=?, age=?, status=?, type=?, message=? where room=? and jid=? and nick=?', (tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message,room, jid, nick))
 		else:
 			if ab[5]: cu.execute('update age set time=?, status=?, message=? where room=? and jid=? and nick=?', (tt,0,ttext,room, jid, nick))
 			else: cu.execute('update age set status=?, message=? where room=? and jid=? and nick=?', (0,ttext,room, jid, nick))
 	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,jid,tt,0,0,'',ttext))
 	mdb.commit()
-	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 	
 def onoff(msg):
 	if msg == None or msg == False or msg == 0 or msg == '0': return L('off')
