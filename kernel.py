@@ -929,10 +929,6 @@ def presenceCB(sess,mess):
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
-	if is_start: append_age_base(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message)
-	else: thr(append_age_base,(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message),'agebase_update')
-
-def append_age_base(room,jid,nick,affiliation,role,priority,show,text,type,status,exit_type,exit_message):
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
