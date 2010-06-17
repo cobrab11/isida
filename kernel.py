@@ -755,7 +755,7 @@ def messageCB(sess,mess):
 					pprint('%s %s/%s [%s] %s' % (jid,room,nick,access_mode,text))
 					argz = btext[len(parse[1])+1:]
 					if not argz:
-						ppr = parse[2].replace('%*', '')
+						ppr = parse[2].replace('%*', '').replace('%{reduce}*', '').replace('%{reduceall}*', '')
 						cpar = re.findall('%([0-9]+)', ppr, re.S)
 						if len(cpar):
 							for tmp in cpar:
