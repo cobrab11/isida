@@ -120,10 +120,34 @@ def muc_tempo_ban2(type, jid, nick,text):
 def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast')
 def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none')
 def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member')
-def muc_admin(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'admin')
-def muc_owner(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'owner')
 
 def muc_affiliation(type, jid, nick, text, aff):
+	tmppos = arr_semi_find(confbase, jid)
+	if tmppos == -1: nowname = nickname
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '': nowname = nickname
+	xtype = ''
+	for base in megabase:
+		if base[0].lower() == jid and base[1] == nowname:
+			xtype = base[3]
+			break
+	if xtype == 'owner':
+		send_msg(type, jid, nick, L('Command is locked!'))
+	elif len(text):
+		skip = None
+		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
+		else: who, reason = text, L('by Isida!')
+		whojid = unicode(get_level(jid,who)[1])
+		if whojid != 'None': sender(Node('iq', {'id': get_id(), 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':whojid},[Node('reason',{},reason)])])]))
+		else: send_msg(type, jid, nick, L('I don\'t know %s') % who)
+	else: send_msg(type, jid, nick, L('What?'))
+
+def muc_ban_past(type, jid, nick,text): muc_affiliation_past(type, jid, nick, text, 'outcast')
+def muc_none_past(type, jid, nick,text): muc_affiliation_past(type, jid, nick, text, 'none')
+def muc_member_past(type, jid, nick,text): muc_affiliation_past(type, jid, nick, text, 'member')
+
+def muc_affiliation_past(type, jid, nick, text, aff):
 	tmppos = arr_semi_find(confbase, jid)
 	if tmppos == -1: nowname = nickname
 	else:
@@ -170,23 +194,10 @@ def muc_role(type, jid, nick, text, role):
 	if len(text):
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
 		else: who, reason = text, L('by Isida!')
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		fnd = cu.execute('select nick from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-		if len(fnd) == 1: whonick, msg = unicode(fnd[0][0]), L('done')
-		elif len(fnd) > 1:
-			wj = getRoom(get_level(jid,who)[1])
-			if wj != 'None': whonick, msg = who, L('done')
-			else: msg, skip = L('I seen some peoples with this nick. Get more info!'), True
-		else: 
-			msg = L('I don\'n know %s, and use as is!') % who
-			whonick = who
-	else: msg, skip = L('What?'), True
-	if skip: send_msg(type, jid, nick, msg)
-	else:
-		i = Node('iq', {'id': get_id(), 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
-		sender(i)
-		send_msg(type, jid, nick, msg)
+		whojid = unicode(get_level(jid,who)[1])
+		if whojid != 'None': sender(Node('iq', {'id': get_id(), 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'jid':whojid},[Node('reason',{},reason)])])]))
+		else: send_msg(type, jid, nick, L('I don\'t know %s') % who)
+	else: send_msg(type, jid, nick, L('What?'))
 
 # ----------------------------------------------
 # role nick
@@ -345,12 +356,13 @@ timer = [check_unban,decrease_alist_role]
 presence_control = [alist_role_presence]
 #message_control = [alist_message]
 
-execute = [(7, 'ban', muc_ban, 2, L('Ban user.')),
+execute = [(7, 'ban_past', muc_ban_past, 2, L('Ban user.')),
+	   (7, 'ban', muc_ban, 2, L('Ban user.')),
 	   (7, 'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
+	   (7, 'none_past', muc_none_past, 2, L('Delete user affiliation.')),
+	   (7, 'member_past', muc_member_past, 2, L('Get member affiliation.')),
 	   (7, 'none', muc_none, 2, L('Delete user affiliation.')),
 	   (7, 'member', muc_member, 2, L('Get member affiliation.')),
-#	   (7, 'admin', muc_admin, 2, ''),
-#	   (7, 'owner', muc_owner, 2, ''),
 	   (7, 'afind', muc_afind, 2, L('Search in alist.')),
 	   (7, 'kick', muc_kick, 2, L('Kick user.')),
 	   (7, 'participant', muc_participant, 2, L('Give participant.')),
