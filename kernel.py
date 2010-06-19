@@ -505,9 +505,9 @@ def iqCB(sess,iq):
 			msg,mute = get_tag_full(unicode(msg),'message'), None
 			if msg.count('<body>') and msg.count('</body>'):
 				jid = get_tag_item(msg,'message','from')
+				tojid = getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1])
 				skip_owner = ownerbase.count(getRoom(jid))
 				if get_tag_item(msg,'message','type') == 'chat' and not skip_owner:
-					tojid = getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1])
 					mbase,mcur = open_muc_base()
 					tmp = mcur.execute('select * from muc where room=? and jid=?', (room,tojid)).fetchall()
 					close_muc_base(mbase)
@@ -578,10 +578,8 @@ def iqCB(sess,iq):
 						else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
 						pprint('MUC-Filter large message (%s): %s [%s] %s' % (act,jid,room,body))
 
-				if mute:
-					nick = get_nick_by_jid_res(room,jid)
-					send_msg('chat', room, nick, L('Warning! Your message is blocked in connection with the policy of the room!'))
-				elif msg:
+				if mute: msg = unicode(xmpp.Message(to=jid,body=L('Warning! Your message is blocked in connection with the policy of the room!'),typ='chat',frm='%s/%s' % (room,get_nick_by_jid(room,tojid))))
+				if msg:
 					i=xmpp.Iq(to=room, typ='result')
 					i.setAttr(key='id', val=id)
 					i.setTag('query',namespace=xmpp.NS_MUC_FILTER).setTagData(tag='message', val='')
@@ -1086,6 +1084,10 @@ else: timeofset = int(gt[3])-int(lt[3]) + 24
 
 if os.path.isfile(configname): execfile(configname)
 else: errorHandler(configname+' is missed.')
+
+#---------------------------
+muc_lock_base = set_folder+'muclock.db'
+#---------------------------
 
 if os.path.isfile(ver_file):
 	bvers = str(readfile(ver_file))

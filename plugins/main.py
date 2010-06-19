@@ -1306,8 +1306,6 @@ def configure(type, jid, nick, text):
 	else: msg = L('Unknown item!')
 	send_msg(type, jid, nick, msg)
 
-muc_lock_base = set_folder+'muclock.db'
-
 def open_muc_base():
 	is_acl = os.path.isfile(muc_lock_base)
 	aclb = sqlite3.connect(muc_lock_base)
