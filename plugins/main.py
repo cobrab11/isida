@@ -170,7 +170,7 @@ def shell_execute(cmd):
 	try: os.remove(tmp_file)
 	except: pass
 	try:
-		os.system(cmd+' >> '+tmp_file)
+		os.system('%s >> %s' % (cmd.encode('utf-8'),tmp_file))
 		try: body = readfile(tmp_file)
 		except: body = L('Command execution error.')
 		if len(body):

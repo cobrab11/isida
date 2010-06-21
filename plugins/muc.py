@@ -182,8 +182,6 @@ def muc_affiliation_past(type, jid, nick, text, aff):
 		sender(i)
 		send_msg(type, jid, nick, msg)
 
-# -------------- role -----------------
-
 def muc_kick(type, jid, nick, text): muc_role(type, jid, nick, text, 'none')
 def muc_participant(type, jid, nick, text): muc_role(type, jid, nick, text, 'participant')
 def muc_visitor(type, jid, nick, text): muc_role(type, jid, nick, text, 'visitor')
@@ -199,92 +197,6 @@ def muc_role(type, jid, nick, text, role):
 		else: send_msg(type, jid, nick, L('I don\'t know %s') % who)
 	else: send_msg(type, jid, nick, L('What?'))
 
-# ----------------------------------------------
-# role nick
-# time
-# reason
-
-def muc_akick(type, jid, nick,text): muc_arole(type, jid, nick, text, 'none')
-def muc_aparticipant(type, jid, nick,text): muc_arole(type, jid, nick, text, 'participant')
-def muc_avisitor(type, jid, nick,text): muc_arole(type, jid, nick, text, 'visitor')
-def muc_amoderator(type, jid, nick,text): muc_arole(type, jid, nick, text, 'moderator')
-
-def muc_arole(type, jid, nick, text, role):
-	skip = True
-	if len(text):
-		if text[:4].lower() == 'show' and not text.count('\n'):
-			text = text[5:]
-			if not len(text): text = '.'
-			alist_role = getFile(ro_alist,[])
-			msg = ''
-			if alist_role != '[]':
-				for tmp in alist_role:
-					if tmp[0] == jid and tmp[3] == role and tmp[2].count(text.lower()):
-						msg += '\n'+tmp[2]+'\t'+tmp[4]+' (by '+tmp[1]+')'
-						if tmp[5]: msg += '\t'+un_unix(tmp[5]-int(time.time()))
-			if not len(msg):
-				if text == '.': msg = L('List is empty')
-				else: msg = L('Not found.')
-		elif text[:4].lower() == 'del ' and not text.count('\n'):
-			text = text[4:]
-			if not len(text): msg = L('Who delete?')
-			else:
-				msg = L('Not found.')
-				alist_role = getFile(ro_alist,[])
-				for tmp in alist_role:
-					if tmp[0] == jid and (tmp[2] == role or tmp[2] == text):
-						alist_role.remove(tmp)
-						writefile(ro_alist,str(alist_role))
-						msg = L('Removed: %s') % tmp[2]
-						break
-		elif text.lower() == 'clear':
-			alist_role = getFile(ro_alist,[])
-			tmp_role = []
-			for tmp in alist_role:
-				if tmp[0] != jid: tmp_role.append(tmp)
-			writefile(ro_alist,str(tmp_role))
-			msg = L('Cleared for %s') % str(jid)
-		else:
-			who = text.split('\n',2)[0]
-			try:
-				ttime = text.split('\n',2)[1]
-				tttime = int(ttime[:-1])
-				tmode = ttime[-1:].lower()
-				tkpd = {'s':1, 'm':60, 'h':3600, 'd':86400}
-				tttime = tttime*tkpd[tmode]
-			except:
-				tttime = 0
-				try: reason = text.split('\n',2)[1]
-				except: reason = L('No reason!')
-			if tttime:
-				try: reason = text.split('\n',2)[2]
-				except: reason = L('No reason!')
-			mdb = sqlite3.connect(agestatbase)
-			cu = mdb.cursor()
-			fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-			if len(fnd) == 1: whonick, whojid, skip, msg = unicode(fnd[0][0]), unicode(fnd[0][1]), None, L('done')
-			elif len(fnd) > 1:
-				whojid = getRoom(get_level(jid,who)[1])
-				if whojid != 'None': whonick, msg, skip = who, L('done'), None
-				else: msg = L('I seen some peoples with this nick. Get more info!')
-			else: msg = L('I don\'t know %s') % who
-	else: msg = L('What?')
-	
-	if skip: send_msg(type, jid, nick, msg)
-	else:
-		alist_role = getFile(ro_alist,[])
-		for tmp in alist_role:
-			if tmp[0] == jid and tmp[2] == whojid: alist_role.remove(tmp)
-		if tttime: alist_role.append((jid,nick,whojid,role,reason,tttime+int(time.time())))
-		else: alist_role.append((jid,nick,whojid,role,reason,0))
-		i = Node('iq', {'id': get_id(), 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':role, 'nick':unicode(whonick)},[Node('reason',{},reason)])])])
-		sender(i)
-		writefile(ro_alist,str(alist_role))
-		send_msg(type, jid, nick, L('done'))
-# ----------------------------------------------
-
-# room, jid, time
-
 def check_unban():
 	unban_log = getFile(tban,[])
 	if unban_log != '[]':
@@ -296,65 +208,9 @@ def check_unban():
 				sender(i)
 		if unban_log != ubl: writefile(tban,str(ubl))
 
-def decrease_alist_role():
-	alist_role = getFile(ro_alist,[])
-	if alist_role != []:
-		tmp_role = []
-		for tmp in alist_role:
-			if tmp[5] == 0 or tmp[5] > int(time.time()): tmp_role.append(tmp)
-		if alist_role != tmp_role: writefile(ro_alist,str(tmp_role))
+global execute, timer
 
-# ----------------------------------------------
-def muc_afind(type, jid, nick, text):
-	skip = None
-	if len(text):
-		who = text
-		mdb = sqlite3.connect(agestatbase)
-		cu = mdb.cursor()
-		fnd = cu.execute('select nick,jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
-		if len(fnd) == 1: whonick, whojid, skip = unicode(fnd[0][0]), unicode(fnd[0][1]), True
-		elif len(fnd) > 1:
-			whojid = getRoom(get_level(jid,who)[1])
-			if whojid != 'None': whonick, msg, skip = who, L('done'), True
-			else: msg = L('I seen some peoples with this nick. Get more info!')
-		else: msg = L('I don\'t know %s') % who
-	else: msg = L('What?')
-	if skip:
-		alist_role = getFile(ro_alist,[])
-		not_found = 1
-		for tmp in alist_role:
-			if tmp[0] == jid and tmp[2] == whojid:
-				msg = L('Found in list: %s %s, reason: %s by %s') % (tmp[3], '('+tmp[2]+')', tmp[4], '('+tmp[1]+')')
-				if tmp[5]: msg += ' '+un_unix(tmp[5]-int(time.time()))
-				not_found = 0
-				break
-		if not_found: msg = L('No matches for %s in alist.') % text
-	send_msg(type, jid, nick, msg)
-
-# ----------------------------------------------
-#room,jid,nick,type,text
-
-def alist_role_presence(room,jid,nick,type,text):
-#	print 'presence:',room,jid,nick,type,text
-	alist_role = getFile(ro_alist,[])
-	jid = getRoom(jid)
-	if alist_role != []:
-		for tmp in alist_role:
-			if tmp[0] == room and tmp[2] == jid:
-				i = Node('iq', {'id': get_id(), 'type': 'set', 'to':tmp[0]}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':tmp[3], 'nick':unicode(nick)},[Node('reason',{},tmp[4])])])])
-				sender(i)
-				break
-
-#def alist_message(room,jid,nick,type,text):
-#	print 'message:',room,jid,nick,type,text
-
-# ----------------------------------------------
-
-global execute, timer, presence_control#, message_control
-
-timer = [check_unban,decrease_alist_role]
-presence_control = [alist_role_presence]
-#message_control = [alist_message]
+timer = [check_unban]
 
 execute = [(7, 'ban_past', muc_ban_past, 2, L('Ban user.')),
 	   (7, 'ban', muc_ban, 2, L('Ban user.')),
@@ -363,13 +219,8 @@ execute = [(7, 'ban_past', muc_ban_past, 2, L('Ban user.')),
 	   (7, 'member_past', muc_member_past, 2, L('Get member affiliation.')),
 	   (7, 'none', muc_none, 2, L('Delete user affiliation.')),
 	   (7, 'member', muc_member, 2, L('Get member affiliation.')),
-	   (7, 'afind', muc_afind, 2, L('Search in alist.')),
 	   (7, 'kick', muc_kick, 2, L('Kick user.')),
 	   (7, 'participant', muc_participant, 2, L('Give participant.')),
 	   (7, 'visitor', muc_visitor, 2, L('Give visitor.')),
 	   (7, 'moderator', muc_moderator, 2, L('Give role moderator.')),
-	   (7, 'akick', muc_akick, 2, L('Autokick.\nakick show|del [jid] - show/del akick list\nakick nick\ntimeD|H|M|S\nreason - autokick nick for time because reason.')),
-	   (7, 'aparticipant', muc_aparticipant, 2, L('Autoparticipant.\naparticipant show|del [jid] - show/del aparticipant list\naparticipant nick\ntimeD|H|M|S\nreason - give user participant affiliation for time because reason.')),
-	   (7, 'avisitor', muc_avisitor, 2, L('Autovisitor.\navisitor show|del [jid] - show/del avisitor list\navisitor nick\ntimeD|H|M|S\nreason - autovisitor nick for time because reason.')),
-	   (7, 'amoderator', muc_amoderator, 2, L('Automoderator.\namoderator show|del [jid] - show/del amoderator list\namoderator nick\ntimeD|H|M|S\nreason - auto give user role moderator for time because reason.')),
 	   (8, 'global_ban', global_ban, 2, L('Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]
