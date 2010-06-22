@@ -863,7 +863,7 @@ def presenceCB(sess,mess):
 	elif id != None: pres_answer.append((id,None))
 	if jid == 'None': jid = get_level(room,nick)[1]
 	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
-	al = get_level(room,nick)[0]
+	al = get_level(getRoom(room),nick)[0]
 	if type == 'subscribe' and al == 9: 
 		j = Presence(room, 'subscribed')
 		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
@@ -927,6 +927,18 @@ def presenceCB(sess,mess):
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
+	al = get_level(getRoom(room),nick)[0]
+# --- presence censor filter ---
+	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and nick+text != to_censore(nick+text) and al >= 0 and get_config(getRoom(room),'censor'):
+		cens_text = L('Censored!')
+		if al >= 5 and get_config(getRoom(room),'censor_warning'): send_msg('groupchat',room,nick,cens_text)
+		elif al == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
+			act = get_config(getRoom(room),'censor_action_member')
+			muc_filter_action(act,jid2,getRoom(room),cens_text)
+		elif al < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
+			act = get_config(getRoom(room),'censor_action_non_member')
+			muc_filter_action(act,jid2,getRoom(room),cens_text)
+# --- end ---
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
