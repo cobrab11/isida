@@ -358,6 +358,10 @@ def leaveconf(conference, server, sm):
 	leave(conf, sm)
 	sleep(0.1)
 
+def caps_and_send(tmp):
+	tmp.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
+	sender(tmp)
+	
 def join(conference):
 	global pres_answer,cycles_used,cycles_unused
 	id = get_id()
@@ -365,8 +369,7 @@ def join(conference):
 																  Node('status', {},[Settings['message']]), \
 																  Node('priority', {},[Settings['priority']])])
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
-	j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-	sender(j)
+	caps_and_send(j)
 	answered, Error, join_timeout = None, None, 3
 	while not answered and join_timeout and not game_over:
 		if is_start:
@@ -599,6 +602,19 @@ def iq_async_clean():
 			for tmp in iq_request.keys():
 				if iq_request[tmp][0] + timeout < time.time(): iq_request.pop(tmp)
 				break
+
+def presence_async_clean():
+	global pres_answer
+	while not game_over:
+		to = timeout
+		while to > 0 and not game_over:
+			to -= 1
+			sleep(1)
+		if len(pres_answer):
+			tm = []
+			for tmp in pres_answer:
+				if tmp[2] + timeout > time.time(): tm.append(tmp)
+			pres_answer = tm
 
 def iq_async(*answ):
 	global iq_request
@@ -852,98 +868,81 @@ def presenceCB(sess,mess):
 	actor=unicode(mess.getActor())
 	to=unicode(mess.getTo())
 	id = mess.getID()
-
+	tt = int(time.time())
 	if type=='error':
-		try: pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error').getTagData(tag='text'))))
+		try: pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error').getTagData(tag='text')),tt))
 		except:
 			try: 
-				pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error'))))
-			except: pres_answer.append((id,L('Unknown error!')))
+				pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error')),tt))
+			except: pres_answer.append((id,L('Unknown error!'),tt))
 		return
-	elif id != None: pres_answer.append((id,None))
+	elif id != None: pres_answer.append((id,None,tt))
 	if jid == 'None': jid = get_level(room,nick)[1]
 	if bad_presence: send_msg('groupchat', room, '', L('/me detect bad stanza from %s') % nick)
-	al = get_level(getRoom(room),nick)[0]
-	if type == 'subscribe' and al == 9: 
-		j = Presence(room, 'subscribed')
-		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		sender(j)
-		j = Presence(room, 'subscribe')
-		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		sender(j)
-		pprint('Subscribe %s' % room)
-	elif type == 'unsubscribed' and al == 9:
-		j = Presence(room, 'unsubscribe')
-		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		sender(j)
-		j = Presence(room, 'unsubscribed')
-		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		sender(j)
-		pprint('Unsubscribe %s' % room)
-	
 	tmppos = arr_semi_find(confbase, room.lower())
 	if tmppos == -1: nowname = Settings['nickname']
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
-
 	if room != selfjid and nick == nowname:
-		smiles = get_config(getRoom(room),'smile')
-		if smiles:
+		if get_config(getRoom(room),'smile'):
 			smile_action = {'participantnone':' :-|', 'participantmember':' :-)', 'moderatormember':' :-"','moderatoradmin':' :-D', 'moderatorowner':' 8-D'}
 			try: send_msg('groupchat', room, '', smile_action[role+affiliation])
 			except: pass
-	
-	if ownerbase.count(getRoom(room)) and type != 'unavailable':
-		j = Presence(room, show=Settings['status'], status=Settings['message'], priority=Settings['priority'])
-		j.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
-		sender(j)
-
-	not_found = 0
-
-	if type=='unavailable' and nick != '':
-		for mmb in megabase:
-			if mmb[0]==room and mmb[1]==nick: megabase.remove(mmb)
-		if to == selfjid and (status=='307' or status=='301') and confbase.count('%s/%s' % (room,nick)):
-			if os.path.isfile(confs):
-				confbase = eval(readfile(confs))
-				confbase = arr_del_semi_find(confbase,getRoom(room))
-				writefile(confs,str(confbase))
-	elif nick != '':
-		for mmb in megabase:
-			if mmb[0]==room and mmb[1]==nick:
-				megabase.remove(mmb)
-				megabase.append([room, nick, role, affiliation, jid])
-				if role != mmb[2] or affiliation != mmb[3]: not_found = 1
-				else: not_found = 2
-		if not not_found: megabase.append([room, nick, role, affiliation, jid])
-	if jid == 'None': jid, jid2 = '<temporary>%s' % nick, 'None'
-	else: jid2, jid = jid, getRoom(jid.lower())
-	exit_type = ''
-	exit_message = ''
+	not_found,exit_type,exit_message = 0,'',''
 	if type=='unavailable':
 		if status=='307': exit_type,exit_message = L('Kicked'),reason
 		elif status=='301': exit_type,exit_message = L('Banned'),reason
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
+		if nick != '':
+			for mmb in megabase:
+				if mmb[0]==room and mmb[1]==nick:
+					megabase.remove(mmb)
+					break
+			if to == selfjid and status in ['307','301'] and confbase.count('%s/%s' % (room,nick)):
+				if os.path.isfile(confs):
+					confbase = eval(readfile(confs))
+					confbase = arr_del_semi_find(confbase,getRoom(room))
+					writefile(confs,str(confbase))
+	else:
+		if ownerbase.count(getRoom(room)): caps_and_send(Presence(room, show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
+		if nick != '':
+			for mmb in megabase:
+				if mmb[0]==room and mmb[1]==nick:
+					megabase.remove(mmb)
+					megabase.append([room, nick, role, affiliation, jid])
+					if role != mmb[2] or affiliation != mmb[3]: not_found = 1
+					else: not_found = 2
+					break
+			if not not_found: megabase.append([room, nick, role, affiliation, jid])
+	if jid == 'None': jid, jid2 = '<temporary>%s' % nick, 'None'
+	else: jid2, jid = jid, getRoom(jid.lower())
 	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
 	al = get_level(getRoom(room),nick)[0]
-# --- presence censor filter ---
-	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and nick+text != to_censore(nick+text) and al >= 0 and get_config(getRoom(room),'censor'):
-		cens_text = L('Censored!')
-		if al >= 5 and get_config(getRoom(room),'censor_warning'): send_msg('groupchat',room,nick,cens_text)
-		elif al == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
-			act = get_config(getRoom(room),'censor_action_member')
-			muc_filter_action(act,jid2,getRoom(room),cens_text)
-		elif al < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
-			act = get_config(getRoom(room),'censor_action_non_member')
-			muc_filter_action(act,jid2,getRoom(room),cens_text)
-# --- end ---
+	if al == 9:
+		if type == 'subscribe': 
+			caps_and_send(Presence(room, 'subscribed'))
+			caps_and_send(Presence(room, 'subscribe'))
+			pprint('Subscribe %s' % room)
+		elif type == 'unsubscribed':
+			caps_and_send(Presence(room, 'unsubscribe'))
+			caps_and_send(Presence(room, 'unsubscribed'))
+			pprint('Unsubscribe %s' % room)
+	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and al >= 0 and get_config(getRoom(room),'censor'):
+		if nick+text != to_censore(nick+text):
+			cens_text = L('Censored!')
+			if al >= 5 and get_config(getRoom(room),'censor_warning'): send_msg('groupchat',room,nick,cens_text)
+			elif al == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
+				act = get_config(getRoom(room),'censor_action_member')
+				muc_filter_action(act,jid2,getRoom(room),cens_text)
+			elif al < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
+				act = get_config(getRoom(room),'censor_action_non_member')
+				muc_filter_action(act,jid2,getRoom(room),cens_text)
 	mdb = sqlite3.connect(agestatbase)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
-	tt = int(time.time())
-	ttext = role + '\n' + affiliation + '\n' + priority + '\n' + show  + '\n' + text
+	ttext = '%s\n%s\n%s\n%s\n%s' % (role,affiliation,priority,show,text)
 	if ab:
 		if type=='unavailable': cu.execute('update age set time=?, age=?, status=?, type=?, message=? where room=? and jid=? and nick=?', (tt,ab[4]+(tt-ab[3]),1,exit_type,exit_message,room, jid, nick))
 		else:
@@ -1086,6 +1085,7 @@ ignore_owner = None					# исполнять отключенные команд
 configname = 'settings/config.py'	# конфиг бота
 topics = {}							# временное хранение топиков
 last_msg_base = {}					# последние сообщения
+paranoia_mode = False				# режим для параноиков. запрет любых исполнений внешнего кода
 no_comm = True
 
 gt=gmtime()
@@ -1246,7 +1246,8 @@ pprint('Joined')
 #sender(pep)
 
 thr(now_schedule,(),'schedule')
-thr(iq_async_clean,(),'async_clean')
+thr(iq_async_clean,(),'async_iq_clean')
+thr(presence_async_clean,(),'async_presence_clean')
 
 while 1:
 	try:

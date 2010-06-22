@@ -37,6 +37,8 @@ muc_filter_match_warning_match = 3			# привышение одинаковых
 muc_filter_match_warning_space = 5			# привышение пустых частей
 muc_filter_match_warning_nn = 3				# количество переводов строк
 muc_filter_match_view = 512					# лимит размера сообщения на отработку
+
+paranoia_mode = False
 '''
 
 def readfile(filename):

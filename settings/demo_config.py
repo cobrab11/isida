@@ -162,3 +162,5 @@ muc_filter_match_warning_space = 5			# прeвышение пустых част
 muc_filter_match_view = 512					# лимит размера сообщения на отработку
 
 muc_filter_match_warning_nn = 3				# количество переводов строк
+
+paranoia_mode = False						# режим для параноиков. запрет любых исполнений внешнего кода

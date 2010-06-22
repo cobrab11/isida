@@ -166,18 +166,20 @@ def match_room(room):
 	return None
 
 def shell_execute(cmd):
-	tmp_file = 'tmp'
-	try: os.remove(tmp_file)
-	except: pass
-	try:
-		os.system('%s >> %s' % (cmd.encode('utf-8'),tmp_file))
-		try: body = readfile(tmp_file)
-		except: body = L('Command execution error.')
-		if len(body):
-			enc = chardet.detect(body)['encoding']
-			return unicode(body,enc)
-		else: return L('ok')
-	except Exception, SM: return L('I can\'t execute it! Error: %s') % str(SM)
+	if paranoia_mode: return L('Command temporary blocked!')
+	else:
+		tmp_file = 'tmp'
+		try: os.remove(tmp_file)
+		except: pass
+		try:
+			os.system('%s >> %s' % (cmd.encode('utf-8'),tmp_file))
+			try: body = readfile(tmp_file)
+			except: body = L('Command execution error.')
+			if len(body):
+				enc = chardet.detect(body)['encoding']
+				return unicode(body,enc)
+			else: return L('ok')
+		except Exception, SM: return L('I can\'t execute it! Error: %s') % str(SM)
 	
 def concat(list): return ''.join(list)
 

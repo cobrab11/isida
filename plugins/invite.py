@@ -12,7 +12,7 @@ def call_body(type, jid, nick, text):
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,text,text)).fetchall()
 		if len(fnd) == 1:
-			whojid = getRoom(str(fnd[0][0]))
+			whojid = getRoom(unicode(fnd[0][0]))
 			is_found = 0
 			for tmp in megabase:
 				if tmp[0] == jid and getRoom(tmp[4]) == whojid:
