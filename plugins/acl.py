@@ -7,8 +7,8 @@
 
 acl_help = '''Actions list.
 acl show - show list
-acl del item - remove item from list
-acl [/time] msg|message|prs|presence|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition
+acl del [/silent] item - remove item from list
+acl [/time] [/silent] msg|message|prs|presence|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition
 allowed variables in commands: ${NICK}, ${JID}, ${SERVER}
 sub = substring, exp = regular expression, cexp = case sensitive regular expression
 time format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!'''
@@ -45,9 +45,12 @@ def acl_show(jid):
 
 def acl_add_del(jid,text,flag):
 	time_mass,atime = {'s':1,'m':60,'h':3600,'d':86400,'w':604800,'M':2592000,'y':31536000},0
-	if text[0][0] == '/':
-		try: atime = int(time.time()) + int(text[0][1:-1]) * time_mass[text[0][-1:]]
-		except: pass
+	silent = False
+	while text[0][0] == '/':
+		if text[0] == '/silent': silent = True
+		else:
+			try: atime = int(time.time()) + int(text[0][1:-1]) * time_mass[text[0][-1:]]
+			except: return L('Time format error!')
 		text = text[1:]
 	acl_cmd = text[0].lower()
 	text = text[1:]
@@ -70,7 +73,8 @@ def acl_add_del(jid,text,flag):
 		close_acl_base(aclb)			
 		if atime: msg += ' [%s] %s %s %s %s' % (time.ctime(atime),acl_cmd, acl_sub_act, text[0], ' '.join(text[1:]).replace('%20','\ ').replace('\n',' // '))
 		else: msg += ' %s %s %s %s' % (acl_cmd, acl_sub_act, text[0], ' '.join(text[1:]).replace('%20','\ ').replace('\n',' // '))
-	return msg
+	if silent: return L('done')
+	else: return msg
 
 def acl_add(jid,text): return acl_add_del(jid,text,True)
 
