@@ -842,24 +842,41 @@ def info_where(type, jid, nick):
 		rjid = getRoom(jjid)
 		for mega in megabase:
 			if mega[0] == rjid: cnt += 1
-		wbase.append((jjid, cnt))
-	for i in range(0,len(wbase)-1):
-		for j in range(i,len(wbase)):
-			if wbase[i][1] < wbase[j][1]:
-				jj = wbase[i]
-				wbase[i] = wbase[j]
-				wbase[j] = jj
-	nmb = 1
+		wbase.append((cnt, jjid))
+	wbase.sort(reverse=True)
+	nmb,hr_count = 1,0
 	hr = getFile(hide_conf,[])
-	hr_count = 0
 	for i in wbase:
-		if hr.count(getRoom(i[0])): hr_count += 1
+		if hr.count(getRoom(i[1])): hr_count += 1
 		else:
-			msg += '\n'+str(nmb)+'. '+i[0]+' ['+str(i[1])+']'
+			msg += '\n%s. %s [%s]' % (nmb,i[1],i[0])
 			nmb += 1
 	if hr_count: msg += L('\nHidden conference(s): %s') % str(hr_count)
 	send_msg(type, jid, nick, msg)
 
+def info_where_plus(type, jid, nick):
+	global confbase
+	msg = L('Active conference(s): %s') % str(len(confbase))
+	wbase = []
+	for jjid in confbase:
+		cnt,rjid,ra = 0,getRoom(jjid),L('unknown')
+		for mega in megabase:
+			if mega[0] == rjid:
+				cnt += 1
+				if mega[0]+'/'+mega[1] == jjid: ra = L(mega[2]+'/'+mega[3])
+		wbase.append((cnt, jjid, ra))
+	wbase.sort(reverse=True)
+	nmb,hr_count = 1,0
+	hr = getFile(hide_conf,[])
+	for i in wbase:
+		if hr.count(getRoom(i[1])): hr_count += 1
+		else:
+			msg += '\n%s. %s (%s) [%s]' % (nmb,i[1],i[2],i[0])
+			nmb += 1
+	if hr_count: msg += L('\nHidden conference(s): %s') % str(hr_count)
+	send_msg(type, jid, nick, msg)
+
+	
 def get_uptime_str():
 	return un_unix(int(time.time()-starttime))
 
@@ -1359,6 +1376,7 @@ comms = [
 	 (9, 'bot_owner', owner, 2, L('Bot owners list.\nbot_owner show\nbot_owner add|del jid')),
 	 (9, 'bot_ignore', ignore, 2, L('Black list.\nbot_ignore show\nbot_ignore add|del jid')),
 	 (6, 'where', info_where, 1, L('Show conferences.')),
+	 (6, 'where+', info_where_plus, 1, L('Show conferences.')),
 	 (0, 'inbase', info_base, 1, L('Your identification in global base.')),
 	 (9, 'look', real_search, 2, L('Search user in conferences where the bot is.')),
 	 (9, 'glook', real_search_owner, 2, L('Search user in conferences where the bot is. Also show jid\'s')),
