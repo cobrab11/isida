@@ -1284,19 +1284,19 @@ def configure(type, jid, nick, text):
 	to_conf = text[0]
 	try: param = text[1]
 	except: param = ''
-	if to_conf == 'show':
-		if param == 'status':
+	if to_conf in ['show','item','items','it','sh']:
+		if param in ['status','info','st']:
 			tmp = config_prefs.keys()
 			tmp.sort()
 			msg = ''
-			for t in tmp: msg += config_prefs[t][0] % onoff(get_config(getRoom(jid),t)) + ' | '
-			msg = L('Current status: %s') % msg[:-2]
+			for t in tmp: msg += u'\n[%s] - ' % t + config_prefs[t][0] % onoff(get_config(getRoom(jid),t)) 
+			msg = L('Current status: %s') % msg
 		elif param in config_prefs: msg = config_prefs[param][0] % onoff(get_config(getRoom(jid),param))
 		else:
 			tmp = config_prefs.keys()
 			tmp.sort()
 			msg = L('Available items: %s') % ', '.join(tmp)
-	elif to_conf == 'help':
+	elif to_conf == 'help' or to_conf == '':
 		if param in config_prefs: msg = config_prefs[param][1]
 		elif param == '':
 			tmp = config_prefs.keys()
@@ -1304,7 +1304,7 @@ def configure(type, jid, nick, text):
 			msg = L('Available items: %s') % ', '.join(tmp)
 		else: msg = L('Help for %s not found!') % param
 	elif to_conf in config_prefs:
-		if param.lower() == 'items':
+		if param.lower() in ['show','item','items','it','sh']:
 			msg = ''
 			for tmp in config_prefs[to_conf][2]: msg += '%s, ' % onoff(tmp)
 			msg = L('Available items: %s') % msg[:-2]
@@ -1361,13 +1361,26 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],
 				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
 				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
+
+				# MUC-Filter messages
+
 				'muc_filter': [L('Muc filter is %s'), L('Message filter for participants'), [True,False], False],
 				'muc_filter_adblock': [L('Adblock muc filter is %s'), L('Adblock filter'), ['off','visitor','kick','ban','replace','mute'], 'off'],
 				'muc_filter_repeat': [L('Repeat muc filter is %s'), L('Repeat same messages filter'), ['off','visitor','kick','ban','mute'], 'off'],
 				'muc_filter_match': [L('Match muc filter is %s'), L('Repeat text in message filter'), ['off','visitor','kick','ban','mute'], 'off'],
 				'muc_filter_large': [L('Large muc filter is %s'), L('Large message filter'), ['off','visitor','kick','ban','paste','truncate','mute'], 'off'],
-				'muc_filter_censor': [L('Censor muc filter is %s'), L('Censor filter'), ['off','visitor','kick','ban','replace','mute'], 'off']}
+				'muc_filter_censor': [L('Censor muc filter is %s'), L('Censor filter'), ['off','visitor','kick','ban','replace','mute'], 'off'],
 
+				# MUC-Filter presence
+
+				'muc_filter_adblock_prs': [L('Adblock muc filter for presence is %s'), L('Adblock filter for presence'), ['off','kick','ban','replace','mute'], 'off'],
+				'muc_filter_rejoin': [L('Repeat join muc filter is %s'), L('Repeat join muc filter'), ['off','on'], 'off'],
+				'muc_filter_repeat_prs': [L('Repeat presence muc filter is %s'), L('Repeat presence muc filter'), ['off','kick','ban','mute'], 'off'],
+				'muc_filter_large_nick': [L('Large nick muc filter is %s'), L('Large nick muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
+				'muc_filter_large_status': [L('Large status muc filter is %s'), L('Large status muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
+				'muc_filter_censor_prs': [L('Censor muc filter for presence is %s'), L('Censor muc filter for presence'), ['off','kick','ban','replace','mute'], 'off']}
+
+				
 comms = [
 	 (0, 'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
 	 (9, 'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),

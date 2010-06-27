@@ -22,8 +22,7 @@ def open_acl_base():
 	is_acl = os.path.isfile(acl_base)
 	aclb = sqlite3.connect(acl_base)
 	acur = aclb.cursor()
-	if not is_acl:
-		acur.execute('create table acl (jid text, action text, type text, text text, command text, time int)')
+	if not is_acl: acur.execute('create table acl (jid text, action text, type text, text text, command text, time int)')
 	return aclb,acur
 
 def close_acl_base(base):

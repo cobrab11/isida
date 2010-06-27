@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
-#                               version 2.10
+#                               version 2.20
 #
 #                           Russian locale (man)
 #
@@ -45,7 +45,7 @@ Sep	Сен
 Oct	Окт
 Nov	Ноя
 Dec	Дек
-Censor is %s	Цензор %s
+Censor is %s	Цензор: %s
 Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоли...
 Command execution error.	Ошибка выполнения команды.
 ok	ок
@@ -72,9 +72,16 @@ Removed: %s	Удалено: %s
 Unable to remove %s	Невозможно удалить %s
 Aliases: %s	Сокращения: %s
 Aliases not found!	Сокращения не найдены!
-Flood is %s	Флуд %s
+Flood is %s	Флуд: %s
 on	вкл
 off	выкл
+kick	выгонять
+ban	банить
+replace	заменять
+mute	подавлять
+visitor	лишать голоса
+truncate	обрезать
+paste	размещать
 %s days %s	%s дней %s
 %s Days %s	%s дня %s
 %s day %s	%s день %s
@@ -86,7 +93,7 @@ off	выкл
 %s year %s	%s год %s
 Command prefix: %s	Префикс команд: %s
 absent	отсутствует
-Smiles is %s	Смайлы %s
+Smiles is %s	Смайлы: %s
 Uptime: %s, Last session: %s	Время работы: %s, Последняя сессия: %s
 Total Error(s): %s\n	Ошибки: %s\n
 No Errors	Нет ошибок
@@ -175,37 +182,49 @@ Current status: %s	Текущий статус: %s
 Available items: %s	Доступны элементы: %s
 Help for %s not found!	Помощь для %s не найдена!
 Unknown item!	Неизвестный элемент!
-Censor warning is %s	Цензор-нотификатор %s
+Censor warning is %s	Цензор-нотификатор: %s
 Warning for moderators and higher	Предупреждение о мате для модераторов и выше
-Censor visitor %s	Лишение голоса по цензору %s
+Censor visitor %s	Лишение голоса по цензору: %s
 Revoke voice for members	Забирать голос у постоянных участников
-Censor kick %s	Выгонять по цензору %s
+Censor kick %s	Выгонять по цензору: %s
 Kick participants	Выгонять участников
-Url title is %s	Показ заголовков ссылок %s
+Url title is %s	Показ заголовков ссылок: %s
 Repeat message block!	Сообщения очень похожи!
 Match message block!	Текст сообщения дублируется!
 Large message… %s	Большое сообщение… %s
 Large message block!	Большое сообщение!
 Blocked by censor!	Блокировано цензором!
 Warning! Your message is blocked in connection with the policy of the room!	Внимание! Ваше сообщение блокировано в связи с политикой комнаты!
-Censor action for member is %s	Действие цензора на постоянных участников - %s
+Censor action for member is %s	Действие цензора на постоянных участников: %s
 Censor action for member	Действие цензора на постоянных участников
-Censor action for non member is %s	Действие цензора на не постоянных участников - %s
+Censor action for non member is %s	Действие цензора на не постоянных участников: %s
 Censor action for non member	Действие цензора на не постоянных участников
-Muc filter is %s	Muc-фильтр - %s
+Muc filter is %s	Muc-фильтр: %s
 Message filter for participants	Фильтр сообщений для участников
-Adblock muc filter is %s	Блокировка рекламы - %s
+Adblock muc filter is %s	Блокировка рекламы: %s
 Adblock message filter	Фильтр блокировки рекламы
-Repeat muc filter is %s	Повтор сообщений - %s
+Repeat muc filter is %s	Повтор сообщений: %s
 Repeat same messages filter	Фильтр повтора похожих сообщений
-Match muc filter is %s	Повторы внутри сообщений - %s
+Match muc filter is %s	Повторы внутри сообщений: %s
 Repeat text in message filter	Фильтр повторой текста внутри сообщения
-Large muc filter is %s	Большие сообщения - %s
+Large muc filter is %s	Большие сообщения: %s
 Large message filter	Фильтр больших сообщений
-Censor muc filter is %s	Muc-цензор - %s
+Censor muc filter is %s	Muc-цензор: %s
 Censor filter	Muc-цензор
 %s pasted by %s	%s запостил(а) %s
 Paste some text to server	Публикация текста на сервере
+Adblock muc filter for presence is %s	Блокировка рекламы в презенсах: %s
+Adblock filter for presence	Фильтр блокировки рекламы в презенсах
+Repeat join muc filter is %s	Множественные входы: %s
+Repeat join muc filter	Фильтр множественных входов
+Repeat presence muc filter is %s	Презенс-флуд: %s
+Repeat presence muc filter	Фильтр презенс-флуда
+Large nick muc filter is %s	Длинные ники: %s
+Large nick muc filter	Фильтр длинных ников
+Large status muc filter is %s	Длинные статусы: %s
+Large status muc filter	Фильтр длинных статусов
+Censor muc filter for presence is %s	Цензор для презенсов: %s
+Censor muc filter for presence	Цензор для презенсов
 
 # --- Ошибки ---
 Bad request	Кривой запрос
@@ -864,7 +883,7 @@ Masochist? 8-D	Самотык? 8-D
 # price.py
 site input format is domain.tld	формат ввода сайта domain.tld
 What site be evaluated?	Какой сайт оценивать?
-Estimated value %s is %s	Оценочная стоимость домена %s составляет - %s
+Estimated value %s is %s	Оценочная стоимость домена %s составляет: %s
 I can't process your request.	Не получилось обработать запрос.
 Show estimated value of domain | Author: ferym	Показывает ориентировочную оценочную стоимость домена | Автор: ferym
 Show estimated value of domain | Author: Disabler	Показывает ориентировочную оценочную стоимость домена | Автор: Disabler
