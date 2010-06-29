@@ -131,7 +131,7 @@ def juick_tag_user(type, jid, nick, text):
 		try: mlen = int(text.split(' ')[1])
 		except: mlen = juick_tag_user_limit
 		text = text.split(' ')[0]
-		if mlen > juick_tag_user_msx: mlen = juick_tag_user_max
+		if mlen > juick_tag_user_max: mlen = juick_tag_user_max
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
