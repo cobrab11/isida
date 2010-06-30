@@ -594,7 +594,7 @@ def iqCB(sess,iq):
 					show = ['online',get_tag(msg,'show')][msg.count('<show>') and msg.count('</show>')]
 					if show not in ['chat','online','away','xa','dnd']: msg = msg.replace(get_tag_full(msg,'show'), '<show>online</show>')
 					status = ['',get_tag(msg,'status')][msg.count('<status>') and msg.count('</status>')]
-					nick = ['',tojid[tojid.find('/')+1:]][tojid.count('/')]
+					nick = ['',tojid[tojid.find('/')+1:]]['/' in tojid]
 					newjoin = msg.count('xmlns="http://jabber.org/protocol/muc"')
 					
 					# AD-Block filter
