@@ -659,7 +659,7 @@ def iqCB(sess,iq):
 							tmo = muc_rejoins[tojid][muc_filter_rejoin_count-1] - muc_rejoins[tojid][0]
 							if tmo < muc_filter_rejoin_timeout:
 								msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},['To many rejoins! Wait %s sec.' % muc_filter_rejoin_timeout])])])).replace('replace_it',get_tag(msg,'presence')),True
-								pprint('MUC-Filter rejoin (%s): %s [%s] %s' % (act,jid,room,nick))						
+								pprint('MUC-Filter rejoin: %s [%s] %s' % (jid,room,nick))						
 
 					# Status filter
 					if get_config(getRoom(room),'muc_filter_repeat_prs') != 'off' and msg and not mute and not newjoin:
