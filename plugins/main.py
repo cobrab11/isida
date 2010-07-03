@@ -1306,7 +1306,7 @@ def configure(type, jid, nick, text):
 	elif to_conf in config_prefs:
 		if param.lower() in ['show','item','items','it','sh']:
 			msg = ''
-			for tmp in config_prefs[to_conf][2]: msg += '%s, ' % onoff(tmp)
+			for tmp in config_prefs[to_conf][2]: msg += ['%s (%s), ' % (tmp,onoff(tmp)),'%s, ' % tmp][tmp == onoff(tmp)]
 			msg = L('Available items: %s') % msg[:-2]
 		elif param == '': msg = config_prefs[to_conf][0] % onoff(get_config(getRoom(jid),to_conf))
 		else:
