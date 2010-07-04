@@ -40,6 +40,7 @@ def watch_room_activity():
 				text += '_'
 				zz = joinconf(text, domain)
 			sleep(1)
+			pprint('Low activity! Try rejoin into %s' % text)
 
 def watcher_reset(a,b,c,d,e):
 	global watch_reset
@@ -49,7 +50,7 @@ def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s
 
 def connect_watch_uni(room,jid,nick,type,mass):
 	global watch_last_activity
-	watch_last_activity[getRoom(room)] = int(time.time())
+	if jid != 'None': watch_last_activity[getRoom(room)] = int(time.time())
 
 global execute, timer
 
