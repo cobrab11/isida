@@ -81,7 +81,9 @@ def thr(func,param,name):
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
 	except Exception, SM:
-		if str(SM).lower().count('thread'): thread_error_count += 1
+		try: SM = str(SM)
+		except: SM = unicode(SM)
+		if SM.lower().count('thread'): thread_error_count += 1
 		else: logging.exception(' [%s] %s' % (timeadd(tuple(localtime())),unicode(proc)))
 		if thread_type:
 			try: tmp_th.kill()
@@ -1365,7 +1367,9 @@ while 1:
 		sys.exit('exit')
 
 	except Exception, SM:
-		pprint('*** Error *** %s ***' % unicode(SM))
+		try: SM = str(SM)
+		except: SM = unicode(SM)
+		pprint('*** Error *** %s ***' % SM)
 		logging.exception(' [%s] ' % timeadd(tuple(localtime())))
 		if str(SM).lower().count('parsing finished'):
 			close_age()

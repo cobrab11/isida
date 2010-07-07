@@ -54,7 +54,10 @@ def netwww(type, jid, nick, text):
 			else:
 				if page.count('<title'): msg = get_tag(page,'title')+'\n'+unhtml_hard(page)
 				else: msg = unhtml_hard(page)
-		except Exception, SM: msg = unicode(SM)
+		except Exception, SM:
+			try: msg = str(SM)
+			except: msg = unicode(SM)
+			msg = L('Error! %s') % msg
 	send_msg(type, jid, nick, msg[:msg_limit])
 
 def parse_url_in_message(room,jid,nick,type,text):

@@ -38,7 +38,10 @@ def gweather_raw(type, jid, nick, text, fully):
 				text = wzc[0][0]
 				link = 'http://informer.gismeteo.ru/xml/'+text+'.xml'
 				try: body, noerr = html_encode(urllib.urlopen(link).read()), True
-				except Exception, SM: body, noerr = str(SM), None
+				except Exception, SM:
+					try: body = str(SM)
+					except: body = unicode(SM)
+					noerr = None
 				if noerr:
 					body = body.split('<FORE')[1:]
 					msg = L(u'Weather in %s:\nDate\t t°\tWind\tClouds') % wzc[0][1]

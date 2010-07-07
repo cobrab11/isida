@@ -179,7 +179,10 @@ def shell_execute(cmd):
 				enc = chardet.detect(body)['encoding']
 				return unicode(body,enc)
 			else: return L('ok')
-		except Exception, SM: return L('I can\'t execute it! Error: %s') % str(SM)
+		except Exception, SM: 
+			try: SM = str(SM)
+			except: SM = unicode(SM)
+			return L('I can\'t execute it! Error: %s') % SM
 	
 def concat(list): return ''.join(list)
 

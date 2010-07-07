@@ -73,6 +73,8 @@ while 1:
 			printlog('unknown exit type!')
 			break
 	except Exception, SM:
+		try: SM = str(SM)
+		except: SM = unicode(SM)
 		printlog('\n'+'*'*50+'\n Isida is crashed! It\'s imposible, but You do it!\n'+'*'*50+'\n')
-		printlog(str(SM)+'\n')
+		printlog(SM+'\n')
 		raise

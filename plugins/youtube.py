@@ -35,7 +35,10 @@ def youtube(type, jid, nick, text):
 						mt = re.findall(regex, tmp, re.S)
 						if mt != []: msg += '\nhttp://youtube.com%s\t%s\t [%s] %s' % mt[0]
 				except: msg = L('Not found!')
-		except Exception, SM: msg = unicode(SM)
+		except Exception, SM:
+			try: msg = str(SM)
+			except: msg = unicode(SM)
+			msg = L('Error! %s') % msg
 	send_msg(type, jid, nick, msg)
 
 global execute

@@ -3,7 +3,10 @@
 
 def exec_ute(type, jid, nick, text):
 	try: text = unicode(eval(text))
-	except Exception, SM: text = L('I can\'t execute it! Error: %s') % unicode(SM)[:msg_limit/2]
+	except Exception, SM:
+		try: SM = str(SM)
+		except: SM = unicode(SM)
+		text = L('I can\'t execute it! Error: %s') % SM[:msg_limit/2]
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
