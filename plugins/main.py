@@ -1309,15 +1309,15 @@ def configure(type, jid, nick, text):
 	elif to_conf in config_prefs:
 		if param.lower() in ['show','item','items','it','sh']:
 			msg = ''
-			for tmp in config_prefs[to_conf][2]: msg += ['%s (%s), ' % (tmp,onoff(tmp)),'%s, ' % tmp][tmp == onoff(tmp)]
+			for tmp in config_prefs[to_conf][2]: msg += ['%s (%s), ' % (onoff_no_tr(tmp),onoff(tmp)),'%s, ' % onoff_no_tr(tmp)][onoff_no_tr(tmp) == onoff(tmp)]
 			msg = L('Available items: %s') % msg[:-2]
 		elif param == '': msg = config_prefs[to_conf][0] % onoff(get_config(getRoom(jid),to_conf))
 		else:
 			if not config_prefs[to_conf][2]: ssta = param
 			else:
 				ssta = get_config(getRoom(jid),to_conf)
-				if (param.lower() == L('on') or param.lower() == 'on') and not param in config_prefs[to_conf][2]: param = True
-				elif (param.lower() == L('off') or param.lower() == 'off') and not param in config_prefs[to_conf][2]: param = False
+				if (param.lower() in [L('on'),'on','true']) and not param in config_prefs[to_conf][2]: param = True
+				elif (param.lower() in [L('off'),'off','false','none']) and not param in config_prefs[to_conf][2]: param = False
 				else: param = param.lower()
 				if param in config_prefs[to_conf][2]: ssta = param
 				else: ssta = ''

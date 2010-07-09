@@ -1043,12 +1043,14 @@ def presenceCB(sess,mess):
 			else: cu.execute('update age set status=?, message=? where room=? and jid=? and nick=?', (0,ttext,room, jid, nick))
 	else: cu.execute('insert into age values (?,?,?,?,?,?,?,?)', (room,nick,jid,tt,0,0,'',ttext))
 	mdb.commit()
-	
-def onoff(msg):
-	if msg == None or msg == False or msg == 0 or msg == '0': return L('off')
-	elif msg == True or msg == 1 or msg == '1': return L('on')
-	else: return L(msg)
 
+def onoff_no_tr(msg):
+	if msg == None or msg == False or msg == 0 or msg == '0': return 'off'
+	elif msg == True or msg == 1 or msg == '1': return 'on'
+	else: return msg
+
+def onoff(msg): return L(onoff_no_tr(msg))
+	
 def getName(jid):
 	jid = unicode(jid)
 	if jid == 'None': return jid
