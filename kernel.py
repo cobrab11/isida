@@ -261,10 +261,9 @@ def errorHandler(text):
 	sys.exit('exit')
 
 def arr_semi_find(array, string):
-	astring = [unicode(string.lower())]
 	pos = 0
 	for arr in array:
-		if re.findall(string, arr.lower()) == astring: break
+		if string.lower() in arr.lower(): break
 		pos += 1
 	if pos != len(array): return pos
 	else: return -1
