@@ -1216,7 +1216,7 @@ if os.path.isfile(loc_file):
 	if os.path.isfile(lf):
 		lf = readfile(lf).decode('UTF').replace('\r','').split('\n')
 		for c in lf:
-			if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
+			if (not c[:3].count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
 pprint('*** Loading main plugin')
 
 execfile('plugins/main.py')

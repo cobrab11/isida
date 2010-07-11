@@ -53,7 +53,7 @@ def google(type, jid, nick,text):
 
 def translate(type, jid, nick,text):
 	trlang = {'sq':L('Albanian'),'en':L('English'),'ar':L('Arabic'),'af':L('Afrikaans'),
-			  'be':L('Belarusian'),'bg':L('Bulgarian'),'cy':L('elsh'),'hu':L('Hungarian'),'vi':L('Vietnamese'),
+			  'be':L('Belarusian'),'bg':L('Bulgarian'),'cy':L('Welsh'),'hu':L('Hungarian'),'vi':L('Vietnamese'),
 			  'gl':L('Galician'),'nl':L('Dutch'),'el':L('Greek'),'da':L('Danish'),'iw':L('Hebrew'),'yi':L('Yiddish'),
 			  'id':L('Indonesian'),'ga':L('Irish'),'is':L('Icelandic'),'es':L('Spanish'),'it':L('Italian'),
 			  'ca':L('Catalan'),'zh-CN':L('Chinese'),'ko':L('Korean'),'lv':L('Latvian'),'lt':L('Lithuanian'),

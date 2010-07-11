@@ -149,7 +149,7 @@ def set_locale(type, jid, nick, text):
 				locales = {}
 				lf = readfile(lf).decode('UTF').replace('\r','').split('\n')
 				for c in lf:
-					if (not c.count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
+					if (not c[:3].count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
 				writefile(loc_file,unicode('\''+text+'\''))
 				msg = L('Locale set to: %s') % text
 			else: msg = L('Locale not found!')
@@ -1270,7 +1270,7 @@ def rss(type, jid, nick, text):
 			except Exception,SM:
 				rss_flush(jid,link,None)
 				if text[4] == 'silent': nosend = True
-				else: msg = L('Error! %s' % SM)
+				else: msg = L('Error! %s') % SM
 		else:
 			rss_flush(jid,link,None)
 			if text[4] == 'silent': nosend = True

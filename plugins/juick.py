@@ -105,10 +105,10 @@ def juick_msg(type, jid, nick, text):
 			repl = get_tag(body.split('<p>')[1],'h2')
 			if repl.lower().count('('):
 				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
-				msg += L('(Replies: %s)') % str(hm_repl)
+				msg += ' ' + L('(Replies: %s)') % str(hm_repl)
 			else:
 				hm_repl = 0
-				msg += L('(No replies)')
+				msg += ' ' + L('(No replies)')
 			frm = get_tag(body.split('<p>')[1],'small')
 			msg += frm[frm.find(' '):]
 			cnt = 1
