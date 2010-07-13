@@ -60,7 +60,7 @@ def acl_add_del(jid,text,flag):
 		else: acl_sub_act = '='
 		text[0] = text[0].replace('%20','\ ')
 		if acl_sub_act in ['exp','cexp']:
-			try: re.compile(text[0])
+			try: re.compile(text[0].replace('*','*?'))
 			except: return L('Error in RegExp!')	
 		aclb,acur = open_acl_base()
 		tmp = acur.execute('select * from acl where jid=? and action=? and type=? and text=?',(jid,acl_cmd, acl_sub_act, text[0])).fetchall()
@@ -112,10 +112,10 @@ def acl_message(room,jid,nick,type,text):
 	if a:
 		for tmp in a:
 			if tmp[4] <= time.time() and tmp[4]: acur.execute('delete from acl where jid=? and action=? and type=? and text=?',(room,tmp[0],tmp[1],tmp[2])).fetchall()
-			if tmp[1] == 'exp' and re.match(tmp[2],text,re.I+re.S+re.U):
+			if tmp[1] == 'exp' and re.match(tmp[2].replace('*','*?'),text,re.I+re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif tmp[1] == 'cexp' and re.match(tmp[2],text,re.S+re.U):
+			elif tmp[1] == 'cexp' and re.match(tmp[2].replace('*','*?'),text,re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
 			elif tmp[1] == 'sub' and text.lower().count(tmp[2].lower()):
@@ -140,10 +140,10 @@ def acl_presence(room,jid,nick,type,mass):
 			elif tmp[0] == 'jidfull': itm = jid
 			elif tmp[0] == 'res': itm = getResouse(jid)
 			elif tmp[0] == 'all': itm = jid+nick+mass[0]
-			if tmp[1] == 'exp' and re.match(tmp[2],itm,re.I+re.S+re.U):
+			if tmp[1] == 'exp' and re.match(tmp[2].replace('*','*?'),itm,re.I+re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
-			elif tmp[1] == 'cexp' and re.match(tmp[2],itm,re.S+re.U):
+			elif tmp[1] == 'cexp' and re.match(tmp[2].replace('*','*?'),itm,re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break
 			elif tmp[1] == 'sub' and itm.lower().count(tmp[2].lower()):
