@@ -1,19 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-# acl [del] /time show|msg|message|prs|presence|nick|jid|all sub|exp .*|some command
-
-# acl = jid,action,type,text,command
-
 acl_help = '''Actions list.
 acl show - show list
 acl del [/silent] item - remove item from list
-acl [/time] [/silent] msg|message|prs|presence|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition
+acl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition
 allowed variables in commands: ${NICK}, ${JID}, ${SERVER}
 sub = substring, exp = regular expression, cexp = case sensitive regular expression
 time format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!'''
 
-acl_acts = ['msg','message','prs','presence','nick','jid','jidfull','res','all']
+acl_acts = ['msg','message','prs','presence','role','affiliation','nick','jid','jidfull','res','all']
 acl_actions = ['show','del'] + acl_acts
 
 acl_base = set_folder+'acl.db'
@@ -129,8 +125,10 @@ def acl_message(room,jid,nick,type,text):
 def acl_presence(room,jid,nick,type,mass):
 	if get_level(room,nick)[0] < 0: return
 	if getRoom(jid) == getRoom(Settings['jid']): return
+	# actions only on joins
+	# if mass[7] > 0 or mass[1] == 'none': return
 	aclb,acur = open_acl_base()
-	a = acur.execute('select action,type,text,command,time from acl where jid=? and (action=? or action=? or action=? or action=? or action=? or action=? or action=?)',(room,'prs','presence','nick','jid','jidfull','res','all')).fetchall()
+	a = acur.execute('select action,type,text,command,time from acl where jid=? and (action=? or action=? or action=? or action=? or action=? or action=? or action=? or action=? or action=?)',(room,'prs','presence','nick','jid','jidfull','res','all','role','affiliation')).fetchall()
 	if a:
 		for tmp in a:
 			if tmp[4] <= time.time() and tmp[4]: acur.execute('delete from acl where jid=? and action=? and type=? and text=?',(room,tmp[0],tmp[1],tmp[2])).fetchall()
@@ -138,8 +136,10 @@ def acl_presence(room,jid,nick,type,mass):
 			elif tmp[0] == 'nick': itm = nick
 			elif tmp[0] == 'jid': itm = getRoom(jid)
 			elif tmp[0] == 'jidfull': itm = jid
-			elif tmp[0] == 'res': itm = getResouse(jid)
-			elif tmp[0] == 'all': itm = jid+nick+mass[0]
+			elif tmp[0] == 'res': itm = getResourse(jid)
+			elif tmp[0] == 'role': itm = mass[1]
+			elif tmp[0] == 'affiliation': itm = mass[2]
+			elif tmp[0] == 'all': itm = jid+nick+mass[0]+mass[1]+mass[2]
 			if tmp[1] == 'exp' and re.match(tmp[2].replace('*','*?'),itm,re.I+re.S+re.U):
 				acl_action(tmp[3],nick,jid,room)
 				break

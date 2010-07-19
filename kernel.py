@@ -509,8 +509,9 @@ def iqCB(sess,iq):
 			msg,mute = get_tag(unicode(msg),'query'), None
 			if msg[:2] == '<m':
 				if msg.count('<body>') and msg.count('</body>'):
-					jid = get_tag_item(msg,'message','from')
-					tojid = getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1])
+					jid = rss_replace(get_tag_item(msg,'message','from'))
+					tojid = rss_replace(getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1]))
+					nick = rss_replace(get_nick_by_jid_res(room,jid))
 					skip_owner = ownerbase.count(getRoom(jid))
 					if get_tag_item(msg,'message','type') == 'chat' and not skip_owner:
 						mbase,mcur = open_muc_base()
@@ -544,7 +545,7 @@ def iqCB(sess,iq):
 								if body in lm or lm in body:
 									act = get_config(getRoom(room),'muc_filter_repeat')
 									if act == 'mute': mute = True
-									else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
+									else: msg = muc_filter_action(act,jid,room,L('Repeat message block!'))
 									pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
 							last_msg_base[getRoom(jid)] = body
 							
@@ -560,7 +561,7 @@ def iqCB(sess,iq):
 							if warn_match > muc_filter_match_warning_match or warn_space > muc_filter_match_warning_space or body.count('\n'*muc_filter_match_warning_nn):
 								act = get_config(getRoom(room),'muc_filter_match')
 								if act == 'mute': mute = True
-								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Match message block!'))
+								else: msg = muc_filter_action(act,jid,room,L('Match message block!'))
 								pprint('MUC-Filter msg matcher (%s): %s [%s] %s' % (act,jid,room,body))
 								
 						# Censor filter
@@ -568,7 +569,7 @@ def iqCB(sess,iq):
 							act = get_config(getRoom(room),'muc_filter_censor')
 							if act == 'replace': msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % to_censore(body))
 							elif act == 'mute': mute = True
-							else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Blocked by censor!'))
+							else: msg = muc_filter_action(act,jid,room,L('Blocked by censor!'))
 							pprint('MUC-Filter msg censor (%s): %s [%s] %s' % (act,jid,room,body))
 
 						# Large message filter
@@ -580,14 +581,14 @@ def iqCB(sess,iq):
 								else: body = L(u'Large message… %s') % url
 								msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
 							elif act == 'mute': mute = True
-							else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
+							else: msg = muc_filter_action(act,jid,room,L('Large message block!'))
 							pprint('MUC-Filter msg large message (%s): %s [%s] %s' % (act,jid,room,body))
 
 					if mute: msg = unicode(xmpp.Message(to=jid,body=L('Warning! Your message is blocked in connection with the policy of the room!'),typ='chat',frm='%s/%s' % (room,get_nick_by_jid(room,tojid))))
 
 			elif msg[:2] == '<p':
-				jid = get_tag_item(msg,'presence','from')
-				tojid = get_tag_item(msg,'presence','to')
+				jid = rss_replace(get_tag_item(msg,'presence','from'))
+				tojid = rss_replace(get_tag_item(msg,'presence','to'))
 				skip_owner = ownerbase.count(getRoom(jid))
 				if skip_owner: pass
 				elif get_config(getRoom(room),'muc_filter') and not mute:
@@ -823,7 +824,7 @@ def messageCB(sess,mess):
 	ft = text
 	ta = get_level(room,nick)
 	access_mode = ta[0]
-	jid =ta[1]
+	jid = ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1: nowname = Settings['nickname']
@@ -951,7 +952,7 @@ def presenceCB(sess,mess):
 	mss = get_tag_full(mss,'x')
 	role=get_valid_tag(mss,'role')
 	affiliation=get_valid_tag(mss,'affiliation')
-	jid=get_valid_tag(mss,'jid')
+	jid=rss_replace(get_valid_tag(mss,'jid'))
 	priority=unicode(mess.getPriority())
 	show=unicode(mess.getShow())
 	reason=unicode(mess.getReason())

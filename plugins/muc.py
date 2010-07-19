@@ -188,8 +188,20 @@ def muc_visitor(type, jid, nick, text): muc_role(type, jid, nick, text, 'visitor
 def muc_moderator(type, jid, nick, text): muc_role(type, jid, nick, text, 'moderator')
 
 def muc_role(type, jid, nick, text, role):
-	skip = None
-	if len(text):
+	tmppos = arr_semi_find(confbase, jid)
+	if tmppos == -1: nowname = nickname
+	else:
+		nowname = getResourse(confbase[tmppos])
+		if nowname == '': nowname = nickname
+	xtype = ''
+	for base in megabase:
+		if base[0].lower() == jid and base[1] == nowname:
+			xtype = base[3]
+			break
+	if xtype == 'owner':
+		send_msg(type, jid, nick, L('Command is locked!'))
+	elif len(text):
+		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
 		else: who, reason = text, L('by Isida!')
 		whojid = unicode(get_level(jid,who)[1])
