@@ -33,9 +33,7 @@ def talkers(type, jid, nick, text):
 	else: msg = text +' '+L('Not found!')
 	send_msg(type, jid, nick, msg)
 
-global execute, timer
-
-timer = []
+global execute
 
 execute = [(3, 'talkers', talkers, 2, L('Show local talkers')),
 	   (4, 'gtalkers', gtalkers, 2, L('Show global talkers'))]
