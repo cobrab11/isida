@@ -294,7 +294,7 @@ def get_joke(text):
 	return jokes[randint(0,1)](text)
 	
 def send_msg(mtype, mjid, mnick, mmessage):
-	if len(mmessage):
+	if mmessage:
 		# 1st april joke :) # if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
 		no_send = True
 		if len(mmessage) > msg_limit:

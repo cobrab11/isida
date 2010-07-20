@@ -41,19 +41,23 @@ def acl_show(jid):
 def acl_add_del(jid,text,flag):
 	time_mass,atime = {'s':1,'m':60,'h':3600,'d':86400,'w':604800,'M':2592000,'y':31536000},0
 	silent = False
-	while text[0][0] == '/':
-		if text[0] == '/silent': silent = True
-		else:
-			try: atime = int(time.time()) + int(text[0][1:-1]) * time_mass[text[0][-1:]]
-			except: return L('Time format error!')
-		text = text[1:]
+	try:
+		while text[0][0] == '/':
+			if text[0] == '/silent': silent = True
+			else:
+				try: atime = int(time.time()) + int(text[0][1:-1]) * time_mass[text[0][-1:]]
+				except: return L('Time format error!')
+			text = text[1:]
+	except: return L('Error in parameters. Read the help about command.')
 	acl_cmd = text[0].lower()
 	text = text[1:]
 	if not acl_cmd in acl_acts: msg = L('Items: %s') % '|'.join(acl_acts)
 	else:
 		#sub|exp .*|some visitor|kick|ban|participant|member|none|say
-		if text[0].lower() in ['sub','exp','cexp','=']: acl_sub_act,text = text[0].lower(),text[1:]
-		else: acl_sub_act = '='
+		try:
+			if text[0].lower() in ['sub','exp','cexp','=']: acl_sub_act,text = text[0].lower(),text[1:]
+			else: acl_sub_act = '='
+		except: return L('Error in parameters. Read the help about command.')
 		text[0] = text[0].replace('%20','\ ')
 		if acl_sub_act in ['exp','cexp']:
 			try: re.compile(text[0].replace('*','*?'))
@@ -74,8 +78,7 @@ def acl_add_del(jid,text,flag):
 def acl_add(jid,text): return acl_add_del(jid,text,True)
 
 def acl_del(jid,text): return acl_add_del(jid,text,False)
-	
-	
+
 def muc_acl(type, jid, nick, text):
 	text = text.replace('\ ','%20').split(' ')
 	while text.count(''): text.remove('')
