@@ -1184,7 +1184,7 @@ def rss(type, jid, nick, text):
 		link = text[1]
 		if not link[:10].count('://'): link = 'http://'+link
 		try:
-			if int(''.join(sys.version.split()[0].split('.'))) >= 260: # python 2.6.0 and higher
+			if int(''.join(re.findall('([0-9])+\.([0-9])+',sys.version)[0])) >= 26: # python 2.6 and higher
 				req = urllib2.Request(link.encode('utf-8'))
 				req.add_header('User-Agent',user_agent)
 				feed = urllib2.urlopen(url=req,timeout=15).read(size_overflow)
