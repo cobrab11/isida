@@ -558,6 +558,15 @@ Logs for %s disabled.	Логи для %s выключены.
 Logging history conference.\nlog [add|del|show][ room@conference.server.tld]	Включение логов конференции.\nlog [add|del|show][ room@conference.server.tld]
 
 # file: ../trunk/plugins/main.py
+on	вкл
+off	выкл
+kick	выгонять
+ban	банить
+replace	заменять
+mute	подавлять
+visitor	лишать голоса
+truncate	обрезать
+paste	размещать
 no limit	без ограничений
 visitor/none	гость без полномочий
 visitor/member	гость и постоянный участник
