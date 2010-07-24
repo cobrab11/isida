@@ -294,7 +294,7 @@ def get_joke(text):
 	return jokes[randint(0,1)](text)
 	
 def send_msg(mtype, mjid, mnick, mmessage):
-	if len(mmessage):
+	if mmessage:
 		# 1st april joke :) # if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
 		no_send = True
 		if len(mmessage) > msg_limit:
@@ -616,8 +616,9 @@ def iqCB(sess,iq):
 				msg,mute = get_tag(unicode(msg),'query'), None
 				if msg[:2] == '<m':
 					if msg.count('<body>') and msg.count('</body>'):
-						jid = get_tag_item(msg,'message','from')
-						tojid = getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1])
+						jid = rss_replace(get_tag_item(msg,'message','from'))
+						tojid = rss_replace(getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1]))
+						nick = rss_replace(get_nick_by_jid_res(room,jid))
 						skip_owner = ownerbase.count(getRoom(jid))
 						if get_tag_item(msg,'message','type') == 'chat' and not skip_owner:
 							mbase,mcur = open_muc_base()
@@ -693,8 +694,8 @@ def iqCB(sess,iq):
 						if mute: msg = unicode(xmpp.Message(to=jid,body=L('Warning! Your message is blocked in connection with the policy of the room!'),typ='chat',frm='%s/%s' % (room,get_nick_by_jid(room,tojid))))
 
 				elif msg[:2] == '<p':
-					jid = get_tag_item(msg,'presence','from')
-					tojid = get_tag_item(msg,'presence','to')
+					jid = rss_replace(get_tag_item(msg,'presence','from'))
+					tojid = rss_replace(get_tag_item(msg,'presence','to'))
 					skip_owner = ownerbase.count(getRoom(jid))
 					if skip_owner: pass
 					elif get_config(getRoom(room),'muc_filter') and not mute:
@@ -930,7 +931,7 @@ def messageCB(sess,mess):
 	ft = text
 	ta = get_level(room,nick)
 	access_mode = ta[0]
-	jid =ta[1]
+	jid = ta[1]
 
 	tmppos = arr_semi_find(confbase, room)
 	if tmppos == -1: nowname = Settings['nickname']
@@ -938,7 +939,7 @@ def messageCB(sess,mess):
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
 	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 9
-	if type == 'groupchat' and nick != '' and jid != 'None': talk_count(room,jid,nick,text)
+	if type == 'groupchat' and nick != '' and jid != 'None' and access_mode >= 0: talk_count(room,jid,nick,text)
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
 		cens_text = L('Censored!')
 		lvl = get_level(room,nick)[0]
@@ -1058,7 +1059,7 @@ def presenceCB(sess,mess):
 	mss = get_tag_full(mss,'x')
 	role=get_valid_tag(mss,'role')
 	affiliation=get_valid_tag(mss,'affiliation')
-	jid=get_valid_tag(mss,'jid')
+	jid=rss_replace(get_valid_tag(mss,'jid'))
 	priority=unicode(mess.getPriority())
 	show=unicode(mess.getShow())
 	reason=unicode(mess.getReason())
