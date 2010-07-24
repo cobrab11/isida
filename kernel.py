@@ -533,7 +533,8 @@ def iqCB(sess,iq):
 
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
-			i.setQueryNS(namespace=xmpp.NS_DISCO_INFO)
+			if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_INFO)
+			else: i.setTag('query',namespace=xmpp.NS_DISCO_INFO,attrs={'node':node})
 			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_INFO})
 			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_ITEMS})
 			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
@@ -556,7 +557,8 @@ def iqCB(sess,iq):
 			if node == disco_config_node or node == xmpp.NS_COMMANDS or node == '':
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
-				i.setQueryNS(namespace=xmpp.NS_DISCO_ITEMS)
+				if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_ITEMS)
+				else: i.setTag('query',namespace=xmpp.NS_DISCO_ITEMS,attrs={'node':node})
 				if node == '' or node == xmpp.NS_COMMANDS: i.getTag('query').setTag('item',attrs={'node':disco_config_node, 'name':L('Configuration'),'jid':towh})
 				sender(i)
 				raise xmpp.NodeProcessed
@@ -569,10 +571,10 @@ def iqCB(sess,iq):
 				action=get_tag_item(unicode(iq),'command','action')
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
-				if action == 'cancel': i.setTag('command',attrs={'status':'canceled', 'node':disco_config_node,'sessionid':id})
+				if action == 'cancel': i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'canceled', 'node':disco_config_node,'sessionid':id})
 				elif towh == selfjid:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
-						i.setTag('command',attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
 						varz = iq.getTag('command').getTag('x')
 						#for t in config_prefs.keys():
 						#	tmtype = varz.getTagAttr('field','type')
@@ -581,7 +583,7 @@ def iqCB(sess,iq):
 						#	put_config(getRoom(room),t,tm)
 						pprint('*** owner reconfigure by %s' % unicode(room))
 					else:
-						i.setTag('command',attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
 						i.getTag('command').setTag('x',namespace=xmpp.NS_DATA,attrs={'type':'form'})
 						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node, 'name':'Configuration','jid':selfjid})
 						i.getTag('command').getTag('x').setTagData('instructions',L('For configure required x:data-compatible client'))
@@ -590,7 +592,7 @@ def iqCB(sess,iq):
 						.setTagData('value','There is nothing!')				
 				else:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
-						i.setTag('command',attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
 						varz = iq.getTag('command').getTag('x')
 						for t in config_prefs.keys():
 							tmtype = varz.getTagAttr('field','type')
@@ -599,7 +601,7 @@ def iqCB(sess,iq):
 							put_config(getRoom(room),t,tm)
 						pprint('*** reconfigure by %s' % unicode(room))
 					else:
-						i.setTag('command',attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
 						i.getTag('command').setTag('x',namespace=xmpp.NS_DATA,attrs={'type':'form'})
 						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node, 'name':'Configuration','jid':selfjid})
 						i.getTag('command').getTag('x').setTagData('instructions',L('For configure required x:data-compatible client'))
