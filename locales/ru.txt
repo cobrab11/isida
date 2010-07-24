@@ -54,6 +54,9 @@ Banned	Забанили
 Leave	Вышел
 Plugin %s. %s	Плагин %s. %s
 Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоли...
+Configuration	Конфигурация
+iSida Jabber Bot configuration	Конфигурация Jabber-бота iSida
+For configure required x:data-compatible client	Для настройки требуется x:data-совместимый клиент
 
 # file: ../trunk/plugins/acl.py
 Acl:	Действия:
