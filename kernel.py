@@ -587,9 +587,7 @@ def iqCB(sess,iq):
 						i.getTag('command').getTag('x').setTagData('instructions',L('For configure required x:data-compatible client'))
 						i.getTag('command').getTag('x').setTagData('title',L('iSida Jabber Bot configuration'))
 						i.getTag('command').getTag('x').setTag('field',attrs={'type':'text-single','label':'In da next time!','var':'empty_feature'})\
-						.setTagData('value','There is nothing!')
-					sender(i)
-					raise xmpp.NodeProcessed				
+						.setTagData('value','There is nothing!')				
 				else:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
 						i.setTag('command',attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
@@ -633,8 +631,8 @@ def iqCB(sess,iq):
 								i.getTag('command').getTag('x').getTag('field',\
 								attrs={'type':'list-single','label':itm_label,'var':t})\
 								.setTag('required')
-					sender(i)
-					raise xmpp.NodeProcessed
+				sender(i)
+				raise xmpp.NodeProcessed
 		else:
 			msg = iq.getTag(name='query', namespace=xmpp.NS_MUC_FILTER)
 			if msg:
