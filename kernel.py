@@ -423,6 +423,24 @@ def paste_text(text,room,jid):
 	fl.write(paste_ender.encode('utf-8'))
 	fl.close()
 	return pasteurl+url
+
+def nice_time(ttim):
+	gt=gmtime()
+	lt=tuple(localtime(ttim))
+	if lt[0:3] == gt[0:3]: timeofset = int(lt[3])-int(gt[3])
+	elif lt[0:3] > gt[0:3]: timeofset = int(lt[3])-int(gt[3]) + 24
+	else: timeofset = int(gt[3])-int(lt[3]) + 24
+	gt=timeZero(gmtime())
+	t_utc='%s%s%sT%s:%s:%s' % (gt[0],gt[1],gt[2],gt[3],gt[4],gt[5])
+	ltt=timeZero(lt)
+	wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
+	wlight = [L('Winter time'),L('Summer time')]
+	wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
+	t_display = '%s:%s:%s, %s.%s\'%s, %s, ' % (ltt[3],ltt[4],ltt[5],ltt[2],wmonth[lt[1]-1],ltt[0],wday[lt[6]])
+	if timeofset < 0: t_tz = 'GMT%s' % timeofset
+	else: t_tz = 'GMT+%s' % timeofset
+	t_display += '%s, %s' % (t_tz,wlight[lt[8]])
+	return t_utc,t_tz,t_display
 	
 def iqCB(sess,iq):
 	global timeofset, banbase, raw_iq, iq_in, iq_request, last_msg_base
@@ -462,6 +480,8 @@ def iqCB(sess,iq):
 			elif nspace == NS_MUC_OWNER: banbase.append(('TheEnd', 'None',id))
 			elif nspace == NS_VERSION: iq_async(id,time.time(), iq.getTag('query').getTagData(tag='name'), iq.getTag('query').getTagData(tag='version'),iq.getTag('query').getTagData(tag='os'))
 			elif nspace == NS_TIME: iq_async(id,time.time(), iq.getTag('query').getTagData(tag='display'),iq.getTag('query').getTagData(tag='utc'),iq.getTag('query').getTagData(tag='tz'))
+			elif iq.getTag('time',namespace=xmpp.NS_URN_TIME): iq_async(id,time.time(), iq.getTag('time').getTagData(tag='utc'),iq.getTag('time').getTagData(tag='tzo'))
+			elif iq.getTag('ping',namespace=xmpp.NS_URN_PING): iq_async(id,time.time())
 			else: iq_async(id,time.time(), unicode(iq))
 
 	elif iq.getType()=='get':
@@ -478,17 +498,7 @@ def iqCB(sess,iq):
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_TIME) and iq_time_enable:
 			pprint('*** iq:time from %s' % unicode(room))
-			gt=timeZero(gmtime())
-			t_utc='%s%s%sT%s:%s:%s' % (gt[0],gt[1],gt[2],gt[3],gt[4],gt[5])
-			lt=tuple(localtime())
-			ltt=timeZero(lt)
-			wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
-			wlight = [L('Winter time'),L('Summer time')]
-			wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
-			t_display = '%s:%s:%s, %s.%s\'%s, %s, ' % (ltt[3],ltt[4],ltt[5],ltt[2],wmonth[lt[1]-1],ltt[0],wday[lt[6]])
-			if timeofset < 0: t_tz = 'GMT%s' % timeofset
-			else: t_tz = 'GMT+%s' % timeofset
-			t_display += '%s, %s' % (t_tz,wlight[lt[8]])
+			t_utc,t_tz,t_display = nice_time(time.time())
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setQueryNS(namespace=xmpp.NS_TIME)
@@ -502,13 +512,13 @@ def iqCB(sess,iq):
 			pprint('*** iq:urn:time from %s' % unicode(room))
 			if timeofset in [-12,-11,-10]: t_tz = '-%s:00' % timeofset
 			elif timeofset in range(-9,-1): t_tz = '-0%s:00' % timeofset
-			elif timeofset in range(1,9): t_tz = '0%s:00' % timeofset
-			else: t_tz = '%s:00' % timeofset
+			elif timeofset in range(0,9): t_tz = '+0%s:00' % timeofset
+			else: t_tz = '+%s:00' % timeofset
 			i=xmpp.Iq(to=room, typ='result')
 			i.setAttr(key='id', val=id)
 			i.setTag('time',namespace=xmpp.NS_URN_TIME)
 			i.getTag('time').setTagData(tag='tzo', val=t_tz)
-			i.getTag('time').setTagData(tag='utc', val=str(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime (time.time()))))
+			i.getTag('time').setTagData(tag='utc', val=str(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())))
 			sender(i)
 			raise xmpp.NodeProcessed
 			
