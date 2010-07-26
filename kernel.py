@@ -866,7 +866,11 @@ def iq_async(*answ):
 def remove_ignore(jid,al):
 	global ignorebase
 	sleep(ddos_limit[al])
-	ignorebase.remove(jid)
+	try:
+		ignorebase.remove(jid)
+		pprint('!!! DDOS: Jid %s is removed from ignore!' % jid)
+	except: pprint('!!! DDOS: Unable find jid %s in ignore list. Perhaps it\'s removed by bot\'s owner!' % jid)
+	
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	global last_command, ignorebase
