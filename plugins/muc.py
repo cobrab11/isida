@@ -123,17 +123,16 @@ def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'me
 
 def muc_affiliation(type, jid, nick, text, aff):
 	tmppos = arr_semi_find(confbase, jid)
-	if tmppos == -1: nowname = nickname
+	if tmppos == -1: nowname = Settings['nickname']
 	else:
 		nowname = getResourse(confbase[tmppos])
-		if nowname == '': nowname = nickname
+		if nowname == '': nowname = Settings['nickname']
 	xtype = ''
 	for base in megabase:
 		if base[0].lower() == jid and base[1] == nowname:
 			xtype = base[3]
 			break
-	if xtype == 'owner':
-		send_msg(type, jid, nick, L('Command is locked!'))
+	if xtype == 'owner': send_msg(type, jid, nick, L('Command is locked!'))
 	elif len(text):
 		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
@@ -149,10 +148,10 @@ def muc_member_past(type, jid, nick,text): muc_affiliation_past(type, jid, nick,
 
 def muc_affiliation_past(type, jid, nick, text, aff):
 	tmppos = arr_semi_find(confbase, jid)
-	if tmppos == -1: nowname = nickname
+	if tmppos == -1: nowname = Settings['nickname']
 	else:
 		nowname = getResourse(confbase[tmppos])
-		if nowname == '': nowname = nickname
+		if nowname == '': nowname = Settings['nickname']
 	xtype = ''
 	for base in megabase:
 		if base[0].lower() == jid and base[1] == nowname:
@@ -189,17 +188,16 @@ def muc_moderator(type, jid, nick, text): muc_role(type, jid, nick, text, 'moder
 
 def muc_role(type, jid, nick, text, role):
 	tmppos = arr_semi_find(confbase, jid)
-	if tmppos == -1: nowname = nickname
+	if tmppos == -1: nowname = Settings['nickname']
 	else:
 		nowname = getResourse(confbase[tmppos])
-		if nowname == '': nowname = nickname
+		if nowname == '': nowname = Settings['nickname']
 	xtype = ''
 	for base in megabase:
 		if base[0].lower() == jid and base[1] == nowname:
 			xtype = base[3]
 			break
-	if xtype == 'owner':
-		send_msg(type, jid, nick, L('Command is locked!'))
+	if xtype == 'owner': send_msg(type, jid, nick, L('Command is locked!'))
 	elif len(text):
 		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
