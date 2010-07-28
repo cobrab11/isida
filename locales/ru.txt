@@ -660,7 +660,7 @@ Bot's owner	Владелец бота
 Total commands: %s | Prefix: %s | Your access level: %s | Available commands: %s%s	Всего команд: %s | Префикс: %s | Ваш доступ: %s | Доступно команд: %s%s
 Send donation to: %sBest regards, %s	Реквизиты для благодарностей/помощи:%sС Уважением, %s
 access	доступ
-Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot's settings. Available only for bot owner	У бота 3 уровня доступа:\n0 - команды доступны всем без ограничений.\n1 - доступ не ниже администратора конференции.\n2 - команды управления и настроек бота. доступны только владельцу бота.
+Bot has next access levels:\n-1 - ignored\n0 - minimal access\n1 - at least visitor and none\n2 - at least visitor and member\n3 - at least participant and none\n4 - at least participant and member\n5 - at least moderator and none\n6 - at least moderator and member\n7 - at least moderator and admin\n8 - at least moderator and owner\n9 - bot owner	У бота следующие уровни доступа:\n-1 - игнорируемый\n0 - минимальный доступ\n1 - не ниже гостя без полномочий\n2 - не ниже гостя и постоянного участника\n3 - не ниже участника без полномочий\n4 - не ниже постоянного участника\n5 - не ниже модератора без полномочий\n6 - не ниже модератора и постоянного участника\n7 - не ниже администратора\n8 - не ниже владельца конференции\n9 - владелец бота
 Access level: %s. %s	Уровень доступа: %s. %s
 Prefix: %s, Available help for commands:\n	Префикс команд: %s, Доступна справка по командам:\n
 %sInformation-referral bot%s Help for command: help command	%sИнформационно-справочный бот%s Справка по командам: help команда

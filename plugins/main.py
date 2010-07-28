@@ -565,7 +565,7 @@ def helpme(type, jid, nick, text):
 	text = text.lower()
 	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
 	elif text in ['donation','donations']: msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
-	elif text in [L('access'),'access']: msg = L('Bot has 3 access level:\n0 - Available for all.\n1 - For admins/owners.\n2 - Bot\'s settings. Available only for bot owner')
+	elif text in [L('access'),'access']: msg = L('Bot has next access levels:\n-1 - ignored\n0 - minimal access\n1 - at least visitor and none\n2 - at least visitor and member\n3 - at least participant and none\n4 - at least participant and member\n5 - at least moderator and none\n6 - at least moderator and member\n7 - at least moderator and admin\n8 - at least moderator and owner\n9 - bot owner')
 	elif text != '':
 		tm,cm = [],[]
 		for tmp in comms:

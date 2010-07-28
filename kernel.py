@@ -10,6 +10,7 @@
 # --------------------------------------------------------------------
 
 from __future__ import with_statement
+from __future__ import division
 from xmpp import *
 from random import *
 from time import *
@@ -144,12 +145,6 @@ def writefile(filename, data):
 	fp = file(filename, 'w')
 	fp.write(data)
 	fp.close()
-	
-'''	
-def readfile(filename): return file(filename).read()
-
-def writefile(filename, data): file(filename, 'w').write(data)
-'''
 
 def getFile(filename,default):
 	if os.path.isfile(filename):
@@ -229,9 +224,7 @@ def smart_encode(text,enc):
 		except: pass
 	return tx
 
-def tZ(val):
-	if val < 10: return '0%s' % val
-	return str(val)
+def tZ(val): return ['%s','0%s'][val<10] % val
 
 def timeadd(lt): return '%s.%s.%s %s:%s:%s' % (tZ(lt[2]),tZ(lt[1]),tZ(lt[0]),tZ(lt[3]),tZ(lt[4]),tZ(lt[5]))
 
