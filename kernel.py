@@ -1439,7 +1439,6 @@ try:
 	cl.auth(jid.getNode(), Settings['password'], jid.getResource())
 	pprint('Autheticated')
 except:
-	raise
 	pprint('Auth error or no connection. Restart in %s sec.' % reboot_time)
 	sleep(reboot_time)
 	sys.exit('restart')
