@@ -532,32 +532,32 @@ def iqCB(sess,iq):
 		
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_INFO):
 			node=get_tag_item(unicode(query),'query','node')
-			pprint('*** iq:disco_info from %s node "%s"' % (unicode(room),node))
-
-			i=xmpp.Iq(to=room, typ='result')
-			i.setAttr(key='id', val=id)
-			if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_INFO)
-			else: i.setTag('query',namespace=xmpp.NS_DISCO_INFO,attrs={'node':node})
-			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_INFO})
-			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_ITEMS})
-			i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
-			i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
-			if node == '':
-				i.getTag('query').setTag('identity',attrs={'category':'client','type':'bot','name':'iSida Jabber Bot'})
-				sender(i)
-				raise xmpp.NodeProcessed
-
-			elif node == disco_config_node or node == xmpp.NS_COMMANDS:
+			if node in ['', disco_config_node, xmpp.NS_COMMANDS]:
+				pprint('*** iq:disco_info from %s node "%s"' % (unicode(room),node))
+				i=xmpp.Iq(to=room, typ='result')
+				i.setAttr(key='id', val=id)
+				if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_INFO)
+				else: i.setTag('query',namespace=xmpp.NS_DISCO_INFO,attrs={'node':node})
+				i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_INFO})
+				i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_DISCO_ITEMS})
 				i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
 				i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
-				i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':L('Configuration')})
-				sender(i)
-				raise xmpp.NodeProcessed
+				if node == '':
+					i.getTag('query').setTag('identity',attrs={'category':'client','type':'bot','name':'iSida Jabber Bot'})
+					sender(i)
+					raise xmpp.NodeProcessed
+
+				elif node == disco_config_node or node == xmpp.NS_COMMANDS:
+					i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
+					i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
+					i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':L('Configuration')})
+					sender(i)
+					raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_ITEMS) and acclvl:
 			node=get_tag_item(unicode(query),'query','node')
 			pprint('*** iq:disco_items from %s node "%s"' % (unicode(room),node))
-			if node == disco_config_node or node == xmpp.NS_COMMANDS or node == '':
+			if node in ['', disco_config_node, xmpp.NS_COMMANDS]:
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
 				if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_ITEMS)
