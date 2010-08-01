@@ -88,8 +88,8 @@ def juick_msg(type, jid, nick, text):
 	if len(text):
 		try:
 			text = text.replace('#','')
-			if text.count('/'): link,post = 'http://juick.com/'+text.split('/')[0],int(text.split('/')[1])
-			else: link,post = 'http://juick.com/'+text.split(' ')[0],0
+			if text.count('/'): link,post = 'http://juick.com/'+text.split('/')[0],text.split('/')[1]
+			else: link,post = 'http://juick.com/'+text.split(' ')[0],None
 			try: repl_limit = int(text.split(' ')[1])
 			except: repl_limit = juick_msg_answers_default
 			body = urllib.urlopen(link).read()
@@ -99,7 +99,7 @@ def juick_msg(type, jid, nick, text):
 				nname = get_tag(body,'h1')
 				if nname.count('(') and nname.count(')'): uname = nname[nname.find('(')+1:nname.find(')')]
 				else: uname = nname
-				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0]+'\n'+nname+' - '
+				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0].replace('/','#')+'\n'+nname+' - '
 				if body.split('<p>')[1].count('<div class="ps">'): msg += get_subtag(body.split('<p>')[1].split('<div class="ps">')[1],'a href') + body.split('<p>')[1].split('</div>',1)[1].split('<small>')[0]
 				else: msg += get_tag(body.split('<p>')[1],'div')
 			repl = get_tag(body.split('<p>')[1],'h2')
@@ -111,13 +111,14 @@ def juick_msg(type, jid, nick, text):
 				msg += ' ' + L('(No replies)')
 			frm = get_tag(body.split('<p>')[1],'small')
 			msg += frm[frm.find(' '):]
-			cnt = 1
 			if hm_repl:
 				if not post:
-					for rp in body.split('<li id="')[1:repl_limit+1]:
-						msg += '\n'+text.split(' ')[0]+'/'+str(cnt)+' '+get_tag(rp,'a')+': '+get_tag(rp,'div')
-						cnt += 1
-				else: msg += '\n'+text+' '+get_tag(body.split('<li id="')[post],'div')
+					for rp in body.split('<li id="')[1:repl_limit+1]: msg += '\n'+text.split(' ')[0]+'/'+rp.split('"')[0]+' '+get_tag(rp,'a')+': '+get_tag(rp,'div')
+				else:
+					for rp in body.split('<li id="'):
+						if rp.split('"')[0] == post:
+							msg += '\n'+text+' '+get_tag(rp,'div')
+							break
 			remove = re.findall(r'" rel="nofollow">.*?</a>', msg, re.S)
 			for tmp in remove: msg = msg.replace(tmp,' ')
 			msg = rss_replace(rss_del_html(msg.replace('<a href="http','http'))).replace('<small>','\n')
