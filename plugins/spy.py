@@ -52,7 +52,7 @@ def spy_show(text):
 	msg = L('Monitoring conferences:')
 	for tmp in sb:
 		msg += '\n'+tmp[0]+' '+tmp[4]+' ('+un_unix(int(time.time()-tmp[1]))+'|u'+str(tmp[2])+'|m'+str(tmp[3])+')'
-	msg += L('\nNext scanning across %s') % un_unix(int(scan_time-(time.time()-spy_stat_time)))
+	msg += L('\nNext scanning across %s') % un_unix(int(GT('scan_time')-(time.time()-spy_stat_time)))
 	return msg
 	
 def conf_spy(type, jid, nick,text):
@@ -75,7 +75,7 @@ def spy_message(room,jid,nick,type,text):
 
 def get_spy_stat():
 	global spy_stat_time
-	if time.time()-spy_stat_time < scan_time: return None
+	if time.time()-spy_stat_time < GT('scan_time'): return None
 	spy_stat_time = time.time()
 	sb = getFile(spy_base,[])
 	for tmp in sb:
@@ -93,7 +93,7 @@ def spy_action():
 	if len(confbase) == 1: return None # Last conference
 	sb = getFile(spy_base,[])
 	for tmp in sb:
-		if time.time()-tmp[1] > spy_action_time:
+		if time.time()-tmp[1] > GT('spy_action_time'):
 			act = tmp[4].split(' ')
 			mist = None
 			for tmp2 in act:

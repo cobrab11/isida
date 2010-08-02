@@ -12,7 +12,7 @@ def month_cal(type, jid, nick, text):
 	try: year = int(text[1])
 	except: year = tuple(localtime())[0]
 	try: smbl = text[2]
-	except: smbl = calendar_default_splitter
+	except: smbl = GT('calendar_default_splitter')
 	try:
 		msg = L('\nMon Tue Wed Thu Fri Sat Sun\n')
 		for tmp in calendar.monthcalendar(year, month):

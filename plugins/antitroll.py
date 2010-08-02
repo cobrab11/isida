@@ -5,15 +5,16 @@ def troll(type, jid, nick, text):
 	text = text.split('\n')
 	r = unicode(text[0])
 	try: count = int(text[2])
-	except: count = troll_default_limit
-	if count > troll_max_limit: count = troll_max_limit
+	except: count = GT('troll_default_limit')
+	if count > GT('troll_max_limit'): count = GT('troll_max_limit')
 	otake = JID(node=getName(jid), domain=getServer(jid), resource=r)
 	otake = unicode(otake)
 	if len(text)>1: message = text[1]
 	else: message = L('You troll!')
+	tst = GT('troll_sleep_time')
 	while count != 0:
 		sender(xmpp.Message(otake, message, "chat"))
-		sleep(troll_sleep_time)
+		sleep(tst)
 		count -= 1
 	send_msg(type, jid, nick, L('Done'))
 

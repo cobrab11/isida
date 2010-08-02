@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-def GetTorrentInfo(request, tracker, link, count=torrent_default_count):
+def GetTorrentInfo(request, tracker, link, count=GT('torrent_default_count')):
 	url, n = link + urllib.quote(request.encode('utf-8')), 0
 	body = html_encode(urllib.urlopen(url).read())
 	body = body.split('<table width="100%">')[1].split('</table>')[0].split('<td>')[1:]

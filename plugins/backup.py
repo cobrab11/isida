@@ -9,7 +9,8 @@ def getMucItems(jid,affil,ns):
 	else: i = Node('iq', {'id': iqid, 'type': 'get', 'to':getRoom(jid)}, payload = [Node('query', {'xmlns': ns},[])])
 	iq_request[iqid]=(time.time(),'','')
 	sender(i)
-	while not banbase.count(('TheEnd', 'None', iqid)): sleep(backup_sleep_time)
+	bst = GT('backup_sleep_time')
+	while not banbase.count(('TheEnd', 'None', iqid)): sleep(bst)
 	iq_request.pop(iqid)
 	bb,cc = [],[]
 	for b in banbase: 
@@ -108,12 +109,13 @@ def conf_backup(type, jid, nick, text):
 						i = i[:i.find('<title>')]+i[i.find('</title>',i.find('<title>')+7)+8:]
 						i = i.replace('form','submit')
 						sender(i)
-						sleep(backup_sleep_time)
+						bst = GT('backup_sleep_time')
+						sleep(bst)
 						iqid = get_id()
 						i = Node('iq', {'id': iqid, 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'admin', 'jid':getRoom(unicode(selfjid))},[])])])
-						sleep(backup_sleep_time)
+						sleep(bst)
 						sender(i)
-						sleep(backup_sleep_time)
+						sleep(bst)
 						msg = L('Restore completed.')
 				else: msg = L('Copy not found. Use key "show" for lisen available copies.')
 			else: msg = L('What do you want to restore?')

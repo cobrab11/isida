@@ -112,7 +112,7 @@ def get_scrobble(type, room, nick, text):
 		except: pass
 	text = text[0]
 	if csize < 1: csize = 1
-	elif csize > pep_scrobbler_max_count: csize = pep_scrobbler_max_count
+	elif csize > GT('pep_scrobbler_max_count'): csize = GT('pep_scrobbler_max_count')
 	jid = getRoom(get_level(room,text)[1])
 	if jid == 'None': jid = room
 	stb = os.path.isfile(scrobblebase)
@@ -166,7 +166,7 @@ def match_room(room):
 	return None
 
 def shell_execute(cmd):
-	if paranoia_mode: return L('Command temporary blocked!')
+	if GT('paranoia_mode'): return L('Command temporary blocked!')
 	else:
 		tmp_file = 'tmp'
 		try: os.remove(tmp_file)
@@ -1163,7 +1163,7 @@ def rss(type, jid, nick, text):
 		if not timetype in ('h','m'): timetype = 'h'
 		try: ofset = int(text[2][:-1])
 		except: ofset = 4
-		if timetype == 'm' and ofset < rss_min_time_limit: timetype = '%sm' % rss_min_time_limit
+		if timetype == 'm' and ofset < GT('rss_min_time_limit'): timetype = '%sm' % GT('rss_min_time_limit')
 		else: timetype = str(ofset)+timetype
 		feedbase.append([link, timetype, text[3], int(time.time()), getRoom(jid),[]]) # url time mode
 		writefile(feeds,str(feedbase))
@@ -1209,7 +1209,7 @@ def rss(type, jid, nick, text):
 			if len(text) > 2: lng = int(text[2])
 			else: lng = len(feed)-1
 			if len(feed)-1 <= lng: lng = len(feed)-1
-			if lng > rss_max_feed_limit: lng = rss_max_feed_limit
+			if lng > GT('rss_max_feed_limit'): lng = GT('rss_max_feed_limit')
 			elif len < 1: lng = 1
 			if len(text) > 3: submode = text[3]
 			else: submode = 'full'
@@ -1221,10 +1221,10 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title')
 			try:
 				break_point = []
-				for tmp in feed[1:rss_max_feed_limit+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
+				for tmp in feed[1:GT('rss_max_feed_limit')+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
 				tstop = rss_flush(jid,link,break_point)
 				t_msg, new_count = [], 0
-				for mmsg in feed[1:rss_max_feed_limit+1]:
+				for mmsg in feed[1:GT('rss_max_feed_limit')+1]:
 					if mode == 'get' or not (hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop):
 						ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
 						if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
@@ -1383,7 +1383,90 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'muc_filter_large_status': [L('Large status muc filter is %s'), L('Large status muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
 				'muc_filter_censor_prs': [L('Censor muc filter for presence is %s'), L('Censor muc filter for presence'), ['off','kick','ban','replace','mute'], 'off']}
 
-				
+# type:
+# b - binary (true\false)
+# i - integer
+# f - float
+# tXX - text[:XX]
+# lXX - len(list) == XX
+
+owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
+				'status_logs_enable':[L('Logger. Enable status change logging'),'b',True],
+				'aff_role_logs_enable':[L('Logger. Enable role and affiliation logging'),'b',True],
+				'html_logs_enable':[L('Logger. Html logs. Otherwize in text'),'b',True],
+				'karma_limit':[L('Karma. Minimal karma for allow krama change for participants'),'i',5],
+				'karma_show_default_limit':[L('Karma. Default length of list karma top+/-'),'i',10],
+				'karma_show_max_limit':[L('Karma. Maximal length of list karma top+/-'),'i',20],
+				'watch_size':[L('Watcher. Frequency of requests in watcher'),'i',900],
+				'user_agent':[L('Www. User-agent for web queries'),'t256','Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.4) Gecko/2008120916 Gentoo Firefox/3.0.4'],
+				'size_overflow':[L('Www. Limit of page in bytes for www command'),'i',262144],
+				'youtube_max_videos':[L('Youtube. Maximal links number'),'i',10],
+				'youtube_default_videos':[L('Youtube. Default links number'),'i',3],
+				'youtube_max_page_size':[L('Youtube. Page size limit'),'i',131072],
+				'youtube_default_lang':[L('Youtube. Default language'),'t2','ru'],
+				'age_default_limit':[L('Age. Default number of users for age commands'),'i',10],
+				'age_max_limit':[L('Age. Maximal number of users for age commands'),'i',100],
+				'anek_private_limit':[L('Anek. Anekdote size for private send'),'i',500],
+				'troll_default_limit':[L('Troll. Default message number for troll command'),'i',10],
+				'troll_max_limit':[L('Troll. Maximal message number for troll command'),'i',100],
+				'troll_sleep_time':[L('Troll. Delay between messages for troll command'),'f',0.05],
+				'backup_sleep_time':[L('Backup. Requests delay for backup command'),'f',0.1],
+				'calendar_default_splitter':[L('Calendar. Default splitter for calendar'),'t10','_'],
+				'clear_delay':[L('Clear. Delay between massages in clear command'),'f',1.3],
+				'clear_default_count':[L('Clear. Default message number for clear command'),'i',20],
+				'clear_max_count':[L('Clear. Maximal message number for clear command'),'i',100],
+				'inlist_sleep_time':[L('Inlist. Timeout for requests inlist plugin'),'f',0.1],
+				'ping_digits':[L('Iq. Number after point in ping'),'i',3],
+				'lfm_api':[L('LastFM. Api for lastfm plugin'),'t64','no api'],
+				'lastfm_max_limit':[L('LastFM. Number of answers for lastfm plugin'),'i',10],
+				'reboot_time':[L('Kernel. Restart timeout for error at bot initial (no connection, auth error)'),'i',180],
+				'timeout':[L('Iq. Timeout for iq queries'),'i',600],
+				'schedule_time':[L('Kernel. Schedule time'),'i',10],
+				'sayto_timeout':[L('Sayto. Age of message in sayto before delete it from base with undelivered'),'i',1209600],
+				'sayto_cleanup_time':[L('Sayto. Timeout for sayto base cleanup'),'i',86400],
+				'scan_time':[L('Spy. Time for spy scan'),'i',1800],
+				'spy_action_time':[L('Spy. Time for reaction on spy scan'),'i',86400],
+				'torrent_default_count':[L('Torrent. Number of answers for torrent command'),'i',3],
+				'rss_max_feed_limit':[L('Rss. Maximum rss count'),'i',10],
+				'rss_min_time_limit':[L('Rss. Minimal time for rss check in minutes'),'i',10],
+				'pep_scrobbler_max_count':[L('Pep scrobbler. Number of maximum answers for pep-scrobbler'),'i',10],
+				'whereis_timeout':[L('Whereis. Timeout for andswer for whereis command'),'i',10],
+				'whereis_time_dec':[L('Whereis. Frequency for answer check for whereis command'),'i',0],
+				'disco_max_limit':[L('Disco. Maximus andwers count for disco command'),'i',10],
+				'juick_user_post_limit':[L('Juick. Number of posts in request by username'),'i',3],
+				'juick_user_post_size':[L('Juick. Number of symbols in post in request by username'),'i',50],
+				'juick_tag_user_limit':[L('Juick. Number of users in request by tag'),'i',5],
+				'juick_tag_user_max':[L('Juick. Maximal number of users in request by tag'),'i',20],
+				'juick_msg_answers_default':[L('Juick. Number of answers for request by message number'),'i',0],
+				'juick_tag_post_limit':[L('Juick. Number of posts in tag request'),'i',3],
+				'juick_tag_post_size':[L('Juick. Number of symbols in tag request'),'i',120],
+				'iq_time_enable':[L('Iq. Allow answer to time request'),'b',True],
+				'iq_uptime_enable':[L('Iq. Allow answer to uptime request'),'b',True],
+				'iq_version_enable':[L('Iq. Allow answer to version request'),'b',True],
+				'iq_disco_enable':[L('Iq. Allow answer to service discovery'),'b',True],
+				'iq_ping_enable':[L('Iq. Allow answer to ping'),'b',True],
+				'paranoia_mode':[L('Kernel. Paranoic mode. Disable all execute possibles on bot'),'b',False],
+				'watch_activity_timeout':[L('Watcher. Timeout for no actions in room for rejoin'),'i',1800],
+				'muc_filter_large_message_size':[L('Muc-filter. Message size for filter'),'i',512],
+				'muc_filter_match_count':[L('Muc-filter. A kind words count'),'i',3],
+				'muc_filter_match_warning_match':[L('Muc-filter. Number of kind parts in message'),'i',3],
+				'muc_filter_match_warning_space':[L('Muc-filter. Number of empty parts in message'),'i',5],
+				'muc_filter_match_view':[L('Muc-filter. Message limit'),'i',512],
+				'muc_filter_match_warning_nn':[L('Muc-filter. Number of empty new lines'),'i',3],
+				'muc_filter_rejoin_count':[L('Muc-filter. Number of reconnects for monitoring'),'i',3],
+				'muc_filter_rejoin_timeout':[L('Muc-filter. Time for reconnect count'),'i',120],
+				'muc_filter_status_count':[L('Muc-filter. Number of precences per time'),'i',3],
+				'muc_filter_status_timeout':[L('Muc-filter. Time between presences'),'i',600],
+				'muc_filter_large_status_size':[L('Muc-filter. Maximux status-message size'),'i',50],
+				'muc_filter_large_nick_size':[L('Muc-filter. Maximum nick size'),'i',20],
+				'html_paste_enable':[L('Paste. Paste as html. Otherwize as text'),'b',True],
+				'censor_text':[L('Kernel. Text for hide censore'),'t32','[censored]'],
+				'ddos_limit':[L('Kernel. Time of ignore for anti-ddos'),'l10','[1800,1800,1800,1800,1800,600,300,150,60,0]'],
+				'ddos_diff':[L('Kernel. Anti-ddos time delay between messages'),'l10','[30,30,30,30,20,20,15,10,5,0]'],
+				'amsg_limit_size':[L('Msgtoadmin. Size limit for msgtoadmin'),'i',1024],
+				'amsg_limit':[L('Msgtoadmin. Time limit for next message for msgtoadmin'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,60]'],
+				'karma_timeout':[L('Karma. Time for karma change from access level'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,5]']}
+
 comms = [
 	 (0, 'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
 	 (9, 'join', bot_join, 2, L('Join conference.\njoin room[@conference.server.ru[/nick]]')),

@@ -24,9 +24,9 @@ def karma(type, jid, nick, text):
 	
 def karma_top(type, jid, nick, text, order):
 	try: lim = int(text)
-	except: lim = karma_show_default_limit
+	except: lim = GT('karma_show_default_limit')
 	if lim < 1: lim = 1
-	elif lim > karma_show_max_limit: lim = karma_show_max_limit
+	elif lim > GT('karma_show_max_limit'): lim = GT('karma_show_max_limit')
 	karma_base = sqlite3.connect(karmabase)
 	cu_karmabase = karma_base.cursor()
 	if order: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by karma',(jid,)).fetchall()
@@ -68,7 +68,7 @@ def karma_get_access(room,jid):
 	stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(room,jid)).fetchone()
 	karma_base.close()
 	if stat == None: return None
-	if int(stat[0]) < karma_limit: return None
+	if int(stat[0]) < GT('karma_limit'): return None
 	return True
 
 def karma_val(val):
@@ -97,7 +97,7 @@ def karma_change(room,jid,nick,type,text,value):
 				stat = cu_karmabase.execute('select last from commiters where room=? and jid=? and karmajid=?',(room,jid,karmajid)).fetchone()
 				karma_valid, karma_time = None, int(time.time())
 				if stat == None: karma_valid = True
-				elif karma_time - int(stat[0]) >= karma_timeout[k_acc]: karma_valid = True
+				elif karma_time - int(stat[0]) >= GT('karma_timeout')[k_acc]: karma_valid = True
 				if karma_valid:
 					if stat: cu_karmabase.execute('update commiters set last=? where room=? and jid=? and karmajid=?',(karma_time,room,jid,karmajid))
 					else: cu_karmabase.execute('insert into commiters values (?,?,?,?)',(room,jid,karmajid,karma_time))
@@ -107,10 +107,10 @@ def karma_change(room,jid,nick,type,text,value):
 						cu_karmabase.execute('delete from karma where room=? and jid=?',(room,karmajid)).fetchall()
 					else: stat = value
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
-					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') % (text,karma_val(stat),un_unix(karma_timeout[k_acc]))
+					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') % (text,karma_val(stat),un_unix(GT('karma_timeout')[k_acc]))
 					karma_base.commit()
 					pprint('karma change in '+room+' for '+text+' to '+str(stat))
-				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % (text,un_unix(int(stat[0])+karma_timeout[k_acc]-karma_time))
+				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % (text,un_unix(int(stat[0])+GT('karma_timeout')[k_acc]-karma_time))
 				karma_base.close()
 		else: msg = L('You can\'t change karma!')
 	send_msg(type, room, nick, msg)

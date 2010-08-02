@@ -17,7 +17,7 @@ def disco(type, jid, nick, text):
 	try: what = text[1]
 	except: what = ''
 	try: hm = int(text[2])
-	except: hm = disco_max_limit
+	except: hm = GT('disco_max_limit')
 	iqid = get_id()
 	i = Node('iq', {'id': iqid, 'type': 'get', 'to':where}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])
 	iq_request[iqid]=(time.time(),disco_async,[type, jid, nick, what, where, hm])
@@ -125,11 +125,12 @@ def whereis_async(type, jid, nick, who, where, is_answ):
 		whereis_requests.append((curr_id,iqid,tt))
 		sender(i)
 		# --- Контроль отправки ---
-		cnt = whereis_timeout
+		cnt = GT('whereis_timeout')
+		wtd = GT('whereis_time_dec')
 		while cnt > 0:
 			if (curr_id,iqid,tt) in whereis_requests:
-				sleep(whereis_time_dec)
-				cnt -= whereis_time_dec
+				sleep(wtd)
+				cnt -= wtd
 			else: break
 		if not cnt:
 			whereis_requests.remove((curr_id,iqid,tt))
@@ -138,7 +139,7 @@ def whereis_async(type, jid, nick, who, where, is_answ):
 		# -------------------------
 	while whereis_checks[curr_id]:
 		for tmp in whereis_requests:
-			if tmp[0] == curr_id and time.time() > tmp[2] + whereis_timeout:
+			if tmp[0] == curr_id and time.time() > tmp[2] + GT('whereis_timeout'):
 				whereis_requests.remove(tmp)
 				whereis_checks[curr_id] -= 1
 			break

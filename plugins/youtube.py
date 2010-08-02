@@ -4,16 +4,16 @@
 def youtube(type, jid, nick, text):
 	if text.count('\n'):
 		try: lim = int(text.split('\n',1)[1])
-		except: lim = youtube_default_videos
-		if lim > youtube_max_videos: lim = youtube_max_videos
+		except: lim = GT('youtube_default_videos')
+		if lim > GT('youtube_max_videos'): lim = GT('youtube_max_videos')
 		if lim < 1: lim = 1
 		text = text.split('\n',1)[0]
-	else: lim = youtube_default_videos
-	size_overflow = youtube_max_page_size
+	else: lim = GT('youtube_default_videos')
+	size_overflow = GT('youtube_max_page_size')
 	text = text.lower().encode('utf-8').replace(' ','%20')
 	regex = '<a href="(/watch.*?)".*?<strong class="hovercard-title" >(.*?)</strong>.*?<span class="hovercard-duration">(.*?)</span>.*?<span class="hovercard-upload-date">(.*?)</span>'
-	req = urllib2.Request('http://www.youtube.com/results?search_type=&search_query=%s&aq=f&hl=%s' % (text,youtube_default_lang))
-	req.add_header('User-Agent',user_agent)
+	req = urllib2.Request('http://www.youtube.com/results?search_type=&search_query=%s&aq=f&hl=%s' % (text,GT('youtube_default_lang')))
+	req.add_header('User-Agent',GT('user_agent'))
 	try: body = str(urllib2.urlopen(req).info())
 	except: body = L('I can\'t do it')
 	mt = re.findall('Content-Length.*?([0-9]+)', body, re.S)

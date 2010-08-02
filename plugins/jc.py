@@ -6,7 +6,7 @@ def jc(type, jid, nick, text):
 	try:	
 		url = 'http://jc.jabber.ru/search.html?%s'.encode("utf-8") % (urllib.urlencode({'search': text.encode("utf-8")}))
 		req = urllib2.Request(url)
-		req.add_header('User-Agent',user_agent)
+		req.add_header('User-Agent',GT('user_agent'))
 		body = urllib2.urlopen(req).read()
 		body = html_encode(body)
 		body = get_tag(body,'ol')

@@ -11,7 +11,7 @@ def netheader(type, jid, nick, text):
 		except: regex = None
 		if not text.count('://'): text = 'http://'+text
 		req = urllib2.Request(text.encode('utf-8'))
-		req.add_header('User-Agent',user_agent)
+		req.add_header('User-Agent',GT('user_agent'))
 		try:
 			body = text + '\n' + str(urllib2.urlopen(req).headers)
 			if regex:
@@ -31,7 +31,7 @@ def netwww(type, jid, nick, text):
 	except: regex = None
 	if not text.count('://'): text = 'http://'+text
 	req = urllib2.Request(text.encode('utf-8'))
-	req.add_header('User-Agent',user_agent)
+	req.add_header('User-Agent',GT('user_agent'))
 	try: body = str(urllib2.urlopen(req).info())
 	except: body = L('I can\'t do it')
 	mt = re.findall('Content-Length.*?([0-9]+)', body, re.S)
@@ -39,9 +39,9 @@ def netwww(type, jid, nick, text):
 	if mt != []:
 		try:
 			c_size = int(''.join(mt[0]))
-			if c_size > size_overflow: msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (str(c_size/1024),str(size_overflow/1024))
-		except: c_size = size_overflow
-	else: c_size = size_overflow
+			if c_size > GT('size_overflow'): msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (str(c_size/1024),str(GT('size_overflow')/1024))
+		except: c_size = GT('size_overflow')
+	else: c_size = GT('size_overflow')
 	if not msg:
 		try:
 			page = remove_sub_space(html_encode(urllib2.urlopen(req).read(c_size)))
@@ -70,7 +70,7 @@ def parse_url_in_message(room,jid,nick,type,text):
 		if link and last_url_watch != link and not link.count(pasteurl):
 			last_url_watch = link
 			req = urllib2.Request(link.encode('utf-8'))
-			req.add_header('User-Agent',user_agent)
+			req.add_header('User-Agent',GT('user_agent'))
 			page = remove_sub_space(html_encode(urllib2.urlopen(req).read(2048)))
 			if page.count('<title>'): tag = 'title'
 			elif page.count('<TITLE>'): tag = 'TITLE'

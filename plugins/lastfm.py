@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-global execute, lf_api, lfm_url, lfm_api, timer
+global execute, lf_api, lfm_url, timer
 
 lfm_url = 'http://ws.audioscrobbler.com/2.0/'
 
@@ -39,14 +39,14 @@ def lastonetrack(type, jid, nick, text):
 
 def lf_api(method, user, splitter):
 	user = reduce_spaces_last(user.lower().encode('utf-8').replace('\\x','%')).replace(' ','%20')
-	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+lfm_api
+	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+GT('lfm_api')
 	return rss_replace(html_encode(urllib.urlopen(link).read())).split(splitter)
 	
 def lasttracks(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.getrecenttracks',text, '<track')
@@ -68,7 +68,7 @@ def lastloved(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.getlovedtracks',text, '<track')
@@ -81,7 +81,7 @@ def lastneighbours(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.getneighbours',text, '<user')
@@ -94,7 +94,7 @@ def lastplaylist(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 2
 	text = text[0]
 	ms = lf_api('user.getplaylists',text, '<playlist')
@@ -107,7 +107,7 @@ def topalbums(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.gettopalbums',text, '<album')
@@ -120,7 +120,7 @@ def topartists(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.gettopartists',text, '<artist')
@@ -133,7 +133,7 @@ def toptags(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.gettoptags',text, '<tag')
@@ -146,7 +146,7 @@ def toptracks(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
 	text = reduce_spaces_last(text).split(' ')
 	try: cnt = int(text[1])
-	except: cnt = lastfm_max_limit
+	except: cnt = GT('lastfm_max_limit')
 	cnt += 1
 	text = text[0]
 	ms = lf_api('user.gettoptracks',text, '<track')
@@ -164,7 +164,7 @@ def tasteometer(type, jid, nick, text):
 	except:
 		send_msg(type, jid, nick, L('Need two users'))
 		return
-	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+lfm_api
+	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+GT('lfm_api')
 	lfxml = html_encode(urllib.urlopen(link).read())
 	scor = get_tag(lfxml,'score')
 	try: scor = float(scor)
@@ -208,7 +208,7 @@ exec_no = [(3, 'lasttracks', no_api, 1, L('Not found LastFM api')),
 	   (3, 'toptracks', no_api, 1, L('Not found LastFM api')),
 	   (3, 'tasteometer', no_api, 1, L('Not found LastFM api'))]
 
-if len(lfm_api) >= 30: execute = exec_yes
+if len(GT('lfm_api')) >= 30: execute = exec_yes
 else: execute = exec_no
 
 

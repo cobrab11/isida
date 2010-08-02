@@ -17,7 +17,7 @@ def sayto(type, jid, nick, text):
 				msg = ''
 				for cc in cm:
 					zz = cc[0].split('\n')
-					tmsg = '\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+'|'+un_unix(sayto_timeout-(time.time()-int(zz[1])))+') '+L('for')+' '+cc[2]+' - '+cc[3]
+					tmsg = '\n' + cc[1] +'/'+ zz[0] +' ('+un_unix(time.time()-int(zz[1]))+'|'+un_unix(GT('sayto_timeout')-(time.time()-int(zz[1])))+') '+L('for')+' '+cc[2]+' - '+cc[3]
 					if len(text) and tmsg.lower().count(text.lower()): msg += tmsg
 					elif not len(text): msg += tmsg
 				if len(msg): msg = L('Not transfered messages: %s') % msg
@@ -91,7 +91,7 @@ def sayto_presence(room,jid,nick,type,text):
 def cleanup_sayto_base():
 	global last_cleanup_sayto_base
 	ctime = int(time.time())
-	if ctime-last_cleanup_sayto_base > sayto_cleanup_time:
+	if ctime-last_cleanup_sayto_base > GT('sayto_cleanup_time'):
 		last_cleanup_sayto_base = ctime
 		sdb = sqlite3.connect(saytobase)
 		cu = sdb.cursor()
@@ -100,7 +100,7 @@ def cleanup_sayto_base():
 			for cc in cm:
 				if cc[0].count('\n'):
 					tim = int(cc[0].split('\n')[1])
-					if ctime-tim > sayto_timeout: cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
+					if ctime-tim > GT('sayto_timeout'): cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
 				else: cu.execute('delete from st where room=? and jid=?',(cc[1], cc[2]))
 			sdb.commit()
 

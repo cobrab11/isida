@@ -6,7 +6,7 @@ def exec_ute(type, jid, nick, text):
 	except Exception, SM:
 		try: SM = str(SM)
 		except: SM = unicode(SM)
-		text = L('I can\'t execute it! Error: %s') % SM[:msg_limit/2]
+		text = L('I can\'t execute it! Error: %s') % SM[:int(msg_limit/2)]
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
@@ -31,5 +31,5 @@ def calc(type, jid, nick, text):
 
 global execute
 
-if not paranoia_mode: execute = [(3, 'calc', calc, 2, L('Calculator.')),
+if not GT('paranoia_mode'): execute = [(3, 'calc', calc, 2, L('Calculator.')),
 								 (9, 'exec', exec_ute, 2, L('Execution of external code.'))]

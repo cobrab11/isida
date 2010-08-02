@@ -6,11 +6,11 @@
 
 def adminmail(type, jid, nick, text):
 	if len(text):
-		if len(text) > amsg_limit: text = text[:amsg_limit]+'[...]'
+		if len(text) > GT('amsg_limit_size'): text = text[:GT('amsg_limit_size')]+u'[…]'
 		timesent = getFile(time_limit_base, {})
 		ga = get_level(jid, nick)
 		fjid = getRoom(ga[1])
-		tmp_lim = amsg_limit[ga[0]]
+		tmp_lim = GT('amsg_limit')[ga[0]]
 		if timesent.has_key(fjid):
 			wt = int(timesent[fjid]-time.time())
 			if wt >= 0:

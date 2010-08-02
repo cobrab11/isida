@@ -59,9 +59,9 @@ def juick_user(type, jid, nick, text):
 	text = text.replace('@','')
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = juick_user_post_limit
+		except: mlen = GT('juick_user_post_limit')
 		try: mlim = int(text.split(' ')[2])
-		except: mlim = juick_user_post_size
+		except: mlim = GT('juick_user_post_size')
 		text = text.split(' ')[0]
 		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
@@ -91,7 +91,7 @@ def juick_msg(type, jid, nick, text):
 			if text.count('/'): link,post = 'http://juick.com/'+text.split('/')[0],text.split('/')[1]
 			else: link,post = 'http://juick.com/'+text.split(' ')[0],None
 			try: repl_limit = int(text.split(' ')[1])
-			except: repl_limit = juick_msg_answers_default
+			except: repl_limit = GT('juick_msg_answers_default')
 			body = urllib.urlopen(link).read()
 			body = html_encode(body.replace('<div><a href','<div><a '))
 			if body.count('<h1>Page Not Found</h1>'): msg = L('Message #%s not found') % text
@@ -130,9 +130,9 @@ def juick_msg(type, jid, nick, text):
 def juick_tag_user(type, jid, nick, text):
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = juick_tag_user_limit
+		except: mlen = GT('juick_tag_user_limit')
 		text = text.split(' ')[0]
-		if mlen > juick_tag_user_max: mlen = juick_tag_user_max
+		if mlen > GT('juick_tag_user_max'): mlen = GT('juick_tag_user_max')
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()
 		body = rss_replace(html_encode(body))
@@ -150,9 +150,9 @@ def juick_tag_user(type, jid, nick, text):
 def juick_tag_msg(type, jid, nick, text):
 	if len(text):
 		try: mlen = int(text.split(' ')[1])
-		except: mlen = juick_tag_post_limit
+		except: mlen = GT('juick_tag_post_limit')
 		try: mlim = int(text.split(' ')[2])
-		except: mlim = juick_tag_post_size
+		except: mlim = GT('juick_tag_post_size')
 		text = text.split(' ')[0]
 		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
 		body = urllib.urlopen(link).read()

@@ -21,7 +21,7 @@ def gettcode(text):
 	try: url = 'http://www.btk-online.ru/phcode/?srchCId=1&srchTName=&srchCCode=&srchTCode='+str(int(text))
 	except: url = 'http://www.btk-online.ru/phcode/?srchCId=1&%s'.encode("utf-8") % (urllib.urlencode({'srchTName': text.encode("windows-1251")}))
 	req = urllib2.Request(url)
-	req.add_header('User-Agent',user_agent)
+	req.add_header('User-Agent',GT('user_agent'))
 	body = urllib2.urlopen(req).read()
 	body = html_encode(body)
 	if body.count('<table id=pcodephones cellspacing=0>\n  <tr><th width'): return L('Your search returns no results.')

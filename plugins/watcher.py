@@ -8,7 +8,7 @@ watch_last_activity = {}
 
 def connect_watch():
 	global iq_request, watch_time, game_over, watch_count, bot_exit_type, watch_reset
-	if (time.time() - watch_time) > watch_size:
+	if (time.time() - watch_time) > GT('watch_size'):
 		watch_time = time.time()
 		watch_count += 1
 		watch_reset = True
@@ -27,7 +27,7 @@ def connect_watch():
 			
 def watch_room_activity():
 	global watch_last_activity
-	to = int(time.time())-watch_activity_timeout
+	to = int(time.time())-GT('watch_activity_timeout')
 	for tmp in confbase:
 		try: cw = watch_last_activity[getRoom(tmp)]
 		except: cw = to
@@ -46,7 +46,7 @@ def watcher_reset(a,b,c,d,e):
 	global watch_reset
 	watch_reset = None
 			
-def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s') % (watch_size,timeout,un_unix(int(time.time() - watch_time)),watch_count))
+def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s') % (GT('watch_size'),timeout,un_unix(int(time.time() - watch_time)),watch_count))
 
 def connect_watch_uni(room,jid,nick,type,mass):
 	global watch_last_activity
@@ -54,7 +54,7 @@ def connect_watch_uni(room,jid,nick,type,mass):
 
 global execute, timer
 
-if iq_version_enable: timer = [connect_watch,watch_room_activity]
+if GT('iq_version_enable'): timer = [connect_watch,watch_room_activity]
 presence_control = [connect_watch_uni]
 message_control = [connect_watch_uni]
 
