@@ -42,6 +42,7 @@ Large message block!	Большое сообщение!
 Warning! Your message is blocked in connection with the policy of the room!	Внимание! Ваше сообщение блокировано в связи с политикой комнаты!
 Large status block!	Блокировка длинного статусного сообщения!
 Large nick block!	Блокировка длинного ника!
+To many rejoins! Wait %s sec.	Слишком много попыток входа! Ждите %s сек.
 Status-flood block!	Блокировка статус-флуда!
 Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.	Внимание! Превышен лимит отправки одинаковых сообщений. Вы блокированы на срок %s сек.
 Censored!	Фильтруем базар!
