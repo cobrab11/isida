@@ -16,7 +16,7 @@ def connect_watch():
 		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
 		iq_request[iqid]=(time.time(),watcher_reset,['chat',god,'',''])
 		sender(i)
-		to = timeout - 10
+		to = GT('timeout') - 10
 		while to > 0 and not game_over:
 			to -= 1
 			sleep(1)
@@ -46,7 +46,7 @@ def watcher_reset(a,b,c,d,e):
 	global watch_reset
 	watch_reset = None
 			
-def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s') % (GT('watch_size'),timeout,un_unix(int(time.time() - watch_time)),watch_count))
+def c_watcher(type, jid, nick): send_msg(type, jid, nick, L('Timeout for ask: %s | Timeout for answer: %s | Last ask: %s | Total checks: %s') % (GT('watch_size'),GT('timeout'),un_unix(int(time.time() - watch_time)),watch_count))
 
 def connect_watch_uni(room,jid,nick,type,mass):
 	global watch_last_activity
