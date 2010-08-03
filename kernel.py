@@ -726,8 +726,8 @@ def iqCB(sess,iq):
 								except: lm = None
 								if lm:
 									if body in lm or lm in body:
-										pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
 										act = get_config(getRoom(room),'muc_filter_repeat')
+										pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
 										if act == 'mute': mute = True
 										else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
 								last_msg_base[getRoom(jid)] = body
