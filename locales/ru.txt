@@ -830,6 +830,7 @@ Spy. Time for reaction on spy scan	Spy. Интервал реакции на с�
 Torrent. Number of answers for torrent command	Torrent. Количество ответов для команды torrent
 Rss. Maximum rss count	Rss. Максимальное количество новостей
 Rss. Minimal time for rss check in minutes	Rss. Минимальное время проверки rss в минутах
+Rss. Timeout for rss request from server in seconds	Rss. Таймаут запроса новости с сервера в секундах
 Pep scrobbler. Number of maximum answers for pep-scrobbler	Pep scrobbler. Максимальное количество ответов для pep скробблера
 Whereis. Timeout for andswer for whereis command	Whereis. Таймаут ожидания ответа для команды whereis
 Whereis. Frequency for answer check for whereis command	Whereis. Частота проверки ответа для команды whereis

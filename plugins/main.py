@@ -1186,15 +1186,18 @@ def rss(type, jid, nick, text):
 		try:
 			if int(''.join(re.findall('([0-9])+\.([0-9])+',sys.version)[0])) >= 26: # python 2.6 and higher
 				req = urllib2.Request(link.encode('utf-8'))
-				req.add_header('User-Agent',user_agent)
-				feed = urllib2.urlopen(url=req,timeout=15).read(size_overflow)
+				req.add_header('User-Agent',GT('user_agent'))
+				feed = urllib2.urlopen(url=req,timeout=GT('rss_get_timeout')).read(GT('size_overflow'))
 			else: feed = urllib.urlopen(link).read()
 		except: feed = L('Unable to access server!')
 		is_rss_aton,fc = 0,feed[:256]
 		if fc.count('<?xml version='):
 			if fc.count('<feed'): is_rss_aton = 2
 			elif fc.count('<rss') or fc.count('<rdf'): is_rss_aton = 1
-		feed = html_encode(feed)
+			feed = html_encode(feed)
+			feed = re.sub(u'(<span.*?>.*?</span>)','',feed)
+			feed = re.sub(u'(<div.*?>)','',feed)
+			feed = re.sub(u'(</div>)','',feed)
 		if is_rss_aton and feed != L('Encoding error!') and feed != L('Unable to access server!'):
 			if is_rss_aton == 1:
 				if feed.count('<item>'): fd = feed.split('<item>')
@@ -1429,6 +1432,7 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'torrent_default_count':[L('Torrent. Number of answers for torrent command'),'i',3],
 				'rss_max_feed_limit':[L('Rss. Maximum rss count'),'i',10],
 				'rss_min_time_limit':[L('Rss. Minimal time for rss check in minutes'),'i',10],
+				'rss_get_timeout':[L('Rss. Timeout for rss request from server in seconds'),'i',15],
 				'pep_scrobbler_max_count':[L('Pep scrobbler. Number of maximum answers for pep-scrobbler'),'i',10],
 				'whereis_timeout':[L('Whereis. Timeout for andswer for whereis command'),'i',10],
 				'whereis_time_dec':[L('Whereis. Frequency for answer check for whereis command'),'i',0],
