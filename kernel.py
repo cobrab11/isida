@@ -1186,7 +1186,6 @@ def presenceCB(sess,mess):
 					confbase = arr_del_semi_find(confbase,getRoom(room))
 					writefile(confs,str(confbase))
 	else:
-		if ownerbase.count(getRoom(room)): caps_and_send(Presence(room, show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
 		if nick != '':
 			for mmb in megabase:
 				if mmb[0]==room and mmb[1]==nick:
@@ -1496,7 +1495,8 @@ cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
 cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
-cl.sendInitPresence()
+caps_and_send(Presence(show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
+#cl.sendInitPresence()
 
 pprint('Wait conference')
 sleep(0.5)
