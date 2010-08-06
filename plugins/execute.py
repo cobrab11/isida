@@ -2,7 +2,7 @@
 # -*- coding: utf -*-
 
 def exec_ute(type, jid, nick, text):
-	try: text = unicode(eval(text))
+	try: text = remove_sub_space(unicode(eval(text)))
 	except Exception, SM:
 		try: SM = str(SM)
 		except: SM = unicode(SM)
@@ -24,7 +24,7 @@ def calc(type, jid, nick, text):
 	if text.count('**'): ppc = 0
 
 	if ppc:	
-		try: text = str(eval(text))
+		try: text = remove_sub_space(str(eval(text)))
 		except: text = L('I can\'t calculate it')
 	else: text = L('Expression unacceptable!')
 	send_msg(type, jid, nick, text)

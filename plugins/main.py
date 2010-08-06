@@ -177,7 +177,7 @@ def shell_execute(cmd):
 			except: body = L('Command execution error.')
 			if len(body):
 				enc = chardet.detect(body)['encoding']
-				return unicode(body,enc)
+				return remove_sub_space(unicode(body,enc))
 			else: return L('ok')
 		except Exception, SM: 
 			try: SM = str(SM)
