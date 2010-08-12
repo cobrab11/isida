@@ -822,7 +822,7 @@ def iqCB(sess,iq):
 						if get_config(getRoom(room),'muc_filter_large_status') != 'off' and len(status) >= GT('muc_filter_large_status_size') and msg and not mute:
 							act = get_config(getRoom(room),'muc_filter_large_status')
 							pprint('MUC-Filter large status (%s): %s [%s] %s' % (act,jid,room,status))
-							if act == 'truncate': msg = msg.replace(get_tag_full(msg,'status'),'<status>%s…</status>' % (status[:GT('muc_filter_large_status_size')]))
+							if act == 'truncate': msg = msg.replace(get_tag_full(msg,'status'),u'<status>%s…</status>' % (status[:GT('muc_filter_large_status_size')]))
 							elif newjoin: msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('Large status block!')])])])).replace('replace_it',get_tag(msg,'presence')),True
 							elif act == 'mute': msg,mute = None,True
 							else: msg = muc_filter_action(act,jid,room,L('Large status block!'))
