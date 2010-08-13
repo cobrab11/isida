@@ -558,6 +558,7 @@ def iqCB(sess,iq):
 				i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
 				if node == '':
 					i.getTag('query').setTag('identity',attrs={'category':'client','type':'bot','name':'iSida Jabber Bot'})
+					sleep(time_nolimit*2)
 					sender(i)
 					raise xmpp.NodeProcessed
 
@@ -565,6 +566,7 @@ def iqCB(sess,iq):
 					i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
 					i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
 					i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':L('Configuration')})
+					sleep(time_nolimit*2)
 					sender(i)
 					raise xmpp.NodeProcessed
 
@@ -577,6 +579,7 @@ def iqCB(sess,iq):
 				if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_ITEMS)
 				else: i.setTag('query',namespace=xmpp.NS_DISCO_ITEMS,attrs={'node':node})
 				if node == '' or node == xmpp.NS_COMMANDS: i.getTag('query').setTag('item',attrs={'node':disco_config_node, 'name':L('Configuration'),'jid':towh})
+				sleep(time_nolimit*2)
 				sender(i)
 				raise xmpp.NodeProcessed
 		
@@ -682,6 +685,7 @@ def iqCB(sess,iq):
 								i.getTag('command').getTag('x').getTag('field',\
 								attrs={'type':'list-single','label':itm_label,'var':t})\
 								.setTag('required')
+				sleep(time_nolimit*2)
 				sender(i)
 				raise xmpp.NodeProcessed
 		else:
