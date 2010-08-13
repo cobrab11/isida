@@ -1468,13 +1468,17 @@ pprint('JID: %s' % unicode(jid))
 raw_iq = []
 
 try:
-	if dm: cl = Client(jid.getDomain())
-	else: cl = Client(jid.getDomain(), debug=[])
-
 	try:
-		Server = server
-		pprint('Trying to connect to %s' % Server[0])
-	except NameError: Server = None
+		Server = server.split(':')[0]
+		Port = int(server.split(':')[1])
+		pprint('Trying to connect to %s' % server)
+	except: Server,Port = None,None
+	if Port:
+		if dm: cl = Client(jid.getDomain(),Port)
+		else: cl = Client(jid.getDomain(),Port,debug=[])
+	else:
+		if dm: cl = Client(jid.getDomain())
+		else: cl = Client(jid.getDomain(),debug=[])
 	try:
 		Proxy = proxy
 		pprint('Using proxy %s' % Proxy['host'])

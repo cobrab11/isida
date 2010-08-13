@@ -95,7 +95,7 @@ class CommonClient:
 			the debug IDs that will go into debug output. You can either specifiy an "include"
 			or "exclude" list. The latter is done via adding "always" pseudo-ID to the list.
 			Full list: ['nodebuilder', 'dispatcher', 'gen_auth', 'SASL_auth', 'bind', 'socket', 
-			 'CONNECTproxy', 'roster', 'browser', 'ibb'] . """
+			 'CONNECTproxy', 'TLS', 'roster', 'browser', 'ibb'] . """
 		if self.__class__.__name__=='Client': self.Namespace,self.DBG='jabber:client',DBG_CLIENT
 		elif self.__class__.__name__=='Component': self.Namespace,self.DBG=dispatcher.NS_COMPONENT_ACCEPT,DBG_COMPONENT
 		self.defaultNamespace=self.Namespace
@@ -128,7 +128,7 @@ class CommonClient:
 		self.disconnect_handlers.reverse()
 		for i in self.disconnect_handlers: i()
 		self.disconnect_handlers.reverse()
-		#if self.__dict__.has_key('TLS'): self.TLS.PlugOut()
+		if self.__dict__.has_key('TLS'): self.TLS.PlugOut()
 
 	def DisconnectHandler(self):
 		""" Default disconnect handler. Just raises an IOError.
@@ -151,8 +151,8 @@ class CommonClient:
 		if self.__dict__.has_key('Bind'): self.Bind.PlugOut()
 		self._route=0
 		if self.__dict__.has_key('NonSASL'): self.NonSASL.PlugOut()
-		#if self.__dict__.has_key('SASL'): self.SASL.PlugOut()
-		#if self.__dict__.has_key('TLS'): self.TLS.PlugOut()
+		if self.__dict__.has_key('SASL'): self.SASL.PlugOut()
+		if self.__dict__.has_key('TLS'): self.TLS.PlugOut()
 		self.Dispatcher.PlugOut()
 		if self.__dict__.has_key('HTTPPROXYsocket'): self.HTTPPROXYsocket.PlugOut()
 		if self.__dict__.has_key('TCPsocket'): self.TCPsocket.PlugOut()
@@ -173,14 +173,12 @@ class CommonClient:
 			return
 		self._Server,self._Proxy=server,proxy
 		self.connected='tcp'
-		'''
 		if (ssl is None and self.Connection.getPort() in (5223, 443)) or ssl:
 			try:			   # FIXME. This should be done in transports.py
 				transports.TLS().PlugIn(self,now=1)
 				self.connected='ssl'
 			except socket.sslerror:
 				return
-		'''
 		dispatcher.Dispatcher().PlugIn(self)
 		while self.Dispatcher.Stream._document_attrs is None:
 			if not self.Process(1): return
@@ -200,13 +198,13 @@ class Client(CommonClient):
 			Example: connect(('192.168.5.5',5222),{'host':'proxy.my.net','port':8080,'user':'me','password':'secret'})
 			Returns '' or 'tcp' or 'tls', depending on the result."""
 		if not CommonClient.connect(self,server,proxy,secure,use_srv) or secure<>None and not secure: return self.connected
-		#transports.TLS().PlugIn(self)
+		transports.TLS().PlugIn(self)
 		if not self.Dispatcher.Stream._document_attrs.has_key('version') or not self.Dispatcher.Stream._document_attrs['version']=='1.0': return self.connected
 		while not self.Dispatcher.Stream.features and self.Process(1): pass	  # If we get version 1.0 stream the features tag MUST BE presented
-		#if not self.Dispatcher.Stream.features.getTag('starttls'): return self.connected	   # TLS not supported by server
-		#while not self.TLS.starttls and self.Process(1): pass
-		#if not hasattr(self, 'TLS') or self.TLS.starttls!='success': self.event('tls_failed'); return self.connected
-		#self.connected='tls'
+		if not self.Dispatcher.Stream.features.getTag('starttls'): return self.connected	   # TLS not supported by server
+		while not self.TLS.starttls and self.Process(1): pass
+		if not hasattr(self, 'TLS') or self.TLS.starttls!='success': self.event('tls_failed'); return self.connected
+		self.connected='tls'
 		return self.connected
 
 	def auth(self,user,password,resource='',sasl=1):

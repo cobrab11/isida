@@ -97,8 +97,7 @@ class Session:
 
 		self._session_state=SESSION_NOT_AUTHED
 		self.waiting_features=[]
-		#for feature in [NS_TLS,NS_SASL,NS_BIND,NS_SESSION]:
-		for feature in [NS_BIND,NS_SESSION]:
+		for feature in [NS_TLS,NS_SASL,NS_BIND,NS_SESSION]:
 			if feature in owner.features: self.waiting_features.append(feature)
 		self.features=[]
 		self.feature_in_process=None
@@ -125,7 +124,7 @@ class Session:
 		""" Reads all pending incoming data.
 			Raises IOError on disconnection.
 			Blocks until at least one byte is read."""
-		try: received = self._recv(10240)
+		try: received = self._recv(65536)
 		except: received = ''
 
 		if len(received): # length of 0 means disconnect
@@ -247,7 +246,7 @@ class Session:
 		if self.TYP=='server' and attrs.has_key('version'):
 			# send features
 			features=Node('stream:features')
-			'''if NS_TLS in self.waiting_features:
+			if NS_TLS in self.waiting_features:
 				features.NT.starttls.setNamespace(NS_TLS)
 				features.T.starttls.NT.required
 			if NS_SASL in self.waiting_features:
@@ -255,9 +254,8 @@ class Session:
 				for mec in self._owner.SASL.mechanisms:
 					features.T.mechanisms.NT.mechanism=mec
 			else:
-			'''
-			if NS_BIND in self.waiting_features: features.NT.bind.setNamespace(NS_BIND)
-			if NS_SESSION in self.waiting_features: features.NT.session.setNamespace(NS_SESSION)
+				if NS_BIND in self.waiting_features: features.NT.bind.setNamespace(NS_BIND)
+				if NS_SESSION in self.waiting_features: features.NT.session.setNamespace(NS_SESSION)
 			self.sendnow(features)
 
 	def feature(self,feature):
