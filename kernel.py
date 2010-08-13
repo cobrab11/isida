@@ -96,12 +96,12 @@ def log_execute(proc, params):
 
 def send_count(item):
 	global message_out, presence_out, iq_out, unknown_out, last_stanza
-	cl.send(item)
 	last_stanza = unicode(item)
 	if last_stanza[:2] == '<m': message_out += 1
 	elif last_stanza[:2] == '<p': presence_out += 1
 	elif last_stanza[:2] == '<i': iq_out += 1
 	else: unknown_out += 1
+	cl.send(item)
 
 '''	
 def sender(item):
