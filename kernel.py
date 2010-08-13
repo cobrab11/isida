@@ -95,12 +95,12 @@ def log_execute(proc, params):
 	except: logging.exception(' [%s] %s' % (timeadd(tuple(localtime())),unicode(proc)))
 
 def send_count(item):
-	global message_out, presence_out, iq_out, unknown_out
+	global message_out, presence_out, iq_out, unknown_out, last_stanza
 	cl.send(item)
-	itm = unicode(item)[:2]
-	if itm == '<m': message_out += 1
-	elif itm == '<p': presence_out += 1
-	elif itm == '<i': iq_out += 1
+	last_stanza = unicode(item)
+	if last_stanza[:2] == '<m': message_out += 1
+	elif last_stanza[:2] == '<p': presence_out += 1
+	elif last_stanza[:2] == '<i': iq_out += 1
 	else: unknown_out += 1
 
 '''	
@@ -1310,6 +1310,9 @@ def flush_stats():
 def disconnecter():
 	global bot_exit_type, game_over
 	pprint('--- Restart by disconnect handler! ---')
+	pprint('--- Last stanza ---')
+	pprint(last_stanza)
+	pprint('-------------------')
 	game_over, bot_exit_type = True, 'restart'
 	sleep(2)
 
@@ -1369,6 +1372,7 @@ paranoia_mode = False				# режим для параноиков. запрет 
 no_comm = True
 muc_rejoins = {}
 muc_statuses = {}
+last_stanza = ''
 
 gt=gmtime()
 lt=tuple(localtime())

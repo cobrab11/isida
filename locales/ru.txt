@@ -834,6 +834,7 @@ Rss. Timeout for rss request from server in seconds	Rss. Таймаут запр
 Pep scrobbler. Number of maximum answers for pep-scrobbler	Pep scrobbler. Максимальное количество ответов для pep скробблера
 Whereis. Timeout for andswer for whereis command	Whereis. Таймаут ожидания ответа для команды whereis
 Whereis. Frequency for answer check for whereis command	Whereis. Частота проверки ответа для команды whereis
+Watcher. Try rejoin in rooms with low activity	Watcher. Пробовать перезаходить в малоактивные конференции
 Disco. Maximus andwers count for disco command	Disco. Максимальное количество ответов для команды disco
 Juick. Number of posts in request by username	Juick. Количество постов при запросе по пользователю
 Juick. Number of symbols in post in request by username	Juick. Количество символов в посте при запросе по пользователю

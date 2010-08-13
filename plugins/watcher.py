@@ -26,6 +26,7 @@ def connect_watch():
 			sleep(2)
 			
 def watch_room_activity():
+	if not GT('watcher_room_activity'): return
 	global watch_last_activity
 	to = int(time.time())-GT('watch_activity_timeout')
 	for tmp in confbase:
