@@ -560,6 +560,7 @@ def iqCB(sess,iq):
 					i.getTag('query').setTag('identity',attrs={'category':'client','type':'bot','name':'iSida Jabber Bot'})
 					sleep(time_nolimit*5)
 					sender(i)
+					sleep(time_nolimit*5)
 					raise xmpp.NodeProcessed
 
 				elif node == disco_config_node or node == xmpp.NS_COMMANDS:
@@ -568,6 +569,7 @@ def iqCB(sess,iq):
 					i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':L('Configuration')})
 					sleep(time_nolimit*5)
 					sender(i)
+					sleep(time_nolimit*5)
 					raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_ITEMS) and acclvl:
@@ -581,6 +583,7 @@ def iqCB(sess,iq):
 				if node == '' or node == xmpp.NS_COMMANDS: i.getTag('query').setTag('item',attrs={'node':disco_config_node, 'name':L('Configuration'),'jid':towh})
 				sleep(time_nolimit*5)
 				sender(i)
+				sleep(time_nolimit*5)
 				raise xmpp.NodeProcessed
 		
 	elif iq.getType()=='set':
@@ -687,6 +690,7 @@ def iqCB(sess,iq):
 								.setTag('required')
 				sleep(time_nolimit*5)
 				sender(i)
+				sleep(time_nolimit*5)
 				raise xmpp.NodeProcessed
 		else:
 			msg = iq.getTag(name='query', namespace=xmpp.NS_MUC_FILTER)
@@ -1487,7 +1491,8 @@ try:
 		Secure = secure
 		pprint('Tryins secured connection')
 	except NameError: Secure = None
-	cl.connect(Server)#,Proxy,Secure)
+	if not Server and not Proxy and not Secure: cl.connect()
+	else: cl.connect(Server,Proxy,Secure)
 	pprint('Connected')
 	cl.auth(jid.getNode(), Settings['password'], jid.getResource())
 	pprint('Autheticated')
