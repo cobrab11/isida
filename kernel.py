@@ -306,7 +306,7 @@ def send_msg(mtype, mjid, mnick, mmessage):
 		no_send = True
 		if len(mmessage) > msg_limit:
 			cnt = 0
-			maxcnt = len(mmessage)/msg_limit + 1
+			maxcnt = int(len(mmessage)/msg_limit) + 1
 			mmsg = mmessage
 			while len(mmsg) > msg_limit:
 				tmsg = u'[%s/%s] %s[…]' % (cnt+1,maxcnt,mmsg[:msg_limit])
