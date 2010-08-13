@@ -605,9 +605,7 @@ def iqCB(sess,iq):
 								elif tp == 'i': tm = int(tm)
 								elif tp[0] == 't': tm = tm[:int(tp[1:])]
 								elif tp[0] == 'l' and len(eval(tm)) == int(tp[1:]): tm = eval(tm)
-							except: 
-								print t,tp,tm
-								tm = GT(t)
+							except: tm = GT(t)
 							PT(t,tm)
 						pprint('*** bot reconfigure by %s' % unicode(room))
 					else:
@@ -756,7 +754,7 @@ def iqCB(sess,iq):
 								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Blocked by censor!'))
 
 							# Large message filter
-							if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) >= GT('muc_filter_large_message_size') and msg and not mute:
+							if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) > GT('muc_filter_large_message_size') and msg and not mute:
 								act = get_config(getRoom(room),'muc_filter_large')
 								pprint('MUC-Filter msg large message (%s): %s [%s] %s' % (act,jid,room,body))
 								if act == 'paste' or act == 'truncate':
@@ -819,7 +817,7 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Blocked by censor!'))
 
 						# Large status filter
-						if get_config(getRoom(room),'muc_filter_large_status') != 'off' and len(status) >= GT('muc_filter_large_status_size') and msg and not mute:
+						if get_config(getRoom(room),'muc_filter_large_status') != 'off' and len(status) > GT('muc_filter_large_status_size') and msg and not mute:
 							act = get_config(getRoom(room),'muc_filter_large_status')
 							pprint('MUC-Filter large status (%s): %s [%s] %s' % (act,jid,room,status))
 							if act == 'truncate': msg = msg.replace(get_tag_full(msg,'status'),u'<status>%s…</status>' % (status[:GT('muc_filter_large_status_size')]))
@@ -828,7 +826,7 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Large status block!'))
 							
 						# Large nick filter
-						if get_config(getRoom(room),'muc_filter_large_nick') != 'off' and len(nick) >= GT('muc_filter_large_nick_size') and msg and not mute:
+						if get_config(getRoom(room),'muc_filter_large_nick') != 'off' and len(nick) > GT('muc_filter_large_nick_size') and msg and not mute:
 							act = get_config(getRoom(room),'muc_filter_large_nick')
 							pprint('MUC-Filter large nick (%s): %s [%s] %s' % (act,jid,room,nick))
 							if act == 'truncate': msg = msg.replace(tojid,u'%s/%s…' % (tojid.split('/',1)[0],nick[:GT('muc_filter_large_nick_size')]))
