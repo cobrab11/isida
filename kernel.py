@@ -1372,7 +1372,8 @@ paranoia_mode = False				# режим для параноиков. запрет 
 no_comm = True
 muc_rejoins = {}
 muc_statuses = {}
-last_stanza = ''
+last_stanza = ''					# последняя станза, посланная ботом
+ENABLE_TLS = True					# принудительное отключение TLS
 
 gt=gmtime()
 lt=tuple(localtime())
@@ -1472,13 +1473,9 @@ try:
 		Server = server.split(':')[0]
 		Port = int(server.split(':')[1])
 		pprint('Trying to connect to %s' % server)
-	except: Server,Port = None,None
-	if Port:
-		if dm: cl = Client(jid.getDomain(),Port)
-		else: cl = Client(jid.getDomain(),Port,debug=[])
-	else:
-		if dm: cl = Client(jid.getDomain())
-		else: cl = Client(jid.getDomain(),debug=[])
+	except: Server,Port = None,5222
+	if dm: cl = Client(jid.getDomain(),Port,ENABLE_TLS=ENABLE_TLS)
+	else: cl = Client(jid.getDomain(),Port,debug=[],ENABLE_TLS=ENABLE_TLS)
 	try:
 		Proxy = proxy
 		pprint('Using proxy %s' % Proxy['host'])
@@ -1487,11 +1484,12 @@ try:
 		Secure = secure
 		pprint('Tryins secured connection')
 	except NameError: Secure = None
-	cl.connect(Server,Proxy,Secure)
+	cl.connect(Server,Proxy,Secure,ENABLE_TLS=ENABLE_TLS)
 	pprint('Connected')
 	cl.auth(jid.getNode(), Settings['password'], jid.getResource())
 	pprint('Autheticated')
 except:
+	raise
 	pprint('Auth error or no connection. Restart in %s sec.' % GT('reboot_time'))
 	sleep(GT('reboot_time'))
 	sys.exit('restart')
