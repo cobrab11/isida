@@ -1389,8 +1389,8 @@ muc_lock_base = set_folder+'muclock.db'
 #---------------------------
 
 if os.path.isfile(ver_file):
-	bvers = str(readfile(ver_file))
-	if len(bvers[:-1]) > 1: botVersion +='.%s' % bvers[:-1]
+	bvers = str(readfile(ver_file)).replace('\n','').replace('\r','').replace('\t','').replace(' ','')
+	if len(bvers[:-1]) > 1: botVersion +='.%s' % bvers
 try: tmp = botOs
 except: botOs = os_version()
 

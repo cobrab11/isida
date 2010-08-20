@@ -7,7 +7,11 @@ def juick(type, jid, nick, text):
 	elif text[:4]== 'msg ': juick_msg(type, jid, nick, text[4:])
 	elif text[:5]== 'user ': juick_user(type, jid, nick, text[5:])
 	elif text[:5]== 'info ': juick_user_info(type, jid, nick, text[5:])
-	else: send_msg(type, jid, nick, L('Smoke help about command!'))
+	else:
+		try: tmpt = re.findall('(#?[0-9]+\/?[0-9]+)',text)[0]
+		except: tmpt = ''
+		if tmpt == text: juick_msg(type, jid, nick, text)
+		else: send_msg(type, jid, nick, L('Smoke help about command!'))
 
 def juick_user_info(type, jid, nick, text):
 	text = text.replace('@','')

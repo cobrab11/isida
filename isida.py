@@ -40,7 +40,7 @@ except:
 	printlog('\n'+'*'*50+'\n Isida is crashed! Incorrent launch!\n'+'*'*50+'\n')
 	raise
 
-if os.path.isfile(pid_file):
+if os.path.isfile(pid_file) and os.name != 'nt':
 	try: last_pid = int(readfile(pid_file))
 	except: crash('Unable get information from %s' % pid_file)
 	try:
@@ -48,8 +48,12 @@ if os.path.isfile(pid_file):
 		crash('Multilaunch detected! Kill pid %s before launch bot again!' % last_pid)
 	except Exception, SM:
 		if not str(SM).lower().count('no such process'): crash('Unknown exception!\n%s' % SM)
-	
+
 writefile(pid_file,str(os.getpid()))
+
+os.remove('settings/version')
+if os.name == 'nt': os.system('svnversion >> settings/version')
+else: os.system('echo `svnversion` >> settings/version')
 
 while 1:
 	try: execfile('kernel.py')
@@ -57,16 +61,24 @@ while 1:
 	except SystemExit, mode:
 		mode = str(mode)
 		if mode == 'update':
-			os.system('echo `svnversion` > settings/ver')
-			os.system('rm plugins/list.txt')
-			os.system('svn up')
-			os.system('echo `svnversion` > settings/version')
+			os.remove('settings/ver')
+			os.remove('settings/version')
+			if os.name == 'nt':
+				os.system('svnversion >> settings/ver')
+				os.remove('plugins/list.txt')
+				os.system('svn up')
+				os.system('svnversion >> settings/version')
+			else:
+				os.system('echo `svnversion` >> settings/ver')
+				os.remove('plugins/list.txt')
+				os.system('svn up')
+				os.system('echo `svnversion` >> settings/version')
 			try: ver = int(readfile('settings/version')[:3]) - int(readfile('settings/ver')[:3])
 			except: ver = -1
-			os.system('rm -r settings/ver')
-			if ver > 0:	 os.system('svn log --limit '+str(ver)+' > update.log')
-			elif ver < 0: os.system('echo Failed to detect version! > update.log')
-			else: os.system('echo No Updates! > update.log')
+			os.remove('settings/ver')
+			if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
+			elif ver < 0: os.system('echo Failed to detect version! >> update.log')
+			else: os.system('echo No Updates! >> update.log')
 		elif mode == 'exit': break
 		elif mode == 'restart': pass
 		else:
