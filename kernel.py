@@ -67,7 +67,7 @@ class KThread(threading.Thread):
 
 	def localtrace(self, frame, why, arg):
 		if self.killed:
-			if why == 'line': raise SystemExit() # !!! <- исправить !!!
+			if why == 'line': raise SystemExit()
 		return self.localtrace
 
 	def kill(self): self.killed = True
@@ -1542,6 +1542,8 @@ while 1:
 		flush_stats()
 		sys.exit(bot_exit_type)
 
+	except SystemExit: pass
+	
 	except KeyboardInterrupt:
 		close_age()
 		StatusMessage = L('Shutdown by CTRL+C...')
