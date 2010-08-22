@@ -70,6 +70,7 @@ Updated:	Обновлено:
 Not found:	Не найдено:
 Added:	Добавлено:
 done	выполнено
+Actions list.\nacl show - show list\nacl del [/silent] item - remove item from list\nacl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition\nallowed variables in commands: ${NICK}, ${JID}, ${SERVER}\nsub = substring, exp = regular expression, cexp = case sensitive regular expression\ntime format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!	Список действий.\nacl show - показать список\nacl del [/silent] item - удалить элемент из списка\nacl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - выполнить команду по условию\nдоступны переменные в командах: ${NICK}, ${JID}, ${SERVER}\nsub = подстрока, exp = регулярное выражение, cexp = регистрозависимое регулятрное выражение\nформат времени - /число+идентификатор. s = секунды, m = минуты, d = дни, w = недели, M = месяцы, y = годы. допустим только один идентификатор!
 
 # file: ../trunk/plugins/adminmail.py
 Time limit exceeded. Wait: %s	Превышен лимит скорости посылки сообщений. Подождите: %s
@@ -694,7 +695,7 @@ Conference(s): %s (for more info use 'where' command)\n	Конференций: 
 Server: %s | Nick: %s\n	Сервер: %s | Ник: %s\n
 Message size limit: %s\n	Лимит размера сообщений: %s\n
 Local time: %s\n	Локальное время: %s\n
-\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s	\nСмайлы: %s | Флуд: %s | Цензор: %s | Префикс команд: %s
+\nFlood: %s | Censor: %s | Prefix: %s	\nФлуд: %s | Цензор: %s | Префикс команд: %s
 \nExecuted threads: %s | Error(s): %s	\nВыполнено тредов: %s | Ошибок: %s
 \nMessage in: %s | out: %s	\nСообщений вх: %s | исх: %s
 \nPresence in: %s | out: %s	\nПрезенсов вх: %s | исх: %s
@@ -726,8 +727,6 @@ Unknown item!	Неизвестный элемент!
 Ignore messages from unaffiliated participants in private - %s	Игнор сообщений от участников без полномочий - %s
 Url title is %s	Показ заголовков ссылок: %s
 Automatic show title of urls in conference	Автоматический показ заголовков ссылок в конференции
-Smiles is %s	Смайлы: %s
-Smile action for role/affiliation change	Реакция смайлами на смену роли/аффиляции в данной конференции
 Flood is %s	Флуд: %s
 Autoanswer	Включение/выключение самообучающегося автоответчика
 Censor is %s	Цензор: %s
@@ -744,23 +743,23 @@ Muc filter is %s	Muc-фильтр: %s
 Message filter for participants	Фильтр сообщений для участников
 Adblock muc filter is %s	Блокировка рекламы: %s
 Adblock filter	Фильтр блокировки рекламы
-Repeat muc filter is %s	Повтор сообщений: %s
+Repeat muc filter is %s	Блокировка повтора сообщений: %s
 Repeat same messages filter	Фильтр повтора похожих сообщений
-Match muc filter is %s	Повторы внутри сообщений: %s
+Match muc filter is %s	Блокировка повторов внутри сообщений: %s
 Repeat text in message filter	Фильтр повторой текста внутри сообщения
-Large muc filter is %s	Большие сообщения: %s
+Large muc filter is %s	Реакция на большие сообщения: %s
 Large message filter	Фильтр больших сообщений
-Censor muc filter is %s	Muc-цензор: %s
+Censor muc filter is %s	Действия muc-цензора: %s
 Censor filter	Muc-цензор
 Adblock muc filter for presence is %s	Блокировка рекламы в презенсах: %s
 Adblock filter for presence	Фильтр блокировки рекламы в презенсах
-Repeat join muc filter is %s	Множественные входы: %s
+Repeat join muc filter is %s	Блокировка множественных входов: %s
 Repeat join muc filter	Фильтр множественных входов
-Repeat presence muc filter is %s	Презенс-флуд: %s
+Repeat presence muc filter is %s	Блокировка презенс-флуда: %s
 Repeat presence muc filter	Фильтр презенс-флуда
-Large nick muc filter is %s	Длинные ники: %s
+Large nick muc filter is %s	Реакция на длинные ники: %s
 Large nick muc filter	Фильтр длинных ников
-Large status muc filter is %s	Длинные статусы: %s
+Large status muc filter is %s	Реакция на длинные статусы: %s
 Large status muc filter	Фильтр длинных статусов
 Censor muc filter for presence is %s	Цензор для презенсов: %s
 Censor muc filter for presence	Цензор для презенсов

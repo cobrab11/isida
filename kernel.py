@@ -1162,11 +1162,6 @@ def presenceCB(sess,mess):
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
-	if room != selfjid and nick == nowname:
-		if get_config(getRoom(room),'smile'):
-			smile_action = {'participantnone':' :-|', 'participantmember':' :-)', 'moderatormember':' :-"','moderatoradmin':' :-D', 'moderatorowner':' 8-D'}
-			try: send_msg('groupchat', room, '', smile_action[role+affiliation])
-			except: pass
 	not_found,exit_type,exit_message = 0,'',''
 	if type=='unavailable':
 		if status=='307': exit_type,exit_message = L('Kicked'),reason

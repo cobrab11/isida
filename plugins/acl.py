@@ -1,14 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-acl_help = '''Actions list.
-acl show - show list
-acl del [/silent] item - remove item from list
-acl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition
-allowed variables in commands: ${NICK}, ${JID}, ${SERVER}
-sub = substring, exp = regular expression, cexp = case sensitive regular expression
-time format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!'''
-
 acl_acts = ['msg','message','prs','presence','role','affiliation','nick','jid','jidfull','res','all']
 acl_actions = ['show','del'] + acl_acts
 
@@ -161,4 +153,4 @@ global execute, presence_control, message_control
 presence_control = [acl_presence]
 message_control = [acl_message]
 
-execute = [(7, 'acl', muc_acl, 2, L(acl_help))]
+execute = [(7, 'acl', muc_acl, 2, L('Actions list.\nacl show - show list\nacl del [/silent] item - remove item from list\nacl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition\nallowed variables in commands: ${NICK}, ${JID}, ${SERVER}\nsub = substring, exp = regular expression, cexp = case sensitive regular expression\ntime format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!'))]

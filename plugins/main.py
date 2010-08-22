@@ -890,10 +890,9 @@ def info(type, jid, nick):
 	msg += L('Message size limit: %s\n') % str(msg_limit)
 	msg += L('Local time: %s\n') % timeadd(tuple(localtime()))
 	msg += L('Uptime: %s, Last session: %s') % (get_uptime_str(), un_unix(int(time.time())-sesstime))
-	smiles = get_config(getRoom(jid),'smile')
 	floods = get_config(getRoom(jid),'flood')
 	censors = get_config(getRoom(jid),'censor')
-	msg += L('\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s') % (onoff(smiles),onoff(floods),onoff(censors),get_prefix(get_local_prefix(jid)))
+	msg += L('\nFlood: %s | Censor: %s | Prefix: %s') % (onoff(floods),onoff(censors),get_prefix(get_local_prefix(jid)))
 	msg += L('\nExecuted threads: %s | Error(s): %s') % (th_cnt,thread_error_count)
 	msg += L('\nMessage in: %s | out: %s') % (message_in,message_out)
 	msg += L('\nPresence in: %s | out: %s') % (presence_in,presence_out)
@@ -1360,7 +1359,6 @@ def muc_filter_lock(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference'), [True,False], False],
-				'smile': [L('Smiles is %s'), L('Smile action for role/affiliation change'), [True,False], False],
 				'flood': [L('Flood is %s'), L('Autoanswer'), [True,False], False],
 				'censor': [L('Censor is %s'), L('Censor'), [True,False], False],
 				#'censor_message': [L('Censor message is %s'), L('Censor message'), None, censor_text],

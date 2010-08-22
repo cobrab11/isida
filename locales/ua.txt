@@ -716,7 +716,7 @@ Conference(s): %s (for more info use 'where' command)\n	Конференцій: 
 Server: %s | Nick: %s\n	Сервер: %s | Нік: %s\n
 Message size limit: %s\n	Ліміт обсягу повідомлень: %s\n
 Local time: %s\n	Місцевий час: %s\n
-\nSmilies: %s | Flood: %s | Censor: %s | Prefix: %s	\nСмайли: %s | Флуд: %s | Цензор: %s | Префікс команд: %s
+\nFlood: %s | Censor: %s | Prefix: %s	\nФлуд: %s | Цензор: %s | Префікс команд: %s
 \nExecuted threads: %s | Error(s): %s	\nВиконанано тредів: % | Помилок: %s
 \nMessage in: %s | out: %s	\nПовідомлень вх: %s
 \nPresence in: %s | out: %s	\nПрезенсів вх: %s | вих: %s
@@ -748,8 +748,6 @@ Unknown item!	Невідомий елемент
 Ignore messages from unaffiliated participants in private - %s	Игнорування повідомлень від учасників без повноважень - %s
 Url title is %s	Показ заголовків посилань: %s
 Automatic show title of urls in conference	Автоматичний показ заголовків посилань
-Smiles is %s	Смайли: %s
-Smile action for role/affiliation change	Реакція смайлами на зміну ролей/афіляцій в данній конференції
 Flood is %s	Флуд: %s
 Autoanswer	Ввімкнення/вимкнення самонавчального відповідача
 Censor is %s	Цензор: %s
