@@ -39,7 +39,7 @@ def bizinfo(type, jid, nick, text):
 			req = 'http://bizinformation.org/ru/www.'+text
 			r = urllib2.urlopen(req)
 			body = unicode(r.read().strip(),'utf-8')
-			if body.count('How Much'): msg = L('site input format is domain.tld')
+			if body.count('Error:'): msg = L('site input format is domain.tld')
 			else: msg = L('Estimated value %s is %s') % (text.strip(), get_tag(body,'span'))
 		else: msg = L('What site be evaluated?')
 	except: msg = L('I can\'t process your request.')

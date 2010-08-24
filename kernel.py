@@ -81,6 +81,7 @@ def thr(func,param,name):
 				tmp_th = KThread(group=None,target=log_execute,name='%s_%s' % (str(th_cnt),name),args=(func,param))
 				tmp_th.start()
 		else: thread.start_new_thread(log_execute,(func,param))
+	except SystemExit: pass
 	except Exception, SM:
 		try: SM = str(SM)
 		except: SM = unicode(SM)
@@ -92,6 +93,7 @@ def thr(func,param,name):
 
 def log_execute(proc, params):
 	try: proc(*params)
+	except SystemExit: pass
 	except: logging.exception(' [%s] %s' % (timeadd(tuple(localtime())),unicode(proc)))
 
 def send_count(item):
@@ -1542,8 +1544,6 @@ while 1:
 		flush_stats()
 		sys.exit(bot_exit_type)
 
-	except SystemExit: pass
-	
 	except KeyboardInterrupt:
 		close_age()
 		StatusMessage = L('Shutdown by CTRL+C...')
