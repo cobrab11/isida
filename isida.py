@@ -32,6 +32,10 @@ def printlog(text):
 def crash(text):
 	printlog(text)
 	sys.exit()
+	
+def rm(file):
+	try: os.remove(file)
+	except: pass
 
 if os.name == 'nt': printlog('Warning! Correct work only on *NIX system!')
 
@@ -51,7 +55,7 @@ if os.path.isfile(pid_file) and os.name != 'nt':
 
 writefile(pid_file,str(os.getpid()))
 
-os.remove('settings/version')
+rm('settings/version')
 if os.name == 'nt': os.system('svnversion >> settings/version')
 else: os.system('echo `svnversion` >> settings/version')
 
@@ -61,21 +65,21 @@ while 1:
 	except SystemExit, mode:
 		mode = str(mode)
 		if mode == 'update':
-			os.remove('settings/ver')
-			os.remove('settings/version')
+			rm('settings/ver')
+			rm('settings/version')
 			if os.name == 'nt':
 				os.system('svnversion >> settings/ver')
-				os.remove('plugins/list.txt')
+				rm('plugins/list.txt')
 				os.system('svn up')
 				os.system('svnversion >> settings/version')
 			else:
 				os.system('echo `svnversion` >> settings/ver')
-				os.remove('plugins/list.txt')
+				rm('plugins/list.txt')
 				os.system('svn up')
 				os.system('echo `svnversion` >> settings/version')
 			try: ver = int(readfile('settings/version')[:3]) - int(readfile('settings/ver')[:3])
 			except: ver = -1
-			os.remove('settings/ver')
+			rm('settings/ver')
 			if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
 			elif ver < 0: os.system('echo Failed to detect version! >> update.log')
 			else: os.system('echo No Updates! >> update.log')
