@@ -105,7 +105,7 @@ def send_count(item):
 	else: unknown_out += 1
 	cl.send(item)
 
-'''	
+'''
 def sender(item):
 	global last_stream
 	if last_stream != []: last_stream.append(item)
@@ -116,7 +116,7 @@ def sender(item):
 def sender(item):
 	sleep(time_nolimit)
 	send_count(item)
-	
+
 def sender_stack():
 	global last_stream
 	last_item = {}
@@ -194,7 +194,7 @@ def PT(item,value):
 	setup = getFile(ow_file,{})
 	setup[item] = value
 	writefile(ow_file,str(setup))
-	
+
 def get_subtag(body,tag):
 	T = re.findall('%s.*?\"(.*?)\"' % tag,body,re.S)
 	if T: return T[0]
@@ -261,7 +261,7 @@ def send_presence_all(sm):
 	pr=xmpp.Presence(typ='unavailable')
 	pr.setStatus(sm)
 	sender(pr)
-	sleep(2)	
+	sleep(2)
 
 def errorHandler(text):
 	pprint('\n*** Error ***')
@@ -296,12 +296,12 @@ def get_joke(text):
 			else: b += tmp
 			cnt = not cnt
 		return b
-		
+
 	def no_joke(text): return text
 
 	jokes = [joke_blond,no_joke]
 	return jokes[randint(0,1)](text)
-	
+
 def send_msg(mtype, mjid, mnick, mmessage):
 	if mmessage:
 		# 1st april joke :) # if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
@@ -371,7 +371,7 @@ def leaveconf(conference, server, sm):
 def caps_and_send(tmp):
 	tmp.setTag('c', namespace=NS_CAPS, attrs={'node':capsNode,'ver':capsVersion})
 	sender(tmp)
-	
+
 def join(conference):
 	global pres_answer,cycles_used,cycles_unused
 	id = get_id()
@@ -410,11 +410,12 @@ def timeZero(val):
 	return rval
 
 def muc_filter_action(act,jid,room,reason):
+	print act,jid,room,reason
 	if act=='visitor':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'visitor', 'jid':jid},[Node('reason',{},reason)])])]))
 	elif act=='kick':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'none', 'jid':jid},[Node('reason',{},reason)])])]))
 	elif act=='ban':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':jid},[Node('reason',{},reason)])])]))
 	return None
-	
+
 def paste_text(text,room,jid):
 	nick = get_nick_by_jid_res(room,jid)
 	if GT('html_paste_enable'): text = html_escape(text)
@@ -450,7 +451,7 @@ def nice_time(ttim):
 	else: t_tz = 'GMT+%s' % timeofset
 	t_display += '%s, %s' % (t_tz,wlight[lt[8]])
 	return t_utc,t_tz,t_display
-	
+
 def iqCB(sess,iq):
 	global timeofset, banbase, raw_iq, iq_in, iq_request, last_msg_base
 	iq_in += 1
@@ -530,7 +531,7 @@ def iqCB(sess,iq):
 			i.getTag('time').setTagData(tag='utc', val=str(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())))
 			sender(i)
 			raise xmpp.NodeProcessed
-			
+
 		elif iq.getTag(name='ping', namespace=xmpp.NS_URN_PING) and GT('iq_ping_enable'):
 			pprint('*** iq:urn:ping from %s' % unicode(room))
 			i=xmpp.Iq(to=room, typ='result')
@@ -545,7 +546,7 @@ def iqCB(sess,iq):
 			i.setTag('query',namespace=xmpp.NS_LAST,attrs={'seconds':str(int(time.time())-starttime)})
 			sender(i)
 			raise xmpp.NodeProcessed
-		
+
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_INFO):
 			node=get_tag_item(unicode(query),'query','node')
 			if node in ['', disco_config_node, xmpp.NS_COMMANDS]:
@@ -581,7 +582,7 @@ def iqCB(sess,iq):
 				if node == '' or node == xmpp.NS_COMMANDS: i.getTag('query').setTag('item',attrs={'node':disco_config_node, 'name':L('Configuration'),'jid':towh})
 				sender(i)
 				raise xmpp.NodeProcessed
-		
+
 	elif iq.getType()=='set':
 		if iq.getTag(name='command', namespace=xmpp.NS_COMMANDS) and acclvl:
 			node=get_tag_item(unicode(iq),'command','node')
@@ -599,7 +600,7 @@ def iqCB(sess,iq):
 							tp = owner_prefs[t][1]
 							#tmtype = varz.getTagAttr('field','type')
 							tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
-							
+
 							#if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
 							try:
 								if tp == 'b': tm = [False,True][int(tm)]
@@ -626,7 +627,7 @@ def iqCB(sess,iq):
 							itm = owner_prefs[t]
 							itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
 							if itm[1] == 'b':
-								dc = GT(t) in [True,1,'1','on']	
+								dc = GT(t) in [True,1,'1','on']
 								i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
 								.setTagData('value',[0,1][dc])
 							elif itm[1][0] in ['t','i','f','l']:
@@ -663,7 +664,7 @@ def iqCB(sess,iq):
 							itm = config_prefs[t]
 							itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
 							if itm[2] == [True,False]:
-								dc = get_config(getRoom(room),t) in [True,1,'1','on']	
+								dc = get_config(getRoom(room),t) in [True,1,'1','on']
 								i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
 								.setTagData('value',[0,1][dc])
 								i.getTag('command').getTag('x').getTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
@@ -675,7 +676,7 @@ def iqCB(sess,iq):
 								i.getTag('command').getTag('x').setTag('field',\
 								attrs={'type':'list-single','label':itm_label,'var':t})\
 								.setTagData('value',get_config(getRoom(room),t))
-								
+
 								for t2 in itm[2]:
 									i.getTag('command').getTag('x').getTag('field',\
 									attrs={'type':'list-single','label':itm_label,'var':t})\
@@ -704,7 +705,7 @@ def iqCB(sess,iq):
 						if skip_owner: pass
 						elif get_config(getRoom(room),'muc_filter') and not mute:
 							body = get_tag(msg,'body')
-							
+
 							# AD-Block filter
 							if get_config(getRoom(room),'muc_filter_adblock') != 'off' and msg and not mute:
 								f = []
@@ -725,35 +726,42 @@ def iqCB(sess,iq):
 								try: lm = last_msg_base[getRoom(jid)]
 								except: lm = None
 								if lm:
-									if body in lm or lm in body:
+									action = False
+									if body == lm: action = True
+									elif body in lm or lm in body:
+										try: muc_repeat[getRoom(jid)] += 1
+										except: muc_repeat[getRoom(jid)] = 1
+										if muc_repeat[getRoom(jid)] >= (GT('muc_filter_repeat_count')-1): action = True
+									else: muc_repeat[getRoom(jid)] = 0
+									if action:
 										act = get_config(getRoom(room),'muc_filter_repeat')
 										pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
 										if act == 'mute': mute = True
-										else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Repeat message block!'))
+										else: msg = muc_filter_action(act,jid,room,L('Repeat message block!'))
 								last_msg_base[getRoom(jid)] = body
-								
+
 							# Match filter
 							if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= GT('muc_filter_match_view'):
 								tbody,warn_match,warn_space = body.split(),0,0
 								for tmp in tbody:
 									cnt = 0
 									for tmp2 in tbody:
-										if tmp2.count(tmp): cnt += 1							
+										if tmp2.count(tmp): cnt += 1
 									if cnt > GT('muc_filter_match_count'): warn_match += 1
 									if not len(tmp): warn_space += 1
 								if warn_match > GT('muc_filter_match_warning_match') or warn_space > GT('muc_filter_match_warning_space') or body.count('\n'*GT('muc_filter_match_warning_nn')):
 									act = get_config(getRoom(room),'muc_filter_match')
 									pprint('MUC-Filter msg matcher (%s): %s [%s] %s' % (act,jid,room,body))
 									if act == 'mute': mute = True
-									else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Match message block!'))
-									
+									else: msg = muc_filter_action(act,jid,room,L('Match message block!'))
+
 							# Censor filter
 							if get_config(getRoom(room),'muc_filter_censor') != 'off' and body != to_censore(body) and msg and not mute:
 								act = get_config(getRoom(room),'muc_filter_censor')
 								pprint('MUC-Filter msg censor (%s): %s [%s] %s' % (act,jid,room,body))
 								if act == 'replace': msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % to_censore(body))
 								elif act == 'mute': mute = True
-								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Blocked by censor!'))
+								else: msg = muc_filter_action(act,jid,room,L('Blocked by censor!'))
 
 							# Large message filter
 							if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) > GT('muc_filter_large_message_size') and msg and not mute:
@@ -765,7 +773,7 @@ def iqCB(sess,iq):
 									else: body = L(u'Large message… %s') % url
 									msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
 								elif act == 'mute': mute = True
-								else: msg = muc_filter_action(act,get_tag_item(msg,'message','from'),room,L('Large message block!'))
+								else: msg = muc_filter_action(act,jid,room,L('Large message block!'))
 
 						if mute: msg = unicode(xmpp.Message(to=jid,body=L('Warning! Your message is blocked in connection with the policy of the room!'),typ='chat',frm='%s/%s' % (room,get_nick_by_jid(room,tojid))))
 
@@ -781,7 +789,7 @@ def iqCB(sess,iq):
 						status = ['',get_tag(msg,'status')][msg.count('<status>') and msg.count('</status>')]
 						nick = ['',tojid[tojid.find('/')+1:]]['/' in tojid]
 						newjoin = msg.count('xmlns="http://jabber.org/protocol/muc"')
-						
+
 						# AD-Block filter
 						if get_config(getRoom(room),'muc_filter_adblock_prs') != 'off' and msg and not mute:
 							fs,fn = [],[]
@@ -809,7 +817,7 @@ def iqCB(sess,iq):
 								elif act == 'mute': msg,mute = None,True
 								else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 
-						# Censor filter		
+						# Censor filter
 						if get_config(getRoom(room),'muc_filter_censor_prs') != 'off' and status+nick != to_censore(status+nick) and msg and not mute:
 							act = get_config(getRoom(room),'muc_filter_censor_prs')
 							pprint('MUC-Filter prs censor (%s): %s [%s] %s' % (act,jid,room,nick+'|'+status))
@@ -826,7 +834,7 @@ def iqCB(sess,iq):
 							elif newjoin: msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('Large status block!')])])])).replace('replace_it',get_tag(msg,'presence')),True
 							elif act == 'mute': msg,mute = None,True
 							else: msg = muc_filter_action(act,jid,room,L('Large status block!'))
-							
+
 						# Large nick filter
 						if get_config(getRoom(room),'muc_filter_large_nick') != 'off' and len(nick) > GT('muc_filter_large_nick_size') and msg and not mute:
 							act = get_config(getRoom(room),'muc_filter_large_nick')
@@ -844,7 +852,7 @@ def iqCB(sess,iq):
 								tmo = muc_rejoins[tojid][GT('muc_filter_rejoin_count')-1] - muc_rejoins[tojid][0]
 								if tmo < GT('muc_filter_rejoin_timeout'):
 									msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('To many rejoins! Wait %s sec.') % GT('muc_filter_rejoin_timeout')])])])).replace('replace_it',get_tag(msg,'presence')),True
-									pprint('MUC-Filter rejoin: %s [%s] %s' % (jid,room,nick))						
+									pprint('MUC-Filter rejoin: %s [%s] %s' % (jid,room,nick))
 
 						# Status filter
 						if get_config(getRoom(room),'muc_filter_repeat_prs') != 'off' and msg and not mute and not newjoin:
@@ -854,10 +862,10 @@ def iqCB(sess,iq):
 								tmo = muc_statuses[tojid][GT('muc_filter_status_count')-1] - muc_statuses[tojid][0]
 								if tmo < GT('muc_filter_status_timeout'):
 									act = get_config(getRoom(room),'muc_filter_repeat_prs')
-									pprint('MUC-Filter status (%s): %s [%s] %s' % (act,jid,room,nick))						
+									pprint('MUC-Filter status (%s): %s [%s] %s' % (act,jid,room,nick))
 									if act == 'mute': msg,mute = None,True
 									else: msg = muc_filter_action(act,jid,room,L('Status-flood block!'))
-							
+
 				if msg:
 					i=xmpp.Iq(to=room, typ='result')
 					i.setAttr(key='id', val=id)
@@ -911,7 +919,7 @@ def remove_ignore(jid,al):
 		ignorebase.remove(jid)
 		pprint('!!! DDOS: Jid %s is removed from ignore!' % jid)
 	except: pprint('!!! DDOS: Unable find jid %s in ignore list. Perhaps it\'s removed by bot\'s owner!' % jid)
-	
+
 
 def com_parser(access_mode, nowname, type, room, nick, text, jid):
 	global last_command, ignorebase
@@ -990,7 +998,7 @@ def to_scrobble(room,mess):
 			if played: cu_scrobl.execute('insert into tune values (?,?,?,?)', (room, title, length, int(time.time())))
 		scrobbase.commit()
 		scrobbase.close()
-	
+
 def messageCB(sess,mess):
 	global lfrom, lto, owners, ownerbase, confbase, confs, lastserver, lastnick, comms
 	global ignorebase, ignores, message_in, no_comm
@@ -1049,7 +1057,7 @@ def messageCB(sess,mess):
 					pprint('%s %s/%s [%s] %s' % (jid,room,nick,access_mode,text))
 					argz = btext[len(parse[1])+1:]
 					if not argz:
-						ppr = parse[2].replace('%*', '').replace('%{reduce}*', '').replace('%{reduceall}*', '')
+						ppr = parse[2].replace('%*', '').replace('%{reduce}*', '').replace('%{reduceall}*', '').replace('%{unused}*', '')
 						cpar = re.findall('%([0-9]+)', ppr, re.S)
 						if len(cpar):
 							for tmp in cpar:
@@ -1057,14 +1065,19 @@ def messageCB(sess,mess):
 								except: pass
 					else:
 						ppr = parse[2].replace('%*', argz).replace('%{reduce}*', reduce_spaces(argz)).replace('%{reduceall}*', reduce_spaces_all(argz))
-						
 						if ppr.count('%'):
 							cpar = re.findall('%([0-9]+)', ppr, re.S)
 							if len(cpar):
 								argz = argz.split()
+								argzbk = argz
 								for tmp in cpar:
-									try: ppr = ppr.replace('%'+tmp,argz[int(tmp)])
+									try:
+										it = int(tmp)
+										ppr = ppr.replace('%'+tmp,argz[it])
+										argzbk = argzbk[:it]+argzbk[it+1:]
 									except: pass
+								ppr = ppr.replace('%{unused}*',' '.join(argzbk))
+							
 					if len(ppr) == ppr.count(' '): ppr = ''
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
@@ -1078,7 +1091,7 @@ def messageCB(sess,mess):
 			text = getAnswer(text,type)
 			thr(send_msg_human,(type, room, nick, text),'msg_human')
 	thr(msg_afterwork,(mess,room,jid,nick,type,back_text),'msg_afterwork')
-			
+
 def msg_afterwork(mess,room,jid,nick,type,back_text):
 	global topics
 	for tmp in gmessage:
@@ -1122,7 +1135,7 @@ def to_censore(text):
 def get_valid_tag(body,tag):
 	if body.count(tag): return get_subtag(body,tag)
 	else: return 'None'
-	
+
 def presenceCB(sess,mess):
 	global megabase, ownerbase, pres_answer, confs, confbase, cu_age, presence_in
 	presence_in += 1
@@ -1231,7 +1244,7 @@ def onoff_no_tr(msg):
 	else: return msg
 
 def onoff(msg): return L(onoff_no_tr(msg))
-	
+
 def getName(jid):
 	jid = unicode(jid)
 	if jid == 'None': return jid
@@ -1303,7 +1316,7 @@ def flush_stats():
 	pprint('Iq in %s | out %s' % (iq_in,iq_out))
 	pprint('Unknown out %s' % unknown_out)
 	pprint('Cycles used %s | unused %s' % (cycles_used,cycles_unused))
-	
+
 def disconnecter():
 	global bot_exit_type, game_over
 	pprint('--- Restart by disconnect handler! ---')
@@ -1323,7 +1336,7 @@ def kill_all_threads():
 		for tmp in threading.enumerate():
 			try: tmp.kill()
 			except: pass
-			
+
 def get_id():
 	global id_count
 	id_count += 1
@@ -1369,6 +1382,7 @@ paranoia_mode = False				# режим для параноиков. запрет 
 no_comm = True
 muc_rejoins = {}
 muc_statuses = {}
+muc_repeat = {}
 last_stanza = ''					# последняя станза, посланная ботом
 ENABLE_TLS = True					# принудительное отключение TLS
 
@@ -1417,7 +1431,7 @@ pprint('*** Loading other plugins')
 
 plugins   = getFile(plname,[])
 pl_ignore = getFile(pliname,[])
-	
+
 for pl in plugins:
 	if pl in pl_ignore: pprint('Ignore plugin: %s' % pl)
 	else:
@@ -1520,7 +1534,7 @@ for tocon in confbase:
 		tocon += '_'
 		zz = joinconf(tocon, getServer(Settings['jid']))
 	cb.append(tocon)
-	pprint('--> %s' % tocon)		
+	pprint('--> %s' % tocon)
 confbase = cb
 is_start = None
 pprint('Joined')

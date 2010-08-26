@@ -125,7 +125,7 @@ class Browser(PlugIn):
 			as handler of some disco tree branch.
 			If you do not specify the node this handler will be used for all queried nodes.
 			If you do not specify the jid this handler will be used for all queried JIDs.
-			
+
 			Usage:
 			cl.Browser.setDiscoHandler(someDict,node,jid)
 			or

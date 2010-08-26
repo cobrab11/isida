@@ -35,7 +35,7 @@ def gettcode(text):
 				msg += tmp2.replace(tmp3,'')
 			return msg
 		else: return L('Your search returns no results.')
-	
+
 def getdefcode(text):
 	try: text = ''.join(re.findall('[0-9+]+', text, re.S))
 	except: text = ''
@@ -68,7 +68,7 @@ def phonecode(type, jid, nick, text):
 		msg = remove_ltgt(msg)
 	else: msg = L('What?')
    	send_msg(type, jid, nick, msg)
-		
+
 global execute
 
 execute = [(3, 'phone', phonecode, 2, L('Information about telephone city code, DEF code or search code for city.'))]

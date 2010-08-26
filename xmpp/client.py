@@ -276,7 +276,7 @@ class Component(CommonClient):
 			self.domains=domains
 		else:
 			self.domains=[transport]
-	
+
 	def connect(self,server=None,proxy=None):
 		""" This will connect to the server, and if the features tag is found then set
 			the namespace to be jabber:client as that is required for jabberd2.

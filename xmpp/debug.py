@@ -34,7 +34,7 @@ by the individual classes.
 
 For samples of usage, see samples subdir in distro source, and selftest
 in this code
-	
+
 """
 
 
@@ -114,7 +114,7 @@ class NoDebug:
 	colors={}
 	def active_set( self, active_flags = None ):
 		return 0
-	
+
 
 LINE_FEED = '\n'
 
@@ -163,14 +163,14 @@ class Debug:
 				  # default is to show welcome if any flags are active
 				  welcome = -1
 				  ):
-		
+
 		self.debug_flags = []
 		if welcome == -1:
 			if active_flags and len(active_flags):
 				welcome = 1
 			else:
 				welcome = 0
-			
+
 		self._remove_dupe_flags()
 		if log_file:
 			if type( log_file ) is type(''):
@@ -204,7 +204,7 @@ class Debug:
 			self.show('Debug created for %s%s' % (caller.f_code.co_filename,
 												   mod_name ))
 			self.show(' flags defined: %s' % ','.join( self.active ))
-			
+
 		if type(flag_show) in (type(''), type(None)):
 			self.flag_show = flag_show
 		else:
@@ -212,7 +212,7 @@ class Debug:
 			raise 'Invalid type for flag_show!', msg2
 
 
-		
+
 
 
 	def show( self, msg, flag = None, prefix = None, sufix = None,
@@ -225,14 +225,14 @@ class Debug:
 							   are active
 
 		if prefix / sufix are not given, default ones from init will be used
-		
+
 		lf = -1 means strip linefeed if pressent
 		lf = 1 means add linefeed if not pressent
 		"""
-		
+
 		if self.validate_flags:
 			self._validate_flag( flag )
-			
+
 		if not self.is_active(flag):
 			return
 		if prefix:
@@ -256,7 +256,7 @@ class Debug:
 								 )
 		else:
 			output = pre
-			
+
 		if self.flag_show:
 			if flag:
 				output = '%s%s%s' % ( output, flag, self.flag_show )
@@ -286,8 +286,8 @@ class Debug:
 				s=s+c
 			self._fh.write( '%s%s%s' % ( pre, s, suf ))
 		self._fh.flush()
-			
-				
+
+
 	def is_active( self, flag ):
 		'If given flag(s) should generate output.'
 
@@ -304,7 +304,7 @@ class Debug:
 						return 1
 		return 0
 
-	
+
 	def active_set( self, active_flags = None ):
 		"returns 1 if any flags where actually set, otherwise 0."
 		r = 0
@@ -318,7 +318,7 @@ class Debug:
 				if t not in self.debug_flags:
 					sys.stderr.write('Invalid debugflag given: %s\n' % t )
 				ok_flags.append( t )
-				
+
 			self.active = ok_flags
 			r = 1
 		else:
@@ -331,7 +331,7 @@ class Debug:
 				self.show( '*** please correct your param!' )
 				self.show( '*** due to this, full debuging is enabled' )
 				self.active = self.debug_flags
-			
+
 			for f in flags:
 				s = f.strip()
 				ok_flags.append( s )
@@ -339,15 +339,15 @@ class Debug:
 
 		self._remove_dupe_flags()
 		return r
-	
+
 	def active_get( self ):
 		"returns currently active flags."
 		return self.active
-	
-	
+
+
 	def _as_one_list( self, items ):
 		""" init param might contain nested lists, typically from group flags.
-		
+
 		This code organises lst and remves dupes
 		"""
 		if type( items ) <> type( [] ) and type( items ) <> type( () ):
@@ -363,8 +363,8 @@ class Debug:
 			else:
 				self._append_unique_str(r, l )
 		return r
-	
-	
+
+
 	def _append_unique_str( self, lst, item ):
 		"""filter out any dupes."""
 		if type(item) <> type(''):
@@ -374,7 +374,7 @@ class Debug:
 			lst.append( item )
 		return lst
 
-	
+
 	def _validate_flag( self, flags ):
 		'verify that flag is defined.'
 		if flags:
@@ -403,12 +403,12 @@ class Debug:
 		if not colors_enabled: prefixcolor=''
 		elif self.colors.has_key(flag): prefixcolor=self.colors[flag]
 		else: prefixcolor=color_none
-		
+
 		if prefix=='error':
 			_exception = sys.exc_info()
 			if _exception[0]:
 				msg=msg+'\n'+''.join(traceback.format_exception(_exception[0], _exception[1], _exception[2])).rstrip()
-		
+
 		prefix= self.prefix+prefixcolor+(flag+' '*12)[:12]+' '+(prefix+' '*6)[:6]
 		self.show(msg, flag, prefix)
 

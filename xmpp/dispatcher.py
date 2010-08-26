@@ -125,7 +125,7 @@ class Dispatcher(PlugIn):
 				raise _pendingException[0], _pendingException[1], _pendingException[2]
 			if data: return len(data)
 		return '0'	  # It means that nothing is received but link is alive.
-		
+
 	def RegisterNamespace(self,xmlns,order='info'):
 		""" Creates internal structures for newly registered namespace.
 			You can register handlers for this namespace afterwards. By default one namespace

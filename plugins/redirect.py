@@ -6,7 +6,7 @@ def to_private(type, room, nick, text):
 
 def to_public(type, room, nick, text):
 	raw_redirect('groupchat', room, nick, text)
-	
+
 def raw_redirect(type, room, nick, text):
 	ta = get_level(room,nick)
 	access_mode = ta[0]

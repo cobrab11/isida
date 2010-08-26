@@ -12,7 +12,7 @@ def GetTorrentInfo(request, tracker, link, count=GT('torrent_default_count')):
 	regexp_link = '<a class="downgif" href="(.*?)"><img src'
 	output = L('Total results: %s \nTitle ::: Size ::: Peers [up/down]') % \
 		str(len(body))
-	body = body[:count]	
+	body = body[:count]
 	if len(body):
 		for bbody in body:
 			n += 1
@@ -23,7 +23,7 @@ def GetTorrentInfo(request, tracker, link, count=GT('torrent_default_count')):
 			link = re.findall(regexp_link, bbody, re.S)[0]
 			output += L('\n%s. %s ::: %s ::: %s/%s\n  Torrent file: %s%s') % \
 				(str(n), name, size, peers_up,peers_dn, tracker, link)
-	else: output = L('Not found!')		
+	else: output = L('Not found!')
 	return output
 
 def torrent_main(type, jid, nick, text):

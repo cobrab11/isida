@@ -4,7 +4,7 @@ rlmas = ((u'&','&amp;'),(u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u
 
 lmass = (('\n','<br>'),('\n','<br />'),('\n','<br/>'),('\n','\n\r'),('','<![CDATA['),('',']]>'),
 		(u'','&shy;'),(u'','&ensp;'),(u'','&emsp;'),(u'','&thinsp;'),(u'','&zwnj;'),(u'','&zwj;'))
-		
+
 rmass = ((u'\"','&quot;'),(u'\'','&apos;'),(u'˜\'','&tilde;'),(u' ','&nbsp;'),
 		(u'&','&amp;'),(u'<','&lt;'),(u'>','&gt;'),(u'¡','&iexcl;'),(u'¢','&cent;'),(u'£','&pound;'),
 		(u'¤','&curren;'),(u'¥','&yen;'),(u'¦','&brvbar;'),(u'§','&sect;'),(u'¨','&uml;'),(u'©','&copy;'),(u'ª','&ordf;'),
@@ -73,7 +73,7 @@ iq_error = {'bad-request':L('Bad request'),
 			'subscription-required':L('Subscription required'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
-			
+
 def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -138,7 +138,7 @@ def get_scrobble(type, room, nick, text):
 		else: msg = L('Not found!')
 	else: msg = L('Not found!')
 	send_msg(type, room, nick, msg)
-		
+
 def set_locale(type, jid, nick, text):
 	global locales
 	if len(text) >= 2:
@@ -183,7 +183,7 @@ def shell_execute(cmd):
 			try: SM = str(SM)
 			except: SM = unicode(SM)
 			return L('I can\'t execute it! Error: %s') % SM
-	
+
 def concat(list): return ''.join(list)
 
 def get_affiliation(jid,nick):
@@ -254,7 +254,7 @@ def reduce_spaces(text):
 		while text[0] == ' ': text = text[1:]
 		while text[-1:] == ' ': text = text[:-1]
 	return text
-	
+
 def reduce_spaces_all(text):
 	while text.count('  '): text = text.replace('  ',' ')
 	if text[0] == ' ': text = text[1:]
@@ -316,12 +316,12 @@ def unhtml_raw(page,mode):
 	return page
 
 def unhtml(page): return unhtml_raw(page,None)
-	
+
 def unhtml_hard(page): return unhtml_raw(page,True)
 
 def del_space_both(t):
 	return del_space_end(del_space_begin(t))
-	
+
 def alias(type, jid, nick, text):
 	global aliases
 	aliases = getFile(alfile,[])
@@ -338,7 +338,7 @@ def alias(type, jid, nick, text):
 		for i in aliases:
 			if i[1] == cmd and i[0] == jid:
 				aliases.remove(i)
-				fl = 1	
+				fl = 1
 		aliases.append([jid, cmd, cbody])
 		if fl: msg = L('Updated:')
 		else: msg = L('Added:')
@@ -526,7 +526,7 @@ def info_whois(type, jid, nick, text):
 	if text != '': msg = raw_who(jid, text)
 	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
-		
+
 def info_access(type, jid, nick):
 	msg = raw_who(jid, nick)
 	send_msg(type, jid, nick, msg)
@@ -560,7 +560,7 @@ def info_comm(type, jid, nick):
 	msg = L('Total commands: %s | Prefix: %s | Your access level: %s | Available commands: %s%s') % (str(len(comms)), get_prefix(get_local_prefix(jid)), str(access_mode), str(len(cu.execute('select * from tempo where am<=?',(access_mode,)).fetchall())), msg)
 	tmp.close()
 	send_msg(type, jid, nick, msg)
-	
+
 def helpme(type, jid, nick, text):
 	text = text.lower()
 	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
@@ -612,7 +612,7 @@ def bot_rejoin(type, jid, nick, text):
 			confbase.append(text)
 			writefile(confs,str(confbase))
 	else: send_msg(type, jid, nick, L('I have never been in %s') % getRoom(lroom))
-		
+
 def remove_by_half(cb,rm):
 	for tmp in cb:
 		if tmp[:len(rm)] == rm:
@@ -634,7 +634,7 @@ def bot_join(type, jid, nick, text):
 			lastserver = getServer(text.lower())
 			lastnick = getResourse(text)
 			lroom = text.lower().split('/')[0]
-			if arr_semi_find(confbase, lroom) == -1:				
+			if arr_semi_find(confbase, lroom) == -1:
 				zz = joinconf(text, domain)
 				while unicode(zz)[:3] == '409':
 					sleep(1)
@@ -717,7 +717,7 @@ def bot_plugin(type, jid, nick, text):
 			for tmr in timer: gtimer.append(tmr)
 			for tmp in presence_control: gpresence.append(tmp)
 			for tmp in message_control: gmessage.append(tmp)
-				
+
 	elif do == 'del':
 		if os.path.isfile('plugins/'+nnick):
 			pl_ignore = getFile(pliname,[])
@@ -772,7 +772,7 @@ def owner(type, jid, nick, text):
 	except:
 		if do != 'show':
 			send_msg(type, jid, nick, L('Wrong arguments!'))
-			return	
+			return
 	if do == 'add':
 		if not ownerbase.count(nnick):
 			if nnick.count('@') and nnick.count('.'):
@@ -798,7 +798,7 @@ def owner(type, jid, nick, text):
 			msg = L('Removed: %s') % nnick
 		else: msg = L('Not found!')
 	elif do == 'show':
-		msg = ''		
+		msg = ''
 		for jjid in ownerbase: msg += jjid+', '
 		msg = L('Bot owner(s): %s') % msg[:-2]
 	else: msg = L('Wrong arguments!')
@@ -879,12 +879,12 @@ def info_where_plus(type, jid, nick):
 	if hr_count: msg += L('\nHidden conference(s): %s') % str(hr_count)
 	send_msg(type, jid, nick, msg)
 
-	
+
 def get_uptime_str():
 	return un_unix(int(time.time()-starttime))
 
 def info(type, jid, nick):
-	global confbase	
+	global confbase
 	msg = L('Conference(s): %s (for more info use \'where\' command)\n') % str(len(confbase))
 	msg += L('Server: %s | Nick: %s\n') % (lastserver,lastnick)
 	msg += L('Message size limit: %s\n') % str(msg_limit)
@@ -933,7 +933,7 @@ def real_search_owner(type, jid, nick, text):
 						fl = 0
 						break
 		if fl: msg = L('\'%s\' not found!') % text
-	send_msg(type, jid, nick, msg)	
+	send_msg(type, jid, nick, msg)
 
 def real_search(type, jid, nick, text):
 	msg = L('What do you need to find?')
@@ -969,13 +969,13 @@ def unescape(text):
 			try: text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
 			except KeyError: pass
 		return text
-	return re.sub("&#?\w+;", fixup, text)	
+	return re.sub("&#?\w+;", fixup, text)
 
 def html_escape(text):
 	def link(text): return '<a href="%s">%s</a>' % (text.group(0),text.group(0))
 	#def email(text): return '<a href="mailto:%s">%s</a>' % (text.group(0),text.group(0))
 	def nbsp(text): return '<br>' + '&nbsp;' * len(text.group(0))
-	text = re.sub(u'^(\ +)',nbsp,text)	
+	text = re.sub(u'^(\ +)',nbsp,text)
 	for tmp in rlmas: text = text.replace(tmp[0],tmp[1])
 	text = re.sub(u'http[s]?://[-a-zA-Z0-9а-яА-Я._/?&#=;@%:]+',link,text)
 	#text = re.sub(u'[-a-zA-Z._0-9?:а-яА-Я]+@[-a-zA-Z._0-9а-яА-Я/?:]+',email,text)
@@ -1022,9 +1022,9 @@ def remove_replace_ltgt(text,item):
 	T = re.findall('<.*?>', text, re.S)
 	for tmp in T: text = text.replace(tmp,item,1)
 	return text
-	
+
 def remove_ltgt(text): return remove_replace_ltgt(text,'')
-	
+
 def replace_ltgt(text): return remove_replace_ltgt(text,' ')
 
 def rss_del_nn(ms):
@@ -1102,7 +1102,7 @@ def smart_concat(text):
 		if not (text[tmp].count(' ') or text[tmp].count('/') or text[tmp].count('.') or text[tmp].count('\\')): text = text[:tmp-1]+[text[tmp-1]+' '+text[tmp]]+text[tmp+1:]
 		else: tmp += 1
 	return '\n'.join(text)
-	
+
 def rss(type, jid, nick, text):
 	global feedbase, feeds,	lastfeeds
 	msg = u'rss show|add|del|clear|new|get'
@@ -1253,7 +1253,7 @@ def rss(type, jid, nick, text):
 						tt_msg = []
 						for tm in t_msg:
 							tsubj,tmsg,tlink = tm
-							cut = int(len(tsubj+tmsg+tlink)/100*over)						
+							cut = int(len(tsubj+tmsg+tlink)/100*over)
 							if cut < len(tlink): tsubj,tmsg,tlink = tsubj[:cut]+u'[]','',''
 							elif cut < len(tsubj+tlink): tsubj,tmsg = tsubj[:cut-len(tlink)]+u'[…]',''
 							else: tmsg = tmsg[:cut-len(tlink+tsubj)]+u'[…]'
@@ -1341,7 +1341,7 @@ def open_muc_base():
 def close_muc_base(base):
 	base.commit()
 	base.close()
-	
+
 def muc_filter_lock(type, jid, nick, text):
 	mbase,mcur = open_muc_base()
 	realjid = getRoom(get_level(jid,nick)[1])
@@ -1462,6 +1462,7 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'muc_filter_status_timeout':[L('Muc-filter. Time between presences'),'i',600],
 				'muc_filter_large_status_size':[L('Muc-filter. Maximux status-message size'),'i',50],
 				'muc_filter_large_nick_size':[L('Muc-filter. Maximum nick size'),'i',20],
+				'muc_filter_repeat_count':[L('Muc-filter. Repeat count'),'i',3],
 				'html_paste_enable':[L('Paste. Paste as html. Otherwize as text'),'b',True],
 				'censor_text':[L('Kernel. Text for hide censore'),'t32','[censored]'],
 				'ddos_limit':[L('Kernel. Time of ignore for anti-ddos'),'l10','[1800,1800,1800,1800,1800,600,300,150,60,0]'],

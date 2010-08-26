@@ -22,7 +22,7 @@ def svn_get(type, jid, nick,text):
 		msg = 'SVN from '+url+'\n'+shell_execute(sh_exe)
 	else: msg = L('Read user manual for commands...')
 	send_msg(type, jid, nick, msg)
-	
+
 global execute
 
 execute = [(3, 'svn', svn_get, 2, L('Show svn log.\nsvn [http://]url [limit] - show last revision(s) limit\nsvn [http://]url rXXX - show XXX revision'))]
