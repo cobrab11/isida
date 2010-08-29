@@ -154,7 +154,7 @@ In this room not allowed take a bomb!	В этой конференции нел�
 This room alredy boombed!	Бомба уже установлена!
 I can't take a bomb to %s	Не могу дать бомбу %s
 /me take a bomb to %s with wires %s. Time to deactivate is %s sec.	/me дала бомбу %s с проводами %s. Время деактивации %s сек.
-It's a lucky day for you! Bomb is fault!	Тебе повезло! Бомба не сработала!
+It's a lucky day for you! Bomb is fault! Right wide is %s	Тебе повезло! Бомба не сработала! Правильный провод был %s
 /me explode %s	/me взорвала %s
 Bomb is deactivated! Congratulations!	Бомба деактивирована! Поздравляю!
 You were wrong! Right wire is %s	Ты ошибся! Правильный провод %s
