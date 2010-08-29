@@ -55,14 +55,14 @@ def bomb_joke(type, jid, nick, text):
 			b_timer -= 1
 			if jid not in bomb_current.keys(): break
 		if b_timer <= 0 and not game_over:
-			bomb_current.pop(getRoom(jid))			
+			bc = bomb_current.pop(getRoom(jid))			
 			b_fault = None
 			if get_config(getRoom(jid),'bomb_fault'):
 				try: bfp = int(get_config(getRoom(jid),'bomb_fault_persent'))
 				except: bfp = bomb_fault_persent
 				if bfp < 0 or bfp > 100: bfp = bomb_fault_persent
 				b_fault = random.randint(0,100) < bfp
-			if b_fault: send_msg(type, jid, nick, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bomb_current[getRoom(jid)][2])
+			if b_fault: send_msg(type, jid, nick, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bc[2])
 			else:
 				send_msg(type, jid, '', L('/me explode %s') % text)
 				if get_config(getRoom(jid),'bomb_action') == 'kick': muc_role(type, jid, nick, '%s\n%s' % (text,get_config(getRoom(jid),'bomb_reason')), 'none')
