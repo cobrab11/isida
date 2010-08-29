@@ -31,15 +31,18 @@ def get_next_random(room):
 
 def bomb_joke(type, jid, nick, text):
 	global bomb_current,bomb_random_list
+	if type == 'chat':
+		send_msg(type, jid, nick, L('Not allowed in private!'))
+		return
 	if len(text) == 0 or len(text) == text.count(' ')+text.count('\n'):
 		rlist,tconf = [],getRoom(jid)
 		for tm in megabase:
-			if tm[0] == tconf and get_level(tconf,tm[1])[0] not in bomb_deny_access and get_level(tconf,tm[1])[1] not in ['None',getRoom(selfjid)]: rlist.append(tm[1])
+			if tm[0] == tconf and not (get_level(tconf,tm[1])[0] in bomb_deny_access) and not (getRoom(get_level(tconf,tm[1])[1]) in ['None',getRoom(selfjid)]): rlist.append(tm[1])
 		text = rlist[random.randrange(len(rlist))]
-	bmb,type = False,'groupchat'
+	bmb = False
 	if not get_config(getRoom(jid),'bomb'): msg = L('In this room not allowed take a bomb!')
 	elif jid in bomb_current.keys(): msg = L('This room alredy boombed!')
-	elif get_level(jid,text)[0] in bomb_deny_access or get_level(jid,text)[1] == 'None': msg = L('I can\'t take a bomb to %s') % text
+	elif get_level(jid,text)[0] in bomb_deny_access or getRoom(get_level(jid,text)[1]) in ['None',getRoom(selfjid)]: msg = L('I can\'t take a bomb to %s') % text
 	else:					
 		try: b_timer = int(get_config(getRoom(jid),'bomb_timer'))
 		except: b_timer = bomb_timer
