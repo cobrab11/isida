@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
@@ -28,6 +28,7 @@ import logging
 import operator
 import os
 import pdb
+import random
 import re
 import simplejson
 import socket
@@ -410,7 +411,6 @@ def timeZero(val):
 	return rval
 
 def muc_filter_action(act,jid,room,reason):
-	print act,jid,room,reason
 	if act=='visitor':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'visitor', 'jid':jid},[Node('reason',{},reason)])])]))
 	elif act=='kick':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'role':'none', 'jid':jid},[Node('reason',{},reason)])])]))
 	elif act=='ban':	sender(Node('iq',{'id': get_id(), 'type': 'set', 'to':room},payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':'outcast', 'jid':jid},[Node('reason',{},reason)])])]))
@@ -549,7 +549,7 @@ def iqCB(sess,iq):
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_INFO):
 			node=get_tag_item(unicode(query),'query','node')
-			if node in ['', disco_config_node, xmpp.NS_COMMANDS]:
+			if node.split('#')[0] in ['', disco_config_node, xmpp.NS_COMMANDS]:
 				pprint('*** iq:disco_info from %s node "%s"' % (unicode(room),node))
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
@@ -564,22 +564,39 @@ def iqCB(sess,iq):
 					sender(i)
 					raise xmpp.NodeProcessed
 
-				elif node == disco_config_node or node == xmpp.NS_COMMANDS:
+				elif node.split('#')[0] == disco_config_node or node == xmpp.NS_COMMANDS:
 					i.getTag('query').setTag('feature',attrs={'var':xmpp.NS_COMMANDS})
 					i.getTag('query').setTag('feature',attrs={'var':disco_config_node})
-					i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':L('Configuration')})
+					default_name = L('Unknown configuration request!')
+					try: tn = '#' + node.split('#')[1]
+					except: tn = ''
+					if tn:
+						if tn.split('-',1)[0] == '#owner': settz = owner_groups
+						elif tn.split('-',1)[0] == '#room': settz = config_groups
+						else: settz = None
+						if settz:
+							for tmp in settz:
+								if tn == tmp[1]:
+									default_name = tmp[0]
+									break
+					i.getTag('query').setTag('identity',attrs={'category':'automation','type':'command-node','name':default_name})
 					sender(i)
 					raise xmpp.NodeProcessed
 
 		elif iq.getTag(name='query', namespace=xmpp.NS_DISCO_ITEMS) and acclvl:
 			node=get_tag_item(unicode(query),'query','node')
 			pprint('*** iq:disco_items from %s node "%s"' % (unicode(room),node))
-			if node in ['', disco_config_node, xmpp.NS_COMMANDS]:
+			if node.split('#')[0] in ['', disco_config_node, xmpp.NS_COMMANDS]:
+				try: tn = '#' + node.split('#')[1]
+				except: tn = ''
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
 				if node == '': i.setQueryNS(namespace=xmpp.NS_DISCO_ITEMS)
 				else: i.setTag('query',namespace=xmpp.NS_DISCO_ITEMS,attrs={'node':node})
-				if node == '' or node == xmpp.NS_COMMANDS: i.getTag('query').setTag('item',attrs={'node':disco_config_node, 'name':L('Configuration'),'jid':towh})
+				if node == '' or node == xmpp.NS_COMMANDS:
+					if towh == selfjid: settings_set = owner_groups
+					else: settings_set = config_groups
+					for tmp in settings_set: i.getTag('query').setTag('item',attrs={'node':disco_config_node+tmp[1], 'name':tmp[0],'jid':towh})
 				sender(i)
 				raise xmpp.NodeProcessed
 
@@ -587,104 +604,121 @@ def iqCB(sess,iq):
 		if iq.getTag(name='command', namespace=xmpp.NS_COMMANDS) and acclvl:
 			node=get_tag_item(unicode(iq),'command','node')
 			pprint('*** iq:disco_set from %s node "%s"' % (unicode(room),node))
-			if node == disco_config_node or node == xmpp.NS_COMMANDS:
+			try: tn = '#' + node.split('#')[1]
+			except: tn = ''
+			if node.split('#')[0] == disco_config_node or node == xmpp.NS_COMMANDS:
 				action=get_tag_item(unicode(iq),'command','action')
 				i=xmpp.Iq(to=room, typ='result')
 				i.setAttr(key='id', val=id)
-				if action == 'cancel': i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'canceled', 'node':disco_config_node,'sessionid':id})
+				if action == 'cancel': i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'canceled', 'node':disco_config_node+tn,'sessionid':id})
 				elif towh == selfjid:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
-						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node+tn,'sessionid':id})
 						varz = iq.getTag('command').getTag('x')
 						for t in owner_prefs.keys():
-							tp = owner_prefs[t][1]
-							#tmtype = varz.getTagAttr('field','type')
-							tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
-
-							#if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
 							try:
-								if tp == 'b': tm = [False,True][int(tm)]
-								elif tp == 'f': tm = float(tm)
-								elif tp == 'i': tm = int(tm)
-								elif tp[0] == 't': tm = tm[:int(tp[1:])]
-								elif tp[0] == 'l' and len(eval(tm)) == int(tp[1:]): tm = eval(tm)
-							except: tm = GT(t)
-							PT(t,tm)
+								tp = owner_prefs[t][1]
+								tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
+								try:
+									if tp == 'b': tm = [False,True][int(tm)]
+									elif tp == 'f': tm = float(tm)
+									elif tp == 'i': tm = int(tm)
+									elif tp[0] == 't': tm = tm[:int(tp[1:])]
+									elif tp[0] == 'l' and len(eval(tm)) == int(tp[1:]): tm = eval(tm)
+								except: tm = GT(t)
+								PT(t,tm)
+							except: pass
 						pprint('*** bot reconfigure by %s' % unicode(room))
 					else:
-						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node+tn,'sessionid':id})
 						i.getTag('command').setTag('x',namespace=xmpp.NS_DATA,attrs={'type':'form'})
-						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node, 'name':'Configuration','jid':selfjid})
+						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node+tn, 'name':'Configuration','jid':selfjid})
 						i.getTag('command').getTag('x').setTagData('instructions',L('For configure required x:data-compatible client'))
-						i.getTag('command').getTag('x').setTagData('title',L('iSida Jabber Bot configuration'))
-						tmp = owner_prefs.keys()
-						tt = []
-						for t in tmp: tt.append((owner_prefs[t][0],t))
-						tt.sort()
-						tmp = []
-						for t in tt: tmp.append(t[1])
-						for t in tmp:
-							itm = owner_prefs[t]
-							itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
-							if itm[1] == 'b':
-								dc = GT(t) in [True,1,'1','on']
-								i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
-								.setTagData('value',[0,1][dc])
-							elif itm[1][0] in ['t','i','f','l']:
-								i.getTag('command').getTag('x').setTag('field',attrs={'type':'text-single','label':itm_label,'var':t})\
-								.setTagData('value',unicode(GT(t)))
-							else:
-								i.getTag('command').getTag('x').setTag('field',\
-								attrs={'type':'list-single','label':itm_label,'var':t})\
-								.setTagData('value',GT(t))
-								for t2 in itm[1]:
-									i.getTag('command').getTag('x').getTag('field',\
+						tkeys = []
+						for tmp in owner_groups: tkeys.append(tmp[1])
+						if tn in tkeys:
+							for tmp in owner_groups:
+								if tn == tmp[1]:
+									c_prefs,c_name = tmp[2],tmp[0]
+									break
+							i.getTag('command').getTag('x').setTagData('title',c_name)
+							cnf_prefs = {}
+							for tmp in c_prefs: cnf_prefs[tmp] = owner_prefs[tmp]
+							tmp = cnf_prefs.keys()
+							tt = []
+							for t in tmp: tt.append((owner_prefs[t][0],t))
+							tt.sort()
+							tmp = []
+							for t in tt: tmp.append(t[1])
+							for t in tmp:
+								itm = owner_prefs[t]
+								itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
+								if itm[1] == 'b':
+									dc = GT(t) in [True,1,'1','on']
+									i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
+									.setTagData('value',[0,1][dc])
+								elif itm[1][0] in ['t','i','f','l']:
+									i.getTag('command').getTag('x').setTag('field',attrs={'type':'text-single','label':itm_label,'var':t})\
+									.setTagData('value',unicode(GT(t)))
+								else:
+									i.getTag('command').getTag('x').setTag('field',\
 									attrs={'type':'list-single','label':itm_label,'var':t})\
-									.setTag('option',attrs={'label':onoff(t2)})\
-									.setTagData('value',t2)
+									.setTagData('value',GT(t))
+									for t2 in itm[1]:
+										i.getTag('command').getTag('x').getTag('field',\
+										attrs={'type':'list-single','label':itm_label,'var':t})\
+										.setTag('option',attrs={'label':onoff(t2)})\
+										.setTagData('value',t2)
 				else:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
-						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'completed', 'node':disco_config_node+tn,'sessionid':id})
 						varz = iq.getTag('command').getTag('x')
 						for t in config_prefs.keys():
-							tmtype = varz.getTagAttr('field','type')
-							tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
-							if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
-							put_config(getRoom(room),t,tm)
+							try:
+								tmtype = varz.getTagAttr('field','type')
+								tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
+								if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
+								put_config(getRoom(room),t,tm)
+							except: pass
 						pprint('*** reconfigure by %s' % unicode(room))
 					else:
-						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node,'sessionid':id})
+						i.setTag('command',namespace=xmpp.NS_COMMANDS,attrs={'status':'executing', 'node':disco_config_node+tn,'sessionid':id})
 						i.getTag('command').setTag('x',namespace=xmpp.NS_DATA,attrs={'type':'form'})
-						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node, 'name':'Configuration','jid':selfjid})
+						i.getTag('command').getTag('x').setTag('item',attrs={'node':disco_config_node+tn, 'name':'Configuration','jid':selfjid})
 						i.getTag('command').getTag('x').setTagData('instructions',L('For configure required x:data-compatible client'))
-						i.getTag('command').getTag('x').setTagData('title',L('iSida Jabber Bot configuration'))
-						tmp = config_prefs.keys()
-						tmp.sort()
-						for t in tmp:
-							itm = config_prefs[t]
-							itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
-							if itm[2] == [True,False]:
-								dc = get_config(getRoom(room),t) in [True,1,'1','on']
-								i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
-								.setTagData('value',[0,1][dc])
-								i.getTag('command').getTag('x').getTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
-								.setTag('required')
-							elif itm[2] == None:
-								i.getTag('command').getTag('x').setTag('field',attrs={'type':'text-single','label':itm_label,'var':t})\
-								.setTagData('value',get_config(getRoom(room),t))
-							else:
-								i.getTag('command').getTag('x').setTag('field',\
-								attrs={'type':'list-single','label':itm_label,'var':t})\
-								.setTagData('value',get_config(getRoom(room),t))
-
-								for t2 in itm[2]:
-									i.getTag('command').getTag('x').getTag('field',\
+						tkeys = []
+						for tmp in config_groups: tkeys.append(tmp[1])
+						if tn in tkeys:
+							for tmp in config_groups:
+								if tn == tmp[1]:
+									c_prefs,c_name = tmp[2],tmp[0]
+									break
+							i.getTag('command').getTag('x').setTagData('title',c_name)
+							cnf_prefs = {}
+							for tmp in c_prefs: cnf_prefs[tmp] = config_prefs[tmp]
+							tmp = cnf_prefs.keys()
+							tmp.sort()
+							for t in tmp:
+								itm = config_prefs[t]
+								itm_label = reduce_spaces(itm[0].replace('%s','').replace(':',''))
+								if itm[2] == [True,False]:
+									dc = get_config(getRoom(room),t) in [True,1,'1','on']
+									i.getTag('command').getTag('x').setTag('field',attrs={'type':'boolean','label':itm_label,'var':t})\
+									.setTagData('value',[0,1][dc])
+								elif itm[2] == None:
+									i.getTag('command').getTag('x').setTag('field',attrs={'type':'text-single','label':itm_label,'var':t})\
+									.setTagData('value',get_config(getRoom(room),t))
+								else:
+									i.getTag('command').getTag('x').setTag('field',\
 									attrs={'type':'list-single','label':itm_label,'var':t})\
-									.setTag('option',attrs={'label':onoff(t2)})\
-									.setTagData('value',t2)
-								i.getTag('command').getTag('x').getTag('field',\
-								attrs={'type':'list-single','label':itm_label,'var':t})\
-								.setTag('required')
+									.setTagData('value',get_config(getRoom(room),t))
+
+									for t2 in itm[2]:
+										i.getTag('command').getTag('x').getTag('field',\
+										attrs={'type':'list-single','label':itm_label,'var':t})\
+										.setTag('option',attrs={'label':onoff(t2)})\
+										.setTagData('value',t2)
+						else: i.getTag('command').getTag('x').setTagData('title',L('Unknown configuration request!'))
 				sender(i)
 				raise xmpp.NodeProcessed
 		else:
@@ -1077,7 +1111,7 @@ def messageCB(sess,mess):
 										argzbk = argzbk[:it]+argzbk[it+1:]
 									except: pass
 								ppr = ppr.replace('%{unused}*',' '.join(argzbk))
-							
+
 					if len(ppr) == ppr.count(' '): ppr = ''
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
@@ -1355,7 +1389,7 @@ msg_limit = 1000					# лимит размера сообщений
 botName = 'Isida-Bot'				# название бота
 botVersion = 'v2.30'				# версия бота
 capsVersion = botVersion[1:]		# версия для капса
-disco_config_node = 'http://isida-bot.com/node/config'
+disco_config_node = 'http://isida-bot.com/config'
 banbase = []						# результаты muc запросов
 pres_answer = []					# результаты посылки презенсов
 iq_request = {}						# iq запросы
@@ -1529,12 +1563,13 @@ for tocon in confbase:
 	if not tocon.count('/'): baseArg += '/%s' % unicode(Settings['nickname'])
 	conf = JID(baseArg)
 	zz = joinconf(tocon, getServer(Settings['jid']))
-	while unicode(zz)[:3] == '409':
+	while unicode(zz)[:3] == '409' and not game_over:
 		sleep(1)
 		tocon += '_'
 		zz = joinconf(tocon, getServer(Settings['jid']))
 	cb.append(tocon)
 	pprint('--> %s' % tocon)
+	if game_over: break
 confbase = cb
 is_start = None
 pprint('Joined')
@@ -1545,6 +1580,8 @@ pprint('Joined')
 thr(now_schedule,(),'schedule')
 thr(iq_async_clean,(),'async_iq_clean')
 thr(presence_async_clean,(),'async_presence_clean')
+try: thr(bomb_random,(),'bomb_random')
+except: pass
 
 while 1:
 	try:

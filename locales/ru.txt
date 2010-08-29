@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
-#                               version 2.20
+#                               version 2.30
 #
 #                          Russian locale (woman)
 #
@@ -10,9 +10,6 @@
 # --------------------------------------------------------------------
 
 # file: ../trunk/kernel.py
-Unknown error!	Неизвестная ошибка!
-Error!	Ошибка!
-No reason	Причина не указана
 Mon	Пн
 Tue	Вт
 Wed	Ср
@@ -34,6 +31,11 @@ Sep	Сен
 Oct	Окт
 Nov	Ноя
 Dec	Дек
+Unknown error!	Неизвестная ошибка!
+Error!	Ошибка!
+No reason	Причина не указана
+Unknown configuration request!	Неизвестный запрос конфигурации!
+For configure required x:data-compatible client	Для настройки требуется x:data-совместимый клиент
 AD-Block!	Блокировка рекламы!
 Repeat message block!	Сообщения очень похожи!
 Match message block!	Текст сообщения дублируется!
@@ -55,14 +57,12 @@ Banned	Забанили
 Leave	Вышел
 Plugin %s. %s	Плагин %s. %s
 Shutdown by CTRL+C...	Какой-то умник нажал CTRL+C в консоли...
-Configuration	Конфигурация
-iSida Jabber Bot configuration	Конфигурация Jabber-бота iSida
-For configure required x:data-compatible client	Для настройки требуется x:data-совместимый клиент
 
 # file: ../trunk/plugins/acl.py
 Acl:	Действия:
 Acl not found	Действия не найдены
 Time format error!	Ошибка формата времени!
+Error in parameters. Read the help about command.	Ошибка в параметрах, прочитайте помощь по команде.
 Items: %s	Элементы: %s
 Error in RegExp!	Ошибка в RegExp!
 Removed:	Удалено:
@@ -136,11 +136,29 @@ You can't add last conference in blacklist.	Нельзя добавлять по
 Add to blacklist: %s	Добавлено в черный список: %s
 Removed from blacklist: %s	Удалено из черного списка: %s
 Address not in blacklist.	Адрес отсутствует в черном списке.
-Error in parameters. Read the help about command.	Ошибка в параметрах, прочитайте помощь по команде.
 List is empty.	Список пуст.
 List of conferences:\n	Список конференций:\n
 Cleared.	Очищено.
 Manage of conferences blacklist.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - add|remove address from blacklist\nblacklist show - show blacklist\nblacklist clear - clear blacklist	Черный список конференций.\nblacklist add|del|show|clear\nblacklist add|del room@conference.server.tld - добавить|удалить конферецию из черного списка\nblacklist show - показать список\nblacklist clear - очистить список
+
+# file: ../trunk/plugins/bomb.py
+blue	синий
+red	красный
+magenta	фиолетовый
+green	зеленый
+cyan	голубой
+yellow	желтый
+white	белый
+black	черный
+In this room not allowed take a bomb!	В этой конференции нельзя раздавать бомбы!
+This room alredy boombed!	Бомба уже установлена!
+I can't take a bomb to %s	Не могу дать бомбу %s
+/me take a bomb to %s with wires %s. Time to deactivate is %s sec.	/me дала бомбу %s с проводами %s. Время деактивации %s сек.
+It's a lucky day for you! Bomb is fault!	Тебе повезло! Бомба не сработала!
+/me explode %s	/me взорвала %s
+Bomb is deactivated! Congratulations!	Бомба деактивирована! Поздравляю!
+You were wrong! Right wire is %s	Ты ошибся! Правильный провод %s
+Take a bomb joke!	Выдача бомбы!
 
 # file: ../trunk/plugins/calendar.py
 \nMon Tue Wed Thu Fri Sat Sun\n	\nПн Вт Ср Чт Пт Сб Вс\n
@@ -763,33 +781,36 @@ Large status muc filter is %s	Реакция на длинные статусы:
 Large status muc filter	Фильтр длинных статусов
 Censor muc filter for presence is %s	Цензор для презенсов: %s
 Censor muc filter for presence	Цензор для презенсов
-Help system. Helps without commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ
-Join conference.\njoin room[@conference.server.ru[/nick]]	Вход в конференцию:\njoin room@conference.server.ru/nick - вход вконференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.
-Leave conference.\nleave room[@conference.server.ru[/nick]]	Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room
-Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]	Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room
-Bot owners list.\nbot_owner show\nbot_owner add|del jid	Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.
-Black list.\nbot_ignore show\nbot_ignore add|del jid	Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.
-Show conferences.	Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.
-Your identification in global base.	Идентификация Вас в глобальной базе.
-Search user in conferences where the bot is.	Поиск участника по конференциям, где находится бот.
-Search user in conferences where the bot is. Also show jid's	Поиск участника по конференциям, где находится бот. Так-же показывается jid.
-News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nс окончанием -url будет ещё показана url новости.
-Aliases.\nalias add new=old\nalias del|show text	Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.
-Show commands list.	Показывает список доступных команд.
-Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
-Show bot uptime.	Время работы бота.
-Misc information about bot.	Различная информация о боте.
-Last svn update log	Показ svn-лога последнего обновления бота
-Set temporary message limit.	Размер сообщения, свыше которого сообщения будут разбиваться на части кратные этому размеру
-Plugin system.\nplugin show|local\nplugin add|del name	Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name - добавить плагин.\nplugin del name - удалить плагин.
-Show error(s).\nerror [number|clear]	Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]
-Your identification.	Ваша идентификация перед ботом.
-Identification.	Идентификация перед ботом.
-Show status.	Показ статуса.
-Set command prefix. Use 'none' for disable prefix	Указание префикса команд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.
-PEP Scrobbler. Test version	PEP Скробблер. Тестовая версия
-Conference configure.\nconfig [show[ status]|help][ item]	Настройка конференции.\nconfig [show[ status]|help][ item]
-Allow recieve messages from unaffiliated participants in private	Приём сообщений от участников без полномочий в привате
+Bomb. Allow take a bomb %s	Bomb. Разрешить раздачу бомб: %s
+Allow take a bomb in current conference	Разрешить раздачу бомб в текущей конференции
+Bomb. Allow random unexplosive bombs %s	Bomb. Иногда не взрывать бомбы %s
+Allow some times take unexplosive bombs	Иногда не взрывать бомбы
+Bomb. Persent of fault bombs %s	Bomb. Процент не рабочих: %s
+Persent of fault bombs	Процент не рабочих бомб
+Bomb. Allow bot take a bomb to random user %s	Bomb. Выдавать бомбу случайному пользователю: %s
+Allow bot take a bomb to random user	Выдавать бомбу случайному пользователю
+Bomb. Allow random bombs only in active room %s	Bomb. Случайные бомбы только в активной конференции: %s
+Allow random bombs only in active room	Случайные бомбы только в активной конференции
+Bomb. Time for detect room as unactive %s	Bomb. Время в течении которого конференция считается активной: %s
+Time for detect room as unactive	Время в течении которого конференция считается активной
+Bomb. Time between random bombs %s	Bomb. Время между случайными бомбами: %s
+Time between random bombs	Время между случайными бомбами
+Bomb. Persent of mistakes for time between random bombs %s	Bomb. Погрешность времени между случайными бомбами в процентах: %s
+Persent of mistakes for time between random bombs	Погрешность времени между случайными бомбами в процентах
+Bomb. Persent of skiped random bombs %s	Bomb. Процент не установки случайных бомб: %s
+Persent of mistakes skiped random bombs	Процент не установки случайных бомб
+Bomb. Timer is %s	Bomb. Таймер бомбы: %s
+Time to deactivate a bomb	Таймер бомбы
+Bomb. Wire count is %s	Bomb. Количество проводов у бомбы: %s
+Wire count for bomb	Количество проводов у бомбы
+Bomb. Action for bomb explode %s	Bomb. Действие при взрыве: %s
+Type of action for bomb explode	Действие при взрыве
+Bomb. Reason %s	Bomb. Причина с которой будет действие: %s
+Reason for bomb explode	Причина с которой будет действие
+KA-BO-OM!!!111	ПЫДЫДЫЩЩЩЬЬЬ!!!111
+Other settings	Прочие настройки
+Muc-filter settings	Настройки muc-фильтра
+Settings for bomb-joke	Настройки для бомбы-шутки
 Logger. Enable system logs	Logger. Включение системных логов
 Logger. Enable status change logging	Logger. Запись в логи смены статусов
 Logger. Enable role and affiliation logging	Logger. Запись в логи смены аффиляций и ролей
@@ -869,7 +890,50 @@ Kernel. Anti-ddos time delay between messages	Kernel. Промежуток ме�
 Msgtoadmin. Size limit for msgtoadmin	Msgtoadmin. Лимит размера сообщения для команды msgtoadmin
 Msgtoadmin. Time limit for next message for msgtoadmin	Msgtoadmin. Лимит времени следующей посылки сообщения для команды msgtoadmin
 Karma. Time for karma change from access level	Karma. Время, через которое можно менять карму в зависимости от уровня доступа
-
+Iq requests settings	Настройки Iq запросов
+Juick settings	Настройки juick
+Logs settings	Настройки логов
+Youtube settings	Настройки youtube
+Karma settings	Настройки кармы
+WWW settings	Настройки WWW
+Antitroll settings	Настройки антитролля
+Kernel settings	Настройки ядра
+LastFM settings	Настройки LastFM
+Whereis settings	Настройки whereis
+Watcher settings	Настройки watcher
+Clear settings	Настройки clear
+RSS settings	Настройки новостей
+Message for admin settings	Настройки сообщений админу
+Age settings	Настройки age
+Sayto settings	Настройки sayto
+Spy settings	Настройки spy
+Help system. Helps without commands: about, donation, access	Показывает текущие разделы справочной системы. Разделы справки без команд: about, donation, доступ
+Join conference.\njoin room[@conference.server.ru[/nick]]	Вход в конференцию:\njoin room@conference.server.ru/nick - вход вконференцию room с ником nick.\njoin room@conference.server.ru - вход в конференцию room с последним заданным ником.\njoin room - вход в конференцию room на последнем заданном сервере с последним заданным ником.
+Leave conference.\nleave room[@conference.server.ru[/nick]]	Выход из конференции:\nleave - выход из текущей конференции.\nleave room - выход из конференции room на последнем заданном сервере.\nleave room@conference.server.ru - выход из конференции room
+Rejoin conference.\nrejoin room[@conference.server.ru[/nick]]	Перезаход в конференцию.\nrejoin - перезайти в текущую конференцию.\nrejoin room - перезайти в конференцию room на последнем заданном сервере.\nrejoin room@conference.server.ru - перезайти в конференцию room
+Bot owners list.\nbot_owner show\nbot_owner add|del jid	Работа со списком владельцев бота:\nbot_owner show - показать список владельцев.\nbot_owner add jid - добавить jid в список.\nbot_owner del jid - удалить jid из списка.
+Black list.\nbot_ignore show\nbot_ignore add|del jid	Работа с "Чёрным списком":\nbot_ignore show - показать список.\nbot_ignore add jid - добавить jid в список.\nbot_ignore del jid - удалить jid из списка.
+Show conferences.	Показ конференций, в которых находится бот. Так же показывается ник бота в конференции и количество участников.
+Your identification in global base.	Идентификация Вас в глобальной базе.
+Search user in conferences where the bot is.	Поиск участника по конференциям, где находится бот.
+Search user in conferences where the bot is. Also show jid's	Поиск участника по конференциям, где находится бот. Так-же показывается jid.
+News:\nrss show - show current.\nrss add url time mode - add news.\nrss del url - remove news.\nrss get url feeds mode - get current news.\nrss new url feeds mode - get unread news only.\nrss clear - clear all news in current conference.\nrss all - show all news in all conferences.\n\nurl - url of rss/atom chanel. can set without http://\ntime - update time. number + time identificator. h - hour, m - minute. allowed only one identificator.\nfeeds - number of messages to receive. 10 max.\nmode - receive mode. full - full news, head - only headers, body - only bodies.\nwith -url to be show url of news.	Каналы новостей:\nrss show - показать текущие подписки.\nrss add url time mode - добавить подписку.\nrss del url - удалить подписку.\nrss get url feeds mode - получить текущие новости.\nrss new url feeds mode - получить только не прочтенные новости.\nrss clear - удалить все новости в текущей конференции.\nrss all - показать все новости во всех конференциях.\n\nurl - адрес rss канала. можно задавать без http://\ntime - время обновления канала. число + указатель времени. h - часы, m - минуты. допускается только один указатель.\nfeeds - количество сообщений для получения. не более 10 шт.\nmode - режим получения сообщений. full - сообщения полностью, head - только заголовки, body - только тело сообщения.\nс окончанием -url будет ещё показана url новости.
+Aliases.\nalias add new=old\nalias del|show text	Сокращённые команды.\nalias add aa=bb - выполнить команду bb при написании команды aa\nalias del aa - удалить сокращение aa\nalias show [text] - показать все сокращения или похожие на text.
+Show commands list.	Показывает список доступных команд.
+Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command	Включение/выключение команд.\ncomm - показать список\ncomm on команда - включить команду\ncomm off команда1[ команда2 команда3 ...] - отключить одну или несколько команд
+Show bot uptime.	Время работы бота.
+Misc information about bot.	Различная информация о боте.
+Last svn update log	Показ svn-лога последнего обновления бота
+Set temporary message limit.	Размер сообщения, свыше которого сообщения будут разбиваться на части кратные этому размеру
+Plugin system.\nplugin show|local\nplugin add|del name	Управление системой плагинов:\nplugin show - показать подключенные плагины.\nplugin local - показать доступные для подключения плагины.\nplugin add name - добавить плагин.\nplugin del name - удалить плагин.
+Show error(s).\nerror [number|clear]	Показывает последнюю логированную ошибку или последние, если задан параметр.\nerror [number|clear]
+Your identification.	Ваша идентификация перед ботом.
+Identification.	Идентификация перед ботом.
+Show status.	Показ статуса.
+Set command prefix. Use 'none' for disable prefix	Указание префикса команд. Без параметра показывает текущий префикс. Если параметром будет none - префикс будет отключен.
+PEP Scrobbler. Test version	PEP Скробблер. Тестовая версия
+Conference configure.\nconfig [show[ status]|help][ item]	Настройка конференции.\nconfig [show[ status]|help][ item]
+Allow recieve messages from unaffiliated participants in private	Приём сообщений от участников без полномочий в привате
 
 # file: ../trunk/plugins/md5.py
 Calculate phrase md5 sum.	Расчёт md5 фразы.

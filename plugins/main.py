@@ -1382,8 +1382,37 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'muc_filter_repeat_prs': [L('Repeat presence muc filter is %s'), L('Repeat presence muc filter'), ['off','kick','ban','mute'], 'off'],
 				'muc_filter_large_nick': [L('Large nick muc filter is %s'), L('Large nick muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
 				'muc_filter_large_status': [L('Large status muc filter is %s'), L('Large status muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
-				'muc_filter_censor_prs': [L('Censor muc filter for presence is %s'), L('Censor muc filter for presence'), ['off','kick','ban','replace','mute'], 'off']}
+				'muc_filter_censor_prs': [L('Censor muc filter for presence is %s'), L('Censor muc filter for presence'), ['off','kick','ban','replace','mute'], 'off'],
 
+				'bomb': [L('Bomb. Allow take a bomb %s'), L('Allow take a bomb in current conference'), [True,False], True],
+				'bomb_fault': [L('Bomb. Allow random unexplosive bombs %s'), L('Allow some times take unexplosive bombs'), [True,False], True],
+				'bomb_fault_persent': [L('Bomb. Persent of fault bombs %s'), L('Persent of fault bombs'), None, '25'],
+				'bomb_random': [L('Bomb. Allow bot take a bomb to random user %s'), L('Allow bot take a bomb to random user'), [True,False], False],
+				'bomb_random_active': [L('Bomb. Allow random bombs only in active room %s'), L('Allow random bombs only in active room'), [True,False], True],
+				'bomb_random_active_timer': [L('Bomb. Time for detect room as unactive %s'), L('Time for detect room as unactive'), None, '1200'],
+				'bomb_random_timer': [L('Bomb. Time between random bombs %s'), L('Time between random bombs'), None, '1800'],
+				'bomb_random_timer_persent': [L('Bomb. Persent of mistakes for time between random bombs %s'), L('Persent of mistakes for time between random bombs'), None, '25'],
+				'bomb_random_timer_skip_persent': [L('Bomb. Persent of skiped random bombs %s'), L('Persent of mistakes skiped random bombs'), None, '25'],
+				'bomb_timer': [L('Bomb. Timer is %s'), L('Time to deactivate a bomb'), None, '45'],
+				'bomb_wire': [L('Bomb. Wire count is %s'), L('Wire count for bomb'), None, '4'],
+				'bomb_action': [L('Bomb. Action for bomb explode %s'), L('Type of action for bomb explode'), ['off','kick'], 'kick'],
+				'bomb_reason': [L('Bomb. Reason %s'), L('Reason for bomb explode'), None, L('KA-BO-OM!!!111')],
+				}
+
+config_group_other = [L('Other settings'),'#room-other',
+				['url_title','flood','censor','censor_warning','censor_action_member','censor_action_non_member']]
+
+config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
+				['muc_filter','muc_filter_adblock','muc_filter_repeat','muc_filter_match',
+				'muc_filter_large','muc_filter_censor','muc_filter_adblock_prs','muc_filter_rejoin',
+				'muc_filter_repeat_prs','muc_filter_large_nick','muc_filter_large_status','muc_filter_censor_prs']]
+
+config_group_bomb = [L('Settings for bomb-joke'),'#room-bombjoke',
+				['bomb','bomb_fault','bomb_fault_persent','bomb_random','bomb_random_timer',
+				'bomb_timer','bomb_wire','bomb_action','bomb_reason','bomb_random_active',
+				'bomb_random_active_timer','bomb_random_timer_persent','bomb_random_timer_skip_persent']]
+
+config_groups = [config_group_mucfilter,config_group_other,config_group_bomb]
 # type:
 # b - binary (true\false)
 # i - integer
@@ -1470,6 +1499,78 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'amsg_limit_size':[L('Msgtoadmin. Size limit for msgtoadmin'),'i',1024],
 				'amsg_limit':[L('Msgtoadmin. Time limit for next message for msgtoadmin'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,60]'],
 				'karma_timeout':[L('Karma. Time for karma change from access level'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,5]']}
+
+owner_group_mucfilter = [L('Muc-filter settings'),'#owner-mucfilter',
+				['muc_filter_large_message_size','muc_filter_match_count','muc_filter_match_warning_match',
+				'muc_filter_match_warning_space','muc_filter_match_view','muc_filter_match_warning_nn',
+				'muc_filter_rejoin_count','muc_filter_rejoin_timeout','muc_filter_status_count',
+				'muc_filter_status_timeout','muc_filter_large_status_size','muc_filter_large_nick_size',
+				'muc_filter_repeat_count']]
+
+owner_group_iq = [L('Iq requests settings'),'#owner-iq',
+				['iq_time_enable','iq_uptime_enable','iq_version_enable','iq_disco_enable',
+				'iq_ping_enable','ping_digits','timeout']]
+
+owner_group_juick = [L('Juick settings'),'#owner-juick',
+				['juick_user_post_limit','juick_user_post_size','juick_tag_user_limit','juick_tag_user_max',
+				'juick_msg_answers_default','juick_tag_post_limit','juick_tag_post_size']]
+
+owner_group_logs = [L('Logs settings'),'#owner-logs',
+				['syslogs_enable','status_logs_enable','aff_role_logs_enable','html_logs_enable']]
+
+owner_group_youtube = [L('Youtube settings'),'#owner-youtube',
+				['youtube_max_videos','youtube_default_videos','youtube_max_page_size','youtube_default_lang']]
+
+owner_group_other = [L('Other settings'),'#owner-other',
+				['anek_private_limit','backup_sleep_time','calendar_default_splitter',
+				'inlist_sleep_time','torrent_default_count','pep_scrobbler_max_count',
+				'disco_max_limit','html_paste_enable']]
+
+owner_group_karma = [L('Karma settings'),'#owner-karma',
+				['karma_limit','karma_show_default_limit','karma_show_max_limit','karma_timeout']]
+
+owner_group_www = [L('WWW settings'),'#owner-www',
+				['size_overflow','user_agent',]]
+
+owner_group_troll = [L('Antitroll settings'),'#owner-troll',
+				['troll_default_limit','troll_max_limit','troll_sleep_time']]
+
+owner_group_kernel = [L('Kernel settings'),'#owner-kernel',
+				['censor_text','ddos_limit','ddos_diff','paranoia_mode','reboot_time','schedule_time']]
+
+owner_group_lastfm = [L('LastFM settings'),'#owner-lastfm',
+				['lfm_api','lastfm_max_limit']]
+
+owner_group_whereis = [L('Whereis settings'),'#owner-whereis',
+				['whereis_timeout','whereis_time_dec']]
+
+owner_group_watcher = [L('Watcher settings'),'#owner-watcher',
+				['watch_size','watcher_room_activity','watch_activity_timeout',]]
+
+owner_group_clear = [L('Clear settings'),'#owner-clear',
+				['clear_delay','clear_default_count','clear_max_count']]
+
+owner_group_rss = [L('RSS settings'),'#owner-rss',
+				['rss_max_feed_limit','rss_min_time_limit','rss_get_timeout']]
+
+owner_group_amsg = [L('Message for admin settings'),'#owner-amsg',
+				['amsg_limit_size','amsg_limit']]
+
+owner_group_age = [L('Age settings'),'#owner-age',
+				['age_default_limit','age_max_limit']]
+
+owner_group_sayto = [L('Sayto settings'),'#owner-sayto',
+				['sayto_timeout','sayto_cleanup_time']]
+
+owner_group_spy = [L('Spy settings'),'#owner-spy',
+				['scan_time','spy_action_time']]
+
+owner_groups = [owner_group_amsg,owner_group_rss,owner_group_clear,
+				owner_group_kernel,owner_group_lastfm,owner_group_whereis,
+				owner_group_watcher,owner_group_troll,owner_group_www,
+				owner_group_karma,owner_group_sayto,owner_group_age,
+				owner_group_mucfilter,owner_group_iq,owner_group_juick,
+				owner_group_logs,owner_group_youtube,owner_group_other]
 
 comms = [
 	 (0, 'help', helpme, 2, L('Help system. Helps without commands: about, donation, access')),
