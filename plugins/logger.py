@@ -28,6 +28,26 @@ def append_message_to_log(room,jid,nick,type,text):
 		if type == 'chat' and text != 'None': nick = 'chat | '+nick
 		if text != 'None' and GT('syslogs_enable'): msg_logger(room,jid,nick,type,text,system_log)
 		
+def write_log_with_end(curr_path,curr_file,log_body,log_he):
+	global last_log_file
+	if not os.path.isfile(curr_file):
+		fl = open(curr_file, 'a')
+		fl.write(log_he.encode('utf-8'))
+		fl.write(log_body.encode('utf-8'))
+		try:
+			ll = last_log_file[curr_path]
+			if os.path.isfile(ll):
+				ender = ['\n','</div></div></body></html>'][GT('html_logs_enable')]
+				fle = open(ll, 'a')
+				fle.write(ender.encode('utf-8'))
+				fle.close()
+		except: pass
+	else:
+		fl = open(curr_file, 'a')
+		fl.write(log_body.encode('utf-8'))
+	fl.close()
+	last_log_file[curr_path] = curr_file
+		
 def msg_logger(room,jid,nick,type,text,logfile):
 	lt = tuple(time.localtime())
 	curr_path = logfile+'/'+room
@@ -47,24 +67,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	log_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,log_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][GT('html_logs_enable')]
 	try: log_he += initial_log_users(room,ott) + ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][GT('html_logs_enable')] + ['*** %s\n','<span class="topic">%s</span></p>'][GT('html_logs_enable')] % [topics[room],html_escape(topics[room]).replace('\n','<br>')][GT('html_logs_enable')]
 	except: pass
-	if not os.path.isfile(curr_file):
-		fl = open(curr_file, 'a')
-		fl.write(log_he.encode('utf-8'))
-		fl.write(log_body.encode('utf-8'))
-	else:
-		fl = open(curr_file, 'a')
-		fl.write(log_body.encode('utf-8'))
-	fl.close()
-	'''
-	try: ll = last_log_file[logfile]
-	except: ll = curr_file
-	if ll != curr_file:
-		ender = ['\n','</div></div></body></html>'][GT('html_logs_enable')]
-		fl = open(curr_file, 'a')
-		fl.write(ender.encode('utf-8'))
-		fl.close()
-	last_log_file[logfile] = curr_file
-	'''
+	write_log_with_end(logfile+room,curr_file,log_body,log_he)
 
 def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
@@ -78,7 +81,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	role,affiliation = [mass[1],html_escape(mass[1])][GT('html_logs_enable')], [mass[2],html_escape(mass[2])][GT('html_logs_enable')]
 	if nick[:11] != '<temporary>' and role != 'None' and affiliation != 'None':
 		text,exit_type = [mass[0],html_escape(mass[0])][GT('html_logs_enable')],mass[3]
-		#if GT('html_logs_enable'): text = correct_html(text)
+		if GT('html_logs_enable') and text[:20] == '&lt;br&gt;&amp;nbsp;': text = ' %s' % text[20:]#text = correct_html(text)
 		exit_message,show = [mass[4],html_escape(mass[4])][GT('html_logs_enable')], [mass[5],html_escape(mass[5])][GT('html_logs_enable')]
 		priority,not_found = mass[6],mass[7]
 		if not_found == 1 and not GT('aff_role_logs_enable'): return
@@ -118,24 +121,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 		log_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,log_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][GT('html_logs_enable')]
 		try: log_he += initial_log_users(room,ott) + ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][GT('html_logs_enable')] + ['*** %s\n','<span class="topic">%s</span></p>'][GT('html_logs_enable')] % [topics[room],html_escape(topics[room]).replace('\n','<br>')][GT('html_logs_enable')]
 		except: pass
-		if not os.path.isfile(curr_file):
-			fl = open(curr_file, 'a')
-			fl.write(log_he.encode('utf-8'))
-			fl.write(log_body.encode('utf-8'))
-		else:
-			fl = open(curr_file, 'a')
-			fl.write(log_body.encode('utf-8'))
-		fl.close()
-		'''
-		try: ll = last_log_file[logfile]
-		except: ll = curr_file
-		if ll != curr_file:
-			ender = ['\n','</div></div></body></html>'][GT('html_logs_enable')]
-			fl = open(curr_file, 'a')
-			fl.write(ender.encode('utf-8'))
-			fl.close()
-		last_log_file[logfile] = curr_file
-		'''
+		write_log_with_end(logfile+room,curr_file,log_body,log_he)
 
 global execute
 

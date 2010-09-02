@@ -55,8 +55,8 @@ def bomb_joke(type, jid, nick, text):
 			bc = bomb_colors[random.randrange(len(bomb_colors))]
 			if bc not in b_clrs: b_clrs.append(bc)
 		bomb_current[getRoom(jid)] = [text,b_clrs,b_clrs[random.randrange(len(b_clrs))]]
-		msg,nick,bmb = L('/me take a bomb to %s with wires %s. Time to deactivate is %s sec.') % (text,', '.join(b_clrs),b_timer),'',True
-	send_msg(type, jid, nick, msg)
+		msg,bmb = L('/me take a bomb to %s with wires %s. Time to deactivate is %s sec.') % (text,', '.join(b_clrs),b_timer),True
+	send_msg(type, jid, '', msg)
 	if bmb:
 		while b_timer > 0 and not game_over:
 			sleep(1)

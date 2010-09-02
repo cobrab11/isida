@@ -291,7 +291,7 @@ def replacer(msg):
 	msg = rss_del_html(msg)
 	msg = rss_replace(msg)
 	msg = rss_del_nn(msg)
-	return msg
+	return msg.replace('...',u'…')
 
 def svn_info(type, jid, nick):
 	if os.path.isfile(ul): msg = L('Last update:\n%s') % readfile(ul).decode('utf-8')
@@ -1191,7 +1191,14 @@ def rss(type, jid, nick, text):
 		except: feed = L('Unable to access server!')
 		is_rss_aton,fc = 0,feed[:256]
 		if fc.count('<?xml version='):
-			if fc.count('<feed'): is_rss_aton = 2
+			if fc.count('<feed'):
+				is_rss_aton = 2
+				t_feed = feed.split('<title>')
+				feed = t_feed[0]
+				for tmp in t_feed[1:]:
+					tm = tmp.split('</title>')
+					if ord(tm[0][-1]) == 208: tm[0] = tm[0][:-1] + '...'
+					feed += '<title>%s</title>%s' % tuple(tm)
 			elif fc.count('<rss') or fc.count('<rdf'): is_rss_aton = 1
 			feed = html_encode(feed)
 			feed = re.sub(u'(<span.*?>.*?</span>)','',feed)
