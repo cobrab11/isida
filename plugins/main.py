@@ -1196,7 +1196,7 @@ def rss(type, jid, nick, text):
 				t_feed = feed.split('<title>')
 				feed = t_feed[0]
 				for tmp in t_feed[1:]:
-					tm = tmp.split('</title>')
+					tm = tmp.split('</title>',1)
 					if ord(tm[0][-1]) == 208: tm[0] = tm[0][:-1] + '...'
 					feed += '<title>%s</title>%s' % tuple(tm)
 			elif fc.count('<rss') or fc.count('<rdf'): is_rss_aton = 1

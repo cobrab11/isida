@@ -1515,7 +1515,7 @@ raw_iq = []
 
 try:
 	try:
-		Server = server.split(':')[0]
+		Server = tuple(server.split(':'))
 		Port = int(server.split(':')[1])
 		pprint('Trying to connect to %s' % server)
 	except: Server,Port = None,5222
@@ -1533,10 +1533,10 @@ try:
 	pprint('Connected')
 	cl.auth(jid.getNode(), Settings['password'], jid.getResource())
 	pprint('Autheticated')
-except:
-	pprint('Auth error or no connection. Restart in %s sec.' % GT('reboot_time'))
-	sleep(GT('reboot_time'))
-	sys.exit('restart')
+except: raise
+#	pprint('Auth error or no connection. Restart in %s sec.' % GT('reboot_time'))
+#	sleep(GT('reboot_time'))
+#	sys.exit('restart')
 pprint('Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
