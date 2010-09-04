@@ -17,7 +17,7 @@ def is_valid(type, jid, nick, text):
 	elif ru_lit+en_lit+text.count(' ')+text.count('.') == lt: msg = L('Valid of nick is - %s%s') % (str(100-int(idx*100)), '%!')
 	elif not ru_lit or not en_lit: msg = L('Normal nick, but left symbols in fireplace.')
 	else: msg = L('Valid of nick is - %s%s') % (int(float(ru_lit+en_lit)/lt*100-int(idx*100)), '%!')
-	if float(caps_lit)/lt > 0.5: msg += L('Many caps - %s%s') % (int(float(caps_lit)/lt*100), '%!')
+	if float(caps_lit)/lt > 0.5: msg += ' ' + L('Many caps - %s%s') % (int(float(caps_lit)/lt*100), '%!')
 
 	msg += ' ' + L('Dominate letters:') + ' '
 	if hl == 1: msg += L('Latin')
