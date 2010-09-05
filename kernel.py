@@ -465,11 +465,15 @@ def iqCB(sess,iq):
 	acclvl = get_level(getRoom(room),getResourse(room))[0] >= 7 and GT('iq_disco_enable')
 	if iq.getType()=='error' and was_request:
 		iq_err,er_name = get_tag(unicode(iq),'error'),L('Unknown error!')
-		for tmp in iq_error.keys():
-			if iq_err.count(tmp):
-				er_name = '%s %s!' % (L('Error!'),iq_error[tmp])
-				break
-		iq_async(id,time.time(),er_name,'error')
+		try: JJ = JUICK_JID
+		except: JJ = None
+		if room == JJ: iq_async(id,time.time(), unicode(iq))
+		else:
+			for tmp in iq_error.keys():
+				if iq_err.count(tmp):
+					er_name = '%s %s!' % (L('Error!'),iq_error[tmp])
+					break
+			iq_async(id,time.time(),er_name,'error')
 
 	elif iq.getType()=='result' and was_request:
 		cparse = unicode(iq)

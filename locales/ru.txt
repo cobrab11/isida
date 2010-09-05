@@ -150,6 +150,7 @@ cyan	голубой
 yellow	желтый
 white	белый
 black	черный
+Not allowed in private!	Не доступно в привате!
 In this room not allowed take a bomb!	В этой конференции нельзя раздавать бомбы!
 This room alredy boombed!	Бомба уже установлена!
 I can't take a bomb to %s	Не могу дать бомбу %s
@@ -507,17 +508,13 @@ Conference's activity.	Активность конференции.
 
 # file: ../trunk/plugins/juick.py
 Smoke help about command!	Курим помощь по команде!
-User %s not found	Пользователь %s не найден
-Who?	Кто?
-Message #%s not found	Сообщение #%s не найдено
-(Replies: %s)	(Ответов: %s)
-(No replies)	(Нет ответов)
-Invalid message number	Неверный номер поста
 What message do you want to find?	Какой пост найти?
-Tag %s not found	Тег %s не найден
-Tag %s found in %s	Тег %s найден у %s
-What tag do you want to find?	Какой тег найти?
-Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user's messages\njuick info <username> - show user info	Миниблоги http://juick.com\njuick tag user <tag>[ количество_пользователей] - пользователи, использующие теги\njuick tag msg <tag>[ лимит_сообщенй [лимит_размера_сообщений]] - сообщения с заданными тегами\njuick msg <номер_поста>[ количество] - пост+количество ответов\njuick msg <номер_поста/номер_ответа> - пост+ответ на пост\njuick user <user> [лимит_сообщенй [лимит_размера_сообщений]] - последние сообщения пользователя\njuick info <user> - информация о пользователе
+Message #%s is not found!	Сообщение #%s не найдено!
+I can't show message #%s!	Я не могу показать сообщение #%s!
+Unknown error while message #%s parsing!	Неизвестная ошибка при запросе сообщения #%s!
+Replies:	Ответов:
+Unknown server ansver!	Неизвестный ответ сервера!
+Miniblogs http://juick.com\njuick [msg][#]post - show post	Миниблоги http://juick.com\njuick [msg][#]post - показать пост
 
 # file: ../trunk/plugins/karma.py
 In this room karma is not changed!	В данной конфе карма не изменялась!
@@ -1118,7 +1115,6 @@ Incorrect tracker.	Неверно задан трекер.
 Search in bittorrent trackers\ntorrent rutor - search in RuTor.org\ntorrent os - search in OpenSharing.org\ntorrent tracker\nquery\ncount	Поиск по торрент трекерам\ntorrent rutor - поиск по RuTor.org\ntorrent os - поиск по OpenSharing.org\ntorrent tracker\nquery\ncount
 
 # file: ../trunk/plugins/turn.py
-Not allowed in private!	Не доступно в привате!
 qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
 QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ
 Turn text from one layout to another.	Если не задан текст - "переворачивает" последнее сообщение с русской раскладки на английскую и обратно.
@@ -1174,4 +1170,3 @@ Search weather by code, city, country.	Поиск погоды по коду г�
 
 # file: ../trunk/plugins/youtube.py
 Search at YouTube	Поиск по YouTube
-

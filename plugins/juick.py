@@ -1,181 +1,74 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+JUICK_JID = 'juick@juick.com'
+
+NS_JUICK = 'http://juick.com/query'
+NS_JUICK_MSG = '%s#messages' % NS_JUICK
+
 def juick(type, jid, nick, text):
-	if text[:9]== 'tag user ': juick_tag_user(type, jid, nick, text[9:])
-	elif text[:8]== 'tag msg ': juick_tag_msg(type, jid, nick, text[8:])
-	elif text[:4]== 'msg ': juick_msg(type, jid, nick, text[4:])
-	elif text[:5]== 'user ': juick_user(type, jid, nick, text[5:])
-	elif text[:5]== 'info ': juick_user_info(type, jid, nick, text[5:])
+	topt = text.split(' ',1)
+	topt[0] = topt[0].lower()
+	if topt[0] == 'msg': juick_msg(type, jid, nick, topt[1])
 	else:
 		try: tmpt = re.findall('(#?[0-9]+\/?[0-9]+)',text)[0]
 		except: tmpt = ''
 		if tmpt == text: juick_msg(type, jid, nick, text)
 		else: send_msg(type, jid, nick, L('Smoke help about command!'))
 
-def juick_user_info(type, jid, nick, text):
-	text = text.replace('@','')
-	if len(text):
-		text = text.split(' ')[0]
-		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/friends'
-		body = urllib.urlopen(link).read()
-		body = rss_replace(html_encode(body))
-
-		if body.count('<h1>Page Not Found</h1>'): msg = L('User %s not found') % text
-		else:
-			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/readers'
-			rbody = urllib.urlopen(link).read()
-			rbody = rss_replace(html_encode(rbody))
-			link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')+'/tags'
-			tbody = urllib.urlopen(link).read()
-			tbody = rss_replace(html_encode(tbody))
-			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
-			tb = body.split('<div id="content">')[1].split('</p>')[0]
-			try:
-				if len(tb)>=20 and tb.count('I read'):
-					msg += '\n'+get_tag(tb,'h2')+' - '
-					for tmp in tb.split('<p>')[1].split('<a href="')[1:]: msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
-					msg = msg[:-2]
-				else: msg += '\nNo readers'
-			except: msg += '\nNo readers'
-
-			if not rbody.count('<h1>Page Not Found</h1>'):
-				try:
-					tb = rbody.split('<div id="content">')[1].split('</div>')[0]
-					if len(tb)>=20 and tb.count('My read'):
-						msg += '\n'+get_tag(tb,'h2')+' - '
-						for tmp in tb.split('<p>')[1].split('<a href="')[1:]: msg += tmp[tmp.find('>')+1:tmp.find('<',tmp.find('>'))]+', '
-						msg = msg[:-2]
-					else: msg += '\nNo readers'
-				except: msg += '\nNo readers'
-
-			if not tbody.count('<h1>Page Not Found</h1>'):
-				try:
-					tb = tbody.split('<div id="content">')[1].split('</div>')[0]
-					msg += '\nTags: '
-					for ttb in tb.split('<span')[1:]: msg += get_tag(ttb,'a')+', '
-					msg = msg[:-2]
-				except: msg += '\nNo tags'
-	else: msg = L('Who?')
-	send_msg(type, jid, nick, msg)
-
-def juick_user(type, jid, nick, text):
-	text = text.replace('@','')
-	if len(text):
-		try: mlen = int(text.split(' ')[1])
-		except: mlen = GT('juick_user_post_limit')
-		try: mlim = int(text.split(' ')[2])
-		except: mlim = GT('juick_user_post_size')
-		text = text.split(' ')[0]
-		link = 'http://juick.com/'+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
-		body = urllib.urlopen(link).read()
-		body = html_encode(body)
-		if body.count('<h1>Page Not Found</h1>'): msg = L('User %s not found') % text
-		else:
-			msg = get_tag(body,'h1')+' - http://juick.com'+get_subtag(body.split('pagetabs')[1].split('</li>')[0],'href')
-			mes = body.split('<li class="liav"')
-			mesg = ''
-			for us in mes[1:mlen+1]:
-				mesg += '\n'+get_tag(us.split('<small>')[1],'a')+' - '
-				if us.count('<div class="ps">'): mm = get_subtag(us.split('<div>')[1],'a href') + ' ' + rss_del_html(us.split('<div>',1)[1].split('<small>')[0])
-				else: mm = rss_del_html(get_tag(us,'div'))
-				mm = rss_replace(mm)
-				if len(mm)<mlim: mesg += mm
-				else: mesg += mm[:mlim]+'[...]'
-				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
-				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
-			msg += mesg
-	else: msg = L('Who?')
-	send_msg(type, jid, nick, msg)
-
 def juick_msg(type, jid, nick, text):
-	if len(text):
-		try:
-			text = text.replace('#','')
-			if text.count('/'): link,post = 'http://juick.com/'+text.split('/')[0],text.split('/')[1]
-			else: link,post = 'http://juick.com/'+text.split(' ')[0],None
-			try: repl_limit = int(text.split(' ')[1])
-			except: repl_limit = GT('juick_msg_answers_default')
-			body = urllib.urlopen(link).read()
-			body = html_encode(body.replace('<div><a href','<div><a '))
-			if body.count('<h1>Page Not Found</h1>'): msg = L('Message #%s not found') % text
-			else:
-				nname = get_tag(body,'h1')
-				if nname.count('(') and nname.count(')'): uname = nname[nname.find('(')+1:nname.find(')')]
-				else: uname = nname
-				msg = 'http://juick.com/'+uname+'/'+text.split(' ')[0].replace('/','#')+'\n'+nname+' - '
-				if body.split('<p>')[1].count('<div class="ps">'): msg += get_subtag(body.split('<p>')[1].split('<div class="ps">')[1],'a href') + body.split('<p>')[1].split('</div>',1)[1].split('<small>')[0]
-				else: msg += get_tag(body.split('<p>')[1],'div')
-			repl = get_tag(body.split('<p>')[1],'h2')
-			if repl.lower().count('('):
-				hm_repl = int(repl[repl.find('(')+1:repl.find(')')])
-				msg += ' ' + L('(Replies: %s)') % str(hm_repl)
-			else:
-				hm_repl = 0
-				msg += ' ' + L('(No replies)')
-			frm = get_tag(body.split('<p>')[1],'small')
-			msg += frm[frm.find(' '):]
-			if hm_repl:
-				if not post:
-					for rp in body.split('<li id="')[1:repl_limit+1]: msg += '\n'+text.split(' ')[0]+'/'+rp.split('"')[0]+' '+get_tag(rp,'a')+': '+get_tag(rp,'div')
-				else:
-					for rp in body.split('<li id="'):
-						if rp.split('"')[0] == post:
-							msg += '\n'+text+' '+get_tag(rp,'div')
-							break
-			remove = re.findall(r'" rel="nofollow">.*?</a>', msg, re.S)
-			for tmp in remove: msg = msg.replace(tmp,' ')
-			msg = rss_replace(rss_del_html(msg.replace('<a href="http','http'))).replace('<small>','\n')
-			while msg.count('  '): msg = msg.replace('  ',' ')
-		except: msg = L('Invalid message number')
-	else: msg = L('What message do you want to find?')
-	send_msg(type, jid, nick, msg)
+	global iq_request
+	if not len(text) or len(text) == text.count(' '):
+		send_msg(type, jid, nick, L('What message do you want to find?'))
+		return
+	j_mid,j_rid = re.findall('#?([0-9]+)\/?([0-9]+)?',text)[0]
+	if len(j_rid):
+		if int(j_rid) == 0: raise SyntaxError
+		else: j_rid = str(int(j_rid))
+	j_mid = str(int(j_mid))
+	try: j_replies = int(text.split()[1])
+	except: j_replies = GT('juick_msg_answers_default')
+	iqid = get_id()
+	j_items = {'xmlns': NS_JUICK_MSG,
+			   'mid':j_mid}
+	#if len(j_rid): j_items['rid'] = '*'
+	#if j_replies > 0: j_items['rid'] = '*'
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':JUICK_JID}, payload = [Node('query', j_items,[])])
+	iq_request[iqid]=(time.time(),juick_msg_async,[type, jid, nick, (j_mid,j_rid,j_replies)])
+	sender(i)
 
-def juick_tag_user(type, jid, nick, text):
-	if len(text):
-		try: mlen = int(text.split(' ')[1])
-		except: mlen = GT('juick_tag_user_limit')
-		text = text.split(' ')[0]
-		if mlen > GT('juick_tag_user_max'): mlen = GT('juick_tag_user_max')
-		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
-		body = urllib.urlopen(link).read()
-		body = rss_replace(html_encode(body))
-		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'): msg = L('Tag %s not found') % text
-		else:
-			usr = body.split('<h2>Users</h2>')[1].split('<h2>Messages</h2>')[0].split('<a href')
-			users = ''
-			for us in usr[1:mlen+1]:
-				uus = us[us.find('>')+1:us.find('<',us.find('>'))]
-				users += '\n'+ uus + ' - http://juick.com/'+uus[1:]
-			msg = L('Tag %s found in %s') % (text, users)
-	else: msg = L('What tag do you want to find?')
-	send_msg(type, jid, nick, msg)
-
-def juick_tag_msg(type, jid, nick, text):
-	if len(text):
-		try: mlen = int(text.split(' ')[1])
-		except: mlen = GT('juick_tag_post_limit')
-		try: mlim = int(text.split(' ')[2])
-		except: mlim = GT('juick_tag_post_size')
-		text = text.split(' ')[0]
-		link = 'http://juick.com/last?tag='+text.encode('utf-8').replace('\\x','%').replace(' ','%20')
-		body = urllib.urlopen(link).read()
-		body = html_encode(body)
-		if body.count('<p>Tag not found</p>') or body.count('<h1>Page Not Found</h1>'): msg = L('Tag %s not found') % text
-		else:
-			mes = body.split('<h2>Messages</h2>')[1].split('</div><div id="lcol"><h2>')[0].split('<li class="liav"')
-			mesg = ''
-			for us in mes[1:mlen+1]:
-				mesg += '\nhttp://juick.com/'+get_tag(us.split('<big>')[1],'a')[1:]+'/'+get_tag(us.split('</div>')[1],'a')[1:]+' - '
-				mm = rss_replace(rss_del_html(get_tag(us,'div')))
-				if len(mm)<mlim: mesg += mm
-				else: mesg += mm[:mlim]+'[...]'
-				if us.split('</span>')[1].count('<a'): mesg += ' ('+get_tag(us,'span')+'|'+get_tag(us.split('</span>')[1],'a')+')'
-				else: mesg += ' ('+get_tag(us,'span')+'|No replies)'
-			msg = L('Tag %s found in %s') % (text, mesg)
-	else: msg = L('What tag do you want to find?')
+def juick_msg_async(type, jid, nick, (j_mid,j_rid,j_replies), is_answ):
+	isa = is_answ[1][0]
+	#print isa
+	j_type = get_tag_item(isa,'iq','type')
+	if j_type == 'error':
+		j_error_code = get_tag_item(isa,'error','code')
+		if j_error_code == '404': msg = L('Message #%s is not found!') % j_mid
+		elif j_error_code == '403': msg = L('I can\'t show message #%s!') % j_mid
+		else: msg = L('Unknown error while message #%s parsing!') % j_mid
+	elif j_type == 'result':
+		j_item 		= get_tag_full(isa,'juick')
+		ja_ts 		= get_tag_item(j_item,'juick','ts')
+		ja_uname 	= get_tag_item(j_item,'juick','uname')
+		ja_replies 	= get_tag_item(j_item,'juick','replies')
+		ja_attach 	= get_tag_item(j_item,'juick','attach')
+		ja_body 	= get_tag(j_item,'body')
+		ja_tags 	= []
+		while j_item.count('<tag') and j_item.count('</tag>'):
+			tmp_tag = get_tag_full(j_item,'tag')
+			j_item = j_item.replace(tmp_tag,'')
+			ja_tags.append(get_tag(tmp_tag,'tag'))
+		msg = '@%s:' % ja_uname
+		if len(ja_tags): msg = '%s *%s' % (msg,' *'.join(ja_tags))
+		if ja_attach in ['jpg', '3gp', 'wmv', 'mov','mp4']:
+			if ja_attach in ['3gp', 'wmv', 'mov','mp4']: ja_url = 'http://i.juick.com/video/'
+			elif ja_attach in ['jpg']: ja_url = 'http://i.juick.com/p/'
+			msg = '%s - %s%s.%s' % (msg,ja_url,j_mid,ja_attach)
+		msg = '%s\n%s\n#%s, %s' % (msg,ja_body,j_mid,ja_ts)
+		if len(ja_replies): msg = '%s; %s %s' % (msg,L('Replies:'),ja_replies)
+	else: msg = L('Unknown server ansver!')
 	send_msg(type, jid, nick, msg)
 
 global execute
 
-execute = [(3, 'juick', juick, 2, L('Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user\'s messages\njuick info <username> - show user info'))]
+execute = [(3, 'juick', juick, 2, L('Miniblogs http://juick.com\njuick [msg][#]post - show post'))]
