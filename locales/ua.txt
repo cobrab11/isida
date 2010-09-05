@@ -28,9 +28,8 @@ Dec	Гру
 Unknown error!	Невідома помилка!
 Error!	Помилка!
 No reason	Причина не вказана
-Configuration	Конфігурація
+Unknown configuration request!	Невідомий запит конфігурації
 For configure required x:data-compatible client	Для налаштування потрібен x:data-сумісний кліент
-iSida Jabber Bot configuration	Конфігурація Jabber-бота iSida
 AD-Block!	Блокування реклами
 Repeat message block!	Повідомлення дуже схожі
 Match message block!	Тескс повідомлення дублюється
@@ -119,6 +118,7 @@ Updated:	Поновлено:
 Not found:	Не знайдено
 Added:	Додано:
 done	виконано
+Actions list.\nacl show - show list\nacl del [/silent] item - remove item from list\nacl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - execute command by condition\nallowed variables in commands: ${NICK}, ${JID}, ${SERVER}\nsub = substring, exp = regular expression, cexp = case sensitive regular expression\ntime format is /number+identificator. s = sec, m = min, d = day, w = week, M = month, y = year. only one identificator allowed!	Списока дій.\nacl show - показати список\nacl del [/silent] item - видалити елемент із списку\nacl [/time] [/silent] msg|message|prs|presence|role|affiliation|nick|jid|jidfull|res|all [sub|exp|cexp] pattern command - виконати команду за умови\nnдоступні змінні в командах:${NICK}, ${JID}, ${SERVER}\nsub = підстрока, exp = регулярний вираз, cexp = регістрозалежний регулярний вираз\nформат часу - /число+ідентифікатор. s = секунди, m = хвилини, d = дні, w = тижні, m = місяці, y = роки. допустимий тільки один ідентифікатор!
 
 # file: ../trunk/plugins/backup.py
 Available copies:	Резервні копії:
@@ -215,6 +215,26 @@ What do you want to find?	Що ж будемо шукати?
 I can't resolve it	Не ресолвиться
 DNS resolver.	DNS-ресолвер.
 Search domain zones TLD.	Пошук доменних зон TLD.
+
+# file: ../trunk/plugins/bomb.py
+blue	синій
+red	червоний
+magenta	фіолетовий
+green	зелений
+cyan	блакитний
+yellow	жовтий
+white	білий
+black	чорний
+Not allowed in private!	Не доступно в приваті
+In this room not allowed take a bomb!	У цій конференції не можна роздавати бомби
+This room alredy boombed!	Бомба вже встановлена
+I can't take a bomb to %s	Не можу дати бомбу %s
+/me take a bomb to %s with wires %s. Time to deactivate is %s sec.	/me дала бомбу %s з проводами %s. Час деактивації %s
+It's a lucky day for you! Bomb is fault! Right wide is %s	Тобі пощастило, бомба не спрацювала. Правильний провід %s
+/me explode %s	/me підірвала %s
+Bomb is deactivated! Congratulations!	Бомба деактивована! Вітаю!
+You were wrong! Right wire is %s	Ти помилився! Правильний провід %s
+Take a bomb joke!	Видача бомби
 
 # file: ../trunk/plugins/horo.py
 aries	овен
@@ -432,7 +452,6 @@ Search in admins list of conference.	Пошук по admins списку кон�
 Search in owners list of conference.	Пошук по owners списку конференції.
 
 # file: ../trunk/plugins/turn.py
-Not allowed in private!	Не доступно в приваті
 qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~	йцукенгшщзхїфівапролджєячсмитьбюёЙЦУКЕНГШЩЗХЇФІВАПРОЛДЖЄЯЧСМИТЬБЮЁqwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~
 QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~qwertyuiop[]asdfghjkl;'zxcvbnm,.`	qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~йцукенгшщзхїфівапролджєячсмитьбюёЙЦУКЕНГШЩЗХЇФІВАПРОЛДЖЄЯЧСМИТЬБЮЁ
 Turn text from one layout to another.	Якщо текст не заданий - "перевертає" останнє повідомлення з української розкладки на англійську та назад.
@@ -784,10 +803,41 @@ Large status muc filter is %s	Довгі статуси: %s
 Large status muc filter	Фільтр довгих статусів
 Censor muc filter for presence is %s	Цензор для презенсів: %s
 Censor muc filter for presence	Цензор дли презенсів
+Bomb. Allow take a bomb %s	Bomb. Дозволити роздачу бомб: %s
+Allow take a bomb in current conference	Дозволити роздачу бомб в даній конференції
+Bomb. Allow random unexplosive bombs %s	Bomb. Іноді не підривати бомби: %s
+Allow some times take unexplosive bombs	Іноді не підривати бомби
+Bomb. Persent of fault bombs %s	Bomb. Процент неробочих бомб: %s
+Persent of fault bombs	Процент неробочих бомб
+Bomb. Allow bot take a bomb to random user %s	Bomb. Видавати бомбу випадковому користувачеві: %s
+Allow bot take a bomb to random user	Видавати бомбу випадковому користувачеві
+Bomb. Allow random bombs only in active room %s	Bomb. Випадкові бомби тільки в активній конференції: %s
+Allow random bombs only in active room	Випадкові бомби тільки в активній конференції
+Bomb. Time for detect room as unactive %s	Bomb. Час протягом якого конференція вважаеться активною: %s
+Time for detect room as unactive	Час протягом якого конференція вважаеться активною
+Bomb. Time between random bombs %s	Bomb. Час між випадковими бомбами: %s
+Time between random bombs	Час між випадковими бомбами
+Bomb. Persent of mistakes for time between random bombs %s	Bomb. Погрішність часу між випадковими бомбами в процентах: %s
+Persent of mistakes for time between random bombs	Погрішність часу між випадковими бомбами в процентах
+Bomb. Persent of skiped random bombs %s	Bomb. Процент не установки випадкових бомб: %s
+Persent of mistakes skiped random bombs	Процент не установки випадкових бомб
+Bomb. Timer is %s	Bomb. Таймер бомби: %s
+Time to deactivate a bomb	Таймер бомби
+Bomb. Wire count is %s	Bomb. Кількість проводів у бомби: %s
+Wire count for bomb	Кількість проводів у бомби
+Bomb. Action for bomb explode %s	Bomb. Дія при вибуху
+Type of action for bomb explode	Дія при вибуху
+Bomb. Reason %s	Bomb. Причина з якою буде дія: %s
+Reason for bomb explode	Причина з якою буде дія
+KA-BO-OM!!!111	БА-БА-АХ!!!!
+Other settings	Інші налаштування
+Muc-filter settings	Налаштування muc-фільтру
+Settings for bomb-joke	Налаштування бомби-жарту
 Logger. Enable system logs	Logger. Ввімкнення системних логів
 Logger. Enable status change logging	Logger. Запис в логи зміни статусів
 Logger. Enable role and affiliation logging	Logger. Запис в логи зміни афіляцій і ролей
 Logger. Html logs. Otherwize in text	Logger. Ведення логів в html, інакше у вигляді звичайного тексту
+Logger. Additional text for logs	Logger. Додатковий текст в кінці html лога
 Karma. Minimal karma for allow krama change for participants	Karma. Мінімальна карма з якою зміна карми доступна не посійним учасникам
 Karma. Default length of list karma top+/-	Karma. Кільлкість учасників за замовчуванням при показі результатів команди karma top+/-
 Karma. Maximal length of list karma top+/-	Karma. Максимальна кількість учасників для показу результатів команди karma top+/-
@@ -842,6 +892,10 @@ Iq. Allow answer to version request	Iq. Дозвіл відповідати на
 Iq. Allow answer to service discovery	Iq. Дозвіл відповідати на запит огляду сервісів бота
 Iq. Allow answer to ping	Iq. Дозвіл відповідати на запит пінгу бота
 Kernel. Paranoic mode. Disable all execute possibles on bot	Kernel. Режим для параноїків. Заборона виконання будь-якого зовнішнього коду
+Kernel. Bot status. Show different status for bot loading	Kernel. Bot status. Особливий статус при завантаженні
+Kernel. Bot status. Status while loading	Kernel. Bot status. Статус при завантаженні
+Kernel. Bot status. Message while loading	Kernel. Bot status. Статус-повідомлення при завантаженні
+Loading...	Завантажуюсь...
 Watcher. Timeout for no actions in room for rejoin	Watcher. Таймаут неактивності конференцій для перезаходу
 Muc-filter. Message size for filter	Muc-filter. Розмір повідомлення для фільтра
 Muc-filter. A kind words count	Muc-filter. Лічильник однакових символів
@@ -855,6 +909,7 @@ Muc-filter. Number of precences per time	Muc-filter. Кількість стат
 Muc-filter. Time between presences	Muc-filter. Проміжок часу на статус-презенси
 Muc-filter. Maximux status-message size	Muc-filter. Максимальний розмір статус-повідомлення
 Muc-filter. Maximum nick size	Muc-filter. Максимальний розмір ніка
+Muc-filter. Repeat count	Muc-filter. Кількість повторів схожих повідомлень
 Paste. Paste as html. Otherwize as text	Paste. Html розмічення, інакше в вигляді тексту
 Kernel. Text for hide censore	Kernel. Текст для закриття мату
 Kernel. Time of ignore for anti-ddos	Kernel. Час ігнору при ddos'і в залежності від рівня доступу
@@ -862,6 +917,23 @@ Kernel. Anti-ddos time delay between messages	Kernel. Проміжок між п
 Msgtoadmin. Size limit for msgtoadmin	Msgtoadmin. Ліміт розміру повідомлення для команди msgtoadmin
 Msgtoadmin. Time limit for next message for msgtoadmin	Ліміт часу слідуючої відправки повідомлення для команди msgtoadmin
 Karma. Time for karma change from access level	Karma. Час через який дозволено міняти карму в залежності від рівня доступу
+Iq requests settings	Налаштування iq запитів 
+Juick settings	Налаштування Juick
+Logs settings	Налаштування логів
+Youtube settings	Налаштування Youtube
+Karma settings	Налаштування карми 
+WWW settings	Налаштування WWW
+Antitroll settings	Налаштування антитроля
+Kernel settings	Налаштування ядра
+LastFM settings	Налаштування LastFM
+Whereis settings	Налаштування whereis
+Watcher settings	Налаштування watcher
+Clear settings	Налаштування clear
+RSS settings	Налаштування RSS
+Message for admin settings	Налаштування повідомлень адміну
+Age settings	Налаштування age
+Sayto settings	Налаштування sayto
+Spy settings	Налаштування spy
 Help system. Helps without commands: about, donation, access	Показує поточні розділи довідкової системи. Розділи довідки без команд: about, donation, доступ
 Join conference.\njoin room[@conference.server.ru[/nick]]	Вхід до конференції:\njoin room@conference.server.ru/nick - вхід до конференції room з ніком nick.\njoin room@conference.server.ru - вхід до конференції room з останнім заданим ніком.\njoin room - вхід до конференції room на останньому заданому сервері з останнім заданим ніком.
 Leave conference.\nleave room[@conference.server.ru[/nick]]	Вихід з конференції:\nleave - вихід з поточної конференції.\nleave room - вихід з конференції room на останньому заданому сервері.\nleave room@conference.server.ru - вихід з конференції room
@@ -1088,15 +1160,11 @@ Show local talkers	Показ локальної бази "Базік"
 Show global talkers	Показ глобальної бази "Базік"
 
 # file: ../trunk/plugins/juick.py
-User %s not found	Користувач %s не знайдений
-Who?	Хто?
-Message #%s not found	Пост #%s не знайдений
-(Replies: %s)	(Відповідей: %s)
-(No replies)	(Немає відповідей)
-Invalid message number	Невірний номер поста
 What message do you want to find?	Який пост знайти?
-Tag %s not found	Тег %s не знайден
-Tag %s found in %s	Тег %s знайден у %s
-What tag do you want to find?	Який тег знайти?
-Miniblogs http://juick.com\njuick tag user <tag> [users count] - users, who use tags\njuick tag msg <tag> [messages_count_limit [message_lenght_limit]] - show messages with requsted tags\njuick msg <message_number> [count] - show message + count replies\njuick msg <message_number/reply_number> [count] - show message + reply\njuick user <username> [message_count_limit [message_lenght_limit]] - last user's messages\njuick info <username> - show user info	Мініблоги http://juick.com\njuick tag user <tag>[ кількість_користувачів] - користувачі, які використовують теги\njuick tag msg <tag>[ ліміт_повідомлень [ліміт_обсягу_повідомлень]] - повідомлення з заданими тегами\njuick msg <номер_поста>[ кількість] - пост+кількість відповідей\njuick msg <номер_поста/номер_відповіді> - пост+відповідь на пост\njuick user <user> [ліміт_повідомлень [ліміт_обсягу_повідомлень]] - останні повідомлення користувача\njuick info <user> - інформація про користувача
+Message #%s is not found!	Повідомлення #%s не знайдено!
+I can't show message #%s!	Я не можу показати повідомлення #%s!
+Unknown error while message #%s parsing!	Невідома помилка при запиті повідомлення #%s
+Replies:	Відповідей:
+Unknown server ansver!	Невідома відповідь сервера
+Miniblogs http://juick.com\njuick [msg][#]post - show post	Мініблоги http://juick.com\njuick [msg][#]post - показати пост
 

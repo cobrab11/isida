@@ -74,6 +74,10 @@ iq_error = {'bad-request':L('Bad request'),
 			'undefined-condition':L('Undefined condition'),
 			'unexpected-request':L('Unexpected request')}
 
+wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
+wlight = [L('Winter time'),L('Summer time')]
+wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
+
 def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
@@ -1489,6 +1493,8 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'show_loading_by_status':[L('Kernel. Bot status. Show different status for bot loading'),'b',True],
 				'show_loading_by_status_show':[L('Kernel. Bot status. Status while loading'),'d','dnd',['chat','online','away','xa','dnd']],
 				'show_loading_by_status_message':[L('Kernel. Bot status. Message while loading'),'t256',L('Loading...')],
+				'kick_ban_notify':[L('Kernel. Notify when bot is kicked or banned'),'b',True],
+				'kick_ban_notify_jid':[L('Kernel. Notify jid for bot kick or ban'),'t1024',''],
 				'watch_activity_timeout':[L('Watcher. Timeout for no actions in room for rejoin'),'i',1800],
 				'muc_filter_large_message_size':[L('Muc-filter. Message size for filter'),'i',512],
 				'muc_filter_match_count':[L('Muc-filter. A kind words count'),'i',3],
@@ -1548,7 +1554,8 @@ owner_group_troll = [L('Antitroll settings'),'#owner-troll',
 
 owner_group_kernel = [L('Kernel settings'),'#owner-kernel',
 				['censor_text','ddos_limit','ddos_diff','paranoia_mode','reboot_time','schedule_time',
-				'show_loading_by_status','show_loading_by_status_show','show_loading_by_status_message']]
+				'show_loading_by_status','show_loading_by_status_show','show_loading_by_status_message',
+				'kick_ban_notify','kick_ban_notify_jid']]
 
 owner_group_lastfm = [L('LastFM settings'),'#owner-lastfm',
 				['lfm_api','lastfm_max_limit']]

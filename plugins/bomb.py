@@ -15,6 +15,18 @@ bomb_random_timer_check_period = 10
 bomb_deny_access = [-1,9]
 bomb_last_activity = {}
 
+def boom_bomb(room,type,nick,bc,mode):
+	b_fault = None
+	if get_config(getRoom(room),'bomb_fault'):
+		try: bfp = int(get_config(getRoom(room),'bomb_fault_persent'))
+		except: bfp = bomb_fault_persent
+		if bfp < 0 or bfp > 100: bfp = bomb_fault_persent
+		b_fault = random.randint(0,100) < bfp
+	if b_fault: send_msg(type, room, nick, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bc)
+	else:
+		if mode: send_msg(type, room, nick, L('You were wrong! Right wire is %s') % bc)
+		if get_config(getRoom(room),'bomb_action') == 'kick': muc_role(type, room, nick, '%s\n%s' % (nick,get_config(getRoom(room),'bomb_reason')), 'none')
+
 def get_next_random(room):
 	try: btm = int(get_config(room,'bomb_random_timer'))
 	except: btm = bomb_random_timer_def
@@ -63,26 +75,31 @@ def bomb_joke(type, jid, nick, text):
 			b_timer -= 1
 			if jid not in bomb_current.keys(): break
 		if b_timer <= 0 and not game_over:
-			bc = bomb_current.pop(getRoom(jid))			
+			bc = bomb_current.pop(getRoom(jid))                     
 			b_fault = None
 			if get_config(getRoom(jid),'bomb_fault'):
 				try: bfp = int(get_config(getRoom(jid),'bomb_fault_persent'))
 				except: bfp = bomb_fault_persent
 				if bfp < 0 or bfp > 100: bfp = bomb_fault_persent
 				b_fault = random.randint(0,100) < bfp
-			if b_fault: send_msg(type, jid, nick, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bc[2])
+			if b_fault: send_msg(type, jid, text, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bc[2])
 			else:
 				send_msg(type, jid, '', L('/me explode %s') % text)
 				if get_config(getRoom(jid),'bomb_action') == 'kick': muc_role(type, jid, nick, '%s\n%s' % (text,get_config(getRoom(jid),'bomb_reason')), 'none')
 			bomb_random_list[getRoom(jid)] = get_next_random(getRoom(jid))
 
-def bomb_presence(room,jid,nick,type,text):
+def bomb_presence(room,jid,nick,type,mass):
 	global bomb_current
 	if not get_config(getRoom(room),'bomb'): return
 	try: bc = bomb_current[getRoom(room)]
 	except: return
 	if nick != bc[0]: return
-	if type == 'unavailable': bomb_current.pop(getRoom(room))
+	if type == 'unavailable':
+		bc = bomb_current.pop(getRoom(room))
+		if mass[8]:
+			sleep(1)
+			boom_bomb(room,'groupchat',mass[8],bc[2],None)
+			bomb_random_list[getRoom(room)] = get_next_random(getRoom(room))
 
 def bomb_message(room,jid,nick,type,text):
 	global bomb_current,bomb_random_list
@@ -94,17 +111,7 @@ def bomb_message(room,jid,nick,type,text):
 	bomb_current.pop(getRoom(room))
 	type = 'groupchat'
 	if text.lower() == bc[2]: send_msg(type, room, nick, L('Bomb is deactivated! Congratulations!'))
-	else:
-		b_fault = None
-		if get_config(getRoom(room),'bomb_fault'):
-			try: bfp = int(get_config(getRoom(room),'bomb_fault_persent'))
-			except: bfp = bomb_fault_persent
-			if bfp < 0 or bfp > 100: bfp = bomb_fault_persent
-			b_fault = random.randint(0,100) < bfp
-		if b_fault: send_msg(type, room, nick, L('It\'s a lucky day for you! Bomb is fault! Right wide is %s') % bc[2])
-		else:
-			send_msg(type, room, nick, L('You were wrong! Right wire is %s') % bc[2])
-			if get_config(getRoom(room),'bomb_action') == 'kick': muc_role(type, room, nick, '%s\n%s' % (nick,get_config(getRoom(room),'bomb_reason')), 'none')
+	else: boom_bomb(room,type,nick,bc[2],True)
 	bomb_random_list[getRoom(room)] = get_next_random(getRoom(room))
 
 def bomb_random():

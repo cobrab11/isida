@@ -51,6 +51,10 @@ def juick_msg_async(type, jid, nick, (j_mid,j_rid,j_replies), is_answ):
 		ja_body 	= rss_replace(get_tag(j_item,'body'))
 		j_item 		= j_item.replace(ja_body,'')
 		ja_ts 		= get_tag_item(j_item,'juick','ts')
+		try:
+			tmp = ja_ts.replace('-',' ').split()
+			ja_ts = '%s %s.%s.%s' % (tmp[3],tmp[2],wmonth[int(tmp[1])-1],tmp[0])
+		except: pass
 		ja_uname 	= rss_replace(get_tag_item(j_item,'juick','uname'))
 		ja_replies 	= rss_replace(get_tag_item(j_item,'juick','replies'))
 		ja_attach 	= rss_replace(get_tag_item(j_item,'juick','attach'))

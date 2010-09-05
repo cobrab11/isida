@@ -443,9 +443,6 @@ def nice_time(ttim):
 	gt=timeZero(gmtime())
 	t_utc='%s%s%sT%s:%s:%s' % (gt[0],gt[1],gt[2],gt[3],gt[4],gt[5])
 	ltt=timeZero(lt)
-	wday = [L('Mon'),L('Tue'),L('Wed'),L('Thu'),L('Fri'),L('Sat'),L('Sun')]
-	wlight = [L('Winter time'),L('Summer time')]
-	wmonth = [L('Jan'),L('Fed'),L('Mar'),L('Apr'),L('May'),L('Jun'),L('Jul'),L('Aug'),L('Sep'),L('Oct'),L('Nov'),L('Dec')]
 	t_display = '%s:%s:%s, %s.%s\'%s, %s, ' % (ltt[3],ltt[4],ltt[5],ltt[2],wmonth[lt[1]-1],ltt[0],wday[lt[6]])
 	if timeofset < 0: t_tz = 'GMT%s' % timeofset
 	else: t_tz = 'GMT+%s' % timeofset
@@ -1198,6 +1195,7 @@ def presenceCB(sess,mess):
 	reason=unicode(mess.getReason())
 	type=unicode(mess.getType())
 	status=unicode(mess.getStatusCode())
+	chg_nick = [None,rss_replace(get_valid_tag(mss,'nick'))][status == '303']
 	actor=unicode(mess.getActor())
 	to=unicode(mess.getTo())
 	id = mess.getID()
@@ -1221,6 +1219,7 @@ def presenceCB(sess,mess):
 	if type=='unavailable':
 		if status=='307': exit_type,exit_message = L('Kicked'),reason
 		elif status=='301': exit_type,exit_message = L('Banned'),reason
+		elif status=='303': exit_type,exit_message = L('Change nick to %s') % chg_nick,''
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
 		if nick != '':
@@ -1233,6 +1232,15 @@ def presenceCB(sess,mess):
 					confbase = eval(readfile(confs))
 					confbase = arr_del_semi_find(confbase,getRoom(room))
 					writefile(confs,str(confbase))
+				pprint('*** bot was %s %s %s' % (['banned in','kicked from'][status=='307'],room,exit_message))
+				if GT('kick_ban_notify'):
+					ntf_list = GT('kick_ban_notify_jid').replace(',',' ').replace('|',' ').replace(';',' ')
+					while ntf_list.count('  '): ntf_list = ntf_list.replace('  ',' ')
+					ntf_list = ntf_list.split()
+					if len(ntf_list):
+						ntf_msg = [L('banned in'),L('kicked from')][status == '307']
+						ntf_msg = L('Bot was %s %s with reason: %s') % (ntf_msg,room,exit_message)
+						for tmp in ntf_list: send_msg('chat', tmp, '', ntf_msg)
 	else:
 		if nick != '':
 			for mmb in megabase:
@@ -1245,7 +1253,7 @@ def presenceCB(sess,mess):
 			if not not_found: megabase.append([room, nick, role, affiliation, jid])
 	if jid == 'None': jid, jid2 = '<temporary>%s' % nick, 'None'
 	else: jid2, jid = jid, getRoom(jid.lower())
-	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found)),'presence_afterwork')
+	for tmp in gpresence: thr(tmp,(room,jid2,nick,type,(text, role, affiliation, exit_type, exit_message, show, priority, not_found, chg_nick)),'presence_afterwork')
 	al = get_level(getRoom(room),nick)[0]
 	if al == 9:
 		if type == 'subscribe': 
