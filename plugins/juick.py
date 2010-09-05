@@ -39,7 +39,7 @@ def juick_msg(type, jid, nick, text):
 
 def juick_msg_async(type, jid, nick, (j_mid,j_rid,j_replies), is_answ):
 	isa = is_answ[1][0]
-	#print isa
+	print isa
 	j_type = get_tag_item(isa,'iq','type')
 	if j_type == 'error':
 		j_error_code = get_tag_item(isa,'error','code')
@@ -47,17 +47,18 @@ def juick_msg_async(type, jid, nick, (j_mid,j_rid,j_replies), is_answ):
 		elif j_error_code == '403': msg = L('I can\'t show message #%s!') % j_mid
 		else: msg = L('Unknown error while message #%s parsing!') % j_mid
 	elif j_type == 'result':
-		j_item 		= get_tag_full(isa,'juick')
+		j_item 		= rss_replace(get_tag_full(isa,'juick'))
+		ja_body 	= rss_replace(get_tag(j_item,'body'))
+		j_item 		= j_item.replace(ja_body,'')
 		ja_ts 		= get_tag_item(j_item,'juick','ts')
-		ja_uname 	= get_tag_item(j_item,'juick','uname')
-		ja_replies 	= get_tag_item(j_item,'juick','replies')
-		ja_attach 	= get_tag_item(j_item,'juick','attach')
-		ja_body 	= get_tag(j_item,'body')
+		ja_uname 	= rss_replace(get_tag_item(j_item,'juick','uname'))
+		ja_replies 	= rss_replace(get_tag_item(j_item,'juick','replies'))
+		ja_attach 	= rss_replace(get_tag_item(j_item,'juick','attach'))
 		ja_tags 	= []
 		while j_item.count('<tag') and j_item.count('</tag>'):
 			tmp_tag = get_tag_full(j_item,'tag')
 			j_item = j_item.replace(tmp_tag,'')
-			ja_tags.append(get_tag(tmp_tag,'tag'))
+			ja_tags.append(rss_replace(get_tag(tmp_tag,'tag')))
 		msg = '@%s:' % ja_uname
 		if len(ja_tags): msg = '%s *%s' % (msg,' *'.join(ja_tags))
 		if ja_attach in ['jpg', '3gp', 'wmv', 'mov','mp4']:
