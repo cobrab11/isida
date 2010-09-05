@@ -1486,6 +1486,9 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'iq_disco_enable':[L('Iq. Allow answer to service discovery'),'b',True],
 				'iq_ping_enable':[L('Iq. Allow answer to ping'),'b',True],
 				'paranoia_mode':[L('Kernel. Paranoic mode. Disable all execute possibles on bot'),'b',False],
+				'show_loading_by_status':[L('Kernel. Bot status. Show different status for bot loading'),'b',True],
+				'show_loading_by_status_show':[L('Kernel. Bot status. Status while loading'),'d','dnd',['chat','online','away','xa','dnd']],
+				'show_loading_by_status_message':[L('Kernel. Bot status. Message while loading'),'t256',L('Loading...')],
 				'watch_activity_timeout':[L('Watcher. Timeout for no actions in room for rejoin'),'i',1800],
 				'muc_filter_large_message_size':[L('Muc-filter. Message size for filter'),'i',512],
 				'muc_filter_match_count':[L('Muc-filter. A kind words count'),'i',3],
@@ -1544,7 +1547,8 @@ owner_group_troll = [L('Antitroll settings'),'#owner-troll',
 				['troll_default_limit','troll_max_limit','troll_sleep_time']]
 
 owner_group_kernel = [L('Kernel settings'),'#owner-kernel',
-				['censor_text','ddos_limit','ddos_diff','paranoia_mode','reboot_time','schedule_time']]
+				['censor_text','ddos_limit','ddos_diff','paranoia_mode','reboot_time','schedule_time',
+				'show_loading_by_status','show_loading_by_status_show','show_loading_by_status_message']]
 
 owner_group_lastfm = [L('LastFM settings'),'#owner-lastfm',
 				['lfm_api','lastfm_max_limit']]

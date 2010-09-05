@@ -629,6 +629,8 @@ def iqCB(sess,iq):
 									elif tp == 'i': tm = int(tm)
 									elif tp[0] == 't': tm = tm[:int(tp[1:])]
 									elif tp[0] == 'l' and len(eval(tm)) == int(tp[1:]): tm = eval(tm)
+									elif tp == 'd':
+										if tm not in owner_prefs[t][3]: tm = owner_prefs[t][2]
 								except: tm = GT(t)
 								PT(t,tm)
 							except: pass
@@ -668,10 +670,10 @@ def iqCB(sess,iq):
 									i.getTag('command').getTag('x').setTag('field',\
 									attrs={'type':'list-single','label':itm_label,'var':t})\
 									.setTagData('value',GT(t))
-									for t2 in itm[1]:
+									for t2 in itm[3]:
 										i.getTag('command').getTag('x').getTag('field',\
 										attrs={'type':'list-single','label':itm_label,'var':t})\
-										.setTag('option',attrs={'label':onoff(t2)})\
+										.setTag('option',attrs={'label':L(t2)})\
 										.setTagData('value',t2)
 				else:
 					if get_tag_item(unicode(iq),'x','type') == 'submit':
@@ -1547,7 +1549,8 @@ cl.RegisterHandler('iq',iqCB)
 cl.RegisterHandler('presence',presenceCB)
 cl.RegisterDisconnectHandler(disconnecter)
 cl.UnregisterDisconnectHandler(cl.DisconnectHandler)
-caps_and_send(Presence(show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
+if GT('show_loading_by_status'): caps_and_send(Presence(show=GT('show_loading_by_status_show'), status=GT('show_loading_by_status_message'), priority=Settings['priority']))
+else: caps_and_send(Presence(show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
 #cl.sendInitPresence()
 
 pprint('Wait conference')
@@ -1586,6 +1589,8 @@ thr(iq_async_clean,(),'async_iq_clean')
 thr(presence_async_clean,(),'async_presence_clean')
 try: thr(bomb_random,(),'bomb_random')
 except: pass
+
+if GT('show_loading_by_status'): caps_and_send(Presence(show=Settings['status'], status=Settings['message'], priority=Settings['priority']))
 
 while 1:
 	try:
