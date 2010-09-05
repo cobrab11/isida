@@ -39,7 +39,7 @@ def juick_msg(type, jid, nick, text):
 
 def juick_msg_async(type, jid, nick, (j_mid,j_rid,j_replies), is_answ):
 	isa = is_answ[1][0]
-	print isa
+	#print isa
 	j_type = get_tag_item(isa,'iq','type')
 	if j_type == 'error':
 		j_error_code = get_tag_item(isa,'error','code')
