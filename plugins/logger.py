@@ -37,7 +37,7 @@ def write_log_with_end(curr_path,curr_file,log_body,log_he):
 		try:
 			ll = last_log_file[curr_path]
 			if os.path.isfile(ll):
-				ender = ['\n','</div></div></body></html>'][GT('html_logs_enable')]
+				ender = ['\n','</div></div><br>%s</body></html>' % GT('html_logs_end_text')][GT('html_logs_enable')]
 				fle = open(ll, 'a')
 				fle.write(ender.encode('utf-8'))
 				fle.close()
