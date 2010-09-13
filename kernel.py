@@ -24,6 +24,7 @@ import datetime
 import gc
 import hashlib
 import htmlentitydefs
+import httplib
 import logging
 import operator
 import os
@@ -807,7 +808,7 @@ def iqCB(sess,iq):
 								if act == 'paste' or act == 'truncate':
 									url = paste_text(rss_replace(body),room,jid)
 									if act == 'truncate': body = u'%s[…] %s' % (body[:GT('muc_filter_large_message_size')],url)
-									else: body = L(u'Large message… %s') % url
+									else: body = L('Large message%s %s') % (u'…',url)
 									msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % body)
 								elif act == 'mute': mute = True
 								else: msg = muc_filter_action(act,jid,room,L('Large message block!'))

@@ -44,7 +44,7 @@ def gweather_raw(type, jid, nick, text, fully):
 					noerr = None
 				if noerr:
 					body = body.split('<FORE')[1:]
-					msg = L(u'Weather in %s:\nDate\t t°\tWind\tClouds') % wzc[0][1]
+					msg = L('Weather in %s:\nDate\t t%s\tWind\tClouds') % (u'°',wzc[0][1])
 					if fully: msg += L('\tPressure, mm. Hg. Art.\tHumidity %')
 					for tmp in body:
 						tmp2 = '<FORE' + tmp

@@ -9,6 +9,11 @@
 #                  (c) 2oo9-2o1o Disabler Production Lab.
 # --------------------------------------------------------------------
 
+# ---------------------------------------------
+#          Autogenerate for locales
+#        (c) Disabler Production Lab.
+# ---------------------------------------------
+
 # file: ../trunk/kernel.py
 Unknown error!	Неизвестная ошибка!
 Error!	Ошибка!
@@ -19,6 +24,7 @@ AD-Block!	Блокировка рекламы!
 Repeat message block!	Сообщения очень похожи!
 Match message block!	Текст сообщения дублируется!
 Blocked by censor!	Блокировано цензором!
+Large message%s %s	Большое сообщение%s %s
 Large message block!	Большое сообщение!
 Warning! Your message is blocked in connection with the policy of the room!	Внимание! Ваше сообщение блокировано в связи с политикой комнаты!
 Large status block!	Блокировка длинного статусного сообщения!
@@ -263,6 +269,10 @@ Expression unacceptable!	Недопустимое выражение!
 Calculator.	Калькулятор.
 Execution of external code.	Выполнение внешнего кода.
 
+# file: ../trunk/plugins/gcalc.py
+Google Calculator results not found	Калькулятор google не может это просчитать!
+Google Calculator. Author: Vit@liy	Калькулятор google. Автор: Vit@liy
+
 # file: ../trunk/plugins/gis.py
 Night	Ночь
 Morning	Утро
@@ -286,6 +296,7 @@ S	Ю
 SW	ЮЗ
 W	З
 NW	СЗ
+Weather in %s:\nDate\t t%s\tWind\tClouds	Погода в %s:\nДата\t t%s\tВетер\tОбл.
 \tPressure, mm. Hg. Art.\tHumidity %	\tДавление, мм.рт.ст.\tВлажность %
 \tCalm	\tШтиль
 Error! %s	Ошибка! %s
@@ -522,7 +533,7 @@ I know %s as:	Я видела %s как:
 Show user's nick changes.	Показ смены ников.
 
 # file: ../trunk/plugins/lastfm.py
-Last track %s: %s - %s %s	Последняя дорожка %s: %s – %s %s
+Last track %s: %s - %s %s	Последняя дорожка %s: %s - %s %s
 Unavailable!	Недоступно!
 Last tracks %s:	Последние дорожки %s:
 Loved tracks %s:	Любимые треки %s:
@@ -1186,3 +1197,4 @@ Search weather by code, city, country.	Поиск погоды по коду г�
 
 # file: ../trunk/plugins/youtube.py
 Search at YouTube	Поиск по YouTube
+
