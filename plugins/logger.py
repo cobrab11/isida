@@ -6,6 +6,7 @@ if not os.path.exists(public_log): os.mkdir(public_log)
 if not os.path.exists(system_log) and GT('syslogs_enable'): os.mkdir(system_log)
 
 last_log_file = {}
+last_log_presence = {}
 
 log_header = ['','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link href="%s" rel="stylesheet" type="text/css" /><title>\n' % logs_css_path][GT('html_logs_enable')]
 def initial_log_users(room,ott):
@@ -73,6 +74,11 @@ def append_presence_to_log(room,jid,nick,type,mass):
 	global public_log, system_log
 	hr = getFile(log_conf,[])
 	if len(hr) and room in hr:
+		# (text, role, affiliation, exit_type, exit_message, show, priority, not_found)
+		try: llp = [last_log_presence[room+jid+nick],None][type == 'unavailable']
+		except: llp = None
+		last_log_presence[room+jid+nick] = mass
+		if mass == llp: return
 		if GT('html_logs_enable'): jid,nick = html_escape(jid), html_escape(nick)
 		presence_logger(room,jid,nick,type,mass,0,public_log)
 		if GT('syslogs_enable'): presence_logger(room,jid,nick,type,mass,1,system_log)
