@@ -1548,10 +1548,10 @@ try:
 	pprint('Connected')
 	cl.auth(jid.getNode(), Settings['password'], jid.getResource())
 	pprint('Autheticated')
-except: raise
-#	pprint('Auth error or no connection. Restart in %s sec.' % GT('reboot_time'))
-#	sleep(GT('reboot_time'))
-#	sys.exit('restart')
+except:
+	pprint('Auth error or no connection. Restart in %s sec.' % GT('reboot_time'))
+	sleep(GT('reboot_time'))
+	sys.exit('restart')
 pprint('Registration Handlers')
 cl.RegisterHandler('message',messageCB)
 cl.RegisterHandler('iq',iqCB)
