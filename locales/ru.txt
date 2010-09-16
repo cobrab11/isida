@@ -259,6 +259,11 @@ I know holidays: %s	Я знаю поводы выпить: %s
 Database doesn't exist.	К сожалению база отсутствует.
 Find holiday\ndrink [name_holiday/date]	Поиск повода выпить ;)\ndrink [повод/дата]
 
+# file: ../trunk/plugins/dumpz.py
+Posting by URL: %s	Запостила по ссылке %s 
+Unexpected error	Непредвиденная ошибка
+Posting text&code on dedicated server for easy sharing.\ndumpz text - posting plain text,\ndumpz [sh|c|html|py|php|css|sql|cpp] - posting text with highlighting	Отправка текста и кода на выделенные сервера для совместного использования.\ndumpz text - отправка простого текста,\ndumpz [sh|c|html|py|php|css|sql|cpp] - отправка текста с подсветкой
+
 # file: ../trunk/plugins/empty.py
 command decription	описание команды.
 

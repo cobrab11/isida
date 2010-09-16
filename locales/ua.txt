@@ -1174,3 +1174,7 @@ Replies:	Відповідей:
 Unknown server ansver!	Невідома відповідь сервера
 Miniblogs http://juick.com\njuick [msg][#]post - show post	Мініблоги http://juick.com\njuick [msg][#]post - показати пост
 
+# file: ../trunk/plugins/dumpz.py
+Posting by URL: %s	Розмістила за посиланням %s 
+Unexpected error	Непередбачувана помилка
+Posting text&code on dedicated server for easy sharing.\ndumpz text - posting plain text,\ndumpz [sh|c|html|py|php|css|sql|cpp] - posting text with highlighting	Відправка тексту та коду на виділені сервери для спільного використання.\ndumpz text - відправка простого тексту,\ndumpz [sh|c|html|py|php|css|sql|cpp] - відправка тексту з підсвічуванням
