@@ -269,10 +269,6 @@ Expression unacceptable!	Недопустимое выражение!
 Calculator.	Калькулятор.
 Execution of external code.	Выполнение внешнего кода.
 
-# file: ../trunk/plugins/gcalc.py
-Google Calculator results not found	Калькулятор google не может это просчитать!
-Google Calculator. Author: Vit@liy	Калькулятор google. Автор: Vit@liy
-
 # file: ../trunk/plugins/gis.py
 Night	Ночь
 Morning	Утро
@@ -368,6 +364,12 @@ Translator.\ntr from_language to_language text - translate text\ntr list - list 
 Search in google	Поиск через google
 Search XEP	Поиск XEP
 Search in en.wikipedia.org	Поиск по ru.wikipedia.org
+
+# file: ../trunk/plugins/googleplus.py
+Google Calculator results not found	Калькулятор google не может это просчитать!
+Google Calculator. Author: Vit@liy	Калькулятор google
+Definition for a word or phrase	Определение слова или фразы
+Define not found	Определение не найдено
 
 # file: ../trunk/plugins/hideroom.py
 This command available only in private!	Команда доступна только в привате!

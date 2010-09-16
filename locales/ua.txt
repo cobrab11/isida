@@ -578,6 +578,12 @@ Search in google	Пошук через google
 Search XEP	Пошук XEP
 Search in en.wikipedia.org	Пошук по ru.wikipedia.org
 
+# file: ../trunk/plugins/googleplus.py
+Google Calculator results not found	Калькулятор google не може це підрахувати!
+Google Calculator. Author: Vit@liy	Калькулятор google
+Definition for a word or phrase	Визначення слова чи виразу
+Define not found	Визначеняя не знайдено
+
 # file: ../trunk/plugins/price.py
 site input format is domain.tld	формат вводу сайту domain.tld
 Estimated value %s is %s	Оцінна вартість домену %s складає - %s
