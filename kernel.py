@@ -383,15 +383,16 @@ def join(conference):
 	j.setTag('x', namespace=NS_MUC).addChild('history', {'maxchars':'0', 'maxstanzas':'0'})
 	caps_and_send(j)
 	answered, Error, join_timeout = None, None, 3
-	while not answered and join_timeout and not game_over:
+	if is_start: join_timeout_delay = 0.3
+	else: join_timeout_delay = 1
+	while not answered and join_timeout >= 0 and not game_over:
 		if is_start:
 			cyc = cl.Process(1)
 			if str(cyc) == 'None': cycles_unused += 1
 			elif int(str(cyc)): cycles_used += 1
 			else: cycles_unused += 1
-		else:
-			sleep(1)
-			join_timeout -= 1
+		else: sleep(join_timeout_delay)
+		join_timeout -= join_timeout_delay
 		for tmp in pres_answer:
 			if tmp[0]==id:
 				Error = tmp[1]
