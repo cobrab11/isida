@@ -897,6 +897,7 @@ Kernel. Paranoic mode. Disable all execute possibles on bot	Kernel. Режим �
 Kernel. Bot status. Show different status for bot loading	Kernel. Bot status. Особый статус при загрузке
 Kernel. Bot status. Status while loading	Kernel. Bot status. Статус при загрузке
 Kernel. Bot status. Message while loading	Kernel. Bot status. Статус-сообщение при загрузке
+Kernel. Bot status. Show percent of loading	Kernel. Bot status. Показывать процент загрузки
 Loading...	Загружаюсь...
 Kernel. Notify when bot is kicked or banned	Kernel. Notify. Уведомлять о том, что бота выгнали или забанили
 Kernel. Notify jid for bot kick or ban	Kernel. Notify. Список jid'ов для уведомлений о кике или бане бота

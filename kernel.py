@@ -1571,6 +1571,8 @@ cb = []
 is_start = True
 lastserver = getServer(confbase[0].lower())
 setup = getFile(c_file,{})
+join_percent, join_pers_add = 0, 100.0/len(confbase)
+
 for tocon in confbase:
 	try: t = setup[getRoom(tocon)]
 	except: 
@@ -1586,6 +1588,10 @@ for tocon in confbase:
 		zz = joinconf(tocon, getServer(Settings['jid']))
 	cb.append(tocon)
 	pprint('--> %s' % tocon)
+	if GT('show_loading_by_status_percent'):
+		join_percent += join_pers_add
+		join_status = '%s %s%s' % (GT('show_loading_by_status_message'),int(join_percent),'%')
+		if GT('show_loading_by_status'): caps_and_send(Presence(show=GT('show_loading_by_status_show'), status=join_status, priority=Settings['priority']))
 	if game_over: break
 confbase = cb
 is_start = None
