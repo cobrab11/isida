@@ -1234,12 +1234,14 @@ def rss(type, jid, nick, text):
 			msg += get_tag(feed[0],'title')
 			try:
 				break_point = []
-				for tmp in feed[1:GT('rss_max_feed_limit')+1]: break_point.append(hashlib.md5(tmp.encode('utf-8')).hexdigest())
+				for tmp in feed[1:GT('rss_max_feed_limit')+1]:
+					ttitle = get_tag(tmp,'title').replace('&lt;br&gt;','\n')
+					break_point.append(hashlib.md5(ttitle.encode('utf-8')).hexdigest())
 				tstop = rss_flush(jid,link,break_point)
 				t_msg, new_count = [], 0
 				for mmsg in feed[1:GT('rss_max_feed_limit')+1]:
-					if mode == 'get' or not (hashlib.md5(mmsg.encode('utf-8')).hexdigest() in tstop):
-						ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+					ttitle = get_tag(mmsg,'title').replace('&lt;br&gt;','\n')
+					if mode == 'get' or not (hashlib.md5(ttitle.encode('utf-8')).hexdigest() in tstop):
 						if is_rss_aton == 1: tbody,turl = get_tag(mmsg,'description').replace('&lt;br&gt;','\n'),get_tag(mmsg,'link')
 						else:
 							tbody = get_tag(mmsg,'content').replace('&lt;br&gt;','\n')
