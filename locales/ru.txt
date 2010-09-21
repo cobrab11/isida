@@ -9,11 +9,6 @@
 #                  (c) 2oo9-2o1o Disabler Production Lab.
 # --------------------------------------------------------------------
 
-# ---------------------------------------------
-#          Autogenerate for locales
-#        (c) Disabler Production Lab.
-# ---------------------------------------------
-
 # file: ../trunk/kernel.py
 Unknown error!	Неизвестная ошибка!
 Error!	Ошибка!
@@ -372,9 +367,9 @@ Search in en.wikipedia.org	Поиск по ru.wikipedia.org
 
 # file: ../trunk/plugins/googleplus.py
 Google Calculator results not found	Калькулятор google не может это просчитать!
+I don't know!	Хм. Мне про это никто не рассказывал...
 Google Calculator. Author: Vit@liy	Калькулятор google
-Definition for a word or phrase	Определение слова или фразы.\ndefine word - случайное определение слова или фразы\ndefine N word - N-ое определение слова или фразы\ndefine a-b word - с a-ое по b-ое определения слова или фразы
-Define not found	Определение не найдено
+Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Определение слова или фразы.\ndefine слово - случайное определение\ndefine N слово - N-нное определение\ndefine a-b слово - определения слова с номера a до b
 
 # file: ../trunk/plugins/hideroom.py
 This command available only in private!	Команда доступна только в привате!
@@ -781,6 +776,10 @@ Censor action for member is %s	Действие цензора на постоя
 Censor action for member	Действие цензора на постоянных участников
 Censor action for non member is %s	Действие цензора на не постоянных участников: %s
 Censor action for non member	Действие цензора на не постоянных участников
+Parse define is %s	Поиск определений %s
+Automatic parse definition via google	Автоматический поиск определений через Google
+Clear notification by %s	Уведомления при очистке %s
+Clear notification by presence or message	Тип уведомлений при очистке: сообщения или презенсы
 Muc filter is %s	Muc-фильтр: %s
 Message filter for participants	Фильтр сообщений для участников
 Adblock muc filter is %s	Блокировка рекламы: %s
@@ -832,6 +831,8 @@ Type of action for bomb explode	Действие при взрыве
 Bomb. Reason %s	Bomb. Причина с которой будет действие: %s
 Reason for bomb explode	Причина с которой будет действие
 KA-BO-OM!!!111	ПЫДЫДЫЩЩЩЬЬЬ!!!111
+Bomb. Idle for unable get the bomb %s	Bomb. Время молчания участника, после которого ему нельзя давать бомбу %s
+Idle for unable get the bomb	Время молчания участника, после которого ему нельзя давать бомбу
 Other settings	Прочие настройки
 Muc-filter settings	Настройки muc-фильтра
 Settings for bomb-joke	Настройки для бомбы-шутки
@@ -897,8 +898,8 @@ Kernel. Paranoic mode. Disable all execute possibles on bot	Kernel. Режим �
 Kernel. Bot status. Show different status for bot loading	Kernel. Bot status. Особый статус при загрузке
 Kernel. Bot status. Status while loading	Kernel. Bot status. Статус при загрузке
 Kernel. Bot status. Message while loading	Kernel. Bot status. Статус-сообщение при загрузке
-Kernel. Bot status. Show percent of loading	Kernel. Bot status. Показывать процент загрузки
 Loading...	Загружаюсь...
+Kernel. Bot status. Show percent of loading	Kernel. Bot status. Показывать процент загрузки
 Kernel. Notify when bot is kicked or banned	Kernel. Notify. Уведомлять о том, что бота выгнали или забанили
 Kernel. Notify jid for bot kick or ban	Kernel. Notify. Список jid'ов для уведомлений о кике или бане бота
 Watcher. Timeout for no actions in room for rejoin	Watcher. Таймаут неактивности конференции для перезахода
@@ -966,8 +967,6 @@ Set command prefix. Use 'none' for disable prefix	Указание префик�
 PEP Scrobbler. Test version	PEP Скробблер. Тестовая версия
 Conference configure.\nconfig [show[ status]|help][ item]	Настройка конференции.\nconfig [show[ status]|help][ item]
 Allow recieve messages from unaffiliated participants in private	Приём сообщений от участников без полномочий в привате
-Parse define is %s	Поиск определений %s
-Automatic parse definition via google	Автоматический поиск определений через Google
 
 # file: ../trunk/plugins/md5.py
 Calculate phrase md5 sum.	Расчёт md5 фразы.
@@ -1171,7 +1170,6 @@ Send to private %s	Отправлено в приват %s
 Nick %s not found!	Ник %s не найден!
 \nfrom: %s %s	\nот: %s %s
 I know that %s was defined by %s %s %s	Я знаю, что %s было определено: %s %s %s
-I don't know!	Хм. Мне про это никто не рассказывал...
 What search?	Чего искать то будем?
 Not enough rights!	Ты ещё мал и глуп для этого!
 This is global definition and not allowed to change!	Это глобальное определение и его нельзя изменить!

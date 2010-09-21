@@ -37,7 +37,7 @@ def define(type, jid, nick, text):
 		data=search.read()
 		result = re.findall('<li>(.+?)<font color=#008000>(.+?)</font></a><p>', data)
 
-		if not result: msg = L('Define not found')
+		if not result: msg = L('I don\'t know!')
 		else:
 			if target:
 				try: n1 = n2 = int(target)
@@ -45,7 +45,7 @@ def define(type, jid, nick, text):
 				msg = ''
 				if 0 < n1 <= n2 <= len(result): 
 					for k in xrange(n1-1,n2): msg += result[k][0] + '\nhttp://' + result[k][1] + '\n\n'
-				else: msg = L('Define not found')
+				else: msg = L('I don\'t know!')
 			else:
 				result = random.choice(result)
 				msg = result[0] + '\nhttp://' + result[1]

@@ -88,10 +88,10 @@ def acl_action(cmd,nick,jid,room):
 		if last_command[6] == Settings['jid']: last_command = []
 	cmd = cmd.replace('${NICK}',nick).replace('${JID}',jid).replace('${SERVER}',getServer(jid))
 	tmppos = arr_semi_find(confbase, room)
-	if tmppos == -1: nowname = nickname
+	if tmppos == -1: nowname = Settings['nickname']
 	else:
 		nowname = getResourse(confbase[tmppos])
-		if nowname == '': nowname = nickname
+		if nowname == '': nowname = Settings['nickname']
 	com_parser(7, nowname, 'groupcat', room, nick, cmd, Settings['jid'])
 	
 def acl_message(room,jid,nick,type,text):

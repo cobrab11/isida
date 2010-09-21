@@ -38,11 +38,11 @@ def conf_backup(type, jid, nick, text):
 		if mode == 'now':
 			tmppos = arr_semi_find(confbase, jid)
 			if tmppos == -1:
-				nowname = nickname
+				nowname = Settings['nickname']
 			else:
 				nowname = getResourse(confbase[tmppos])
 				if nowname == '':
-					nowname = nickname
+					nowname =Settings['nickname']
 			xtype = ''
 			for base in megabase:
 				if base[0].lower() == jid and base[1] == nowname:
@@ -78,10 +78,10 @@ def conf_backup(type, jid, nick, text):
 
 				if a:
 					tmppos = arr_semi_find(confbase, jid)
-					if tmppos == -1: nowname = nickname
+					if tmppos == -1: nowname = Settings['nickname']
 					else:
 						nowname = getResourse(confbase[tmppos])
-						if nowname == '': nowname = nickname
+						if nowname == '': nowname = Settings['nickname']
 					xtype = ''
 					for base in megabase:
 						if base[0].lower() == jid and base[1] == nowname:

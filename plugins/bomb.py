@@ -14,6 +14,17 @@ bomb_random_timer_skip_persent_def = 25
 bomb_random_timer_check_period = 10
 bomb_deny_access = [-1,9]
 bomb_last_activity = {}
+bomb_idle_default = 900
+
+def bomb_idle(jid,nick):
+	global idle_base
+	for tmp in idle_base:
+		if tmp[0] == jid and tmp[1] == nick:
+			try: bid = int(get_config(getRoom(jid),'bomb_idle'))
+			except: bid = bomb_idle_default
+			if int(time.time())-tmp[3] >= bid: break
+			else: return False
+	return True
 
 def boom_bomb(room,type,nick,bc,mode):
 	b_fault = None
@@ -49,12 +60,12 @@ def bomb_joke(type, jid, nick, text):
 	if len(text) == 0 or len(text) == text.count(' ')+text.count('\n'):
 		rlist,tconf = [],getRoom(jid)
 		for tm in megabase:
-			if tm[0] == tconf and not (get_level(tconf,tm[1])[0] in bomb_deny_access) and not (getRoom(get_level(tconf,tm[1])[1]) in ['None',getRoom(selfjid)]): rlist.append(tm[1])
+			if tm[0] == tconf and not bomb_idle(jid,text) and not (get_level(tconf,tm[1])[0] in bomb_deny_access) and not (getRoom(get_level(tconf,tm[1])[1]) in ['None',getRoom(selfjid)]): rlist.append(tm[1])
 		text = rlist[random.randrange(len(rlist))]
 	bmb = False
 	if not get_config(getRoom(jid),'bomb'): msg = L('In this room not allowed take a bomb!')
 	elif jid in bomb_current.keys(): msg = L('This room alredy boombed!')
-	elif get_level(jid,text)[0] in bomb_deny_access or getRoom(get_level(jid,text)[1]) in ['None',getRoom(selfjid)]: msg = L('I can\'t take a bomb to %s') % text
+	elif bomb_idle(jid,text) or get_level(jid,text)[0] in bomb_deny_access or getRoom(get_level(jid,text)[1]) in ['None',getRoom(selfjid)]: msg = L('I can\'t take a bomb to %s') % text
 	else:					
 		try: b_timer = int(get_config(getRoom(jid),'bomb_timer'))
 		except: b_timer = bomb_timer

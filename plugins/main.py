@@ -1379,6 +1379,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
 				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
 				'parse_define': [L('Parse define is %s'), L('Automatic parse definition via google'), [True,False], False],
+				'clear_answer':[L('Clear notification by %s'),L('Clear notification by presence or message'), ['presence','message'],'presence'],
 				# MUC-Filter messages
 
 				'muc_filter': [L('Muc filter is %s'), L('Message filter for participants'), [True,False], False],
@@ -1410,10 +1411,12 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'bomb_wire': [L('Bomb. Wire count is %s'), L('Wire count for bomb'), None, '4'],
 				'bomb_action': [L('Bomb. Action for bomb explode %s'), L('Type of action for bomb explode'), ['off','kick'], 'kick'],
 				'bomb_reason': [L('Bomb. Reason %s'), L('Reason for bomb explode'), None, L('KA-BO-OM!!!111')],
+				'bomb_idle': [L('Bomb. Idle for unable get the bomb %s'), L('Idle for unable get the bomb'), None, 900]
 				}
 
 config_group_other = [L('Other settings'),'#room-other',
-				['url_title','flood','censor','censor_warning','censor_action_member','censor_action_non_member', 'parse_define']]
+				['url_title','flood','censor','censor_warning','censor_action_member','censor_action_non_member',
+				'parse_define','clear_answer']]
 
 config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
 				['muc_filter','muc_filter_adblock','muc_filter_repeat','muc_filter_match',
@@ -1423,7 +1426,8 @@ config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
 config_group_bomb = [L('Settings for bomb-joke'),'#room-bombjoke',
 				['bomb','bomb_fault','bomb_fault_persent','bomb_random','bomb_random_timer',
 				'bomb_timer','bomb_wire','bomb_action','bomb_reason','bomb_random_active',
-				'bomb_random_active_timer','bomb_random_timer_persent','bomb_random_timer_skip_persent']]
+				'bomb_random_active_timer','bomb_random_timer_persent',
+				'bomb_random_timer_skip_persent','bomb_idle']]
 
 config_groups = [config_group_mucfilter,config_group_other,config_group_bomb]
 # type:
@@ -1550,7 +1554,7 @@ owner_group_karma = [L('Karma settings'),'#owner-karma',
 				['karma_limit','karma_show_default_limit','karma_show_max_limit','karma_timeout']]
 
 owner_group_www = [L('WWW settings'),'#owner-www',
-				['size_overflow','user_agent',]]
+				['size_overflow','user_agent']]
 
 owner_group_troll = [L('Antitroll settings'),'#owner-troll',
 				['troll_default_limit','troll_max_limit','troll_sleep_time']]
@@ -1567,7 +1571,7 @@ owner_group_whereis = [L('Whereis settings'),'#owner-whereis',
 				['whereis_timeout','whereis_time_dec']]
 
 owner_group_watcher = [L('Watcher settings'),'#owner-watcher',
-				['watch_size','watcher_room_activity','watch_activity_timeout',]]
+				['watch_size','watcher_room_activity','watch_activity_timeout']]
 
 owner_group_clear = [L('Clear settings'),'#owner-clear',
 				['clear_delay','clear_default_count','clear_max_count']]
