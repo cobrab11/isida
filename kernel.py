@@ -1311,7 +1311,8 @@ def getServer(jid):
 def getResourse(jid):
 	jid = unicode(jid)
 	if jid == 'None': return jid
-	return jid[jid.find('/')+1:]
+	try: return jid.split('/')[1]
+	except: return ''
 
 def getRoom(jid):
 	jid = unicode(jid)
@@ -1527,6 +1528,7 @@ pprint('*** (c) 2oo9-2o1o Disabler Production Lab.')
 
 lastnick = Settings['nickname']
 jid = JID(Settings['jid'])
+if getResourse(jid) in ['None','']: jid = JID(Settings['jid'].split('/')[0]+'/my owner is stupid and can not complete the configuration')
 selfjid = jid
 pprint('JID: %s' % unicode(jid))
 raw_iq = []
