@@ -24,7 +24,7 @@ def gcalc(type, jid, nick, text):
 
 def define(type, jid, nick, text):
 	text = text.strip()
-	target = ''
+	target, define_silent = '', False
 	if not text: msg = L('What?')
 	else:
 		if re.search('\A\d+?(-\d+?)? ', text): target, text = text.split(' ', 1)
@@ -36,23 +36,23 @@ def define(type, jid, nick, text):
 		search=google.getresponse()
 		data=search.read()
 		result = re.findall('<li>(.+?)<font color=#008000>(.+?)</font></a><p>', data)
-
-		if not result: msg = L('I don\'t know!')
+		if target:
+			try: n1 = n2 = int(target)
+			except: n1, n2 = map(int, target.split('-'))
+			if n1+n2 == 0: define_silent,n1,n2 = True,1,1
+		if not result: msg = [L('I don\'t know!'),''][define_silent]
 		else:
 			if target:
-				try: n1 = n2 = int(target)
-				except: n1, n2 = map(int, target.split('-'))
 				msg = ''
 				if 0 < n1 <= n2 <= len(result): 
 					for k in xrange(n1-1,n2): msg += result[k][0] + '\nhttp://' + result[k][1] + '\n\n'
-				else: msg = L('I don\'t know!')
+				else: msg = [L('I don\'t know!'),''][define_silent]
 			else:
 				result = random.choice(result)
 				msg = result[0] + '\nhttp://' + result[1]
 			msg = re.sub(r'<[^<>]+>', ' ', msg).strip()
 			msg = rss_replace(msg.decode('cp1251'))
-	send_msg(type, jid, nick, msg)
-
+	if msg: send_msg(type, jid, nick, msg)
 
 def define_message(room,jid,nick,type,text):
 	if get_config(room,'parse_define'):
@@ -61,9 +61,8 @@ def define_message(room,jid,nick,type,text):
 		nowname = getResourse(confbase[tmppos])
 		what = re.search(u'^что такое ([^?]+?)\?$', text.strip(), re.I+re.U)
 		if what:
-			text = 'define 1 ' + what.group(1)
+			text = 'define 0 ' + what.group(1)
 			com_parser(access_mode, nowname, type, room, nick, text, jid)
-
 
 global execute, message_control
 
