@@ -410,9 +410,9 @@ Turn text from one layout to another.	Якщо текст не заданий - 
 
 # file: ../trunk/plugins/googleplus.py
 Google Calculator results not found	Калькулятор google не може це підрахувати!
-Define not found	Визначення не знайдено
-Google Calculator. Author: Vit@liy	Калькулятор google
-Definition for a word or phrase	Визначення слова чи виразу.\ndefine word - випадкове визначення слова чи виразу\ndefine N word - N-нне визначення слова чи виразу\ndefine a-b word - з a-го по b-е визначення слова чи виразу
+I don't know!	Хм. Мені про це ніхто не разповідав...
+Google Calculator	Калькулятор google
+Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Визначення для слова чи виразу.\ndefine word - випадкове визначення слова чи виразу\ndefine N word - N-нне визначення слова чи виразу\ndefine a-b word - з a-го по b-те визначення слова чи фрази
 
 # file: ../trunk/plugins/acl.py
 Acl:	Дії:
@@ -830,6 +830,10 @@ Censor action for member is %s	Дія цензора на постійних у�
 Censor action for member	Дія цензора на постійних учасників
 Censor action for non member is %s	Дія цензора на не постійних учасників: %s
 Censor action for non member	Дія цензора на не постійних учасників
+Parse define is %s	Пошук визначень %s
+Automatic parse definition via google	Автоматичний пошук визначень через Google
+Clear notification by %s	Сповіщення при очищенні %s
+Clear notification by presence or message	Тип сповіщеннь при очищенні: повідомлення чи презенси
 Muc filter is %s	Muc-фільтр: %s
 Message filter for participants	Фільтр повідомлень для учасників
 Adblock muc filter is %s	Блокування реклами: %s
@@ -881,6 +885,8 @@ Type of action for bomb explode	Дія при вибуху
 Bomb. Reason %s	Bomb. Причина з якою буде дія: %s
 Reason for bomb explode	Причина з якою буде дія
 KA-BO-OM!!!111	БА-БА-АХ!!!!
+Bomb. Idle for unable get the bomb %s	Bomb. Час мовчання учасника, після якого йому неможна давати бомбу %s
+Idle for unable get the bomb	Час мовчання учасника, після якого йому неможна давати бомбу
 Other settings	Інші налаштування
 Muc-filter settings	Налаштування muc-фільтру
 Settings for bomb-joke	Налаштування бомби-жарту
@@ -1015,8 +1021,6 @@ Set command prefix. Use 'none' for disable prefix	Встановлення пр�
 PEP Scrobbler. Test version	Pep скробблер. Тестова версія
 Conference configure.\nconfig [show[ status]|help][ item]	Налаштування конференції.\nconfig [show[ status]|help][ item]
 Allow recieve messages from unaffiliated participants in private	Прийом повідомлень від учасників без повноважень в приваті
-Parse define is %s	Пошук визначень %s
-Automatic parse definition via google	Автоматичний пошук визначень через Google
 
 # file: ../trunk/plugins/jc.py
 Show information about conference from jc.jabber.ru.\njc [address]	Показує інформацию про вказану конференцію з ресурсу jc.jabber.ru\njc [конфа]
@@ -1066,7 +1070,6 @@ Send to private %s	Відправлено до привату %s
 Nick %s not found!	Нік %s не знайден!
 \nfrom: %s %s	\nвід: %s %s
 I know that %s was defined by %s %s %s	Я знаю, що %s було визначено: %s %s %s
-I don't know!	Хм. Мені про це ніхто не разповідав...
 What search?	Що ж будемо шукати?
 Not enough rights!	Ти ще малий і дурний для цього!
 This is global definition and not allowed to change!	Це глобальне визначення і його не можна змінити!
