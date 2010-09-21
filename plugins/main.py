@@ -1378,7 +1378,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],
 				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
 				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
-
+				'parse_define': [L('Parse define is %s'), L('Automatic parse definition via google'), [True,False], False],
 				# MUC-Filter messages
 
 				'muc_filter': [L('Muc filter is %s'), L('Message filter for participants'), [True,False], False],
@@ -1413,7 +1413,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				}
 
 config_group_other = [L('Other settings'),'#room-other',
-				['url_title','flood','censor','censor_warning','censor_action_member','censor_action_non_member']]
+				['url_title','flood','censor','censor_warning','censor_action_member','censor_action_non_member', 'parse_define']]
 
 config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
 				['muc_filter','muc_filter_adblock','muc_filter_repeat','muc_filter_match',

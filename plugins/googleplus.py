@@ -50,11 +50,24 @@ def define(type, jid, nick, text):
 				result = random.choice(result)
 				msg = result[0] + '\nhttp://' + result[1]
 			msg = re.sub(r'<[^<>]+>', ' ', msg).strip()
-			msg = msg.decode('cp1251')
+			msg = rss_replace(msg.decode('cp1251'))
 	send_msg(type, jid, nick, msg)
 
 
-global execute
+def define_message(room,jid,nick,type,text):
+	if get_config(room,'parse_define'):
+		access_mode, jid = get_level(room,nick)
+		tmppos = arr_semi_find(confbase, room)
+		nowname = getResourse(confbase[tmppos])
+		what = re.search(u'^что такое (.+?)\?$', text.strip(), re.I+re.U)
+		if what:
+			text = 'define 1 ' + what.group(1)
+			com_parser(access_mode, nowname, type, room, nick, text, jid)
+
+
+global execute, message_control
+
+message_control = [define_message]
 
 execute = [(3, 'gcalc', gcalc, 2, L('Google Calculator. Author: Vit@liy')),
-	(3, 'define', define, 2, L('Definition for a word or phrase'))]
+	(3, 'define', define, 2, L('Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase'))]

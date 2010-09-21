@@ -412,7 +412,7 @@ Turn text from one layout to another.	Якщо текст не заданий - 
 Google Calculator results not found	Калькулятор google не може це підрахувати!
 Define not found	Визначення не знайдено
 Google Calculator. Author: Vit@liy	Калькулятор google
-Definition for a word or phrase	Визначення слова чи виразу
+Definition for a word or phrase	Визначення слова чи виразу.\ndefine word - випадкове визначення слова чи виразу\ndefine N word - N-нне визначення слова чи виразу\ndefine a-b word - з a-го по b-е визначення слова чи виразу
 
 # file: ../trunk/plugins/acl.py
 Acl:	Дії:
@@ -758,11 +758,11 @@ Access level: %s. %s	Рівень доступу: %s. %s
 Prefix: %s, Available help for commands:\n	Префікс команд: %s, Доступна довідка з команд:\n
 %sInformation-referral bot%s Help for command: help command	%sІнформаційно-довідковий бот%s Довідка по командах: help команда
 Rejoin by %s	Перезаходжу за командою %s
-I have never been in %s	Вистачить бухати! Мене немає в %s
+I have never been in %s	Досить бухати! Мене немає в %s
 Wrong arguments!	Неправильні аргументи!
 Denied!	Заборонено!
 Joined to %s	Зайшла до %s
-I'm already in %s with nick %s	Вистачить бухати! Я вже в %s з ніком %s
+I'm already in %s with nick %s	Досить бухати! Я вже в %s з ніком %s
 Changed nick in %s to %s	Зміна ніку в %s на %s
 I can't leave last room!	Не можу залишити останню конфу!
 Leave room %s	Залишила %s
@@ -840,14 +840,14 @@ Match muc filter is %s	Повтори всередині повідомлень:
 Repeat text in message filter	Фільтр повторів всередині повідомлень
 Large muc filter is %s	Великі повідомлення: %s
 Large message filter	Фільтр великих повідомлень
-Censor muc filter is %s	Muc-церзор: %s
-Censor filter	Muc-церзор
+Censor muc filter is %s	Muc-цензор: %s
+Censor filter	Muc-цензор
 Adblock muc filter for presence is %s	Блокування реклами в презенсах: %s
 Adblock filter for presence	Фільтр блокування реклами в презенсах
-Repeat join muc filter is %s	Множинні входи: %s
-Repeat join muc filter	Фільтр множинних входів
+Repeat join muc filter is %s	Багаторазові входи: %s
+Repeat join muc filter	Фільтр багаторазові входів
 Repeat presence muc filter is %s	Презенс-флуд: %s
-Repeat presence muc filter	Фільтр презен-флуду
+Repeat presence muc filter	Фільтр презенс-флуду
 Large nick muc filter is %s	Довгі ніки: %s
 Large nick muc filter	Фільтр довгих ніків
 Large status muc filter is %s	Довгі статуси: %s
@@ -1015,6 +1015,8 @@ Set command prefix. Use 'none' for disable prefix	Встановлення пр�
 PEP Scrobbler. Test version	Pep скробблер. Тестова версія
 Conference configure.\nconfig [show[ status]|help][ item]	Налаштування конференції.\nconfig [show[ status]|help][ item]
 Allow recieve messages from unaffiliated participants in private	Прийом повідомлень від учасників без повноважень в приваті
+Parse define is %s	Пошук визначень %s
+Automatic parse definition via google	Автоматичний пошук визначень через Google
 
 # file: ../trunk/plugins/jc.py
 Show information about conference from jc.jabber.ru.\njc [address]	Показує інформацию про вказану конференцію з ресурсу jc.jabber.ru\njc [конфа]

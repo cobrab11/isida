@@ -373,7 +373,7 @@ Search in en.wikipedia.org	Поиск по ru.wikipedia.org
 # file: ../trunk/plugins/googleplus.py
 Google Calculator results not found	Калькулятор google не может это просчитать!
 Google Calculator. Author: Vit@liy	Калькулятор google
-Definition for a word or phrase	Определение слова или фразы
+Definition for a word or phrase	Определение слова или фразы.\ndefine word - случайное определение слова или фразы\ndefine N word - N-ое определение слова или фразы\ndefine a-b word - с a-ое по b-ое определения слова или фразы
 Define not found	Определение не найдено
 
 # file: ../trunk/plugins/hideroom.py
@@ -966,6 +966,8 @@ Set command prefix. Use 'none' for disable prefix	Указание префик�
 PEP Scrobbler. Test version	PEP Скробблер. Тестовая версия
 Conference configure.\nconfig [show[ status]|help][ item]	Настройка конференции.\nconfig [show[ status]|help][ item]
 Allow recieve messages from unaffiliated participants in private	Приём сообщений от участников без полномочий в привате
+Parse define is %s	Поиск определений %s
+Automatic parse definition via google	Автоматический поиск определений через Google
 
 # file: ../trunk/plugins/md5.py
 Calculate phrase md5 sum.	Расчёт md5 фразы.
