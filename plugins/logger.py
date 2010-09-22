@@ -62,7 +62,7 @@ def msg_logger(room,jid,nick,type,text,logfile):
 	log_body = ['[%s] ' % ott,'<p><a id="%s" name="%s" href="#%s" class="time">%s</a> ' % (ott,ott,ott,ott)][GT('html_logs_enable')]
 	if nick == '': log_body += ['*** %s\n','<span class="topic">%s</span></p>'][GT('html_logs_enable')] % text
 	else:
-		if text[:4] == '/me ': log_body += ['*%s %s','<span class="me">%s %s</span></p>\n'][GT('html_logs_enable')] % (nick,text[4:])
+		if text[:4] == '/me ': log_body += ['*%s %s\n','<span class="me">%s %s</span></p>\n'][GT('html_logs_enable')] % (nick,text[4:])
 		else: log_body += ['%s: %s\n','<span class="nick">%s:&nbsp;</span><span class="text">%s</span></p>\n'][GT('html_logs_enable')] % (nick,text)
 	lht = room+' - '+str(lt[0])+'/'+tZ(lt[1])+'/'+tZ(lt[2])
 	log_he = ['%s\t\thttp://isida-bot.com\n\n' % lht,log_header+lht+'</title></head><body><div class="main"><div class="top"><div class="heart"><a href="http://isida-bot.com">http://isida-bot.com</a></div><div class="conference">'+lht+'</div></div><div class="container">\n'][GT('html_logs_enable')]
