@@ -412,7 +412,7 @@ Turn text from one layout to another.	Якщо текст не заданий - 
 Google Calculator results not found	Калькулятор google не може це підрахувати!
 I don't know!	Хм. Мені про це ніхто не разповідав...
 Google Calculator	Калькулятор google
-Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Визначення для слова чи виразу.\ndefine word - випадкове визначення слова чи виразу\ndefine N word - N-нне визначення слова чи виразу\ndefine a-b word - з a-го по b-те визначення слова чи фрази
+Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Визначення для слова чи виразу.\ndefine слово - випадкове визначення слова чи виразу\ndefine N слово - N-нне визначення слова чи виразу\ndefine a-b word - визначення слова чи фрази з номеру a і до b
 
 # file: ../trunk/plugins/acl.py
 Acl:	Дії:
@@ -1197,4 +1197,9 @@ Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add co
 # file: ../trunk/plugins/redirect.py
 Redirect command output in private.	Перенаправляє виведення команди в приват.
 Redirect command output in groupchat.	Перенаправляє виведення команди в конференцію.
+
+# file: ../trunk/plugins/sokr.py
+Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr Аббревіатури. Приклади використання: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
+Total found %s matches. Result(s) %s:\n	Всього знайдено %s відповідностей. Результат(и) %s:\n
+
 

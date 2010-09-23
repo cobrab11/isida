@@ -1113,6 +1113,10 @@ Command host	Команда host
 Command dig	Команда dig
 Check port activity\nport server:port [1..5]	Проверка активности порта на запрашиваемом сервере:\nport server:port [1..5]
 
+# file: ../trunk/plugins/sokr.py
+Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr Аббревиатуры. Примеры использования: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
+Total found %s matches. Result(s) %s:\n	Всего найдено %s совпадений. Результат(ы) %s:\n
+
 # file: ../trunk/plugins/svn.py
 en_EN.UTF8	ru_RU.UTF8
 Read user manual for commands...	Изучаем инструкции к командам...
