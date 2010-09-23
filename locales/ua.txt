@@ -1199,7 +1199,7 @@ Redirect command output in private.	Перенаправляє виведенн�
 Redirect command output in groupchat.	Перенаправляє виведення команди в конференцію.
 
 # file: ../trunk/plugins/sokr.py
-Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr Аббревіатури. Приклади використання: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
+Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr	Аббревіатури. Приклади використання: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
 Total found %s matches. Result(s) %s:\n	Всього знайдено %s відповідностей. Результат(и) %s:\n
 
 
