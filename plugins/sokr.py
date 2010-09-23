@@ -17,7 +17,8 @@ def sokr(type, jid, nick, text):
 		if not results: msg = L('I don\'t know!')
 		else:
 			if cr == 1: target = '1'
-			else:  target = '1-%s' % cr
+			elif cr < 6:  target = '1-%s' % cr
+			else: target = '1-5'
 			try: n1 = n2 = int(target)
 			except: n1, n2 = map(int, target.split('-'))
 			if 0 < n1 <= n2 <= cr: 
