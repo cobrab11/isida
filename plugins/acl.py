@@ -92,7 +92,7 @@ def acl_action(cmd,nick,jid,room):
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
-	com_parser(7, nowname, 'groupcat', room, nick, cmd, Settings['jid'])
+	com_parser(7, nowname, 'groupchat', room, nick, cmd, Settings['jid'])
 	
 def acl_message(room,jid,nick,type,text):
 	if not no_comm: return
