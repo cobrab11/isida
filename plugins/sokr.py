@@ -4,6 +4,7 @@
 # (c) Vit@liy
 
 def sokr(type, jid, nick, text):
+	target = ''
 	if not text.strip(): msg = L('What?')
 	else:
 		if re.search('\A\d+?(-\d+?)? ', text): target, text = text.split(' ', 1)
@@ -16,9 +17,10 @@ def sokr(type, jid, nick, text):
 		cr = len(results)
 		if not results: msg = L('I don\'t know!')
 		else:
-			if cr == 1: target = '1'
-			elif cr < 6:  target = '1-%s' % cr
-			else: target = '1-5'
+			if not target:
+				if cr == 1: target = '1'
+				elif cr < 6:  target = '1-%s' % cr
+				else: target = '1-5'
 			try: n1 = n2 = int(target)
 			except: n1, n2 = map(int, target.split('-'))
 			if 0 < n1 <= n2 <= cr: 

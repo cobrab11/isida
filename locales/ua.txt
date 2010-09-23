@@ -413,6 +413,7 @@ Google Calculator results not found	Калькулятор google не може 
 I don't know!	Хм. Мені про це ніхто не разповідав...
 Google Calculator	Калькулятор google
 Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Визначення для слова чи виразу.\ndefine слово - випадкове визначення слова чи виразу\ndefine N слово - N-нне визначення слова чи виразу\ndefine a-b word - визначення слова чи фрази з номеру a і до b
+Parse full phrase	Пошук по повній фразі
 
 # file: ../trunk/plugins/acl.py
 Acl:	Дії:
@@ -832,6 +833,7 @@ Censor action for non member is %s	Дія цензора на не постій�
 Censor action for non member	Дія цензора на не постійних учасників
 Parse define is %s	Пошук визначень %s
 Automatic parse definition via google	Автоматичний пошук визначень через Google
+Parse plain phrase	Пошук по простій фразі
 Clear notification by %s	Сповіщення при очищенні %s
 Clear notification by presence or message	Тип сповіщеннь при очищенні: повідомлення чи презенси
 Muc filter is %s	Muc-фільтр: %s

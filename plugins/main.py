@@ -1378,7 +1378,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],
 				'censor_action_member': [L('Censor action for member is %s'), L('Censor action for member'), ['off','visitor','kick','ban'], 'off'],
 				'censor_action_non_member': [L('Censor action for non member is %s'), L('Censor action for non member'), ['off','visitor','kick','ban'], 'off'],
-				'parse_define': [L('Parse define is %s'), L('Automatic parse definition via google'), [True,False], False],
+				'parse_define': [L('Parse define is %s'), L('Automatic parse definition via google'), ['off',L('Parse full phrase'), L('Parse plain phrase')], 'off'],
 				'clear_answer':[L('Clear notification by %s'),L('Clear notification by presence or message'), ['presence','message'],'presence'],
 				# MUC-Filter messages
 

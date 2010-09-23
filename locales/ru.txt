@@ -370,6 +370,7 @@ Google Calculator results not found	Калькулятор google не може�
 I don't know!	Хм. Мне про это никто не рассказывал...
 Google Calculator	Калькулятор google
 Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Определение слова или фразы.\ndefine слово - случайное определение\ndefine N слово - N-нное определение\ndefine a-b слово - определения слова с номера a до b
+Parse full phrase	Поиск по полной фразе
 
 # file: ../trunk/plugins/hideroom.py
 This command available only in private!	Команда доступна только в привате!
@@ -778,6 +779,7 @@ Censor action for non member is %s	Действие цензора на не п�
 Censor action for non member	Действие цензора на не постоянных участников
 Parse define is %s	Поиск определений %s
 Automatic parse definition via google	Автоматический поиск определений через Google
+Parse plain phrase	Поиск по простой фразе
 Clear notification by %s	Уведомления при очистке %s
 Clear notification by presence or message	Тип уведомлений при очистке: сообщения или презенсы
 Muc filter is %s	Muc-фильтр: %s
