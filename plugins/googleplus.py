@@ -57,11 +57,12 @@ def define(type, jid, nick, text):
 def define_message(room,jid,nick,type,text):
 	s = get_config(room,'parse_define')
 	if s != 'off':
-		what = re.search([u'^что такое ([^?]+?)\?$',u'что такое ([^?]+?)\?'][s=='partial'], text.strip(), re.I+re.U+re.S)
+		tmppos = arr_semi_find(confbase, room)
+		nowname = getResourse(confbase[tmppos])
+		text = re.sub('^%s[,:]\ ' % nowname, '', text.strip())
+		what = re.search([u'^что такое ([^?]+?)\?$',u'что такое ([^?]+?)\?'][s=='partial'], text, re.I+re.U+re.S)
 		if what:
 			access_mode = get_level(room,nick)[0]
-			tmppos = arr_semi_find(confbase, room)
-			nowname = getResourse(confbase[tmppos])
 			text = 'define 0 ' + what.group(1)
 			com_parser(access_mode, nowname, type, room, nick, text, jid)
 			return True
