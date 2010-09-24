@@ -64,6 +64,7 @@ def define_message(room,jid,nick,type,text):
 			nowname = getResourse(confbase[tmppos])
 			text = 'define 0 ' + what.group(1)
 			com_parser(access_mode, nowname, type, room, nick, text, jid)
+			return True
 
 global execute, message_control
 

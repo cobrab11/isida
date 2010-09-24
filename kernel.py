@@ -1274,27 +1274,29 @@ def messageCB(sess,mess):
 					no_comm = com_parser(access_mode, nowname, type, room, nick, ppr, jid)
 					break
 
-	if room != selfjid: is_flood = get_config(getRoom(room),'flood')
-	else: is_flood = None
+	thr(msg_afterwork,(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname),'msg_afterwork')
 
-	if selfjid != jid and no_comm and access_mode >= 0 and (ft[:len(nowname)+2] == nowname+': ' or ft[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
-		if len(text)>100: send_msg(type, room, nick, L('Too many letters!'))
-		else:
-			text = getAnswer(text,type)
-			thr(send_msg_human,(type, room, nick, text),'msg_human')
-	thr(msg_afterwork,(mess,room,jid,nick,type,back_text),'msg_afterwork')
-
-def msg_afterwork(mess,room,jid,nick,type,back_text):
+def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname):
 	global topics
+	alowed_flood = True
 	for tmp in gmessage:
 		subj=unicode(mess.getSubject())
 		if subj != 'None' and back_text == 'None':
 			if subj.count('\n'): subj = '\n%s'  % subj
-			tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj))
+			if tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj)): alowed_flood = False
 			topics[room] = subj
 		else:
-			tmp(room,jid,nick,type,back_text)
+			if tmp(room,jid,nick,type,back_text): alowed_flood = False
 			if nick == '': topics[room] = back_text
+	
+	if alowed_flood and no_comm:
+		if room != selfjid: is_flood = get_config(getRoom(room),'flood')
+		else: is_flood = None
+		if selfjid != jid and access_mode >= 0 and (back_text[:len(nowname)+2] == nowname+': ' or back_text[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
+			if len(back_text)>100: send_msg(type, room, nick, L('Too many letters!'))
+			else:
+				text = getAnswer(back_text,type)
+				thr(send_msg_human,(type, room, nick, text),'msg_human')
 
 def send_msg_human(type, room, nick, text):
 	if text: sleep(len(text)/4+randint(0,10))

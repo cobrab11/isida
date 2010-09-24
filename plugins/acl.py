@@ -92,30 +92,32 @@ def acl_action(cmd,nick,jid,room):
 	else:
 		nowname = getResourse(confbase[tmppos])
 		if nowname == '': nowname = Settings['nickname']
-	com_parser(7, nowname, 'groupchat', room, nick, cmd, Settings['jid'])
+	return com_parser(7, nowname, 'groupchat', room, nick, cmd, Settings['jid'])
 	
 def acl_message(room,jid,nick,type,text):
-	if not no_comm: return
+	#if not no_comm: return
 	if get_level(room,nick)[0] < 0: return
 	if getRoom(jid) == getRoom(Settings['jid']): return
 	aclb,acur = open_acl_base()
 	a = acur.execute('select action,type,text,command,time from acl where jid=? and (action=? or action=? or action=?)',(room,'msg','message','all')).fetchall()
+	no_comm = True
 	if a:
 		for tmp in a:
 			if tmp[4] <= time.time() and tmp[4]: acur.execute('delete from acl where jid=? and action=? and type=? and text=?',(room,tmp[0],tmp[1],tmp[2])).fetchall()
 			if tmp[1] == 'exp' and re.match(tmp[2].replace('*','*?'),text,re.I+re.S+re.U):
-				acl_action(tmp[3],nick,jid,room)
+				no_comm = acl_action(tmp[3],nick,jid,room)
 				break
 			elif tmp[1] == 'cexp' and re.match(tmp[2].replace('*','*?'),text,re.S+re.U):
-				acl_action(tmp[3],nick,jid,room)
+				no_comm = acl_action(tmp[3],nick,jid,room)
 				break
 			elif tmp[1] == 'sub' and text.lower().count(tmp[2].lower()):
-				acl_action(tmp[3],nick,jid,room)
+				no_comm = acl_action(tmp[3],nick,jid,room)
 				break
 			elif text.lower() == tmp[2].lower():
-				acl_action(tmp[3],nick,jid,room)
+				no_comm = acl_action(tmp[3],nick,jid,room)
 				break
-	close_acl_base(aclb)			
+	close_acl_base(aclb)
+	return not no_comm
 
 def acl_presence(room,jid,nick,type,mass):
 	if get_level(room,nick)[0] < 0: return
