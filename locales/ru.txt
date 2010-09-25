@@ -134,6 +134,7 @@ cyan	голубой
 yellow	желтый
 white	белый
 black	черный
+Here is no candidate to take a bomb!	В этой конференции некому дать бомбу!
 It's a lucky day for you! Bomb is fault! Right wide is %s	Тебе повезло! Бомба не сработала! Правильный провод был %s
 You were wrong! Right wire is %s	Ты ошибся! Правильный провод %s
 Not allowed in private!	Не доступно в привате!

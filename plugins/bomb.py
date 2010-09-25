@@ -61,7 +61,10 @@ def bomb_joke(type, jid, nick, text):
 		rlist,tconf = [],getRoom(jid)
 		for tm in megabase:
 			if tm[0] == tconf and not bomb_idle(jid,text) and not (get_level(tconf,tm[1])[0] in bomb_deny_access) and not (getRoom(get_level(tconf,tm[1])[1]) in ['None',getRoom(selfjid)]): rlist.append(tm[1])
-		text = rlist[random.randrange(len(rlist))]
+		if len(rlist): text = rlist[random.randrange(len(rlist))]
+		else:
+			send_msg(type, jid, nick, L('Here is no candidate to take a bomb!'))
+			return
 	bmb = False
 	if not get_config(getRoom(jid),'bomb'): msg = L('In this room not allowed take a bomb!')
 	elif jid in bomb_current.keys(): msg = L('This room alredy boombed!')

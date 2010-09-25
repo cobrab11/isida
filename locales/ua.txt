@@ -1173,6 +1173,7 @@ cyan	блакитний
 yellow	жовтий
 white	білий
 black	чорний
+Here is no candidate to take a bomb!	В цій конференції нікому дати бомбу!
 It's a lucky day for you! Bomb is fault! Right wide is %s	Тобі пощастило, бомба не спрацювала. Правильний провід %s
 You were wrong! Right wire is %s	Ти помилився! Правильний провід %s
 In this room not allowed take a bomb!	У цій конференції не можна роздавати бомби
