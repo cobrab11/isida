@@ -14,6 +14,7 @@ def wiki_search(type, jid, nick,text):
 		noh_title = title.replace('<b>', '').replace('</b>', '')
 		content = content.replace('<b>', '').replace('</b>', '')
 		url = results[0]['unescapedUrl']
+		url = urllib.unquote(url.encode('utf8')).decode('utf8')
 		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	except: msg = L('Expression \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
@@ -47,6 +48,7 @@ def google(type, jid, nick,text):
 		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
 		content = content.replace('<b>', u'«').replace('</b>', u'»')
 		url = results[0]['unescapedUrl']
+		url = urllib.unquote(url.encode('utf8')).decode('utf8')
 		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	except: msg = L('Expression \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
