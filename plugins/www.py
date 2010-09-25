@@ -52,8 +52,8 @@ def netwww(type, jid, nick, text):
 					else: msg = L('RegExp not found!')
 				except: msg = L('Error in RegExp!')
 			else:
-				if page.count('<title'): msg = get_tag(page,'title')+'\n'+unhtml_hard(page)
-				else: msg = unhtml_hard(page)
+				msg = urllib.unquote(unhtml_hard(page).encode('utf8')).decode('utf8')
+				if '<title' in page: msg = '%s\n%s' % (get_tag(page,'title'), msg)
 		except Exception, SM:
 			try: msg = str(SM)
 			except: msg = unicode(SM)
