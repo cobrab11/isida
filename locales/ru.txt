@@ -1215,3 +1215,5 @@ Search weather by code, city, country.	Поиск погоды по коду г�
 # file: ../trunk/plugins/youtube.py
 Search at YouTube	Поиск по YouTube
 
+# file: ../trunk/plugins/ithap.py
+Quote from ithappens.ru\nithap [number]	Цитата с ithappens.ru\nithap [номер]
