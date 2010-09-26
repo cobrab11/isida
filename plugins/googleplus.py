@@ -57,6 +57,8 @@ def define(type, jid, nick, text):
 def define_message(room,jid,nick,type,text):
 	s = get_config(room,'parse_define')
 	if s != 'off':
+		cof = getFile(conoff,[])
+		if (room,'define') in cof: return
 		tmppos = arr_semi_find(confbase, room)
 		nowname = getResourse(confbase[tmppos])
 		text = re.sub('^%s[,:]\ ' % nowname, '', text.strip())
@@ -69,7 +71,7 @@ def define_message(room,jid,nick,type,text):
 
 global execute, message_control
 
-message_control = [define_message]
+message_act_control = [define_message]
 
 execute = [(3, 'gcalc', gcalc, 2, L('Google Calculator')),
 	(3, 'define', define, 2, L('Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase'))]

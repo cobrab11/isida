@@ -1278,18 +1278,19 @@ def messageCB(sess,mess):
 
 def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname):
 	global topics
-	alowed_flood = True
-	for tmp in gmessage:
-		subj=unicode(mess.getSubject())
-		if subj != 'None' and back_text == 'None':
-			if subj.count('\n'): subj = '\n%s'  % subj
-			if tmp(room,jid,'',type,L('*** %s set topic: %s') % (nick,subj)): alowed_flood = False
-			topics[room] = subj
-		else:
-			if tmp(room,jid,nick,type,back_text): alowed_flood = False
-			if nick == '': topics[room] = back_text
-	
-	if alowed_flood and no_comm:
+	not_alowed_flood = False
+	subj = unicode(mess.getSubject())
+	text = back_text
+	if subj != 'None' and back_text == 'None':
+		if subj.count('\n'): subj = '\n%s'  % subj
+		text = L('*** %s set topic: %s') % (nick,subj)
+		topics[room] = subj
+	elif nick == '': topics[room] = back_text
+	for tmp in gmessage: not_alowed_flood = tmp(room,jid,nick,type,text) or not_alowed_flood
+	if no_comm:
+		for tmp in gactmessage: not_alowed_flood = not_alowed_flood or tmp(room,jid,nick,type,text)
+			
+	if not not_alowed_flood and no_comm:
 		if room != selfjid: is_flood = get_config(getRoom(room),'flood')
 		else: is_flood = None
 		if selfjid != jid and access_mode >= 0 and (back_text[:len(nowname)+2] == nowname+': ' or back_text[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
@@ -1627,11 +1628,12 @@ if os.path.isfile(loc_file):
 pprint('*** Loading main plugin')
 
 execfile('plugins/main.py')
-plname 		= 'plugins/list.txt'
-pliname 	= 'plugins/ignored.txt'
-gtimer 		= [check_rss]
-gpresence 	= []
-gmessage 	= []
+plname		= 'plugins/list.txt'
+pliname		= 'plugins/ignored.txt'
+gtimer		= [check_rss]
+gpresence	= []
+gmessage	= []
+gactmessage	= []
 
 pprint('*** Loading other plugins')
 
@@ -1643,6 +1645,7 @@ for pl in plugins:
 	else:
 		presence_control = []
 		message_control = []
+		message_act_control = []
 		iq_control = []
 		timer = []
 		pprint('Append plugin: %s' % pl)
@@ -1650,7 +1653,8 @@ for pl in plugins:
 		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (pl[:-3],cm[4])))
 		for tmr in timer: gtimer.append(tmr)
 		for tmp in presence_control: gpresence.append(tmp)
-		for tmp in message_control: gmessage.append(tmp) 
+		for tmp in message_control: gmessage.append(tmp)
+		for tmp in message_act_control: gactmessage.append(tmp)
 
 aliases = getFile(alfile,[])
 

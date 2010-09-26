@@ -63,7 +63,7 @@ def bomb_joke(type, jid, nick, text):
 			if tm[0] == tconf and not bomb_idle(jid,text) and not (get_level(tconf,tm[1])[0] in bomb_deny_access) and not (getRoom(get_level(tconf,tm[1])[1]) in ['None',getRoom(selfjid)]): rlist.append(tm[1])
 		if len(rlist): text = rlist[random.randrange(len(rlist))]
 		else:
-			send_msg(type, jid, nick, L('Here is no candidate to take a bomb!'))
+			if not (nick == text == ''): send_msg(type, jid, nick, L('Here is no candidate to take a bomb!'))
 			return
 	bmb = False
 	if not get_config(getRoom(jid),'bomb'): msg = L('In this room not allowed take a bomb!')
@@ -160,6 +160,6 @@ def bomb_message_active(room,jid,nick,type,mass):
 global execute, presence_control, message_control
 
 presence_control = [bomb_presence]
-message_control = [bomb_message,bomb_message_active]
+message_act_control = [bomb_message,bomb_message_active]
 
 execute = [(4, 'bomb', bomb_joke, 2, L('Take a bomb joke!'))]

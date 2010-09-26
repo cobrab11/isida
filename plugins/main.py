@@ -710,6 +710,7 @@ def bot_plugin(type, jid, nick, text):
 			if not nnick in plugins: plugins.append(nnick)
 			presence_control = []
 			message_control = []
+			message_act_control = []
 			iq_control = []
 			timer = []
 			execfile('plugins/'+nnick)
@@ -721,6 +722,7 @@ def bot_plugin(type, jid, nick, text):
 			for tmr in timer: gtimer.append(tmr)
 			for tmp in presence_control: gpresence.append(tmp)
 			for tmp in message_control: gmessage.append(tmp)
+			for tmp in message_act_control: gactmessage.append(tmp)
 
 	elif do == 'del':
 		if os.path.isfile('plugins/'+nnick):
@@ -731,6 +733,7 @@ def bot_plugin(type, jid, nick, text):
 			if nnick in plugins: plugins.remove(nnick)
 			presence_control = []
 			message_control = []
+			message_act_control = []
 			iq_control = []
 			timer = []
 			execfile('plugins/'+nnick)
@@ -743,6 +746,7 @@ def bot_plugin(type, jid, nick, text):
 			for tmr in timer: gtimer.remove(tmr)
 			for tmp in presence_control: gpresence.remove(tmp)
 			for tmp in message_control: gmessage.remove(tmp)
+			for tmp in message_act_control: gactmessage.remove(tmp)
 	elif do == 'local':
 		a = os.listdir('plugins/')
 		b = []
