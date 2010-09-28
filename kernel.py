@@ -978,10 +978,14 @@ def iqCB(sess,iq):
 						if show not in ['chat','online','away','xa','dnd']: msg = msg.replace(get_tag_full(msg,'show'), '<show>online</show>')
 						status = ['',get_tag(msg,'status')][msg.count('<status>') and msg.count('</status>')]
 						nick = ['',tojid[tojid.find('/')+1:]]['/' in tojid]
-						newjoin = msg.count('xmlns="http://jabber.org/protocol/muc"')
+						gr,newjoin = getRoom(room),True
+						for tmp in megabase:
+							if tmp[0] == gr and tmp[4] == jid:
+								newjoin = False
+								break
 
 						# AD-Block filter
-						if get_config(getRoom(room),'muc_filter_adblock_prs') != 'off' and msg and not mute:
+						if get_config(gr,'muc_filter_adblock_prs') != 'off' and msg and not mute:
 							fs,fn = [],[]
 							for reg in adblock_regexp:
 								tmps = [None,re.findall(reg,status,re.I+re.S+re.U)][status != '']
@@ -989,7 +993,7 @@ def iqCB(sess,iq):
 								if tmps: fs = fs + tmps
 								if tmpn: fn = fn + tmpn
 							if fs:
-								act = get_config(getRoom(room),'muc_filter_adblock_prs')
+								act = get_config(gr,'muc_filter_adblock_prs')
 								pprint('MUC-Filter adblock prs status (%s): %s [%s] %s' % (act,jid,room,status))
 								if act == 'replace':
 									for tmp in fs: status = status.replace(tmp,[GT('censor_text')*len(tmp),GT('censor_text')][len(GT('censor_text'))>1])
@@ -998,7 +1002,7 @@ def iqCB(sess,iq):
 								elif act == 'mute': msg,mute = None,True
 								else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 							if fn and msg:
-								act = get_config(getRoom(room),'muc_filter_adblock_prs')
+								act = get_config(gr,'muc_filter_adblock_prs')
 								pprint('MUC-Filter adblock prs nick (%s): %s [%s] %s' % (act,jid,room,nick))
 								if act == 'replace':
 									for tmp in fn: nick = nick.replace(tmp,[GT('censor_text')*len(tmp),GT('censor_text')][len(GT('censor_text'))>1])
@@ -1008,8 +1012,8 @@ def iqCB(sess,iq):
 								else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 
 						# Censor filter
-						if get_config(getRoom(room),'muc_filter_censor_prs') != 'off' and status+nick != to_censore(status+nick) and msg and not mute:
-							act = get_config(getRoom(room),'muc_filter_censor_prs')
+						if get_config(gr,'muc_filter_censor_prs') != 'off' and status+nick != to_censore(status+nick) and msg and not mute:
+							act = get_config(gr,'muc_filter_censor_prs')
 							pprint('MUC-Filter prs censor (%s): %s [%s] %s' % (act,jid,room,nick+'|'+status))
 							if act == 'replace':
 								if len(status): msg = msg.replace(get_tag_full(msg,'status'),'<status>%s</status>' % to_censore(status)).replace(tojid,'%s/%s' % (tojid.split('/',1)[0],to_censore(nick)))
@@ -1019,8 +1023,8 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Blocked by censor!'))
 
 						# Large status filter
-						if get_config(getRoom(room),'muc_filter_large_status') != 'off' and len(status) > GT('muc_filter_large_status_size') and msg and not mute:
-							act = get_config(getRoom(room),'muc_filter_large_status')
+						if get_config(gr,'muc_filter_large_status') != 'off' and len(status) > GT('muc_filter_large_status_size') and msg and not mute:
+							act = get_config(gr,'muc_filter_large_status')
 							pprint('MUC-Filter large status (%s): %s [%s] %s' % (act,jid,room,status))
 							if act == 'truncate': msg = msg.replace(get_tag_full(msg,'status'),u'<status>%s…</status>' % (status[:GT('muc_filter_large_status_size')]))
 							elif newjoin: msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('Large status block!')])])])).replace('replace_it',get_tag(msg,'presence')),True
@@ -1028,8 +1032,8 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Large status block!'))
 
 						# Large nick filter
-						if get_config(getRoom(room),'muc_filter_large_nick') != 'off' and len(nick) > GT('muc_filter_large_nick_size') and msg and not mute:
-							act = get_config(getRoom(room),'muc_filter_large_nick')
+						if get_config(gr,'muc_filter_large_nick') != 'off' and len(nick) > GT('muc_filter_large_nick_size') and msg and not mute:
+							act = get_config(gr,'muc_filter_large_nick')
 							pprint('MUC-Filter large nick (%s): %s [%s] %s' % (act,jid,room,nick))
 							if act == 'truncate': msg = msg.replace(tojid,u'%s/%s…' % (tojid.split('/',1)[0],nick[:GT('muc_filter_large_nick_size')]))
 							elif newjoin: msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('Large nick block!')])])])).replace('replace_it',get_tag(msg,'presence')),True
@@ -1037,7 +1041,7 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Large nick block!'))
 
 						# Rejoin filter
-						if get_config(getRoom(room),'muc_filter_rejoin') != 'off' and msg and not mute and newjoin:
+						if get_config(gr,'muc_filter_rejoin') != 'off' and msg and not mute and newjoin:
 							try: muc_rejoins[tojid] = [muc_rejoins[tojid],muc_rejoins[tojid][1:]][len(muc_rejoins[tojid])==GT('muc_filter_rejoin_count')] + [int(time.time())]
 							except: muc_rejoins[tojid] = []
 							if len(muc_rejoins[tojid]) == GT('muc_filter_rejoin_count'):
@@ -1047,13 +1051,13 @@ def iqCB(sess,iq):
 									pprint('MUC-Filter rejoin: %s [%s] %s' % (jid,room,nick))
 
 						# Status filter
-						if get_config(getRoom(room),'muc_filter_repeat_prs') != 'off' and msg and not mute and not newjoin:
+						if get_config(gr,'muc_filter_repeat_prs') != 'off' and msg and not mute and not newjoin:
 							try: muc_statuses[tojid] = [muc_statuses[tojid],muc_statuses[tojid][1:]][len(muc_statuses[tojid])==GT('muc_filter_status_count')] + [int(time.time())]
 							except: muc_statuses[tojid] = []
 							if len(muc_statuses[tojid]) == GT('muc_filter_status_count'):
 								tmo = muc_statuses[tojid][GT('muc_filter_status_count')-1] - muc_statuses[tojid][0]
 								if tmo < GT('muc_filter_status_timeout'):
-									act = get_config(getRoom(room),'muc_filter_repeat_prs')
+									act = get_config(gr,'muc_filter_repeat_prs')
 									pprint('MUC-Filter status (%s): %s [%s] %s' % (act,jid,room,nick))
 									if act == 'mute': msg,mute = None,True
 									else: msg = muc_filter_action(act,jid,room,L('Status-flood block!'))
