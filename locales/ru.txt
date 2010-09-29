@@ -1011,6 +1011,31 @@ I can't resolve it	Не резолвится
 DNS resolver.	DNS резолвер.
 Search domain zones TLD.	Поиск доменных зон TLD.
 
+# file: ../trunk/plugins/oracle.py
+Prophecy oracle. Example: oracle your_answer?	Предсказания оракула. Пример: oracle ваш_вопрос?
+Yes	Да
+Yes - definitely	Да - определенно
+You may rely on it	Вы можете положиться на это
+Without a doubt	Без сомнения
+Signs point to yes	Знаки говорят да
+Outlook good	Хорошая перспектива
+Most likely	Наиболее вероятно
+It is decidedly so	Это решительно так
+It is certain	Это бесспорно
+As I see it, yes	Я вижу это как да
+Reply hazy, try again	Туманный ответ, попробуй еще раз
+Ask again later	Спросите снова позже
+Better not tell you now	Лучше не говорить Вам сейчас
+Cannot predict now	Не могу предсказать сейчас
+Concentrate and ask again	Сконцентрируйтесь и спросите снова
+Don't count on it	Не рассчитывайте на это
+My reply is no	Мой ответ нет
+Outlook not so good	Перспектива, не столь хорошая
+My sources say no	Мои источники говорят нет
+Heads or tails	Орёл или решка
+Head	Орёл
+Tail	Решка
+
 # file: ../trunk/plugins/paste.py
 %s pasted by %s	%s запостил(а) %s
 Paste some text to server	Публикация текста на сервере

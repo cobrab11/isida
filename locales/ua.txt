@@ -11,7 +11,7 @@ Unknown configuration request!	Невідомий запит конфігура�
 For configure required x:data-compatible client	Для налаштування потрібен x:data-сумісний кліент
 AD-Block!	Блокування реклами
 Repeat message block!	Повідомлення дуже схожі
-Match message block!	Тескс повідомлення дублюється
+Match message block!	Текст повідомлення дублюється
 Blocked by censor!	Блоковано цензором
 Large message%s %s	Велике повідомлення%s %s
 Large message block!	Велике повідомлення заблоковано!
@@ -1209,3 +1209,28 @@ Total found %s matches. Result(s) %s:\n	Всього знайдено %s від�
 
 # file: ../trunk/plugins/ithap.py
 Quote from ithappens.ru\nithap [number]	Цитата с ithappens.ru\nithap [номер]
+
+# file: ../trunk/plugins/oracle.py
+Prophecy oracle. Example: oracle your_answer?	Пророцтва оракула. Приклад: oracle ваше_запитання?
+Yes	Так
+Yes - definitely	Так - напевне
+You may rely on it	Ви можете покластися на це
+Without a doubt	Без сумнівів
+Signs point to yes	Знаки говорять так
+Outlook good	Гарна перспектива
+Most likely	Найбільш ймовірно
+It is decidedly so	Це рішуче так
+It is certain	Це безперечно
+As I see it, yes	Я бачу, що це так
+Reply hazy, try again	Туманна відповідь, спробуйте ще раз
+Ask again later	Запитайте знову пізніше
+Better not tell you now	Краще не говорити Вам зараз
+Cannot predict now	Не можу передбачити зараз
+Concentrate and ask again	Зконцентруйтесь і запитайте знову
+Don't count on it	Не розраховуйте на це
+My reply is no	Моя відповідь ні
+Outlook not so good	Перспектива, не настільки хороша 
+My sources say no	Мои джерела говорять ні
+Heads or tails	Орел чи решка
+Head	Орел
+Tail	Решка
