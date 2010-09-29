@@ -270,6 +270,11 @@ Expression unacceptable!	Недопустимое выражение!
 Calculator.	Калькулятор.
 Execution of external code.	Выполнение внешнего кода.
 
+# file: ../trunk/plugins/flibusta.py
+No news	Новинок не найдено
+Total found %s matches. Result(s) %s:\n	Всего найдено %s совпадений. Результат(ы) %s:\n
+Search books and authors on flibusta.net.\nflibusta [-a author] [-t title] [-n number of result]	Поиск книг и авторов на сайте flibusta.net.\nflibusta [-a автор] [-t название] [-n номер результата]
+
 # file: ../trunk/plugins/gis.py
 Night	Ночь
 Morning	Утро
