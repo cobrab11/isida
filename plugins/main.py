@@ -577,7 +577,7 @@ def helpme(type, jid, nick, text):
 				cm = (tmp[1],tmp[0],tmp[4])
 				break
 			elif tmp[1].lower().count(text) or tmp[4].lower().count(text): tm.append((tmp[0], tmp[1], tmp[4]))
-		if cm: msg = '%s. ' % cm[0].capitalize() + L('Access level: %s. %s') % cm
+		if cm: msg = '%s. ' % cm[0].capitalize() + L('Access level: %s. %s') % (cm[1],cm[2])
 		elif len(tm) == 1: msg = '%s. ' % tm[0][1].capitalize() + L('Access level: %s. %s') % (tm[0][0],tm[0][2])
 		elif not len(tm+cm): msg = L('"%s" not found') % text
 		else:

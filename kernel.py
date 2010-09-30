@@ -700,6 +700,10 @@ def iqCB(sess,iq):
 										tmtype = varz.getTagAttr('field','type')
 										tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
 										if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
+										elif config_prefs[t][2] != None:
+											if config_prefs[t][2] == [True,False] and tm in ['0','1']: tm = [False,True][int(tm)]
+											elif tm in config_prefs[t][2]: pass
+											else: tm = config_prefs[t][3]
 										put_config(getRoom(room),t,tm)
 									except: pass
 								pprint('*** reconfigure by %s' % unicode(room))
@@ -834,6 +838,10 @@ def iqCB(sess,iq):
 									tmtype = varz.getTagAttr('field','type')
 									tm = varz.getTag('field',attrs={'var':t}).getTagData('value')
 									if tmtype == 'boolean' and tm in ['0','1']: tm = [False,True][int(tm)]
+									elif config_prefs[t][2] != None:
+										if config_prefs[t][2] == [True,False] and tm in ['0','1']: tm = [False,True][int(tm)]
+										elif tm in config_prefs[t][2]: pass
+										else: tm = config_prefs[t][3]
 									put_config(getRoom(room),t,tm)
 								except: pass
 							pprint('*** reconfigure by %s' % unicode(room))
@@ -1293,7 +1301,6 @@ def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname)
 	for tmp in gmessage: not_alowed_flood = tmp(room,jid,nick,type,text) or not_alowed_flood
 	if no_comm:
 		for tmp in gactmessage: not_alowed_flood = not_alowed_flood or tmp(room,jid,nick,type,text)
-			
 	if not not_alowed_flood and no_comm:
 		if room != selfjid: is_flood = get_config(getRoom(room),'flood')
 		else: is_flood = None
