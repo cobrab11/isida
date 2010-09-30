@@ -566,18 +566,20 @@ def info_comm(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 
 def helpme(type, jid, nick, text):
-	text = text.lower()
+	text = text.strip().lower()
 	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
 	elif text in ['donation','donations']: msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
 	elif text in [L('access'),'access']: msg = L('Bot has next access levels:\n-1 - ignored\n0 - minimal access\n1 - at least visitor and none\n2 - at least visitor and member\n3 - at least participant and none\n4 - at least participant and member\n5 - at least moderator and none\n6 - at least moderator and member\n7 - at least moderator and admin\n8 - at least moderator and owner\n9 - bot owner')
-	elif text != '':
+	elif len(text) > 1:
 		tm,cm = [],[]
 		for tmp in comms:
-			if tmp[1] != text: tm.append((tmp[0], tmp[1], tmp[4]))
-			else:
-				cm = (tmp[0],tmp[4])
+			if tmp[1] == text:
+				cm = (tmp[1],tmp[0],tmp[4])
 				break
-		if cm: msg = L('Access level: %s. %s') % cm
+			elif tmp[1].lower().count(text) or tmp[4].lower().count(text): tm.append((tmp[0], tmp[1], tmp[4]))
+		if cm: msg = '%s. ' % cm[0].capitalize() + L('Access level: %s. %s') % cm
+		elif len(tm) == 1: msg = '%s. ' % tm[0][1].capitalize() + L('Access level: %s. %s') % (tm[0][0],tm[0][2])
+		elif not len(tm+cm): msg = L('"%s" not found') % text
 		else:
 			tm.sort()
 			msg = L('Prefix: %s, Available help for commands:\n') % get_prefix(get_local_prefix(jid))
