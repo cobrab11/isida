@@ -1417,7 +1417,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'bomb_wire': [L('Bomb. Wire count is %s'), L('Wire count for bomb'), None, '4'],
 				'bomb_action': [L('Bomb. Action for bomb explode %s'), L('Type of action for bomb explode'), ['off','kick'], 'kick'],
 				'bomb_reason': [L('Bomb. Reason %s'), L('Reason for bomb explode'), None, L('KA-BO-OM!!!111')],
-				'bomb_idle': [L('Bomb. Idle for unable get the bomb %s'), L('Idle for unable get the bomb'), None, 900]
+				'bomb_idle': [L('Bomb. Idle for unable get the bomb %s'), L('Idle for unable get the bomb'), None, '900']
 				}
 
 config_group_other = [L('Other settings'),'#room-other',
