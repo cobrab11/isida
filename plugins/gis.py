@@ -10,7 +10,7 @@ def gweather_raw(type, jid, nick, text, fully):
 	def get_maxmin(body,tag,splitter):
 		tmax = get_tag_item(body,tag,'max')
 		tmin = get_tag_item(body,tag,'min')
-		if not fully: return str((int(tmax)+int(tmin))/2)
+		if not fully: return str(int((int(tmax)+int(tmin))/2))
 		if tmax == tmin: return tmax
 		if (int(tmin)+int(tmax))/2 == 0: return '0'
 		return tmin + splitter + tmax
@@ -44,7 +44,7 @@ def gweather_raw(type, jid, nick, text, fully):
 					noerr = None
 				if noerr:
 					body = body.split('<FORE')[1:]
-					msg = L('Weather in %s:\nDate\t t%s\tWind\tClouds') % (u'°',wzc[0][1])
+					msg = L('Weather in %s:\nDate\t t%s\tWind\tClouds') % (wzc[0][1],u'°')
 					if fully: msg += L('\tPressure, mm. Hg. Art.\tHumidity %')
 					for tmp in body:
 						tmp2 = '<FORE' + tmp
