@@ -180,6 +180,7 @@ Find nick on conference server\nwhereis - find your nick on current conference s
 
 # file: ../trunk/plugins/dist.py
 Distance between cities	Расстояние между городами. Пример: dist Киев - Набережные Челны
+%s kilometers	%s километров
 
 # file: ../trunk/plugins/domain.py
 Sites at Domain/IP address: %s\n	Сайты расположенные на IP адресе/домене: %s\n

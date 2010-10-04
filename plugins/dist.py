@@ -56,7 +56,7 @@ def dist(type, jid, nick, text):
 		t1 = map(int, geodict[towns[0].lower()].split())
 		t2 = map(int, geodict[towns[1].lower()].split())
 		distance = points2distance(((t1[0], t1[1], 0),	(t1[2], t1[3], 0)), ((t2[0], t2[1], 0),	(t2[2], t2[3], 0)))
-		msg = u"%s километров" % distance
+		msg = L('%s kilometers') % distance
 	else:
 		msg = L('What?')
 	send_msg(type,jid,nick,msg)

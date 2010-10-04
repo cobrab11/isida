@@ -1242,3 +1242,4 @@ Search books and authors on flibusta.net.\nflibusta [-a author] [-t title] [-n n
 
 # file: ../trunk/plugins/dist.py
 Distance between cities	Відстань між містами
+%s kilometers	%s кілометрів
