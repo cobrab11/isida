@@ -1239,3 +1239,6 @@ Tail	Решка
 No news	Новинок не знайдено
 Total found %s matches. Result(s) %s:\n	Всього знайдено %s відповідностей. Результат(и) %s:\n
 Search books and authors on flibusta.net.\nflibusta [-a author] [-t title] [-n number of result]	Пошук книг та авторів на сайті flibusta.net.\nflibusta [-a автор] [-t назва] [-n номер результату]
+
+# file: ../trunk/plugins/dist.py
+Distance between cities	Відстань між містами

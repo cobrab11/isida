@@ -178,6 +178,9 @@ Total conferences: %s, available: %s	Всего конференций: %s, до
 Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.	Обзор сервисов.\ndisco server.tld - запрос информации о сервере\ndisco conference.server.tld [body [size]] - поиск строки body в обзоре конференций и показ size результатов\ndisco room@conference.server.tld [body [size]] - поиск строки body в обзоре конференции room и показ size результатов
 Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld	Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick [conference.]server.tld - поиск ника по серверу server.tld
 
+# file: ../trunk/plugins/dist.py
+Distance between cities	Расстояние между городами. Пример: dist Киев - Набережные Челны
+
 # file: ../trunk/plugins/domain.py
 Sites at Domain/IP address: %s\n	Сайты расположенные на IP адресе/домене: %s\n
 Domain/IP address info:	Информация о IP адресе/домене:
