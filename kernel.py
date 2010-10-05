@@ -1296,7 +1296,7 @@ def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname)
 	if subj != 'None' and back_text == 'None':
 		if subj.count('\n'): subj = '\n%s'  % subj
 		text = L('*** %s set topic: %s') % (nick,subj)
-		topics[room] = subj
+		topics[room],nick = subj,''
 	elif nick == '': topics[room] = back_text
 	for tmp in gmessage: not_alowed_flood = tmp(room,jid,nick,type,text) or not_alowed_flood
 	if no_comm:
