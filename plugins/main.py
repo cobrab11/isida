@@ -501,31 +501,6 @@ def get_nick_by_jid_res(room, jid):
 		if tmp[0] == room and tmp[4] == jid: return tmp[1]
 	return None
 
-def get_access(cjid, cnick):
-	access_mode = -2
-	jid = 'None'
-	for base in megabase:
-		if base[1].count(cnick) and base[0].lower()==cjid:
-			jid = base[4]
-			if base[3]=='admin' or base[3]=='owner':
-				access_mode = 1
-				break
-			if base[3]=='member' or base[3]=='none':
-				access_mode = 0
-				break
-	for iib in ignorebase:
-		grj = getRoom(jid.lower())
-		if iib.lower() == grj:
-			access_mode = -1
-			break
-		if not (iib.count('.')+iib.count('@')) and grj.count(iib.lower()):
-			access_mode = -1
-			break
-	rjid = getRoom(jid)
-	if ownerbase.count(rjid): access_mode = 2
-	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(cjid)): access_mode = 2
-	return (access_mode, jid)
-
 def info_whois(type, jid, nick, text):
 	if text != '': msg = raw_who(jid, text)
 	else: msg = L('What?')
@@ -990,7 +965,7 @@ def html_escape(text):
 	text = re.sub(u'http[s]?://[-a-zA-Z0-9а-яА-Я._/?&#=;@%:]+',link,text)
 	#text = re.sub(u'[-a-zA-Z._0-9?:а-яА-Я]+@[-a-zA-Z._0-9а-яА-Я/?:]+',email,text)
 	text = text.replace('\n','<br>')
-	text = re.sub(u'<br>\ +',nbsp,text)
+	text = re.sub(u'^<br>\ +',nbsp,text)
 	return text
 
 def rss_replace(ms):
