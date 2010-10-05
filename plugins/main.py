@@ -82,7 +82,7 @@ def get_level(cjid, cnick):
 	access_mode = -2
 	jid = 'None'
 	for base in megabase:
-		if base[1].count(cnick) and base[0].lower()==cjid:
+		if base[1] == cnick and base[0].lower()==cjid:
 			jid = base[4]
 			if base[2]+'|'+base[3] in levl:
 				access_mode = levl[base[2]+'|'+base[3]]
