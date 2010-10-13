@@ -1307,6 +1307,7 @@ def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname)
 		if selfjid != jid and access_mode >= 0 and (back_text[:len(nowname)+2] == nowname+': ' or back_text[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 			if len(back_text)>100: send_msg(type, room, nick, L('Too many letters!'))
 			else:
+				if back_text[:len(nowname)] == nowname: back_text = back_text[len(nowname)+2:]
 				text = getAnswer(back_text,type)
 				thr(send_msg_human,(type, room, nick, text),'msg_human')
 
@@ -1323,9 +1324,7 @@ def getAnswer(tx,type):
 	mrand = str(randint(1,la))
 	answers.execute('select * from answer where ind=?', (mrand,))
 	for aa in answers: anscom = aa[1]
-	if type == 'groupchat':
-		tx = to_censore(tx)
-		answers.execute('insert into answer values (?,?)', (la+1,tx))
+	if type == 'groupchat' and tx == to_censore(tx): answers.execute('insert into answer values (?,?)', (la+1,tx))
 	mdb.commit()
 	anscom = to_censore(anscom)
 	return anscom
