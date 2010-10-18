@@ -974,7 +974,8 @@ def iqCB(sess,iq):
 								else: msg = muc_filter_action(act,jid,room,L('Large message block!'))
 
 						if mute: msg = unicode(xmpp.Message(to=jid,body=L('Warning! Your message is blocked in connection with the policy of the room!'),typ='chat',frm='%s/%s' % (room,get_nick_by_jid(room,tojid))))
-
+					else: msg = None
+						
 				elif msg[:2] == '<p':
 					jid = rss_replace(get_tag_item(msg,'presence','from'))
 					tojid = rss_replace(get_tag_item(msg,'presence','to'))
