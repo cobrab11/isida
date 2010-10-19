@@ -17,7 +17,7 @@ def true_age_raw(type, jid, nick, text, xtype):
 	text = text[0]
 	if text == '': text = nick
 	if llim > GT('age_max_limit'): llim = GT('age_max_limit')
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
@@ -67,7 +67,7 @@ def seen_raw(type, jid, nick, text, xtype):
 	text = text[0]
 	if text == '': text = nick
 	if llim > GT('age_max_limit'): llim = GT('age_max_limit')
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
 	if not real_jid:
@@ -116,7 +116,7 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	ztype = None
 	if text == '': text = nick
 	if llim > GT('age_max_limit'): llim = GT('age_max_limit')
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid order by -time,-status',(jid,text,text.lower())).fetchall()
 	if not real_jid:

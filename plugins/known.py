@@ -4,7 +4,7 @@
 def known(type, jid, nick, text):
 	text = text.strip()
 	if text == '': text = nick
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?)',(jid,text,text.lower())).fetchone()
 	if real_jid:

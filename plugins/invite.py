@@ -8,7 +8,7 @@ def call_body(type, jid, nick, text):
 			reason = text.split('\n')[1]
 			text = text.split('\n')[0]
 		except: reason = None
-		mdb = sqlite3.connect(agestatbase)
+		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,text,text)).fetchall()
 		if len(fnd) == 1:

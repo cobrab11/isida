@@ -26,7 +26,7 @@ def gweather_raw(type, jid, nick, text, fully):
 
 	if len(reduce_spaces(text)):
 		text = text.lower()
-		cbb = sqlite3.connect(gisbase)
+		cbb = sqlite3.connect(gisbase,timeout=base_timeout)
 		cu = cbb.cursor()
 		wzc = cu.execute('select * from gis where code like ? or lcity like ?',(text,text)).fetchall()
 		if not wzc:

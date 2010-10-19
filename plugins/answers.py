@@ -5,7 +5,7 @@ def answers_ie(type, jid, nick, text):
 	if text.lower().strip().split(' ',1)[0] == 'export':
 		try: fname = text.lower().split(' ',1)[1]
 		except: fname = answers_file
-		mdb = sqlite3.connect(answersbase)
+		mdb = sqlite3.connect(answersbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		base_size = len(cu.execute('select * from answer').fetchall())
 		fnd = cu.execute('select body from answer where body like ? group by body order by body',('%',)).fetchall()
@@ -20,7 +20,7 @@ def answers_ie(type, jid, nick, text):
 		if os.path.isfile(fname):
 			answer = readfile(fname).decode('utf-8')
 			answer = answer.split('\n')
-			mdb = sqlite3.connect(answersbase)
+			mdb = sqlite3.connect(answersbase,timeout=base_timeout)
 			cu = mdb.cursor()
 			cu.execute('delete from answer where body like ?',('%',))
 			msg = L('Import from file: %s | Total records: %s') % (fname,str(len(answer)))

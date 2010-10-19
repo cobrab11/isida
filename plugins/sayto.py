@@ -10,7 +10,7 @@ def sayto(type, jid, nick, text):
 		ga = get_level(jid, nick)
 		if ga[0] != 9: msg = L('You access level is to low!')
 		else:
-			sdb = sqlite3.connect(saytobase)
+			sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 			cu = sdb.cursor()
 			cm = cu.execute('select * from st').fetchall()
 			if len(cm):
@@ -30,21 +30,21 @@ def sayto(type, jid, nick, text):
 		to = text.split(' ')[0]
 		what = text.split(' ',1)[1]
 		frm = nick + '\n' + str(int(time.time()))
-		mdb = sqlite3.connect(agestatbase)
+		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		fnd = cu.execute('select status, jid from age where room=? and nick=? group by jid',(jid,to)).fetchall()
 		if len(fnd) == 1:
 			fnd = fnd[0]
 			if fnd[0]:
 				msg = L('I will convey your message.')
-				sdb = sqlite3.connect(saytobase)
+				sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 				cu = sdb.cursor()
 				cu.execute('insert into st values (?,?,?,?)', (frm, jid, fnd[1], what))
 				sdb.commit()
 			else: msg = L('Or am I a fool or %s is here.') % to
 		elif len(fnd) > 1:
 			off_count = 0
-			sdb = sqlite3.connect(saytobase)
+			sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 			cu = sdb.cursor()
 			for tmp in fnd:
 				if tmp[0]:
@@ -56,7 +56,7 @@ def sayto(type, jid, nick, text):
 		else:
 			if to.count('@') and to.count('.'):
 				fnd = cu.execute('select status, jid from age where room=? and jid=? group by jid',(jid,to)).fetchall()
-				sdb = sqlite3.connect(saytobase)
+				sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 				cu = sdb.cursor()
 				if fnd:
 					off_count = 0
@@ -76,7 +76,7 @@ def sayto(type, jid, nick, text):
 
 def sayto_presence(room,jid,nick,type,text):
 	if nick != '':
-		sdb = sqlite3.connect(saytobase)
+		sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 		cu = sdb.cursor()
 		cm = cu.execute('select * from st where room=? and (jid=? or jid=?)',(room, getRoom(jid), nick)).fetchall()
 		if len(cm):
@@ -93,7 +93,7 @@ def cleanup_sayto_base():
 	ctime = int(time.time())
 	if ctime-last_cleanup_sayto_base > GT('sayto_cleanup_time'):
 		last_cleanup_sayto_base = ctime
-		sdb = sqlite3.connect(saytobase)
+		sdb = sqlite3.connect(saytobase,timeout=base_timeout)
 		cu = sdb.cursor()
 		cm = cu.execute('select who, room, jid from st').fetchall()
 		if len(cm):

@@ -89,7 +89,7 @@ def muc_tempo_ban2(type, jid, nick,text):
 			except: reason = L('No reason!')
 			reason = L('ban on %s since %s because %s') % \
 				(un_unix(tttime), timeadd(tuple(localtime())), reason)
-			mdb = sqlite3.connect(agestatbase)
+			mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 			cu = mdb.cursor()
 			fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 			if len(fnd) == 1: msg, whojid = L('done'), getRoom(unicode(fnd[0][0]))
@@ -163,7 +163,7 @@ def muc_affiliation_past(type, jid, nick, text, aff):
 		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
 		else: who, reason = text, L('by Isida!')
-		mdb = sqlite3.connect(agestatbase)
+		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		fnd = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid',(jid,who,who)).fetchall()
 		if len(fnd) == 1: msg, whojid = L('done'), getRoom(unicode(fnd[0][0]))

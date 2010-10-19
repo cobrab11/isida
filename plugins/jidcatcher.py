@@ -4,7 +4,7 @@
 def info_search(type, jid, nick, text):
 	msg = L('What I must find?')
 	if text != '':
-		mdb = sqlite3.connect(jid_base)
+		mdb = sqlite3.connect(jid_base,timeout=base_timeout)
 		cu = mdb.cursor()
 		cu.execute('delete from jid where server like ?',('<temporary>%',)).fetchall()
 		ttext = '%'+text+'%'
@@ -19,7 +19,7 @@ def info_search(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def info_res(type, jid, nick, text):
-	mdb = sqlite3.connect(jid_base)
+	mdb = sqlite3.connect(jid_base,timeout=base_timeout)
 	cu = mdb.cursor()
 	cu.execute('delete from jid where server like ?',('<temporary>%',)).fetchall()
 	if text == 'count':
@@ -43,7 +43,7 @@ def info_res(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def info_serv(type, jid, nick, text):
-	mdb = sqlite3.connect(jid_base)
+	mdb = sqlite3.connect(jid_base,timeout=base_timeout)
 	cu = mdb.cursor()
 	cu.execute('delete from jid where server like ?',('<temporary>%',)).fetchall()
 	if text == 'count':
@@ -84,7 +84,7 @@ def jidcatcher_presence(room,jid,nick,type,text):
 		aa2 = getServer(jid)
 		aa3 = getResourse(jid)
 		try:
-			mdb = sqlite3.connect(jid_base)
+			mdb = sqlite3.connect(jid_base,timeout=base_timeout)
 			cu = mdb.cursor()
 			if not cu.execute('select login from jid where login=? and server=? and resourse=?',(aa1,aa2,aa3)).fetchone():
 				cu.execute('insert into jid values (?,?,?)', (aa1,aa2,aa3))

@@ -8,7 +8,7 @@ acl_base = set_folder+'acl.db'
 
 def open_acl_base():
 	is_acl = os.path.isfile(acl_base)
-	aclb = sqlite3.connect(acl_base)
+	aclb = sqlite3.connect(acl_base,timeout=base_timeout)
 	acur = aclb.cursor()
 	if not is_acl: acur.execute('create table acl (jid text, action text, type text, text text, command text, time int)')
 	return aclb,acur

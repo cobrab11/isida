@@ -8,7 +8,7 @@ def check_wz(text):
 	return None
 
 def get_weather(text):
-	cbb = sqlite3.connect(wzbase)
+	cbb = sqlite3.connect(wzbase,timeout=base_timeout)
 	cu = cbb.cursor()
 	wzc = cu.execute('select code from wz where code like ? or city like ? or counry like ?',(text,text,text)).fetchall()
 	cbb.close()
@@ -99,7 +99,7 @@ def weather_raw(type, jid, nick, text):
 
 def weather_search(type, jid, nick, text):
 	if len(text):
-		cbb = sqlite3.connect(wzbase)
+		cbb = sqlite3.connect(wzbase,timeout=base_timeout)
 		cu = cbb.cursor()
 		wzc = cu.execute('select code,city,counry from wz where code like ? or city like ? or counry like ?',(text,text,text)).fetchall()
 		cbb.close()

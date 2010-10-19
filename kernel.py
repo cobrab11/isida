@@ -1180,7 +1180,7 @@ def to_scrobble(room,mess):
 			#print '%s - %s [%s]' % (room,title,length)
 		else: played = None
 		stb = os.path.isfile(scrobblebase)
-		scrobbase = sqlite3.connect(scrobblebase)
+		scrobbase = sqlite3.connect(scrobblebase,timeout=base_timeout)
 		cu_scrobl = scrobbase.cursor()
 		if not stb:
 			cu_scrobl.execute('''create table tune (jid text, song text, length text, played integer)''')
@@ -1319,7 +1319,7 @@ def send_msg_human(type, room, nick, text):
 
 def getAnswer(tx,type):
 	if not len(tx) or tx.count(' ') == len(tx): return None
-	mdb = sqlite3.connect(answersbase)
+	mdb = sqlite3.connect(answersbase,timeout=base_timeout)
 	answers = mdb.cursor()
 	la = len(answers.execute('select * from answer').fetchall())
 	mrand = str(randint(1,la))
@@ -1443,7 +1443,7 @@ def presenceCB(sess,mess):
 			elif al < 4 and get_config(getRoom(room),'censor_action_non_member') != 'off':
 				act = get_config(getRoom(room),'censor_action_non_member')
 				muc_filter_action(act,jid2,getRoom(room),cens_text)
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from age where room=? and jid=? and nick=?',(room, jid, nick)).fetchone()
 	ttext = '%s\n%s\n%s\n%s\n%s' % (role,affiliation,priority,show,text)
@@ -1519,7 +1519,7 @@ def check_rss():
 
 def talk_count(room,jid,nick,text):
 	jid = getRoom(jid)
-	mdb = sqlite3.connect(talkersbase)
+	mdb = sqlite3.connect(talkersbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchone()
 	wtext = len(text.split(' '))
@@ -1603,6 +1603,7 @@ muc_statuses = {}
 muc_repeat = {}
 last_stanza = ''					# последняя станза, посланная ботом
 ENABLE_TLS = True					# принудительное отключение TLS
+base_timeout = 20					# таймаут на доступ ко всем базам
 
 gt=gmtime()
 lt=tuple(localtime())

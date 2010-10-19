@@ -4,7 +4,7 @@
 def wtfsearch(type, jid, nick, text):
 	msg = L('What need to find?')
 	if len(text):
-		mdb = sqlite3.connect(wtfbase)
+		mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		text = '%'+text+'%'
 		ww = cu.execute('select * from wtf where (room=? or room=? or room=?) and (room like ? or jid like ? or nick like ? or wtfword like ? or wtftext like ? or time like ?)',(jid,'global','import',text,text,text,text,text,text)).fetchall()
@@ -15,7 +15,7 @@ def wtfsearch(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def wtfrand(type, jid, nick):
-	mdb = sqlite3.connect(wtfbase)
+	mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	ww = cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import')).fetchall()
 	tlen = len(ww)
@@ -24,7 +24,7 @@ def wtfrand(type, jid, nick):
 	send_msg(type, jid, nick, msg)
 
 def wtfnames(type, jid, nick, text):
-	mdb = sqlite3.connect(wtfbase)
+	mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	if text == 'all': cu.execute('select * from wtf where room=? or room=? or room=?',(jid,'global','import'))
 	elif text == 'global': cu.execute('select * from wtf where room=?',('global',))
@@ -37,7 +37,7 @@ def wtfnames(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def wtfcount(type, jid, nick):
-	mdb = sqlite3.connect(wtfbase)
+	mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	tlen = len(cu.execute('select * from wtf where 1=1').fetchall())
 	cnt = len(cu.execute('select * from wtf where room=?',(jid,)).fetchall())
@@ -74,7 +74,7 @@ def wtfp(type, jid, nick, text):
 
 def wtf_get(ff,type, jid, nick, text):
 	if len(text):
-		mdb = sqlite3.connect(wtfbase)
+		mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		tlen = len(cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text)).fetchall())
 		cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=?',(jid,'global','import',text))
@@ -99,7 +99,7 @@ def dfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		mdb = sqlite3.connect(wtfbase)
+		mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		matches = cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=? order by lim',(jid,'global','import',what)).fetchone()
 		if matches:
@@ -133,7 +133,7 @@ def gdfn(type, jid, nick, text):
 		what = del_space_end(text[:ti])
 		text = del_space_begin(text[ti+1:])
 
-		mdb = sqlite3.connect(wtfbase)
+		mdb = sqlite3.connect(wtfbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		matches = cu.execute('select * from wtf where (room=? or room=? or room=?) and wtfword=? order by lim',(jid,'global','import',what)).fetchone()
 		if matches:

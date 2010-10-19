@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def gtalkers(type, jid, nick, text):
-	mdb = sqlite3.connect(talkersbase)
+	mdb = sqlite3.connect(talkersbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	if len(text):
 		ttext = '%'+text+'%'
@@ -18,7 +18,7 @@ def gtalkers(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def talkers(type, jid, nick, text):
-	mdb = sqlite3.connect(talkersbase)
+	mdb = sqlite3.connect(talkersbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	if len(text):
 		ttext = '%'+text+'%'

@@ -2,7 +2,7 @@
 # -*- coding: utf -*-
 
 karmabasefile = os.path.isfile(karmabase)
-karma_base = sqlite3.connect(karmabase)
+karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 cu_karmabase = karma_base.cursor()
 if not karmabasefile:
 	cu_karmabase.execute('''create table karma (room text, jid text, karma int)''')
@@ -27,7 +27,7 @@ def karma_top(type, jid, nick, text, order):
 	except: lim = GT('karma_show_default_limit')
 	if lim < 1: lim = 1
 	elif lim > GT('karma_show_max_limit'): lim = GT('karma_show_max_limit')
-	karma_base = sqlite3.connect(karmabase)
+	karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 	cu_karmabase = karma_base.cursor()
 	if order: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by karma',(jid,)).fetchall()
 	else: stat = cu_karmabase.execute('select jid,karma from karma where room=? order by -karma',(jid,)).fetchall()
@@ -49,7 +49,7 @@ def karma_show(type, jid, nick, text):
 	karmajid = getRoom(get_level(jid,text)[1])
 	if karmajid == 'None': return L('I\'m not sure, but %s not is here.') % atext
 	else:
-		karma_base = sqlite3.connect(karmabase)
+		karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 		cu_karmabase = karma_base.cursor()
 		stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(jid,karmajid)).fetchone()
 		karma_base.close()
@@ -63,7 +63,7 @@ def karma_moderator(type, jid, nick, text):
 	return L('I can\'t!')
 
 def karma_get_access(room,jid):
-	karma_base = sqlite3.connect(karmabase)
+	karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 	cu_karmabase = karma_base.cursor()
 	stat = cu_karmabase.execute('select karma from karma where room=? and jid=?',(room,jid)).fetchone()
 	karma_base.close()
@@ -92,7 +92,7 @@ def karma_change(room,jid,nick,type,text,value):
 			elif karmajid == 'None': msg = L('You can\'t change karma in outdoor conference!')
 			elif karmajid == jid: msg = L('You can\'t change own karma!')
 			else:
-				karma_base = sqlite3.connect(karmabase)
+				karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 				cu_karmabase = karma_base.cursor()
 				stat = cu_karmabase.execute('select last from commiters where room=? and jid=? and karmajid=?',(room,jid,karmajid)).fetchone()
 				karma_valid, karma_time = None, int(time.time())

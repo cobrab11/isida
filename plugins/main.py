@@ -120,7 +120,7 @@ def get_scrobble(type, room, nick, text):
 	jid = getRoom(get_level(room,text)[1])
 	if jid == 'None': jid = room
 	stb = os.path.isfile(scrobblebase)
-	scrobbase = sqlite3.connect(scrobblebase)
+	scrobbase = sqlite3.connect(scrobblebase,timeout=base_timeout)
 	cu_scrobl = scrobbase.cursor()
 	if not stb:
 		cu_scrobl.execute('''create table tune (jid text, song text, length integer, played integer)''')
@@ -274,7 +274,7 @@ def status(type, jid, nick, text):
 			break
 	if is_found:
 		realjid = getRoom(get_level(jid,text)[1])
-		mdb = sqlite3.connect(agestatbase)
+		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		stat = cu.execute('select message,status from age where jid=? and room=? and nick=?',(realjid,jid,text)).fetchone()
 		if stat[1]: msg = L('leave this room.')
@@ -418,7 +418,7 @@ def un_unix(val):
 	return ret
 
 def close_age_null():
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
@@ -427,7 +427,7 @@ def close_age_null():
 	mdb.commit()
 
 def close_age():
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? order by room',(0,)).fetchall()
@@ -437,7 +437,7 @@ def close_age():
 	mdb.commit()
 
 def close_age_room(room):
-	mdb = sqlite3.connect(agestatbase)
+	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	cu.execute('delete from age where jid like ?',('<temporary>%',)).fetchall()
 	ccu = cu.execute('select * from age where status=? and room=? order by room',(0,room)).fetchall()
@@ -1326,7 +1326,7 @@ def configure(type, jid, nick, text):
 
 def open_muc_base():
 	is_acl = os.path.isfile(muc_lock_base)
-	aclb = sqlite3.connect(muc_lock_base)
+	aclb = sqlite3.connect(muc_lock_base,timeout=base_timeout)
 	acur = aclb.cursor()
 	if not is_acl:
 		acur.execute('create table muc (room text, jid text)')
