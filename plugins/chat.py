@@ -53,5 +53,5 @@ def getAnswer(text,room,type):
 	else:
 		answ = getSmartAnswer(text,room)
 		ANSW_PREV[room] = text.upper()
-	if type == 'groupchat' and tx == to_censore(tx): addAnswerToBase(text)
+	if type == 'groupchat' and text == to_censore(text): addAnswerToBase(text)
 	return answ
