@@ -9,7 +9,7 @@
 
 # ----------------------------------------------------------------------
 # фукнция вызывается при подаче команду боту
-def empty_command(type, jid, nick, text):
+def empty_command(type, jid, nick, text): return
 # type - тип chat или groupchat
 # jid - конференция или jid из которой пришла команда
 # nick - ник пославшего команду
@@ -45,6 +45,7 @@ def empty_presence(room,jid,nick,type,arr): return
 
 # ----------------------------------------------------------------------
 # функция вызывается при входящих сообщениях
+# при пассивной обработке сообщений без ответа в конференцию
 def empty_message(room,jid,nick,type,text): return
 # room ... конференция из которой пришло сообщение
 # jid .... jid пославшего сообщение
@@ -53,12 +54,25 @@ def empty_message(room,jid,nick,type,text): return
 # text ... текст сообщения
 
 # ----------------------------------------------------------------------
-global execute, timer, presence_control, message_control
+# функция вызывается при входящих сообщениях,
+# при активной обработке сообщений с ответом в конференцию
+# в зависмости от возвращаемого результата (False|True) срабатывает или не срабатывает флуд 
+def empty_act_message(room,jid,nick,type,text): return True
+# room ... конференция из которой пришло сообщение
+# jid .... jid пославшего сообщение
+# nick ... ник пославшего сообщение
+# type ... тип сообщения
+# text ... текст сообщения
+
+# ----------------------------------------------------------------------
+
+global execute, timer, presence_control, message_control, message_act_control
 
 # если данные фичи не нужны - удалить ниже и из global
 timer = [empty_timer] # список функций, которые вызываются раз в секунду
 presence_control = [empty_presence] # реакция на презенс
-message_control = [empty_message] # реакция на сообщение
+message_control = [empty_message] # пассивная реакция на сообщение
+message_act_control = [empty_act_message] # активная реакция на сообщение
 
 # описание команд
 execute = [(0, 'empty', empty_command, 1, L('command decription'))]

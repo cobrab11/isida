@@ -1353,7 +1353,7 @@ def muc_filter_lock(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference'), [True,False], False],
-				'flood': [L('Flood is %s'), L('Autoanswer'), [True,False], False],
+				'flood': [L('Flood is %s'), L('Autoanswer'), ['off','random','smart'], 'off'],
 				'censor': [L('Censor is %s'), L('Censor'), [True,False], False],
 				#'censor_message': [L('Censor message is %s'), L('Censor message'), None, censor_text],
 				'censor_warning': [L('Censor warning is %s'), L('Warning for moderators and higher') ,[True,False], False],

@@ -1303,32 +1303,21 @@ def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname)
 	if no_comm:
 		for tmp in gactmessage: not_alowed_flood = not_alowed_flood or tmp(room,jid,nick,type,text)
 	if not not_alowed_flood and no_comm:
-		if room != selfjid: is_flood = get_config(getRoom(room),'flood')
+		if room != selfjid: is_flood = get_config(getRoom(room),'flood') not in ['off',False]
 		else: is_flood = None
 		if selfjid != jid and access_mode >= 0 and (back_text[:len(nowname)+2] == nowname+': ' or back_text[:len(nowname)+2] == nowname+', ' or type == 'chat') and is_flood:
 			if len(back_text)>100: send_msg(type, room, nick, L('Too many letters!'))
 			else:
 				if back_text[:len(nowname)] == nowname: back_text = back_text[len(nowname)+2:]
-				text = getAnswer(back_text,type)
-				thr(send_msg_human,(type, room, nick, text),'msg_human')
+				try:
+					text = getAnswer(back_text,room,type)
+					thr(send_msg_human,(type, room, nick, text),'msg_human')
+				except: pass
 
 def send_msg_human(type, room, nick, text):
-	if text: sleep(len(text)/4+randint(0,10))
+	if text: sleep(len(text)/2.5+randint(0,10))
 	else: text = L('What?')
 	send_msg(type, room, nick, text)
-
-def getAnswer(tx,type):
-	if not len(tx) or tx.count(' ') == len(tx): return None
-	mdb = sqlite3.connect(answersbase,timeout=base_timeout)
-	answers = mdb.cursor()
-	la = len(answers.execute('select * from answer').fetchall())
-	mrand = str(randint(1,la))
-	answers.execute('select * from answer where ind=?', (mrand,))
-	for aa in answers: anscom = aa[1]
-	if type == 'groupchat' and tx == to_censore(tx): answers.execute('insert into answer values (?,?)', (la+1,tx))
-	mdb.commit()
-	anscom = to_censore(anscom)
-	return anscom
 
 def to_censore(text):
 	wca = None

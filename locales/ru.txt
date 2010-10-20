@@ -586,6 +586,8 @@ Logs for %s disabled.	Логи для %s выключены.
 Logging history conference.\nlog [add|del|show][ room@conference.server.tld]	Включение логов конференции.\nlog [add|del|show][ room@conference.server.tld]
 
 # file: ../trunk/plugins/main.py
+random	случайный
+smart	умный
 full	полностью
 partial	частично
 on	вкл

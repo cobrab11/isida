@@ -10,21 +10,16 @@ def exec_ute(type, jid, nick, text):
 	send_msg(type, jid, nick, text)
 
 def calc(type, jid, nick, text):
-	legal = nmbrs+['*','/','+','-','(',')','=','^','!',' ','<','>']
-	ppc = 1
-	for tt in text:
-		all_ok = 0
-		for ll in legal:
-			if tt==ll:
-				all_ok = 1
+	legal = string.digits + string.letters + '*/+-()=^!<>. '
+	ppc = 1	
+	if '**' in text or 'pow' in text: ppc = 0
+	else:
+		for tt in text:
+			if tt not in legal:
+				ppc = 0
 				break
-		if not all_ok:
-			ppc = 0
-			break
-	if text.count('**'): ppc = 0
-
 	if ppc:	
-		try: text = remove_sub_space(str(eval(text)))
+		try: text = remove_sub_space(str(eval(re.sub('([^a-zA-Z]|\A)([a-zA-Z])', r'\1math.\2', text))))
 		except: text = L('I can\'t calculate it')
 	else: text = L('Expression unacceptable!')
 	send_msg(type, jid, nick, text)

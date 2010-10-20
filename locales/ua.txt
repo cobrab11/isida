@@ -630,6 +630,8 @@ Show time of join/leave + jid.	Показує час входу/виходу + j
 Show time of join/leave + jid splitted by nicks.	Показує час входу/виходу + jid з розбивкою за ніками. Результат роботи команди завжди направляється до привату.
 
 # file: ../trunk/plugins/main.py
+random	випадковий
+smart	розумний
 full	повністю
 partial	частково
 on	ввімк
