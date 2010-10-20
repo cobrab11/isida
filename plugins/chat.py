@@ -15,7 +15,7 @@ def addAnswerToBase(tx):
 	if not len(tx) or tx.count(' ') == len(tx): return
 	mdb = sqlite3.connect(answersbase,timeout=base_timeout)
 	answers = mdb.cursor()
-	if tx == to_censore(tx): answers.execute('insert into answer values (?,?)', (len(answers.execute('select ind from answer').fetchall())+1,tx))
+	answers.execute('insert into answer values (?,?)', (len(answers.execute('select ind from answer').fetchall())+1,tx))
 	mdb.commit()
 	mdb.close()
 
@@ -53,5 +53,5 @@ def getAnswer(text,room,type):
 	else:
 		answ = getSmartAnswer(text,room)
 		ANSW_PREV[room] = text.upper()
-	addAnswerToBase(text)
+	if type == 'groupchat' and tx == to_censore(tx): addAnswerToBase(text)
 	return answ
