@@ -55,3 +55,7 @@ def getAnswer(text,room,type):
 		ANSW_PREV[room] = text.upper()
 	if type == 'groupchat' and text == to_censore(text): addAnswerToBase(text)
 	return answ
+
+global execute
+
+execute = []
