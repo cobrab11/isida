@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf -*-
+# -*- coding: utf-8 -*-
 
 def srv_nslookup(type, jid, nick, text):
 	srv_raw_check(type, jid, nick, 'nslookup '+text)
@@ -17,16 +17,29 @@ def srv_raw_check(type, jid, nick, text):
 
 def chkserver(type, jid, nick, text):
 	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
-	t = re.findall('[-a-zA-Z0-9à-ÿÀ-ß._/?#=@%]+',text,re.S)
+	t = re.findall(u'[-a-zA-Z0-9Ð°-ÑÐ-Ð¯._/?#=@%]+',text,re.S)
 	if len(t) >= 2:
 		port = []
 		for a in t:
 			if a.isdigit(): port.append(a)
 		for a in port: t.remove(a)
 		if len(t)==1 and len(port)>=1:
-			msg = shell_execute('nmap %s -p%s -P0 -T5' % (t[0],','.join(port)))
-			try: msg = '%s\n%s' % (t[0],reduce_spaces_all(re.findall('SERVICE(.*)Nmap',msg,re.S+re.U)[0][1:-2]))
-			except: msg = '%s - %s' % (t[0],L('unknown'))
+			t = t[0]
+			port.sort()
+			msg = shell_execute('nmap %s -p%s -P0 -T5' % (t,','.join(port)))
+			try: msg = '%s\n%s' % (t,reduce_spaces_all(re.findall('SERVICE(.*)Nmap',msg,re.S+re.U)[0][1:-2]))
+			except:
+				try:
+					msg,sock = '',socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+					for a in port:
+						try:
+							sock.connect((t,int(a)))
+							s = L('on')
+						except: s = L('off')
+						msg += '\n%s %s' % (a,s)
+					sock.close()
+					msg = '%s%s' % (t,msg)
+				except: raise#msg = '%s - %s' % (t,L('unknown'))
 			msg = L('Port status at %s') % msg
 		else: msg = L('What?')
 	else: msg = L('What?')
