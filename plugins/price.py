@@ -10,9 +10,7 @@ def price(type, jid, nick, parameters):
 			return
 		if len(parameters):
 			parameters = parameters.split('.')[-2].lower()+'.'+parameters.split('.')[-1].lower()
-			req = 'http://www.webvaluer.org/ru/www.'+parameters
-			r = urllib2.urlopen(req)
-			target = r.read()
+			target = load_page(req)
 			od = re.search('<span style=\"color:green; font-weight:bold;\">',target)
 			message = target[od.end():]
 			message = message[:re.search('</span></h1>',message).start()]
@@ -37,8 +35,8 @@ def bizinfo(type, jid, nick, text):
 		elif len(text):
 			text = text.split('.')[-2].lower()+'.'+text.split('.')[-1].lower()
 			req = 'http://bizinformation.org/ru/www.'+text
-			r = urllib2.urlopen(req)
-			body = unicode(r.read().strip(),'utf-8')
+			r = load_page(req)
+			body = unicode(r.strip(),'utf-8')
 			if body.count('Error:'): msg = L('site input format is domain.tld')
 			else: msg = L('Estimated value %s is %s') % (text.strip(), get_tag(body,'span'))
 		else: msg = L('What site be evaluated?')

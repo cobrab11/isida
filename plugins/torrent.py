@@ -3,7 +3,7 @@
 
 def GetTorrentInfo(request, tracker, link, count=GT('torrent_default_count')):
 	url, n = link + urllib.quote(request.encode('utf-8')), 0
-	body = html_encode(urllib.urlopen(url).read())
+	body = html_encode(load_page(url))
 	body = body.split('<table width="100%">')[1].split('</table>')[0].split('<td>')[1:]
 	regexp_name = '.*<a href="/torrent/.*">(.*) </a>'
 	regexp_size = '</td>.*<td align="right">(.*?)</td>'

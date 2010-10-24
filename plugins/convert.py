@@ -21,7 +21,7 @@ def currency_converter(type, jid, nick, text):
 		if len(text) > 1: (c_from,c_to) = text[:2]
 		if c_from and c_to and c_summ:
 			url = 'http://conv.rbc.ru/convert.shtml?mode=calc&source=cb.0&tid_from=%s&commission=1&tid_to=%s&summa=%s&day=%s&month=%s&year=%s' % (c_from,c_to,c_summ,date[2],date[1],date[0])
-			body = html_encode(urllib.urlopen(url).read())
+			body = html_encode(load_page(url))
 			regex = '<TD class=background>.*?<TD class=background>.*?<TD he.*?>(.*?) </TD>.*?<B>(.*?)</B>.*?<B>(.*?)</B>.*?<TD he.*?>(.*?) </TD>.*?<B>(.*?)</B>'
 			mt = re.findall(regex, body, re.S)
 			if mt != []: 

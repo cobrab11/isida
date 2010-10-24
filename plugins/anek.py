@@ -5,9 +5,7 @@
 
 def anek(type, jid, nick):
 	try:
-		req = 'http://anekdot.odessa.ua/rand-anekdot.php'
-		r = urllib2.urlopen(req)
-		target = r.read()
+		target = load_page('http://anekdot.odessa.ua/rand-anekdot.php')
 		od = re.search('background-color:#FFFFFF\'>',target)
 		message = target[od.end():]
 		message = message[:re.search('<br>',message).start()]

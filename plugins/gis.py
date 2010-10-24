@@ -37,7 +37,7 @@ def gweather_raw(type, jid, nick, text, fully):
 			if len(wzc) == 1:		
 				text = wzc[0][0]
 				link = 'http://informer.gismeteo.ru/xml/'+text+'.xml'
-				try: body, noerr = html_encode(urllib.urlopen(link).read()), True
+				try: body, noerr = html_encode(load_page(link)), True
 				except Exception, SM:
 					try: body = str(SM)
 					except: body = unicode(SM)

@@ -5,7 +5,7 @@
 
 def afor(type, jid, nick):
 	try:
-		target = urllib2.urlopen('http://skio.ru/quotes/humour_quotes.php').read()
+		target = load_page('http://skio.ru/quotes/humour_quotes.php')
 		od = re.search('<form id="qForm" method="post"><div align="center">',target)
 		message = target[od.end():]
 		message = message[:re.search('</div>',message).start()]

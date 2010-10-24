@@ -16,9 +16,7 @@ def get_weather(text):
 	if len(wzc) != 1: return 'Not Found'
 	text = wzc[0][0].upper()
 	link = 'http://weather.noaa.gov/pub/data/observations/metar/decoded/'+text+'.TXT'
-	f = urllib.urlopen(link)
-	wzz = f.read()
-	f.close()
+	wzz = load_page(link)
 	return wzz
 
 def weather(type, jid, nick, text):

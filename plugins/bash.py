@@ -4,7 +4,7 @@
 def bash_org_ru(type, jid, nick, text):
 	try: url, splitter = 'http://bash.org.ru/quote/'+str(int(text)), '<div class="q">'
 	except: url, splitter = 'http://bash.org.ru/random', '<hr class="iq">'
-	body = html_encode(urllib.urlopen(url).read())
+	body = html_encode(load_page(url))
 	if body.count('<div class="vote">') > 1 and url.count('quote'): msg = L('Quote not found!')
 	else:
 		body = body.split('<div class="vote">')[1].split(splitter)[0]
@@ -20,7 +20,7 @@ def ibash_org_ru(type, jid, nick, text):
 	url_id = 'http://ibash.org.ru/quote.php?id='
 	try: url = url_id+str(int(text))
 	except: url = 'http://ibash.org.ru/random.php'
-	body = html_encode(urllib.urlopen(url).read())
+	body = html_encode(load_page(url))
 	msg = url_id + re.findall(reg_title, body, re.S)[0]
 	if msg[-3:] == '???': msg = L('Quote not found!')
 	else: msg += '\n'+rss_replace(re.findall(reg_body, body, re.S)[0])

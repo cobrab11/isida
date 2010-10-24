@@ -1,25 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# (c) Vit@liy
-
 def gcalc(type, jid, nick, text):
 	if not text.strip(): msg = L('What?')
 	else:
-		query=urllib.urlencode({'q':text.encode('utf-8')})
 		start='<h2 class=r style="font-size:138%"><b>'
 		end='</b>'
-		google=httplib.HTTPConnection("www.google.ru")
-		google.request("GET","/search?"+query)
-		search=google.getresponse()
-		data=search.read()
-
+		data = load_page('http://www.google.ru/search?', {'q':text.encode('utf-8')})
+		print data
 		if data.find(start)==-1: msg = L('Google Calculator results not found')
 		else:
 			begin=data.index(start)
 			result=data[begin+len(start):begin+data[begin:].index(end)]
 			result = result.replace("<font size=-2> </font>",",").replace(" &#215; 10<sup>","E").replace("</sup>","").replace("\xa0",",").replace('<sup>','^')
-			msg = result.decode('cp1251')
+			msg = html_encode(result)
 	send_msg(type, jid, nick, msg)
 
 def define(type, jid, nick, text):
@@ -28,13 +22,9 @@ def define(type, jid, nick, text):
 	if not text: msg = L('What?')
 	else:
 		if re.search('\A\d+?(-\d+?)? ', text): target, text = text.split(' ', 1)
-		query=urllib.urlencode({'q':'define:'+text.encode('utf-8')})
 		start='<h2 class=r style="font-size:138%"><b>'
 		end='</b>'
-		google=httplib.HTTPConnection("www.google.ru")
-		google.request("GET","/search?"+query)
-		search=google.getresponse()
-		data=search.read()
+		data = load_page('http://www.google.ru/search?', {'q': 'define:%s' % text.encode('utf-8')})
 		result = re.findall('<li>(.+?)<font color=#008000>(.+?)</font></a><p>', data)
 		if target:
 			try: n1 = n2 = int(target)
@@ -51,7 +41,7 @@ def define(type, jid, nick, text):
 				result = random.choice(result)
 				msg = result[0] + '\nhttp://' + result[1]
 			msg = re.sub(r'<[^<>]+>', ' ', msg).strip()
-			msg = rss_replace(msg.decode('cp1251'))
+			msg = rss_replace(html_encode(urllib.unquote(msg)))
 	if msg: send_msg(type, jid, nick, msg)
 
 def define_message(room,jid,nick,type,text):

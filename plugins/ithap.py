@@ -5,7 +5,7 @@ def ithap(type, jid, nick, text):
 	if text.strip(): url = 'http://ithappens.ru/story/'+text.strip()
 	else: url = 'http://ithappens.ru/random/'
 	try:
-		body = html_encode(urllib.urlopen(url).read())
+		body = html_encode(load_page(url))
 		message = re.search('<p class="text">(.+?)</p>', body).group()
 		msg = unhtml(message)
 	except:

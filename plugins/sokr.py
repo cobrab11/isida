@@ -8,11 +8,7 @@ def sokr(type, jid, nick, text):
 	if not text.strip(): msg = L('What?')
 	else:
 		if re.search('\A\d+?(-\d+?)? ', text): target, text = text.split(' ', 1)
-		query=urllib.urlencode({'q':text.encode('utf-8')})
-		sokr=httplib.HTTPConnection("www.sokr.ru")
-		sokr.request("GET","/search/?abbr=%s&abbr_exact=1" % query)
-		search=sokr.getresponse()
-		data=search.read()
+		data = load_page("http://www.sokr.ru/search/?", {'abbr': text.encode('utf-8'), 'abbr_exact': '1'})
 		results = re.findall('em class="got_clear">.+?</em></a>.+?<p class="value">(.+?)</p>' , data, re.S)
 		cr = len(results)
 		if not results: msg = L('I don\'t know!')
