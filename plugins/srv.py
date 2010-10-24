@@ -30,16 +30,17 @@ def chkserver(type, jid, nick, text):
 			try: msg = '%s\n%s' % (t,reduce_spaces_all(re.findall('SERVICE(.*)Nmap',msg,re.S+re.U)[0][1:-2]))
 			except:
 				try:
-					msg,sock = '',socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+					msg = ''
 					for a in port:
+						sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 						try:
 							sock.connect((t,int(a)))
 							s = L('on')
 						except: s = L('off')
 						msg += '\n%s %s' % (a,s)
-					sock.close()
+						sock.close()
 					msg = '%s%s' % (t,msg)
-				except: raise#msg = '%s - %s' % (t,L('unknown'))
+				except: msg = '%s - %s' % (t,L('unknown'))
 			msg = L('Port status at %s') % msg
 		else: msg = L('What?')
 	else: msg = L('What?')
