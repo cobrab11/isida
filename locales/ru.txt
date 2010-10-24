@@ -1148,11 +1148,11 @@ I leave conference %s by condition spy plugin: %s	Конференция %s по
 Check conference activity\nspy add <conference>[ u<number>][ m<number>] - add conference to list. u - count users, m - count message per night. At default At least one condition - the bot will leave the conference\nspy del <conference> - remove conference from list\nspy show - show active monitoring.	Проверка активности конференции\nspy add <conference>[ u<number>][ m<number>] - добавить конференцию в список мониторинга активности. u - среднее число участников, m - количество сообщение за сутки. При невыполнении хотябы одного условия - бот выйдет из конференции\nspy del <conference> - удалить конференцю из списка мониторинга\nspy show - показать активное слежение
 
 # file: ../trunk/plugins/srv.py
-Port status at %s	Статус порта %s
+Port status at %s	Статус порта у %s
 Command nslookup	Команда nslookup
 Command host	Команда host
 Command dig	Команда dig
-Check port activity\nport server:port [1..5]	Проверка активности порта на запрашиваемом сервере:\nport server:port [1..5]
+Check port activity\nport server port1 [port2 ...]	Проверка активности порта на запрашиваемом сервере:\nport server port1 [port2 ...]
 
 # file: ../trunk/plugins/sokr.py
 Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr	Аббревиатуры. Примеры использования: sokr abbr, sokr 6 abbr, sokr 3-7 abbr

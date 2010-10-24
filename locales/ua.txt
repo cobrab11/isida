@@ -442,11 +442,11 @@ Show local talkers	Показ локальної бази "Базік"
 Show global talkers	Показ глобальної бази "Базік"
 
 # file: ../trunk/plugins/srv.py
-Port status at %s	Статус порту %s
+Port status at %s	Статус порту у %s
 Command nslookup	Команда nslookup
 Command host	Команда host
 Command dig	Команда dig
-Check port activity\nport server:port [1..5]	Перевірка активності порту на запитуємому сервері:\nport server:port [1..5]
+Check port activity\nport server port1 [port2 ...]	Перевірка активності порту на запитуємому сервері:\nport server port1 [port2 ...]
 
 # file: ../trunk/plugins/known.py
 I know you as:	Я бачила тебе як:

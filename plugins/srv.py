@@ -16,18 +16,19 @@ def srv_raw_check(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def chkserver(type, jid, nick, text):
-	if text.count('.') and text.count(':') and len(text) > 5:
-		if text.count(' '):
-			try: mtype = int(text.split(' ')[1])
-			except: mtype = 1
-			if mtype < 1: mtype = 1
-			elif mtype >5: mtype = 5
-			text = text.split(' ')[0]
-		else: mtype = 1
-		url = 'http://status.blackout-gaming.net/status.php?dns='+text.replace(':','&port=')+'&style=t'+str(mtype)
-		body = urllib.urlopen(url).read()
-		body = (body.split('("')[1])[:-3]
-		msg = L('Port status at %s') % body
+	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
+	t = re.findall('[-a-zA-Z0-9à-ÿÀ-ß._/?#=@%]+',text,re.S)
+	if len(t) >= 2:
+		port = []
+		for a in t:
+			if a.isdigit(): port.append(a)
+		for a in port: t.remove(a)
+		if len(t)==1 and len(port)>=1:
+			msg = shell_execute('nmap %s -p%s -P0 -T5' % (t[0],','.join(port)))
+			try: msg = '%s\n%s' % (t[0],reduce_spaces_all(re.findall('SERVICE(.*)Nmap',msg,re.S+re.U)[0][1:-2]))
+			except: msg = '%s - %s' % (t[0],L('unknown'))
+			msg = L('Port status at %s') % msg
+		else: msg = L('What?')
 	else: msg = L('What?')
 	send_msg(type, jid, nick, msg)
 
@@ -35,6 +36,6 @@ global execute
 
 if not paranoia_mode: execute = [(6, 'nslookup', srv_nslookup, 2, L('Command nslookup')),
 		   (6, 'host', srv_host, 2, L('Command host')),
-		   (6, 'dig', srv_dig, 2, L('Command dig'))]
+		   (6, 'dig', srv_dig, 2, L('Command dig')),
+		   (4, 'port', chkserver, 2, L('Check port activity\nport server port1 [port2 ...]'))]
 else: execute = []
-execute.append((3, 'port', chkserver, 2, L('Check port activity\nport server:port [1..5]')))
