@@ -3,10 +3,9 @@
 
 def wiki_search(type, jid, nick,text):
 	ntext = L('wiki %s inurl:en.wikipedia.org/wiki') % text
-	query = urllib.urlencode({'q' : ntext.encode("utf-8")})
-	url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
-	search_results = urllib.urlopen(url)
-	json = simplejson.loads(search_results.read())
+	url = 'http://ajax.googleapis.com/ajax/services/search/web?'
+	search_results = html_encode(load_page(url, {'v': '1.0', 'q': ntext.encode("utf-8")}))
+	json = simplejson.loads(search_results)
 	try:
 		results = json['responseData']['results']
 		title = results[0]['title']
@@ -21,10 +20,9 @@ def wiki_search(type, jid, nick,text):
 
 def xep_show(type, jid, nick,text):
 	ntext = 'xep '+text+' inurl:xmpp.org'
-	query = urllib.urlencode({'q' : ntext.encode("utf-8")})
-	url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
-	search_results = urllib.urlopen(url)
-	json = simplejson.loads(search_results.read())
+	url = 'http://ajax.googleapis.com/ajax/services/search/web?'
+	search_results = html_encode(load_page(url, {'v': '1.0', 'q': ntext.encode("utf-8")}))
+	json = simplejson.loads(search_results)
 	try:
 		results = json['responseData']['results']
 		title = results[0]['title']
@@ -37,21 +35,41 @@ def xep_show(type, jid, nick,text):
 	send_msg(type, jid, nick, msg)
 
 def google(type, jid, nick,text):
-	query = urllib.urlencode({'q' : text.encode("utf-8")})
-	url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s'.encode("utf-8") % (query)
-	search_results = urllib.urlopen(url)
-	json = simplejson.loads(search_results.read())
-	try:
-		results = json['responseData']['results']
-		title = results[0]['title']
-		content = results[0]['content']
-		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
-		content = content.replace('<b>', u'«').replace('</b>', u'»')
-		url = results[0]['unescapedUrl']
-		url = urllib.unquote(url.encode('utf8')).decode('utf8')
-		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
-	except: msg = L('Expression \"%s\" not found!') % text
-	send_msg(type, jid, nick, msg)
+	results = ''
+	global google_last_res
+	text = text.strip()
+	if text == 'next':
+		try:
+			if not google_last_res:
+				results = L('Expression \"%s\" not found!') % text
+			else:
+				first = google_last_res[0]
+				google_last_res = google_last_res[1:]
+		except: results = L('What?')
+	else:
+		if text:
+			url = 'http://ajax.googleapis.com/ajax/services/search/web?'
+			search_results = html_encode(load_page(url, {'v': '1.0', 'q': text.encode("utf-8")}))
+			json = simplejson.loads(search_results)
+			data = json['responseData']['results']
+			first = data[0]
+			google_last_res = data[1:]
+		else:
+			results = L('What?')
+	if not results:
+		try:
+			title = first['title']
+			content = first['content']
+			noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
+			content = content.replace('<b>', u'«').replace('</b>', u'»')
+			url = first['unescapedUrl']
+			url = urllib.unquote(url.encode('utf8')).decode('utf8')
+			results = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
+		except:
+			results = L('Expression \"%s\" not found!') % text
+	send_msg(type, jid, nick, results)
+
+
 
 def translate(type, jid, nick,text):
 	trlang = {'sq':L('Albanian'),'en':L('English'),'ar':L('Arabic'),'af':L('Afrikaans'),
@@ -79,10 +97,10 @@ def translate(type, jid, nick,text):
 		if text.count(' ') > 1:
 			text = text.split(' ',2)
 			if (text[0].lower() in trlang) and (text[1].lower() in trlang) and text[2] != '':
-				query = urllib.urlencode({'q' : text[2].encode("utf-8"),'langpair':text[0].lower()+'|'+text[1].lower()})
-				url = 'http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&%s'.encode("utf-8") % (query)
-				search_results = urllib.urlopen(url)
-				json = simplejson.loads(search_results.read())
+				url = 'http://ajax.googleapis.com/ajax/services/language/translate?'
+				lpair = '%s|%s' % (text[0].lower(), text[1].lower())
+				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : text[2].encode("utf-8"), 'langpair' : lpair}))
+				json = simplejson.loads(search_results)
 				msg = rss_replace(json['responseData']['translatedText'])
 			else: msg = L('Incorrect language settings for translate. tr list - available languages.')
 		else: msg = L('Command\'s format: tr from to text')

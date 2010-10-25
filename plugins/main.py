@@ -1354,7 +1354,7 @@ def muc_filter_lock(type, jid, nick, text):
 
 def get_opener(page_name, parameters):
 	try:
-		proxy_support = urllib2.ProxyHandler({"http" : "http://%(user)s:%(pass)s@%(host)s:%(port)d" % http_proxy})
+		proxy_support = urllib2.ProxyHandler({"http" : "http://%(user)s:%(password)s@%(host)s:%(port)d" % http_proxy})
 		opener = urllib2.build_opener(proxy_support, urllib2.HTTPHandler)
 		urllib2.install_opener(opener)
 	except: opener = urllib2.build_opener(urllib2.HTTPHandler)  
