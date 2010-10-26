@@ -12,7 +12,7 @@ def gcalc(type, jid, nick, text):
 			begin=data.index(start)
 			result=data[begin+len(start):begin+data[begin:].index(end)]
 			result = result.replace("<font size=-2> </font>",",").replace(" &#215; 10<sup>","E").replace("</sup>","").replace("\xa0",",").replace('<sup>','^')
-			msg = html_encode(result)
+			msg = result.decode('utf-8', 'ignore')
 	send_msg(type, jid, nick, msg)
 
 def define(type, jid, nick, text):
