@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+google_last_res = {}
+
 def wiki_search(type, jid, nick,text):
 	ntext = L('wiki %s inurl:en.wikipedia.org/wiki') % text
 	url = 'http://ajax.googleapis.com/ajax/services/search/web?'
@@ -39,37 +41,37 @@ def google(type, jid, nick,text):
 	global google_last_res
 	text = text.strip()
 	if text == 'next':
+		if google_last_res.has_key(jid) and google_last_res[jid].has_key(nick) and google_last_res[jid][nick]:
+			first = google_last_res[jid][nick][0]
+			google_last_res[jid][nick] = google_last_res[jid][nick][1:]
+		else:
+			results = L('No results!')
+	elif text:
 		try:
-			if not google_last_res:
-				results = L('Expression \"%s\" not found!') % text
-			else:
-				first = google_last_res[0]
-				google_last_res = google_last_res[1:]
-		except: results = L('What?')
-	else:
-		if text:
 			url = 'http://ajax.googleapis.com/ajax/services/search/web?'
 			search_results = html_encode(load_page(url, {'v': '1.0', 'q': text.encode("utf-8")}))
 			json = simplejson.loads(search_results)
 			data = json['responseData']['results']
 			first = data[0]
-			google_last_res = data[1:]
-		else:
-			results = L('What?')
+			if google_last_res.has_key(jid):
+				google_last_res[jid].update({nick: data[1:]})
+			else:
+				google_last_res[jid] = {nick: data[1:]}
+		except: results = L('Expression \"%s\" not found!') % text
+	else: results = L('What?')
 	if not results:
-		try:
-			title = first['title']
-			content = first['content']
-			noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
-			content = content.replace('<b>', u'«').replace('</b>', u'»')
-			url = first['unescapedUrl']
-			url = urllib.unquote(url.encode('utf8')).decode('utf8')
-			results = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
-		except:
-			results = L('Expression \"%s\" not found!') % text
+		title = first['title']
+		content = first['content']
+		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
+		content = content.replace('<b>', u'«').replace('</b>', u'»')
+		url = first['unescapedUrl']
+		url = urllib.unquote(url.encode('utf8')).decode('utf8')
+		results = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	send_msg(type, jid, nick, results)
 
-
+def google_clear(room,jid,nick,type,arr): 
+	if type == 'unavailable' and google_last_res.has_key(room) and google_last_res[room].has_key(nick):
+		del google_last_res[room][nick]
 
 def translate(type, jid, nick,text):
 	trlang = {'sq':L('Albanian'),'en':L('English'),'ar':L('Arabic'),'af':L('Afrikaans'),
@@ -106,9 +108,10 @@ def translate(type, jid, nick,text):
 		else: msg = L('Command\'s format: tr from to text')
 	send_msg(type, jid, nick, msg)
 
-global execute
+global execute, presence_control
 
 execute = [(3, 'tr', translate, 2, L('Translator.\ntr from_language to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction')),
 	 (3, 'google', google, 2, L('Search in google')),
 	 (3, 'xep', xep_show, 2, L('Search XEP')),
 	 (3, 'wiki', wiki_search, 2, L('Search in en.wikipedia.org'))]
+presence_control = [google_clear]
