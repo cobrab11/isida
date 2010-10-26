@@ -95,7 +95,7 @@ def whereis(type, jid, nick, text):
 	else:
 		whereis_lock = True
 		if len(text):
-			text = text.split(' ')
+			text = text.split('\n')
 			who = text[0]
 		else: who = nick
 		if len(text)<2: where = getServer(jid)
@@ -171,4 +171,4 @@ def whereis_collect_async(who,tt,iqid,curr_id,is_answ):
 global execute
 
 execute = [(3, 'disco', disco, 2, L('Service discovery.\ndisco server.tld - request information about server\ndisco conference.server.tld [body [size]] - find body string in conference list and show size results\ndisco room@conference.server.tld [body [size]] - find body string in disco room conference and show size results.')),
-	 (7, 'whereis', whereis, 2, L('Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick [conference.]server.tld - find nick on server server.tld'))]
+	 (7, 'whereis', whereis, 2, L('Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick\n[conference.]server.tld - find nick on server server.tld'))]
