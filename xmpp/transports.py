@@ -77,7 +77,7 @@ class TCPsocket(PlugIn):
 		" SRV resolver. Takes server=(host, port) as argument. Returns new (host, port) pair "
 		if HAVE_DNSPYTHON or HAVE_PYDNS:
 			host, port = server
-			possible_queries = ['_xmpp-client._tcp.' + host]
+			possible_queries = ['_xmpp-client._tcp.%s' % host]
 
 			for query in possible_queries:
 				try:
@@ -94,16 +94,14 @@ class TCPsocket(PlugIn):
 						answers = response.answers
 						if len(answers) > 0:
 							# ignore the priority and weight for now
+							answers.sort()
 							_, _, port, host = answers[0]['data']
 							del _
 							port = int(port)
 							break
-				except:
-					self.DEBUG('An error occurred while looking up %s' % query, 'warn')
-			port = 5222 # !!! FIX IT !!!
+				except: self.DEBUG('An error occurred while looking up %s' % query, 'warn')
 			server = (host, port)
-		else:
-			self.DEBUG("Could not load one of the supported DNS libraries (dnspython or pydns). SRV records will not be queried and you may need to set custom hostname/port for some servers to be accessible.\n",'warn')
+		else: self.DEBUG("Could not load one of the supported DNS libraries (dnspython or pydns). SRV records will not be queried and you may need to set custom hostname/port for some servers to be accessible.\n",'warn')
 		# end of SRV resolver
 		return server
 
