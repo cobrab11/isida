@@ -90,10 +90,8 @@ def disco_async(type, jid, nick, what, where, hm, is_answ):
 
 def whereis(type, jid, nick, text):
 	global iq_request,whereis_lock
-	if whereis_lock:
-		send_msg(type, jid, nick, L('This command in use somewhere else. Please try later.'))
+	if whereis_lock: send_msg(type, jid, nick, L('This command in use somewhere else. Please try later.'))
 	else:
-		whereis_lock = True
 		if len(text):
 			text = text.split('\n')
 			who = text[0]
@@ -118,6 +116,7 @@ def whereis_async(type, jid, nick, who, where, is_answ):
 	send_msg(type, jid, nick, L('Please wait. Result you will be receive in private message approximately %s %s') % (str(int(len(djids)/1.1)), L('sec.')))
 	curr_id = 'whereis_%s' % get_id()
 	whereis_checks[curr_id] = len(djids)
+	whereis_lock = True
 	for ii in djids:
 		iqid, tt = get_id(), time.time()
 		i = Node('iq', {'id': iqid, 'type': 'get', 'to':ii}, payload = [Node('query', {'xmlns': NS_DISCO_ITEMS},[])])

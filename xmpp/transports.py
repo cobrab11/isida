@@ -100,6 +100,7 @@ class TCPsocket(PlugIn):
 							break
 				except:
 					self.DEBUG('An error occurred while looking up %s' % query, 'warn')
+			port = 5222 # !!! FIX IT !!!
 			server = (host, port)
 		else:
 			self.DEBUG("Could not load one of the supported DNS libraries (dnspython or pydns). SRV records will not be queried and you may need to set custom hostname/port for some servers to be accessible.\n",'warn')

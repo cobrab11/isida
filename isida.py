@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
-import os, sys, time
+import os, sys, time, re
 pid_file = 'isida.pid'
 
 def readfile(filename):
@@ -58,6 +58,7 @@ writefile(pid_file,str(os.getpid()))
 rm('settings/version')
 if os.name == 'nt': os.system('svnversion >> settings/version')
 else: os.system('echo `svnversion` >> settings/version')
+os.system('echo No Updates! >> update.log')
 
 while 1:
 	try: execfile('kernel.py')
@@ -68,21 +69,20 @@ while 1:
 			rm('settings/ver')
 			rm('settings/version')
 			if os.name == 'nt':
-				os.system('svnversion >> settings/ver')
+				#os.system('svnversion >> settings/ver')
 				rm('plugins/list.txt')
 				os.system('svn up')
 				os.system('svnversion >> settings/version')
 			else:
-				os.system('echo `svnversion` >> settings/ver')
+				#os.system('echo `svnversion` >> settings/ver')
 				rm('plugins/list.txt')
 				os.system('svn up')
 				os.system('echo `svnversion` >> settings/version')
-			try: ver = int(readfile('settings/version')[:3]) - int(readfile('settings/ver')[:3])
-			except: ver = -1
-			rm('settings/ver')
-			if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
-			elif ver < 0: os.system('echo Failed to detect version! >> update.log')
-			else: os.system('echo No Updates! >> update.log')
+			#try: ver = int(re.findall('[0-9]+',readfile('settings/version'))) - int(re.findall('[0-9]+',readfile('settings/ver')))
+			#except: ver = -1
+			#if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
+			#elif ver < 0: os.system('echo Failed to detect version! >> update.log')
+			#else: os.system('echo No Updates! >> update.log')
 		elif mode == 'exit': break
 		elif mode == 'restart': pass
 		else:

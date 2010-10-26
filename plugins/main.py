@@ -300,7 +300,7 @@ def replacer(msg):
 def svn_info(type, jid, nick):
 	if os.path.isfile(ul): msg = L('Last update:\n%s') % readfile(ul).decode('utf-8')
 	else: msg = L('File %s not found!') % ul
-	send_msg(type, jid, nick, msg)
+	send_msg(type, jid, nick, msg[:msg_limit])
 
 def unhtml_raw(page,mode):
 	for a in range(0,page.count('<style')):
@@ -1611,7 +1611,7 @@ comms = [
 	 (8, 'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
 	 (0, 'bot_uptime', uptime, 1, L('Show bot uptime.')),
 	 (6, 'info', info, 1, L('Misc information about bot.')),
-	 (0, 'new', svn_info, 1, L('Last svn update log')),
+	 #(0, 'new', svn_info, 1, L('Last svn update log')),
 	 (9, 'limit', conf_limit, 2, L('Set temporary message limit.')),
 	 (9, 'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
 	 (9, 'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
