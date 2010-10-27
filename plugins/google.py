@@ -74,20 +74,19 @@ def google_clear(room,jid,nick,type,arr):
 		del google_last_res[room][nick]
 
 def translate(type, jid, nick,text):
+	text = text.strip()
 	trlang = {'sq':L('Albanian'),'en':L('English'),'ar':L('Arabic'),'af':L('Afrikaans'),
-			  'be':L('Belarusian'),'bg':L('Bulgarian'),'cy':L('Welsh'),'hu':L('Hungarian'),'vi':L('Vietnamese'),
-			  'gl':L('Galician'),'nl':L('Dutch'),'el':L('Greek'),'da':L('Danish'),'iw':L('Hebrew'),'yi':L('Yiddish'),
-			  'id':L('Indonesian'),'ga':L('Irish'),'is':L('Icelandic'),'es':L('Spanish'),'it':L('Italian'),
-			  'ca':L('Catalan'),'zh':L('Chinese'),'ko':L('Korean'),'lv':L('Latvian'),'lt':L('Lithuanian'),
-			  'mk':L('Macedonian'),'ms':L('Malay'),'mt':L('Maltese'),'de':L('German'),'no':L('Norwegian'),
-			  'fa':L('Persian'),'pl':L('Polish'),'pt':L('Portuguese'),'ro':L('Romanian'),'ru':L('Russian'),
-			  'sr':L('Serbian'),'sk':L('Slovak'),'sl':L('Slovenian'),'sw':L('Swahili'),'tl':L('Tagalog'),
-			  'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
-			  'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese')}
+			'be':L('Belarusian'),'bg':L('Bulgarian'),'cy':L('Welsh'),'hu':L('Hungarian'),'vi':L('Vietnamese'),
+			'gl':L('Galician'),'nl':L('Dutch'),'el':L('Greek'),'da':L('Danish'),'iw':L('Hebrew'),'yi':L('Yiddish'),
+			'id':L('Indonesian'),'ga':L('Irish'),'is':L('Icelandic'),'es':L('Spanish'),'it':L('Italian'),
+			'ca':L('Catalan'),'zh':L('Chinese'),'ko':L('Korean'),'lv':L('Latvian'),'lt':L('Lithuanian'),
+			'mk':L('Macedonian'),'ms':L('Malay'),'mt':L('Maltese'),'de':L('German'),'no':L('Norwegian'),
+			'fa':L('Persian'),'pl':L('Polish'),'pt':L('Portuguese'),'ro':L('Romanian'),'ru':L('Russian'),
+			'sr':L('Serbian'),'sk':L('Slovak'),'sl':L('Slovenian'),'sw':L('Swahili'),'tl':L('Tagalog'),
+			'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
+			'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese'),'ht':L('Creole')}
 	if text.lower() == 'list':
-		msg = L('Available languages for translate:') + ' '
-		for tl in trlang: msg += tl+', '
-		msg = msg[:-2]
+		msg = L('Available languages for translate:') + ' ' + ', '.join(trlang.keys())
 	elif text[:4].lower() == 'info':
 		text = text.lower().split(' ')
 		msg = ''
@@ -96,16 +95,22 @@ def translate(type, jid, nick,text):
 		if len(msg): msg = L('Available languages: %s') % msg[:-2]
 		else: msg = L('I don\'t know this language')
 	else:
-		if text.count(' ') > 1:
+		if ' ' in text:
 			text = text.split(' ',2)
-			if (text[0].lower() in trlang) and (text[1].lower() in trlang) and text[2] != '':
-				url = 'http://ajax.googleapis.com/ajax/services/language/translate?'
+			url = 'http://ajax.googleapis.com/ajax/services/language/translate?'
+			if len(text)>1 and trlang.has_key(text[0].lower()) and not trlang.has_key(text[1].lower()):
+				lpair = '|%s' % text[0].lower()
+				tr_text = ' '.join(text[1:])
+				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : tr_text.encode("utf-8"), 'langpair' : lpair}))
+				json = simplejson.loads(search_results)
+				msg = rss_replace(json['responseData']['translatedText'])
+			elif len(text)>2 and trlang.has_key(text[0].lower()) and trlang.has_key(text[1].lower()) and text[2]:
 				lpair = '%s|%s' % (text[0].lower(), text[1].lower())
 				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : text[2].encode("utf-8"), 'langpair' : lpair}))
 				json = simplejson.loads(search_results)
 				msg = rss_replace(json['responseData']['translatedText'])
 			else: msg = L('Incorrect language settings for translate. tr list - available languages.')
-		else: msg = L('Command\'s format: tr from to text')
+		else: msg = L('Command\'s format: tr [from] to text')
 	send_msg(type, jid, nick, msg)
 
 global execute, presence_control
