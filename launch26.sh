@@ -1,5 +1,6 @@
 #!/bin/sh
 
-rm -f plugins/list.txt
+if [ -e plugins/list.txt ] ; then rm -f plugins/list.txt.back && mv plugins/list.txt.back plugins/list.txt ; fi
 svn up
-python2.6 isida.py
+if [ ! -e plugins/list.txt ] ; then mv plugins/list.txt.back plugins/list.txt ; fi
+python2.7 isida.pypython2.6 isida.py
