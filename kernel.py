@@ -1644,11 +1644,7 @@ pl_ignore = getFile(pliname,[])
 for pl in plugins:
 	if pl in pl_ignore: pprint('Ignore plugin: %s' % pl)
 	else:
-		presence_control = []
-		message_control = []
-		message_act_control = []
-		iq_control = []
-		timer = []
+		presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
 		pprint('Append plugin: %s' % pl)
 		execfile('plugins/%s' % pl)
 		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (pl[:-3],cm[4])))

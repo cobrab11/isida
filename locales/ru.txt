@@ -731,8 +731,10 @@ I can't leave last room!	Не могу выйти из последней кон
 Leave room %s	Свалила из %s
 Leave room by %s	Меня выводит %s
 Temporary message size limit %s	Временный лимит размера сообщений %s
-Loaded plugin: %s\nAdd commands: %s	Загружен плагин: %s\nДоступны команды: %s
-Unloaded plugin: %s\nDel commands: %s	Удалён плагин: %s\nУдалены команды: %s
+Loaded plugin: %s	Загружен плагин: %s
+\nAdd commands: %s	\nДоступны команды: %s
+Unloaded plugin: %s	Удалён плагин: %s
+\nDel commands: %s	\nУдалены команды: %s
 Available plugins: %s	Доступные плагины: %s
 \nIgnored plugins: %s	\nИгнорируемые плагины: %s
 Active plugins: %s	Активные плагины: %s

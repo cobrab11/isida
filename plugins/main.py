@@ -685,17 +685,15 @@ def bot_plugin(type, jid, nick, text):
 				pl_ignore.remove(nnick)
 				writefile(pliname,str(pl_ignore))
 			if not nnick in plugins: plugins.append(nnick)
-			presence_control = []
-			message_control = []
-			message_act_control = []
-			iq_control = []
-			timer = []
+			presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
 			execfile('plugins/'+nnick)
-			msg = ''
+			tmsg = ''
 			for cm in execute:
-				msg += cm[1]+'['+str(cm[0])+'], '
+				tmsg += '%s[%s], ' % (cm[1],cm[0])
 				comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (nnick[:-3],cm[4])))
-			msg = L('Loaded plugin: %s\nAdd commands: %s') % (nnick[:-3],msg[:-2])
+			msg = L('Loaded plugin: %s') % nnick[:-3]
+			if tmsg: msg += L('\nAdd commands: %s') % tmsg[:-2]
+
 			for tmr in timer: gtimer.append(tmr)
 			for tmp in presence_control: gpresence.append(tmp)
 			for tmp in message_control: gmessage.append(tmp)
@@ -708,18 +706,15 @@ def bot_plugin(type, jid, nick, text):
 				pl_ignore.append(nnick)
 				writefile(pliname,str(pl_ignore))
 			if nnick in plugins: plugins.remove(nnick)
-			presence_control = []
-			message_control = []
-			message_act_control = []
-			iq_control = []
-			timer = []
+			presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
 			execfile('plugins/'+nnick)
-			msg = ''
-			for commmm in execute:
-				msg += commmm[1]+'['+str(commmm[0])+'], '
+			tmsg = ''
+			for cm in execute:
+				tmsg += '%s[%s], ' % (cm[1],cm[0])
 				for i in comms:
-					if i[1] == commmm[1]: comms.remove(i)
-			msg = L('Unloaded plugin: %s\nDel commands: %s') % (nnick[:-3],msg[:-2])
+					if i[1] == cm[1]: comms.remove(i)
+			msg = L('Unloaded plugin: %s') % nnick[:-3]
+			if tmsg: msg += L('\nDel commands: %s') % tmsg[:-2]
 			for tmr in timer: gtimer.remove(tmr)
 			for tmp in presence_control: gpresence.remove(tmp)
 			for tmp in message_control: gmessage.remove(tmp)

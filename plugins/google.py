@@ -3,6 +3,8 @@
 
 google_last_res = {}
 
+def replace_bold(t,b,e): return t.replace('<b>',b).replace('</b>',e)
+
 def wiki_search(type, jid, nick,text):
 	ntext = L('wiki %s inurl:en.wikipedia.org/wiki') % text
 	url = 'http://ajax.googleapis.com/ajax/services/search/web?'
@@ -14,8 +16,7 @@ def wiki_search(type, jid, nick,text):
 		content = results[0]['content']
 		noh_title = title.replace('<b>', '').replace('</b>', '')
 		content = content.replace('<b>', '').replace('</b>', '')
-		url = results[0]['unescapedUrl']
-		url = urllib.unquote(url.encode('utf8')).decode('utf8')
+		url = urllib.unquote(results[0]['unescapedUrl'].encode('utf8')).decode('utf8')
 		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	except: msg = L('Expression \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
@@ -29,23 +30,21 @@ def xep_show(type, jid, nick,text):
 		results = json['responseData']['results']
 		title = results[0]['title']
 		content = results[0]['content']
-		noh_title = title.replace('<b>', '').replace('</b>', '')
-		content = content.replace('<b>', '').replace('</b>', '')
-		url = results[0]['unescapedUrl']
-		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
+		noh_title = replace_bold(title,'','')
+		content = replace_bold(content,'','')
+		msg = '\n'.join((replacer(noh_title),replacer(content),results[0]['unescapedUrl']))
 	except: msg = L('xep \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
 
 def google(type, jid, nick,text):
-	results = ''
 	global google_last_res
+	results = ''
 	text = text.strip()
 	if text == 'next':
 		if google_last_res.has_key(jid) and google_last_res[jid].has_key(nick) and google_last_res[jid][nick]:
 			first = google_last_res[jid][nick][0]
 			google_last_res[jid][nick] = google_last_res[jid][nick][1:]
-		else:
-			results = L('No results!')
+		else: results = L('No results!')
 	elif text:
 		try:
 			url = 'http://ajax.googleapis.com/ajax/services/search/web?'
@@ -53,25 +52,21 @@ def google(type, jid, nick,text):
 			json = simplejson.loads(search_results)
 			data = json['responseData']['results']
 			first = data[0]
-			if google_last_res.has_key(jid):
-				google_last_res[jid].update({nick: data[1:]})
-			else:
-				google_last_res[jid] = {nick: data[1:]}
+			if google_last_res.has_key(jid): google_last_res[jid].update({nick: data[1:]})
+			else: google_last_res[jid] = {nick: data[1:]}
 		except: results = L('Expression \"%s\" not found!') % text
 	else: results = L('What?')
 	if not results:
 		title = first['title']
 		content = first['content']
-		noh_title = title.replace('<b>', u'«').replace('</b>', u'»')
-		content = content.replace('<b>', u'«').replace('</b>', u'»')
-		url = first['unescapedUrl']
-		url = urllib.unquote(url.encode('utf8')).decode('utf8')
+		noh_title = replace_bold(title,u'«',u'»')
+		content = replace_bold(content,u'«',u'»')
+		url = urllib.unquote(first['unescapedUrl'].encode('utf8')).decode('utf8')
 		results = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	send_msg(type, jid, nick, results)
 
 def google_clear(room,jid,nick,type,arr): 
-	if type == 'unavailable' and google_last_res.has_key(room) and google_last_res[room].has_key(nick):
-		del google_last_res[room][nick]
+	if type == 'unavailable' and google_last_res.has_key(room) and google_last_res[room].has_key(nick): del google_last_res[room][nick]
 
 def translate(type, jid, nick,text):
 	text = text.strip()
@@ -85,28 +80,22 @@ def translate(type, jid, nick,text):
 			'sr':L('Serbian'),'sk':L('Slovak'),'sl':L('Slovenian'),'sw':L('Swahili'),'tl':L('Tagalog'),
 			'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
 			'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese'),'ht':L('Creole')}
-	if text.lower() == 'list':
-		msg = L('Available languages for translate:') + ' ' + ', '.join(trlang.keys())
+	if text.lower() == 'list': msg = L('Available languages for translate:') + ' ' + ', '.join(trlang.keys())
 	elif text[:4].lower() == 'info':
 		text = text.lower().split(' ')
 		msg = ''
 		for tmp in text:
-			if tmp in trlang: msg += tmp+' - '+trlang[tmp]+', '
+			if tmp in trlang: msg += '%s - %s, ' % (tmp,trlang[tmp])
 		if len(msg): msg = L('Available languages: %s') % msg[:-2]
 		else: msg = L('I don\'t know this language')
 	else:
 		if ' ' in text:
 			text = text.split(' ',2)
 			url = 'http://ajax.googleapis.com/ajax/services/language/translate?'
-			if len(text)>1 and trlang.has_key(text[0].lower()) and not trlang.has_key(text[1].lower()):
-				lpair = '|%s' % text[0].lower()
-				tr_text = ' '.join(text[1:])
+			if len(text)>1 and trlang.has_key(text[0].lower()):
+				if len(text)>2 and trlang.has_key(text[1].lower()): lpair,tr_text = '%s|%s' % (text[0].lower(), text[1].lower()),text[2]
+				else: lpair,tr_text = '|%s' % text[0].lower(),' '.join(text[1:])
 				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : tr_text.encode("utf-8"), 'langpair' : lpair}))
-				json = simplejson.loads(search_results)
-				msg = rss_replace(json['responseData']['translatedText'])
-			elif len(text)>2 and trlang.has_key(text[0].lower()) and trlang.has_key(text[1].lower()) and text[2]:
-				lpair = '%s|%s' % (text[0].lower(), text[1].lower())
-				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : text[2].encode("utf-8"), 'langpair' : lpair}))
 				json = simplejson.loads(search_results)
 				msg = rss_replace(json['responseData']['translatedText'])
 			else: msg = L('Incorrect language settings for translate. tr list - available languages.')
@@ -115,8 +104,10 @@ def translate(type, jid, nick,text):
 
 global execute, presence_control
 
+presence_control = [google_clear]
+
 execute = [(3, 'tr', translate, 2, L('Translator.\ntr [from_language] to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction')),
 	 (3, 'google', google, 2, L('Search in google')),
 	 (3, 'xep', xep_show, 2, L('Search XEP')),
 	 (3, 'wiki', wiki_search, 2, L('Search in en.wikipedia.org'))]
-presence_control = [google_clear]
+
