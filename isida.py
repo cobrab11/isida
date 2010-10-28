@@ -68,16 +68,20 @@ while 1:
 		if mode == 'update':
 			rm('settings/ver')
 			rm('settings/version')
+			rm('plugins/list.txt.back')
 			if os.name == 'nt':
 				#os.system('svnversion >> settings/ver')
-				rm('plugins/list.txt')
+				os.system('cd plugins && ren list.txt list.txt.back && cd ..')
 				os.system('svn up')
 				os.system('svnversion >> settings/version')
 			else:
 				#os.system('echo `svnversion` >> settings/ver')
-				rm('plugins/list.txt')
+				os.system('mv plugins/list.txt plugins/list.txt.back')
 				os.system('svn up')
 				os.system('echo `svnversion` >> settings/version')
+			if not os.path.isfile('plugins/list.txt'):
+				if os.name == 'nt': os.system('cd plugins && ren list.txt.back list.txt && cd ..')
+				else: os.system('mv plugins/list.txt.back plugins/list.txt')
 			#try: ver = int(re.findall('[0-9]+',readfile('settings/version'))) - int(re.findall('[0-9]+',readfile('settings/ver')))
 			#except: ver = -1
 			#if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
