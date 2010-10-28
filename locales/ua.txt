@@ -366,6 +366,7 @@ Swedish	шведська
 Estonian	естонська
 Japanese	японська
 Creole	креольська
+I can't translate it!	Я не можу цього перекласти!
 Available languages for translate:	Доступні мови для перекладу:
 Available languages: %s	Відомі мови: %
 I don't know this language	Я не знаю таких мов

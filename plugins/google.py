@@ -96,8 +96,9 @@ def translate(type, jid, nick,text):
 				if len(text)>2 and trlang.has_key(text[1].lower()): lpair,tr_text = '%s|%s' % (text[0].lower(), text[1].lower()),text[2]
 				else: lpair,tr_text = '|%s' % text[0].lower(),' '.join(text[1:])
 				search_results = html_encode(load_page(url, {'v' : '1.0', 'q' : tr_text.encode("utf-8"), 'langpair' : lpair}))
-				json = simplejson.loads(search_results)
-				msg = rss_replace(json['responseData']['translatedText'])
+				json = simplejson.loads(search_results)['responseData']
+				if json: msg = rss_replace(json['translatedText'])
+				else: msg = L('I can\'t translate it!')
 			else: msg = L('Incorrect language settings for translate. tr list - available languages.')
 		else: msg = L('Command\'s format: tr [from] to text')
 	send_msg(type, jid, nick, msg)
