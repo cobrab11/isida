@@ -993,6 +993,16 @@ def iqCB(sess,iq):
 								newjoin = False
 								break
 
+						# Whitelist
+						if get_config(gr,'muc_filter_whitelist') and msg and not mute and newjoin:
+							mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
+							cu = mdb.cursor()
+							in_base = cu.execute('select jid from age where room=? and jid=?',(gr,getRoom(jid))).fetchone()
+							mdb.close()
+							if not in_base:
+								pprint('MUC-Filter whitelist: %s %s' % (gr,jid))
+								msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('Deny by whitelist!')])])])).replace('replace_it',get_tag(msg,'presence')),True
+
 						# AD-Block filter
 						if get_config(gr,'muc_filter_adblock_prs') != 'off' and msg and not mute:
 							fs,fn = [],[]
@@ -1050,7 +1060,7 @@ def iqCB(sess,iq):
 							else: msg = muc_filter_action(act,jid,room,L('Large nick block!'))
 
 						# Rejoin filter
-						if get_config(gr,'muc_filter_rejoin') != 'off' and msg and not mute and newjoin:
+						if get_config(gr,'muc_filter_rejoin') and msg and not mute and newjoin:
 							try: muc_rejoins[tojid] = [muc_rejoins[tojid],muc_rejoins[tojid][1:]][len(muc_rejoins[tojid])==GT('muc_filter_rejoin_count')] + [int(time.time())]
 							except: muc_rejoins[tojid] = []
 							if len(muc_rejoins[tojid]) == GT('muc_filter_rejoin_count'):

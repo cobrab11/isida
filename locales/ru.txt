@@ -22,6 +22,7 @@ Blocked by censor!	Блокировано цензором!
 Large message%s %s	Большое сообщение%s %s
 Large message block!	Большое сообщение!
 Warning! Your message is blocked in connection with the policy of the room!	Внимание! Ваше сообщение блокировано в связи с политикой комнаты!
+Deny by whitelist!	Ограничение по белому списку!
 Large status block!	Блокировка длинного статусного сообщения!
 Large nick block!	Блокировка длинного ника!
 To many rejoins! Wait %s sec.	Слишком много попыток входа! Ждите %s сек.
@@ -815,6 +816,8 @@ Censor muc filter is %s	Действия muc-цензора: %s
 Censor filter	Muc-цензор
 Adblock muc filter for presence is %s	Блокировка рекламы в презенсах: %s
 Adblock filter for presence	Фильтр блокировки рекламы в презенсах
+Whitelist is %s	Белый список: %s
+Whitelist via muc filter	Белый список через muc-фильтр
 Repeat join muc filter is %s	Блокировка множественных входов: %s
 Repeat join muc filter	Фильтр множественных входов
 Repeat presence muc filter is %s	Блокировка презенс-флуда: %s

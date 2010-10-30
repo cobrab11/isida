@@ -1382,6 +1382,7 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 
 				'muc_filter_adblock_prs': [L('Adblock muc filter for presence is %s'), L('Adblock filter for presence'), ['off','kick','ban','replace','mute'], 'off'],
 				'muc_filter_rejoin': [L('Repeat join muc filter is %s'), L('Repeat join muc filter'), [True,False], False],
+				'muc_filter_whitelist': [L('Whitelist is %s'), L('Whitelist via muc filter'), [True,False], False],
 				'muc_filter_repeat_prs': [L('Repeat presence muc filter is %s'), L('Repeat presence muc filter'), ['off','kick','ban','mute'], 'off'],
 				'muc_filter_large_nick': [L('Large nick muc filter is %s'), L('Large nick muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
 				'muc_filter_large_status': [L('Large status muc filter is %s'), L('Large status muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
@@ -1409,7 +1410,7 @@ config_group_other = [L('Other settings'),'#room-other',
 
 config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
 				['muc_filter','muc_filter_adblock','muc_filter_repeat','muc_filter_match',
-				'muc_filter_large','muc_filter_censor','muc_filter_adblock_prs','muc_filter_rejoin',
+				'muc_filter_large','muc_filter_censor','muc_filter_adblock_prs','muc_filter_rejoin','muc_filter_whitelist',
 				'muc_filter_repeat_prs','muc_filter_large_nick','muc_filter_large_status','muc_filter_censor_prs']]
 
 config_group_bomb = [L('Settings for bomb-joke'),'#room-bombjoke',
