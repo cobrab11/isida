@@ -462,6 +462,14 @@ def iqCB(sess,iq):
 	query = iq.getTag('query')
 	was_request = id in iq_request
 	acclvl = get_level(getRoom(room),getResourse(room))[0] >= 7 and GT('iq_disco_enable')
+	nnj = False
+	if room == selfjid: nnj = True
+	else:
+		for tmp in megabase:
+			if '%s/%s' % tuple(tmp[0:2]) == room:
+				nnj = True
+				break
+
 	if iq.getType()=='error' and was_request:
 		iq_err,er_name = get_tag(unicode(iq),'error'),L('Unknown error!')
 		try: JJ = JUICK_JID
@@ -497,7 +505,8 @@ def iqCB(sess,iq):
 			elif iq.getTag('ping',namespace=xmpp.NS_URN_PING): iq_async(id,time.time())
 			else: iq_async(id,time.time(), unicode(iq))
 
-	elif iq.getType()=='get':
+	elif iq.getType()=='get' and nnj:
+		
 		if iq.getTag(name='query', namespace=xmpp.NS_VERSION) and GT('iq_version_enable'):
 			pprint('*** iq:version from %s' % unicode(room))
 			i=xmpp.Iq(to=room, typ='result')
