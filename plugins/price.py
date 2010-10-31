@@ -10,7 +10,7 @@ def price(type, jid, nick, parameters):
 			return
 		if len(parameters):
 			parameters = parameters.split('.')[-2].lower()+'.'+parameters.split('.')[-1].lower()
-			target = load_page(req)
+			target = load_page('http://www.webvaluer.org/ru/www.'+parameters)
 			od = re.search('<span style=\"color:green; font-weight:bold;\">',target)
 			message = target[od.end():]
 			message = message[:re.search('</span></h1>',message).start()]

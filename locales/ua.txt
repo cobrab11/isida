@@ -22,6 +22,7 @@ Blocked by censor!	Блоковано цензором
 Large message%s %s	Велике повідомлення%s %s
 Large message block!	Велике повідомлення заблоковано!
 Warning! Your message is blocked in connection with the policy of the room!	Увага! Ваше повідомлення було блоковано у зв'язку з політикою конференції
+Deny by whitelist!	Обмеження по білому списку
 Large status block!	Блокування великого статусного повідомлення
 Large nick block!	Блокування великого ніка
 To many rejoins! Wait %s sec.	Занадто багато спроб входу! Чекайте %s с.
@@ -314,6 +315,7 @@ Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Повн�
 wiki %s inurl:en.wikipedia.org/wiki	вікі %s inurl:ru.wikipedia.org/wiki
 Expression "%s" not found!	Виразу "%s" не знайдено!
 xep "%s" not found!	xep "%s" не знайден!
+No results!	Результати відсутні!
 Albanian	албанська
 English		англійська
 Arabic	арабська
@@ -366,17 +368,16 @@ Swedish	шведська
 Estonian	естонська
 Japanese	японська
 Creole	креольська
-I can't translate it!	Я не можу цього перекласти!
 Available languages for translate:	Доступні мови для перекладу:
 Available languages: %s	Відомі мови: %
 I don't know this language	Я не знаю таких мов
+I can't translate it!	Я не можу цього перекласти!
 Incorrect language settings for translate. tr list - available languages.	Неправильно вказана мова або немає тексту для перекладу. tr list - доступні мови
 Command's format: tr [from] to text	Формат команди: tr [з_якої] на_яку текст
 Translator.\ntr [from_language] to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction	Перекладач.\ntr [з_якої_мови] на_яку_мову текст - переклад тексту\ntr list - список мов для перекладу\ntr info <скорочення> - розшифровка скорочення мови
 Search in google	Пошук через google
 Search XEP	Пошук XEP
 Search in en.wikipedia.org	Пошук по ru.wikipedia.org
-No results!	Результати відсутні!
 
 # file: ../trunk/plugins/googleplus.py
 Google Calculator results not found	Калькулятор google не може це підрахувати!
@@ -818,6 +819,8 @@ Adblock muc filter for presence is %s	Блокування реклами в п�
 Adblock filter for presence	Фільтр блокування реклами в презенсах
 Repeat join muc filter is %s	Багаторазові входи: %s
 Repeat join muc filter	Фільтр багаторазові входів
+Whitelist is %s	Білий список: %s
+Whitelist via muc filter	Білий список через muc-фільтр
 Repeat presence muc filter is %s	Презенс-флуд: %s
 Repeat presence muc filter	Фільтр презенс-флуду
 Large nick muc filter is %s	Довгі ніки: %s
