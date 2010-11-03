@@ -1347,7 +1347,7 @@ def muc_filter_lock(type, jid, nick, text):
 	close_muc_base(mbase)
 	send_msg(type, jid, nick, msg)
 
-def get_opener(page_name, parameters):
+def get_opener(page_name, parameters=None):
 	try:
 		proxy_support = urllib2.ProxyHandler({"http" : "http://%(user)s:%(password)s@%(host)s:%(port)d" % http_proxy})
 		opener = urllib2.build_opener(proxy_support, urllib2.HTTPHandler)

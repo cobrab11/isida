@@ -25,10 +25,7 @@ def handler_horoscope(type, jid, nick, parameters):
       send_msg('chat', jid, nick, L('List of dates:\n%s') % sp)
       return
     if horodb.has_key(parameters.lower()):
-      req = urllib2.Request('http://horo.mail.ru/prediction'+horodb[parameters.lower()])
-      req.add_header = ('User-agent', 'Mozilla/5.0')
-      r = urllib2.urlopen(req)
-      target = html_encode(r.read())
+      target = html_encode(load_page('http://horo.mail.ru/prediction'+horodb[parameters.lower()]))
       od = re.search('<div id="tm_today">',target)
       message = target[od.end():]
       message = message[:re.search('<div class="mb2">',message).start()]

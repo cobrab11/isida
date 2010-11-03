@@ -4,15 +4,15 @@
 last_url_watch = ''
 
 def netheader(type, jid, nick, text):
-	if len(text):
+	if text:
 		try:
 			regex = text.split('\n')[0].replace('*','*?')
 			text = text.split('\n')[1]
 		except: regex = None
-		if not text.count('://'): text = 'http://'+text
+		if '://' not in text: text = 'http://'+text
 		req = text.encode("utf-8")
 		try:
-			body = text + '\n' + str(urllib.urlopen(req).headers)
+			body = text + '\n' + str(get_opener(req).headers)
 			if regex:
 				try:
 					mt = re.findall(regex, body, re.S)
@@ -29,10 +29,9 @@ def netwww(type, jid, nick, text):
 		regex = text.split('\n')[0].replace('*','*?')
 		text = text.split('\n')[1]
 	except: regex = None
-	if not text.count('://'): text = 'http://'+text
+	if '://' not in text: text = 'http://'+text
 	req = text.encode('utf-8')
-	#req.add_header('User-Agent',GT('user_agent'))
-	try: body = str(urllib.urlopen(req).info())
+	try: body = str(get_opener(req).info())
 	except: body = L('I can\'t do it')
 	mt = re.findall('Content-Length.*?([0-9]+)', body, re.S)
 	msg = None
@@ -44,7 +43,7 @@ def netwww(type, jid, nick, text):
 	else: c_size = GT('size_overflow')
 	if not msg:
 		try:
-			page = remove_sub_space(html_encode(urllib.urlopen(req).read(c_size)))
+			page = remove_sub_space(html_encode(load_page(req)))
 			if regex:
 				try:
 					mt = re.findall(regex, page, re.S)
@@ -71,7 +70,7 @@ def parse_url_in_message(room,jid,nick,type,text):
 			last_url_watch = link
 			req = urllib2.Request(link.encode('utf-8'))
 			req.add_header('User-Agent',GT('user_agent'))
-			page = remove_sub_space(html_encode(urllib2.urlopen(req).read(2048)))
+			page = remove_sub_space(html_encode(load_page(req)))
 			if page.count('<title>'): tag = 'title'
 			elif page.count('<TITLE>'): tag = 'TITLE'
 			else: return
