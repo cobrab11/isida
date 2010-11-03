@@ -1507,6 +1507,7 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'muc_filter_large_status_size':[L('Muc-filter. Maximux status-message size'),'i',50],
 				'muc_filter_large_nick_size':[L('Muc-filter. Maximum nick size'),'i',20],
 				'muc_filter_repeat_count':[L('Muc-filter. Repeat count'),'i',3],
+				'muc_filter_repeat_time': [L('Muc-filter. Timeout for repeat message'), 'i', 3600],
 				'html_paste_enable':[L('Paste. Paste as html. Otherwize as text'),'b',True],
 				'censor_text':[L('Kernel. Text for hide censore'),'t32','[censored]'],
 				'ddos_limit':[L('Kernel. Time of ignore for anti-ddos'),'l10','[1800,1800,1800,1800,1800,600,300,150,60,0]'],
@@ -1520,7 +1521,7 @@ owner_group_mucfilter = [L('Muc-filter settings'),'#owner-mucfilter',
 				'muc_filter_match_warning_space','muc_filter_match_view','muc_filter_match_warning_nn',
 				'muc_filter_rejoin_count','muc_filter_rejoin_timeout','muc_filter_status_count',
 				'muc_filter_status_timeout','muc_filter_large_status_size','muc_filter_large_nick_size',
-				'muc_filter_repeat_count']]
+				'muc_filter_repeat_count','muc_filter_repeat_time']]
 
 owner_group_iq = [L('Iq requests settings'),'#owner-iq',
 				['iq_time_enable','iq_uptime_enable','iq_version_enable','iq_disco_enable',

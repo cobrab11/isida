@@ -940,6 +940,7 @@ Muc-filter. Time between presences	Muc-filter. Промежуток времен
 Muc-filter. Maximux status-message size	Muc-filter. Максимальный размер статус-сообщения
 Muc-filter. Maximum nick size	Muc-filter. Максимальный размер ника
 Muc-filter. Repeat count	Muc-filter. Количество повторов похожих сообщений
+Muc-filter. Timeout for repeat message	Muc-filter. Таймаут повтора сообщений
 Paste. Paste as html. Otherwize as text	Paste. Html размещение, иначе в виде текста
 Kernel. Text for hide censore	Kernel. Текст для закрытия мата
 Kernel. Time of ignore for anti-ddos	Kernel. Время игнора при ddos'е в зависимости от уровня доступа

@@ -452,7 +452,7 @@ def nice_time(ttim):
 	return t_utc,t_tz,t_display
 
 def iqCB(sess,iq):
-	global timeofset, banbase, raw_iq, iq_in, iq_request, last_msg_base
+	global timeofset, banbase, raw_iq, iq_in, iq_request, last_msg_base, last_msg_time_base
 	iq_in += 1
 	id = iq.getID()
 	if id == None: return None
@@ -930,22 +930,29 @@ def iqCB(sess,iq):
 
 							# Repeat message filter
 							if get_config(getRoom(room),'muc_filter_repeat') != 'off' and msg and not mute:
-								try: lm = last_msg_base[getRoom(jid)]
+								grj = getRoom(jid)
+								try: lm = last_msg_base[grj]
 								except: lm = None
 								if lm:
-									action = False
-									if body == lm: action = True
-									elif body in lm or lm in body:
-										try: muc_repeat[getRoom(jid)] += 1
-										except: muc_repeat[getRoom(jid)] = 1
-										if muc_repeat[getRoom(jid)] >= (GT('muc_filter_repeat_count')-1): action = True
-									else: muc_repeat[getRoom(jid)] = 0
-									if action:
-										act = get_config(getRoom(room),'muc_filter_repeat')
-										pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
-										if act == 'mute': mute = True
-										else: msg = muc_filter_action(act,jid,room,L('Repeat message block!'))
-								last_msg_base[getRoom(jid)] = body
+									rep_to = GT('muc_filter_repeat_time')
+									try: lmt = last_msg_time_base[grj]
+									except: lmt = 0
+									if rep_to+lmt > time.time():
+										action = False
+										if body == lm: action = True
+										elif lm in body:
+											try: muc_repeat[grj] += 1
+											except: muc_repeat[grj] = 1
+											if muc_repeat[grj] >= (GT('muc_filter_repeat_count')-1): action = True
+										else: muc_repeat[grj] = 0
+										if action:
+											act = get_config(getRoom(room),'muc_filter_repeat')
+											pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
+											if act == 'mute': mute = True
+											else: msg = muc_filter_action(act,jid,room,L('Repeat message block!'))
+									else: muc_repeat[grj] = 0
+								last_msg_base[grj] = body
+								last_msg_time_base[grj] = time.time()
 
 							# Match filter
 							if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= GT('muc_filter_match_view'):
@@ -1604,6 +1611,7 @@ ignore_owner = None					# исполнять отключенные команд
 configname = 'settings/config.py'	# конфиг бота
 topics = {}							# временное хранение топиков
 last_msg_base = {}					# последние сообщения
+last_msg_time_base = {}				# время между последними сообщениями последние сообщения
 paranoia_mode = False				# режим для параноиков. запрет любых исполнений внешнего кода
 no_comm = True
 muc_rejoins = {}
