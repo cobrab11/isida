@@ -12,7 +12,7 @@ def exec_ute(type, jid, nick, text):
 def calc(type, jid, nick, text):
 	legal = string.digits + string.letters + '*/+-()=^!<>. '
 	ppc = 1	
-	if '**' in text or 'pow' in text: ppc = 0
+	if '**' in text or 'pow' in text or 'factorial' in text: ppc = 0
 	else:
 		for tt in text:
 			if tt not in legal:
