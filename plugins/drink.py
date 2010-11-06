@@ -56,6 +56,26 @@ def to_drink(type, jid, nick, text):
 	else: msg =L('Database doesn\'t exist.')
 	send_msg(type, jid, nick, msg)
 
+def calend(type, jid, nick, text):
+	msg, url, text = '', '', text.strip()
+	if not text: url = 'http://www.calend.ru/day/%s-%s/' % time.gmtime()[1:3]
+	elif len(text) > 1: url = 'http://www.calend.ru/search/?search_str='+urllib.quote(text.encode('cp1251'))
+	if url:
+		data = html_encode(load_page(url))
+		t = get_tag(data,'title')	
+		if t == u'Поиск':
+			hl = re.findall('<a  href="/holidays(?:/\d*?)+?" title=".+?">(.+?)</a>(?:.|\s)+?/>\s+?(\d+ .+?)\s', data)
+			if hl:
+				for a in hl: msg += '\n%s (%s)' % a
+		else:
+			d = get_tag(data,'h1')
+			hl = re.findall('<a  href="/holidays(?:/\d*?)+?" title=".+?">(.+?)</a>', data)
+			if hl: msg = '%s:\n%s' % (d, '\n'.join(hl))
+	else: msg = L('What?')
+	if not msg: msg = L('Holiday: %s not found.') % text
+	send_msg(type, jid, nick, msg)
+
 global execute
 
-execute = [(3, 'drink', to_drink, 2, L('Find holiday\ndrink [name_holiday/date]'))]
+execute = [(3, 'drink', to_drink, 2, L('Find holiday\ndrink [name_holiday/date]')),
+		(3, 'calend', calend, 2, L('Find holiday\ncalend [name_holiday/date]'))]

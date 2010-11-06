@@ -13,8 +13,8 @@
 Unknown error!	Неизвестная ошибка!
 Error!	Ошибка!
 No reason	Причина не указана
-Unknown configuration request!	Неизвестный запрос конфигурации!
 For configure required x:data-compatible client	Для настройки требуется x:data-совместимый клиент
+Unknown configuration request!	Неизвестный запрос конфигурации!
 AD-Block!	Блокировка рекламы!
 Repeat message block!	Сообщения очень похожи!
 Match message block!	Текст сообщения дублируется!
@@ -29,8 +29,8 @@ To many rejoins! Wait %s sec.	Слишком много попыток вход�
 Status-flood block!	Блокировка статус-флуда!
 Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.	Внимание! Превышен лимит отправки одинаковых сообщений. Вы блокированы на срок %s сек.
 Censored!	Фильтруем базар!
-Too many letters!	Слишком многа букаф!
 *** %s set topic: %s	*** %s обновил(а) тему: %s
+Too many letters!	Слишком многа букаф!
 What?	Ась?
 /me detect bad stanza from %s	/me смотрит на %s и думает: "Факин умник детектед!"
 Kicked	Выгнали
@@ -135,10 +135,10 @@ cyan	голубой
 yellow	желтый
 white	белый
 black	черный
-Here is no candidate to take a bomb!	В этой конференции некому дать бомбу!
 It's a lucky day for you! Bomb is fault! Right wide is %s	Тебе повезло! Бомба не сработала! Правильный провод был %s
 You were wrong! Right wire is %s	Ты ошибся! Правильный провод %s
 Not allowed in private!	Не доступно в привате!
+Here is no candidate to take a bomb!	В этой конференции некому дать бомбу!
 In this room not allowed take a bomb!	В этой конференции нельзя раздавать бомбы!
 This room alredy boombed!	Бомба уже установлена!
 I can't take a bomb to %s	Не могу дать бомбу %s
@@ -180,8 +180,8 @@ Service discovery.\ndisco server.tld - request information about server\ndisco c
 Find nick on conference server\nwhereis - find your nick on current conference server\nwhereis nick - find nick on current conference server\nwhereis nick\n[conference.]server.tld - find nick on server server.tld	Поиск ника по серверу конференций\nwhereis - поиск своего ника по серверу на котором находится текущая конференция\nwhereis nick - поиск ника по серверу на котором находится текущая конференция\nwhereis nick\n[conference.]server.tld - поиск ника по серверу server.tld
 
 # file: ../trunk/plugins/dist.py
-Distance between cities	Расстояние между городами. Пример: dist Киев - Набережные Челны
 %s kilometers	%s километров
+Distance between cities	Расстояние между городами. Пример: dist Киев - Набережные Челны
 
 # file: ../trunk/plugins/domain.py
 Sites at Domain/IP address: %s\n	Сайты расположенные на IP адресе/домене: %s\n
@@ -259,6 +259,7 @@ Holiday: %s not found.	Повод: %s не найден.
 I know holidays: %s	Я знаю поводы выпить: %s
 Database doesn't exist.	К сожалению база отсутствует.
 Find holiday\ndrink [name_holiday/date]	Поиск повода выпить ;)\ndrink [повод/дата]
+Find holiday\ncalend [name_holiday/date]	Поиск повода выпить ;)\ncalend [повод/дата]
 
 # file: ../trunk/plugins/dumpz.py
 Posting by URL: %s	Запостила по ссылке %s 
@@ -315,6 +316,7 @@ Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Полн�
 wiki %s inurl:en.wikipedia.org/wiki	вики %s inurl:ru.wikipedia.org/wiki
 Expression "%s" not found!	Выражение "%s" не найдено!
 xep "%s" not found!	xep "%s" не найден!
+No results!	Нет результатов!
 Albanian	албанский
 English		английский
 Arabic	арабсий
@@ -367,24 +369,22 @@ Swedish	шведский
 Estonian	эстонский
 Japanese	японский
 Creole	креольский
-I can't translate it!	Я не могу это перевести!
 Available languages for translate:	Доступные языки для перевода:
 Available languages: %s	Известные языки: %s
 I don't know this language	Я не знаю таких языков
+I can't translate it!	Я не могу это перевести!
 Incorrect language settings for translate. tr list - available languages.	Неправильно указан язык или нет текста для перевода. tr list - доступные языки
 Command's format: tr [from] to text	Формат команды: tr [с_какого] на_какой текст
 Translator.\ntr [from_language] to_language text - translate text\ntr list - list for available languages for translate\ntr info <reduction> - get info about language reduction	Переводчик.\ntr [с_какого_языка] на_какой_язык текст - перевод текста\ntr list - список языков для перевода\ntr info <сокращение> - расшифровка сокращения языка
 Search in google	Поиск через google
 Search XEP	Поиск XEP
 Search in en.wikipedia.org	Поиск по ru.wikipedia.org
-No results!	Нет результатов!
 
 # file: ../trunk/plugins/googleplus.py
 Google Calculator results not found	Калькулятор google не может это просчитать!
 I don't know!	Хм. Мне про это никто не рассказывал...
 Google Calculator	Калькулятор google
 Definition for a word or phrase.\ndefine word - random define of word or phrase\ndefine N word - N-th define of word or phrase\ndefine a-b word - from a to b defines of word or phrase	Определение слова или фразы.\ndefine слово - случайное определение\ndefine N слово - N-нное определение\ndefine a-b слово - определения слова с номера a до b
-Parse full phrase	Поиск по полной фразе
 
 # file: ../trunk/plugins/hideroom.py
 This command available only in private!	Команда доступна только в привате!
@@ -500,6 +500,9 @@ And?	Ну и?
 Expression is true for %s%s	Вероятность того, что выражение верно - %s%s
 Check truth of expession.	Проверка выражения на правдивость.
 Check different languages symbols in nick.	Проверка ника на наличие использования букв из разных языков.
+
+# file: ../trunk/plugins/ithap.py
+Quote from ithappens.ru\nithap [number]	Цитата с ithappens.ru\nithap [номер]
 
 # file: ../trunk/plugins/jc.py
 Show information about conference from jc.jabber.ru.\njc [address]	Показывает информацию о указанной конференции с ресурса jc.jabber.ru\njc [конфа]
@@ -799,7 +802,6 @@ Censor action for non member is %s	Действие цензора на не п�
 Censor action for non member	Действие цензора на не постоянных участников
 Parse define is %s	Поиск определений %s
 Automatic parse definition via google	Автоматический поиск определений через Google
-Parse plain phrase	Поиск по простой фразе
 Clear notification by %s	Уведомления при очистке %s
 Clear notification by presence or message	Тип уведомлений при очистке: сообщения или презенсы
 Muc filter is %s	Muc-фильтр: %s
@@ -816,10 +818,10 @@ Censor muc filter is %s	Действия muc-цензора: %s
 Censor filter	Muc-цензор
 Adblock muc filter for presence is %s	Блокировка рекламы в презенсах: %s
 Adblock filter for presence	Фильтр блокировки рекламы в презенсах
-Whitelist is %s	Белый список: %s
-Whitelist via muc filter	Белый список через muc-фильтр
 Repeat join muc filter is %s	Блокировка множественных входов: %s
 Repeat join muc filter	Фильтр множественных входов
+Whitelist is %s	Белый список: %s
+Whitelist via muc filter	Белый список через muc-фильтр
 Repeat presence muc filter is %s	Блокировка презенс-флуда: %s
 Repeat presence muc filter	Фильтр презенс-флуда
 Large nick muc filter is %s	Реакция на длинные ники: %s
@@ -1032,7 +1034,6 @@ DNS resolver.	DNS резолвер.
 Search domain zones TLD.	Поиск доменных зон TLD.
 
 # file: ../trunk/plugins/oracle.py
-Prophecy oracle. Example: oracle your_answer?	Предсказания оракула. Пример: oracle ваш_вопрос?
 Yes	Да
 Yes - definitely	Да - определенно
 You may rely on it	Вы можете положиться на это
@@ -1052,9 +1053,10 @@ Don't count on it	Не рассчитывайте на это
 My reply is no	Мой ответ нет
 Outlook not so good	Перспектива, не столь хорошая
 My sources say no	Мои источники говорят нет
-Heads or tails	Орёл или решка
 Head	Орёл
 Tail	Решка
+Prophecy oracle. Example: oracle your_answer?	Предсказания оракула. Пример: oracle ваш_вопрос?
+Heads or tails	Орёл или решка
 
 # file: ../trunk/plugins/paste.py
 %s pasted by %s	%s запостил(а) %s
@@ -1141,6 +1143,9 @@ Shutting down the bot. You can set reason.	Завершение работы б�
 Restart the bot. You can set reason.	Завершение работы бота. Можно указать параметр, который будет показан в статусе бота при выходе.
 Autoupdate from SVN. You can set reason.	Самообновление бота из SVN. Можно указать параметр, который будет показан в статусе бота при выходе.
 
+# file: ../trunk/plugins/sokr.py
+Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr	Аббревиатуры. Примеры использования: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
+
 # file: ../trunk/plugins/spy.py
 what do you want to add?	что добавить?
 not given tracking	не заданы параметры слежения
@@ -1162,10 +1167,6 @@ Command nslookup	Команда nslookup
 Command host	Команда host
 Command dig	Команда dig
 Check port activity\nport server port1 [port2 ...]	Проверка активности порта на запрашиваемом сервере:\nport server port1 [port2 ...]
-
-# file: ../trunk/plugins/sokr.py
-Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr	Аббревиатуры. Примеры использования: sokr abbr, sokr 6 abbr, sokr 3-7 abbr
-Total found %s matches. Result(s) %s:\n	Всего найдено %s совпадений. Результат(ы) %s:\n
 
 # file: ../trunk/plugins/svn.py
 en_EN.UTF8	ru_RU.UTF8
@@ -1260,5 +1261,3 @@ Search weather by code, city, country.	Поиск погоды по коду г�
 # file: ../trunk/plugins/youtube.py
 Search at YouTube	Поиск по YouTube
 
-# file: ../trunk/plugins/ithap.py
-Quote from ithappens.ru\nithap [number]	Цитата с ithappens.ru\nithap [номер]

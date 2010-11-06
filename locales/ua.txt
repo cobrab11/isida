@@ -259,6 +259,7 @@ Holiday: %s not found.	Привід: %s не знайден.
 I know holidays: %s	Я знаю приводи випити: %s
 Database doesn't exist.	На жаль, база відсутня.
 Find holiday\ndrink [name_holiday/date]	Пошук приводу випити ;)\ndrink [привід/дата]
+Find holiday\ncalend [name_holiday/date]	Пошук приводу випити ;)\ncalend [привід/дата]
 
 # file: ../trunk/plugins/dumpz.py
 Posting by URL: %s	Розмістила за посиланням %s 
