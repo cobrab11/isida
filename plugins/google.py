@@ -5,21 +5,17 @@ google_last_res = {}
 
 def replace_bold(t,b,e): return t.replace('<b>',b).replace('</b>',e)
 
-def wiki_search(type, jid, nick,text):
-	ntext = L('wiki %s inurl:en.wikipedia.org/wiki') % text
-	url = 'http://ajax.googleapis.com/ajax/services/search/web?'
-	search_results = html_encode(load_page(url, {'v': '1.0', 'q': ntext.encode("utf-8")}))
-	json = simplejson.loads(search_results)
-	try:
-		results = json['responseData']['results']
-		title = results[0]['title']
-		content = results[0]['content']
-		noh_title = title.replace('<b>', '').replace('</b>', '')
-		content = content.replace('<b>', '').replace('</b>', '')
-		url = urllib.unquote(results[0]['unescapedUrl'].encode('utf8')).decode('utf8')
-		msg = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
-	except: msg = L('Expression \"%s\" not found!') % text
-	send_msg(type, jid, nick, msg)
+def wiki_search(type, jid, nick, text):
+	room = jid
+	jid = getRoom(get_level(room,nick)[1])
+	cof = getFile(conoff,[])
+	if (room,'wiki') in cof: return
+	tmppos = arr_semi_find(confbase, room)
+	nowname = getResourse(confbase[tmppos])
+	access_mode = get_level(room,nick)[0]
+	if text == 'next': text = 'google next'
+	else: text = 'google ' + L('wiki %s inurl:en.wikipedia.org/wiki') % text
+	com_parser(access_mode, nowname, type, room, nick, text, jid)
 
 def xep_show(type, jid, nick,text):
 	ntext = 'xep '+text+' inurl:xmpp.org'

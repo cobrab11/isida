@@ -20,7 +20,7 @@ def addAnswerToBase(tx):
 	mdb.close()
 
 def getRandomAnswer(tx):
-	if not len(tx) or tx.count(' ') == len(tx): return None
+	if not tx.strip(): return None
 	mdb = sqlite3.connect(answersbase,timeout=base_timeout)
 	answers = mdb.cursor()
 	mrand = str(randint(1,len(answers.execute('select ind from answer').fetchall())))
@@ -31,21 +31,21 @@ def getRandomAnswer(tx):
 def getSmartAnswer(text,room):
 	if '?' in text: answ = random.choice(list_of_answers).strip()
 	else: answ = random.choice(list_of_empty).strip()
-	score,sc = 1.5,0
+	score,sc, var = 1.0,0,[]
 	text = text.upper()
 	for answer in list_of_mind:
 		s = answer.split('||')
 		sc = rating(s[0], text, room)
-		if sc > score: score,answ = sc,random.choice(s[1].split('|'))
-		elif sc == score: answ = random.choice(s[1].split('|')+[answ])
-	return answ.decode('utf-8')
+		if sc > score: score,var = sc,s[1].split('|')
+		elif sc == score: var += s[1].split('|')
+	return random.choice(var).decode('utf-8')
 
 def rating(s, text, room):
-	oc,spisok = 0.0,s.decode('utf-8').split('|')
-	for _ in spisok:
-		if _ in text: oc = oc + 1
-		if _ in ANSW_PREV.get(room, ''): oc = oc + 0.5	
-	return oc
+	r,s = 0.0,s.decode('utf-8').split('|')
+	for _ in s:
+		if _ in text: r += 1
+		if _ in ANSW_PREV.get(room, ''): r += 0.5	
+	return r
 
 def getAnswer(text,room,type):
 	text = text.strip()

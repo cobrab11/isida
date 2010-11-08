@@ -51,7 +51,7 @@ def define_message(room,jid,nick,type,text):
 		tmppos = arr_semi_find(confbase, room)
 		nowname = getResourse(confbase[tmppos])
 		text = re.sub('^%s[,:]\ ' % nowname, '', text.strip())
-		what = re.search([u'^что такое ([^?]+?)\?$',u'что такое ([^?]+?)\?'][s=='partial'], text, re.I+re.U+re.S)
+		what = re.search([u'^(?:(?:что такое)|(?:кто такой)) ([^?]+?)\?$',u'(?:(?:что такое)|(?:кто такой)) ([^?]+?)\?'][s=='partial'], text, re.I+re.U+re.S)
 		if what:
 			access_mode = get_level(room,nick)[0]
 			text = 'define 0 ' + what.group(1)
