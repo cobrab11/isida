@@ -1336,8 +1336,8 @@ def msg_afterwork(mess,room,jid,nick,type,back_text,no_comm,access_mode,nowname)
 			else:
 				if back_text[:len(nowname)] == nowname: back_text = back_text[len(nowname)+2:]
 				try:
-					text = getAnswer(back_text,room,type)
-					thr(send_msg_human,(type, room, nick, text),'msg_human')
+					text = getAnswer(type, room, nick, back_text)
+					if text: thr(send_msg_human,(type, room, nick, text),'msg_human')
 				except: pass
 
 def send_msg_human(type, room, nick, text):
