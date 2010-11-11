@@ -27,7 +27,7 @@ def flood_actions(type, room, nick, answ, msg):
 		else: send_msg(type, room, nick, L('What?'))
 	elif answ == '@anek': text = 'anek'
 	elif answ == '@calend':
-		if u'ЗАВТРА' in msg: text = 'calend %s.%s' % (time.gmtime()[1]+1, time.gmtime()[2])
+		if u'ЗАВТРА' in msg: text = time.strftime('calend %d.%m', time.localtime(time.time()+86400))
 		else: text = 'calend'
 	if text: com_parser(access_mode, nowname, type, room, nick, text, jid)
 
