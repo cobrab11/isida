@@ -1241,8 +1241,7 @@ def messageCB(sess,mess):
 	if (text == 'None' or text == '') and not mess.getSubject(): return
 	if mess.getTimestamp() != None: return
 	nick=mess.getFrom().getResource()
-	if nick == None: nick = ''
-	else: nick = unicode(nick)
+	if nick != None: nick = unicode(nick)
 	towh=unicode(mess.getTo().getStripped())
 	lprefix = get_local_prefix(room)
 	back_text = text
@@ -1259,7 +1258,7 @@ def messageCB(sess,mess):
 		if nowname == '': nowname = Settings['nickname']
 	if (jid == 'None' or jid[:4] == 'j2j.') and ownerbase.count(getRoom(room)): access_mode = 9
 	if type == 'groupchat' and nick != '' and jid != 'None' and access_mode >= 0: talk_count(room,jid,nick,text)
-	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
+	if nick != '' and nick != None and nick != nowname and len(text)>1 and text != 'None' and text != to_censore(text) and access_mode >= 0 and get_config(getRoom(room),'censor'):
 		cens_text = L('Censored!')
 		lvl = get_level(room,nick)[0]
 		if lvl >= 5 and get_config(getRoom(room),'censor_warning'): send_msg(type,room,nick,cens_text)
