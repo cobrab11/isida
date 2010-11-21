@@ -147,6 +147,13 @@ I can't take a bomb to %s	Не можу дати бомбу %s
 Bomb is deactivated! Congratulations!	Бомба деактивована! Вітаю!
 Take a bomb joke!	Видача бомби
 
+# file: ../trunk/plugins/bugmenot.py
+%s%% (%s votes)	%s%% (%s голосів)
+Site Blocked	Сайт заблокований
+No results!	Результати відсутні!
+Login: %s, Pass: %s - %s %s	Логін: %s, Пароль: %s - %s %s
+Search in bugmenot.com	Пошук по bugmenot.com
+
 # file: ../trunk/plugins/calendar.py
 \nMon Tue Wed Thu Fri Sat Sun\n	\nПн Вт Ср Чт Пт Сб Нд\n
 Now: %s%s	Зараз: %s%s
@@ -314,9 +321,8 @@ Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Повн�
 
 # file: ../trunk/plugins/google.py
 wiki %s inurl:en.wikipedia.org/wiki	вікі %s inurl:ru.wikipedia.org/wiki
-Expression "%s" not found!	Виразу "%s" не знайдено!
 xep "%s" not found!	xep "%s" не знайден!
-No results!	Результати відсутні!
+Expression "%s" not found!	Виразу "%s" не знайдено!
 Albanian	албанська
 English		англійська
 Arabic	арабська
