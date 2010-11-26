@@ -8,8 +8,7 @@ def ithap(type, jid, nick, text):
 		body = html_encode(load_page(url))
 		message = re.search('<p class="text">(.+?)</p>', body).group()
 		msg = unhtml(message)
-	except:
-		msg = L('Quote not found!')
+	except: msg = L('Quote not found!')
 	send_msg(type, jid, nick, msg)	
 
 global execute

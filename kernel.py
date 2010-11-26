@@ -1236,7 +1236,7 @@ def messageCB(sess,mess):
 	message_in += 1
 	type=unicode(mess.getType())
 	room=unicode(mess.getFrom().getStripped())
-	if type == 'headline': to_scrobble(room,mess)
+	#if type == 'headline': to_scrobble(room,mess)
 	text=unicode(mess.getBody())
 	if (text == 'None' or text == '') and not mess.getSubject(): return
 	if mess.getTimestamp() != None: return

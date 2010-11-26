@@ -1323,8 +1323,7 @@ def open_muc_base():
 	is_acl = os.path.isfile(muc_lock_base)
 	aclb = sqlite3.connect(muc_lock_base,timeout=base_timeout)
 	acur = aclb.cursor()
-	if not is_acl:
-		acur.execute('create table muc (room text, jid text)')
+	if not is_acl: acur.execute('create table muc (room text, jid text)')
 	return aclb,acur
 
 def close_muc_base(base):

@@ -12,65 +12,126 @@ wtfbase = set_folder+u'wtfbase2.db'	# определения
 answers = set_folder+u'answers.db'	# ответы бота
 saytobase = set_folder+u'sayto.db'	# база команды "передать"
 
-print 'Databases creator for Isida Jabber Bot v2.00 and higher'
+print 'Databases creator and indexator for Isida Jabber Bot v2.00 and higher'
 print '(c) Disabler Production Lab.'
-
-print 'Create new bases'
 
 stb = os.path.isfile(agestat)
 agest = sqlite3.connect(agestat)
 cu_agest = agest.cursor()
+print agestat,
 if not stb:
 	cu_agest.execute('''create table age (room text, nick text, jid text, time integer, age integer, status integer, type text, message text)''')
 	agest.commit()
-else: print agestat, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu_agest.execute('''drop index rj''')
+except: pass
+try: cu_agest.execute('''drop index rnj''')
+except: pass
+cu_agest.execute('''create index rj on age (room,jid)''')
+cu_agest.execute('''create index rnj on age (room,nick,jid)''')
+agest.commit()
+print 'indexed'
 agest.close()
 
 stb = os.path.isfile(jidbase)
 jidst = sqlite3.connect(jidbase)
 cu_jidst = jidst.cursor()
+print jidbase,
 if not stb:
 	cu_jidst.execute('''create table jid (login text, server text, resourse text)''')
 	jidst.commit()
-else: print jidbase, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu_jidst.execute('''drop index log''')
+except: pass
+try: cu_jidst.execute('''drop index srv''')
+except: pass
+try: cu_jidst.execute('''drop index res''')
+except: pass
+cu_jidst.execute('''create index log on jid (login)''')
+cu_jidst.execute('''create index srv on jid (server)''')
+cu_jidst.execute('''create index res on jid (resourse)''')
+jidst.commit()
+print 'indexed'
 jidst.close()
 
 stb = os.path.isfile(talkers)
 talkst = sqlite3.connect(talkers)
 cu_talkst = talkst.cursor()
+print talkers,
 if not stb:
 	cu_talkst.execute('''create table talkers (room text, jid text, nick text, words integer, frases integer)''')
 	talkst.commit()
-else: print talkers, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu_talkst.execute('''drop index rj''')
+except: pass
+try: cu_talkst.execute('''drop index rjn''')
+except: pass
+cu_talkst.execute('''create index rj on talkers (room,jid)''')
+cu_talkst.execute('''create index rjn on talkers (room,jid,nick)''')
+talkst.commit()
+print 'indexed'
 talkst.close()
 
 stb = os.path.isfile(wtfbase)
 wtfst = sqlite3.connect(wtfbase)
 cu_wtfst = wtfst.cursor()
+print wtfbase,
 if not stb:
 	cu_wtfst.execute('''create table wtf (ind integer, room text, jid text, nick text, wtfword text, wtftext text, time text, lim integer)''')
 	wtfst.commit()
-else: print wtfbase, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu_wtfst.execute('''drop index r''')
+except: pass
+try: cu_wtfst.execute('''drop index rj''')
+except: pass
+try: cu_wtfst.execute('''drop index rw''')
+except: pass
+try: cu_wtfst.execute('''drop index rww''')
+except: pass
+cu_wtfst.execute('''create index r on wtf (room)''')
+cu_wtfst.execute('''create index rj on wtf (room,jid)''')
+cu_wtfst.execute('''create index rw on wtf (room,wtfword)''')
+cu_wtfst.execute('''create index rww on wtf (room,wtfword,wtftext)''')
+wtfst.commit()
+print 'indexed'
 wtfst.close()
 
 stb = os.path.isfile(answers)
 answst = sqlite3.connect(answers)
 cu_answst = answst.cursor()
+print answers,
 if not stb:
 	cu_answst.execute('''create table answer (ind integer, body text)''')
 	cu_answst.execute('insert into answer values (?,?)', (1,u';-)'))
 	cu_answst.execute('insert into answer values (?,?)', (2,u'Привет'))
 	answst.commit()
-else: print answers, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu_answst.execute('''drop index id''')
+except: pass
+cu_answst.execute('''create index id on answer (ind)''')
+answst.commit()
+print 'indexed'
 answst.close()
 
 stb = os.path.isfile(saytobase)
 sdb = sqlite3.connect(saytobase)
 cu = sdb.cursor()
+print saytobase, 
 if not stb:
 	cu.execute('''create table st (who text, room text, jid text, message text)''')
 	sdb.commit()
-else: print saytobase, 'was skiped!'
+	print 'was created,',
+else: print 'used exist,',
+try: cu.execute('''drop index rj''')
+except: pass
+cu.execute('''create index rj on st (room,jid)''')
+sdb.commit()
+print 'indexed'
 sdb.close()
 
 ########################################
