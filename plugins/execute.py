@@ -18,8 +18,13 @@ def calc(type, jid, nick, text):
 			if tt not in legal:
 				ppc = 0
 				break
-	if ppc:	
-		try: text = remove_sub_space(str(eval(re.sub('([^a-zA-Z]|\A)([a-zA-Z])', r'\1math.\2', text))))
+	if ppc:
+		if not '.' in text:
+			try: text = re.sub(r'([0-9]+)',r'\1.0',text)
+			except: pass
+		try:
+			text = remove_sub_space(str(eval(re.sub('([^a-zA-Z]|\A)([a-zA-Z])', r'\1math.\2', text))))
+			if text[-2:] == '.0': text = str(int(eval(text)))
 		except: text = L('I can\'t calculate it')
 	else: text = L('Expression unacceptable!')
 	send_msg(type, jid, nick, text)
