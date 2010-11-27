@@ -19,12 +19,10 @@ def calc(type, jid, nick, text):
 				ppc = 0
 				break
 	if ppc:
-		if not '.' in text:
-			try: text = re.sub(r'([0-9]+)',r'\1.0',text)
-			except: pass
+		text = re.sub('([^\.]\d+)([^\.])', r'\1.0\2', text)
 		try:
 			text = remove_sub_space(str(eval(re.sub('([^a-zA-Z]|\A)([a-zA-Z])', r'\1math.\2', text))))
-			if text[-2:] == '.0': text = str(int(eval(text)))
+			if text[-2:] == '.0': text = text[:-2]
 		except: text = L('I can\'t calculate it')
 	else: text = L('Expression unacceptable!')
 	send_msg(type, jid, nick, text)
