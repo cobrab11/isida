@@ -1,13 +1,7 @@
-# --------------------------------------------------------------------
-#
-#                             Isida Jabber Bot
-#                               version 2.30
-#
-#                          Ukrainian locale (woman)
-#
-# --------------------------------------------------------------------
-#                  (c) 2oo9-2o1o Disabler Production Lab.
-# --------------------------------------------------------------------
+# ---------------------------------------------
+#          Autogenerate for locales
+#        (c) Disabler Production Lab.
+# ---------------------------------------------
 
 # file: ../trunk/kernel.py
 Unknown error!	Невідома помилка!
@@ -545,12 +539,15 @@ Your	тебе
 I'm not sure, but %s not is here.	Я не впевнена, але %s тут немає.
 %s have a clear karma	У %s чиста карма
 %s karma is %s	В %s карма %s
-You can't change karma in private!	Змінення карми в приваті заборонено!
 You can't change karma in outdoor conference!	Не можна змінити карму учасника поза конференцією!
+You changes %s's karma to %s	Ви змінили карму %s до %s
+incorrect digital parameter	невірно заданий цифровий параметр
+You can't change karma!	Вам не можна змінювати карму учасника!
+You clear karma for %s	Ви очистили карму %s
+You can't change karma in private!	Змінення карми в приваті заборонено!
 You can't change own karma!	Не можна змінити карму самому собі!
 You changes %s's karma to %s. Next time to change across: %s.	Ви змінили карму %s до %s. Наступний раз можна змінити через: %s
 Time from last change %s's karma is very small. Please wait %s.	Ви нещодавно змінювали карму %s. Почекайте: %s.
-You can't change karma!	Вам не можна змінювати карму учасника!
 Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма учасника.\nkarma [show] nick\nkarma top+|- [кількість]\nДля змінення:\nnick: +1\nnick: -1
 
 # file: ../trunk/plugins/known.py
@@ -865,9 +862,29 @@ Reason for bomb explode	Причина з якою буде дія
 KA-BO-OM!!!111	БА-БА-АХ!!!!
 Bomb. Idle for unable get the bomb %s	Bomb. Час мовчання учасника, після якого йому неможна давати бомбу %s
 Idle for unable get the bomb	Час мовчання учасника, після якого йому неможна давати бомбу
+Karma. Actions for karma change is %s	Karma. Дії при зміні карми: %s
+Allow change role/affiliation by karma change	Дозволити зміну статусу учасника в залежності від карми
+Karma. Reason for actions by karma change is %s	Karma. Різон для дії при зміні карми: %s
+Reason for change role/affiliation by karma change	Різон для дії при зміні карми
+by karma change!	внаслідок зміни карми!
+Karma. Ban when karma is lower than %s	Karma. Забороняти вхід при зниженні карми до %s
+Ban when karma is lower than defined value	Забороняти вхід при зниженні карми менше вказаного значення
+Karma. Kick when karma is lower than %s	Karma. Виганяти при зниженні карми до %s
+Kick when karma is lower than defined value	Виганяти вхід при зниженні карми менше вказаного значення
+Karma. Revoke voice when karma is lower than %s	Позбавляти голосу при зниженні карми до %s
+Revoke voice when karma is lower than defined value	Позбавляти голосу при зниженні карми менше вказаного значення
+Karma. None affiliation when karma is lower than %s	Позбавляти повноваженнь при зниженні карми до %s
+Revoke affiliation when karma is lower than defined value	Позбавляти повноваженнь при зниженні карми менше вказаного значення
+Karma. Participant affiliation when karma is higher than %s	Надавати повноважень при підвищенні карми до %s
+Give a participant affiliation when karma is higher than defined value	Надавати повноважень при підвищенні карми вище вказаного значення
+Karma. Member affiliation when karma is higher than %s	Надавати повноваження постійного учасника при підвищенні карми до %s
+Give a member affiliation when karma is higher than defined value	Надавати повноваження постійного учасника при підвищенні карми вище вказаного значення
+Karma. Moderator role when karma is higher than %s	Надавати повноваження модератора при підвищенні карми до %s
+Give a moderator role when karma is higher than defined value	Надавати повноваження модератора при підвищенні карми вище вказаного значення
 Other settings	Інші налаштування
 Muc-filter settings	Налаштування muc-фільтру
 Settings for bomb-joke	Налаштування бомби-жарту
+Actions for karma change	Дії при зміні карми
 Logger. Enable system logs	Logger. Ввімкнення системних логів
 Logger. Enable status change logging	Logger. Запис в логи зміни статусів
 Logger. Enable role and affiliation logging	Logger. Запис в логи зміни афіляцій і ролей
@@ -956,6 +973,9 @@ Kernel. Anti-ddos time delay between messages	Kernel. Проміжок між п
 Msgtoadmin. Size limit for msgtoadmin	Msgtoadmin. Ліміт розміру повідомлення для команди msgtoadmin
 Msgtoadmin. Time limit for next message for msgtoadmin	Ліміт часу слідуючої відправки повідомлення для команди msgtoadmin
 Karma. Time for karma change from access level	Karma. Час через який дозволено міняти карму в залежності від рівня доступу
+Karma. Difference between two action in karma	Karma. Різниця між двома діями карми
+Karma. Upper value of karma for control action	Karma. Верхня межа карми при перевірці правильності значеннь
+Karma. Lower value of karma for control action	Нижня межа карми при перевірці правильності значеннь
 Iq requests settings	Налаштування iq запитів 
 Juick settings	Налаштування Juick
 Logs settings	Налаштування логів
@@ -1156,7 +1176,6 @@ Abbreviations.\nExamples: sokr abbr, sokr 6 abbr, sokr 3-7 abbr	Аббревіа
 what do you want to add?	що додати?
 not given tracking	не задані параметри спостереження
 is not specified criterion tracking	не вказан критерій спостереження
-incorrect digital parameter	невірно заданий цифровий параметр
 I am not in the %s 	Мене немає в %s
 Updated: %s	Поновлено: %s
 what do you want remove?	що видалити?

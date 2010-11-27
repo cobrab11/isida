@@ -1387,6 +1387,8 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'muc_filter_large_status': [L('Large status muc filter is %s'), L('Large status muc filter'), ['off','visitor','kick','ban','truncate','mute'], 'off'],
 				'muc_filter_censor_prs': [L('Censor muc filter for presence is %s'), L('Censor muc filter for presence'), ['off','kick','ban','replace','mute'], 'off'],
 
+				# Bomb
+				
 				'bomb': [L('Bomb. Allow take a bomb %s'), L('Allow take a bomb in current conference'), [True,False], True],
 				'bomb_fault': [L('Bomb. Allow random unexplosive bombs %s'), L('Allow some times take unexplosive bombs'), [True,False], True],
 				'bomb_fault_persent': [L('Bomb. Persent of fault bombs %s'), L('Persent of fault bombs'), None, '25'],
@@ -1400,7 +1402,19 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				'bomb_wire': [L('Bomb. Wire count is %s'), L('Wire count for bomb'), None, '4'],
 				'bomb_action': [L('Bomb. Action for bomb explode %s'), L('Type of action for bomb explode'), ['off','kick'], 'kick'],
 				'bomb_reason': [L('Bomb. Reason %s'), L('Reason for bomb explode'), None, L('KA-BO-OM!!!111')],
-				'bomb_idle': [L('Bomb. Idle for unable get the bomb %s'), L('Idle for unable get the bomb'), None, '900']
+				'bomb_idle': [L('Bomb. Idle for unable get the bomb %s'), L('Idle for unable get the bomb'), None, '900'],
+
+				# Karma actions
+				
+				'karma_action': [L('Karma. Actions for karma change is %s'), L('Allow change role/affiliation by karma change'), [True,False], False],
+				'karma_action_reason': [L('Karma. Reason for actions by karma change is %s'), L('Reason for change role/affiliation by karma change'), None, L('by karma change!')],
+				'karma_action_1ban': [L('Karma. Ban when karma is lower than %s'), L('Ban when karma is lower than defined value'), None, '-50'],
+				'karma_action_2kick': [L('Karma. Kick when karma is lower than %s'), L('Kick when karma is lower than defined value'), None, '-20'],
+				'karma_action_3visitor': [L('Karma. Revoke voice when karma is lower than %s'), L('Revoke voice when karma is lower than defined value'), None, '-10'],
+				'karma_action_4none': [L('Karma. None affiliation when karma is lower than %s'), L('Revoke affiliation when karma is lower than defined value'), None, '-5'],
+				'karma_action_5participant': [L('Karma. Participant affiliation when karma is higher than %s'), L('Give a participant affiliation when karma is higher than defined value'), None, '5'],
+				'karma_action_6member': [L('Karma. Member affiliation when karma is higher than %s'), L('Give a member affiliation when karma is higher than defined value'), None, '20'],
+				'karma_action_7moderator': [L('Karma. Moderator role when karma is higher than %s'), L('Give a moderator role when karma is higher than defined value'), None, '50'],
 				}
 
 config_group_other = [L('Other settings'),'#room-other',
@@ -1417,8 +1431,12 @@ config_group_bomb = [L('Settings for bomb-joke'),'#room-bombjoke',
 				'bomb_timer','bomb_wire','bomb_action','bomb_reason','bomb_random_active',
 				'bomb_random_active_timer','bomb_random_timer_persent',
 				'bomb_random_timer_skip_persent','bomb_idle']]
+				
+config_group_karma = [L('Actions for karma change'),'#room-karma-action',
+				['karma_action','karma_action_1ban','karma_action_2kick','karma_action_3visitor',
+				'karma_action_4none','karma_action_5participant','karma_action_6member','karma_action_7moderator']]
 
-config_groups = [config_group_mucfilter,config_group_other,config_group_bomb]
+config_groups = [config_group_mucfilter,config_group_other,config_group_bomb,config_group_karma]
 # type:
 # b - binary (true\false)
 # i - integer
@@ -1513,7 +1531,10 @@ owner_prefs = {'syslogs_enable': [L('Logger. Enable system logs'),'b',True],
 				'ddos_diff':[L('Kernel. Anti-ddos time delay between messages'),'l10','[30,30,30,30,20,20,15,10,5,0]'],
 				'amsg_limit_size':[L('Msgtoadmin. Size limit for msgtoadmin'),'i',1024],
 				'amsg_limit':[L('Msgtoadmin. Time limit for next message for msgtoadmin'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,60]'],
-				'karma_timeout':[L('Karma. Time for karma change from access level'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,5]']}
+				'karma_timeout':[L('Karma. Time for karma change from access level'),'l10','[86400,86400,86400,86400,86400,86400,43200,3600,1800,5]'],
+				'karma_discret':[L('Karma. Difference between two action in karma'),'i',5],
+				'karma_discret_lim_up':[L('Karma. Upper value of karma for control action'),'i',100],
+				'karma_discret_lim_dn':[L('Karma. Lower value of karma for control action'),'i',-100]}
 
 owner_group_mucfilter = [L('Muc-filter settings'),'#owner-mucfilter',
 				['muc_filter_large_message_size','muc_filter_match_count','muc_filter_match_warning_match',
@@ -1542,7 +1563,7 @@ owner_group_other = [L('Other settings'),'#owner-other',
 				'disco_max_limit','html_paste_enable']]
 
 owner_group_karma = [L('Karma settings'),'#owner-karma',
-				['karma_limit','karma_show_default_limit','karma_show_max_limit','karma_timeout']]
+				['karma_limit','karma_show_default_limit','karma_show_max_limit','karma_timeout','karma_discret','karma_discret_lim_up','karma_discret_lim_dn']]
 
 owner_group_www = [L('WWW settings'),'#owner-www',
 				['size_overflow','user_agent']]

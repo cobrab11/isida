@@ -4,9 +4,12 @@
 karmabasefile = os.path.isfile(karmabase)
 karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
 cu_karmabase = karma_base.cursor()
+
 if not karmabasefile:
 	cu_karmabase.execute('''create table karma (room text, jid text, karma int)''')
 	cu_karmabase.execute('''create table commiters (room text, jid text, karmajid text, last int)''')
+	cu_karmabase.execute('''create index krj on karma (room,jid)''')
+	cu_karmabase.execute('''create index crjk on karma (room,jid,karmajid)''')
 	karma_base.commit()
 karma_base.close()
 
@@ -14,15 +17,19 @@ def karma(type, jid, nick, text):
 	arg = text.split(' ',1)
 	try: arg1 = arg[1]
 	except: arg1 = None
-	if arg[0].lower() == 'show': msg = karma_show(type, jid, nick, arg1)
-	elif arg[0].lower() == 'top+': msg = karma_top(type, jid, nick, arg1, None)
-	elif arg[0].lower() == 'top-': msg = karma_top(type, jid, nick, arg1, True)
-	elif arg[0].lower() == 'ban': msg = karma_ban(type, jid, nick, arg1)
-	elif arg[0].lower() == 'moderator': msg = karma_moderator(type, jid, nick, arg1)
-	else: msg = karma_show(type, jid, nick, arg[0])
+	a0l = arg[0].lower()
+
+	karma_comm = {'show':		[karma_show,		(jid, nick, arg1)],
+				  'top+':		[karma_top,			(jid, nick, arg1, None)],
+				  'top-':		[karma_top,			(jid, nick, arg1, True)],
+				  'set':		[karma_set,			(jid, nick, arg1)],
+				  'clear':		[karma_clear,		(jid, nick, arg1)]}
+
+	if karma_comm.has_key(a0l): msg = karma_comm[a0l][0](*karma_comm[a0l][1])
+	else: msg = karma_show(jid, nick, text)
 	send_msg(type, jid, nick, msg)
 	
-def karma_top(type, jid, nick, text, order):
+def karma_top(jid, nick, text, order):
 	try: lim = int(text)
 	except: lim = GT('karma_show_default_limit')
 	if lim < 1: lim = 1
@@ -43,7 +50,7 @@ def karma_top(type, jid, nick, text, order):
 	if len(msg): return L('Top karma: %s') % msg
 	else: return L('Karma for members is present not changed!')
 
-def karma_show(type, jid, nick, text):
+def karma_show(jid, nick, text):
 	if text == None or text == '' or text == nick: text, atext = nick, L('Your')
 	else: atext = text
 	karmajid = getRoom(get_level(jid,text)[1])
@@ -56,11 +63,45 @@ def karma_show(type, jid, nick, text):
 		if stat == None: return L('%s have a clear karma') % atext
 		else: return L('%s karma is %s') % (atext, karma_val(int(stat[0])))
 
-def karma_ban(type, jid, nick, text):
-	return L('I can\'t!')
+def karma_set(jid, nick, text):
+	cof = getFile(conoff,[])
+	if (jid,'karma') in cof: return
+	k_acc = get_level(jid,nick)[0]
+	if k_acc >= 9:
+		text,val = text.split('\n',1)
+		try:
+			val = int(val)
+			jid, karmajid = getRoom(jid), getRoom(get_level(jid,text)[1])
+			if karmajid == getRoom(selfjid): return
+			elif karmajid == 'None': return L('You can\'t change karma in outdoor conference!')
+			else:
+				karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
+				cu_karmabase = karma_base.cursor()
+				cu_karmabase.execute('delete from karma where room=? and jid=?',(jid,karmajid)).fetchall()
+				cu_karmabase.execute('insert into karma values (?,?,?)',(jid,karmajid,val)).fetchall()
+				karma_base.commit()
+				karma_base.close()
+				val = karma_val(val)
+				return L('You changes %s\'s karma to %s') % (text,val)
+		except: return L('incorrect digital parameter').capitalize()
+	else: return L('You can\'t change karma!')
 
-def karma_moderator(type, jid, nick, text):
-	return L('I can\'t!')
+def karma_clear(jid, nick, text):
+	cof = getFile(conoff,[])
+	if (jid,'karma') in cof: return
+	k_acc = get_level(jid,nick)[0]
+	if k_acc >= 9:
+		jid, karmajid = getRoom(jid), getRoom(get_level(jid,text)[1])
+		if karmajid == getRoom(selfjid): return
+		elif karmajid == 'None': return L('You can\'t change karma in outdoor conference!')
+		else:
+			karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
+			cu_karmabase = karma_base.cursor()
+			cu_karmabase.execute('delete from karma where room=? and jid=?',(jid,karmajid)).fetchall()
+			karma_base.commit()
+			karma_base.close()
+			return L('You clear karma for %s') % text
+	else: return L('You can\'t change karma!')
 
 def karma_get_access(room,jid):
 	karma_base = sqlite3.connect(karmabase,timeout=base_timeout)
@@ -75,6 +116,44 @@ def karma_val(val):
 	if val == 0: return '0'
 	elif val < 0: return str(val)
 	else: return '+'+str(val)
+
+def karma_correct(room):
+	def karma_correct_diff(vm,ac):
+		lim_up = [GT('karma_discret_lim_up')]
+		lim_dn = [GT('karma_discret_lim_dn')]
+		kd,rs = GT('karma_discret'),[]
+		def validate_mass(m):
+			for t in range(0,len(m)-1):
+				if abs(m[t]-m[t+1]) < kd or m[t] >= m[t+1]: return False
+			return True
+		def karma_blur_mass(vm):
+			vm = lim_dn + vm + lim_up
+			nm = []
+			for t in range(0,len(vm)-2): nm.append(int((vm[t]+vm[t+1]+vm[t+2])/3))
+			return nm
+		while not validate_mass(vm): vm = karma_blur_mass(vm)
+		for t in range(0,len(ac)): rs.append([vm[t],ac[t]])
+		return rs
+	tm,ac,vm,nm = config_group_karma[2],[],[],[]
+	for t in tm:
+		df = re.findall(r'karma_action_[0-9](.*)',t)
+		if df:
+			ac += df
+			try: tvm = int(get_config(room,t))
+			except: tvm = int(config_prefs[t][3])
+			vm.append(tvm)
+			nm.append(t)
+	vm = karma_correct_diff(vm,ac)
+	for t in range(0,len(nm)): put_config(room,nm[t],str(vm[t][0]))
+	return vm
+
+def karma_action_do(room,text,action):
+	tmppos = arr_semi_find(confbase, room)
+	if tmppos == -1: nick = Settings['nickname']
+	else: nick = getResourse(confbase[tmppos])
+	act = {'outcast':muc_affiliation,'none':muc_affiliation,'member':muc_affiliation,
+		   'kick':muc_role,'participant':muc_role,'visitor':muc_role,'moderator':muc_role}
+	act[action]('chat',room,nick,'%s\n%s' % (text,get_config(room,'karma_action_reason')),action.replace('kick','none'))
 
 def karma_change(room,jid,nick,type,text,value):
 	if type == 'chat': msg = L('You can\'t change karma in private!')
@@ -109,7 +188,18 @@ def karma_change(room,jid,nick,type,text,value):
 					cu_karmabase.execute('insert into karma values (?,?,?)',(room,karmajid,stat)).fetchall()
 					msg = L('You changes %s\'s karma to %s. Next time to change across: %s.') % (text,karma_val(stat),un_unix(GT('karma_timeout')[k_acc]))
 					karma_base.commit()
-					pprint('karma change in '+room+' for '+text+' to '+str(stat))
+					pprint('karma change in %s for %s to %s' % (room,text,stat))
+					am = None
+					if get_config(room,'karma_action'):
+						kmass = karma_correct(room)
+						for t in kmass:
+							if t[0] <= 0 and stat <= t[0]:
+								am = (room,text,t[1])
+								break
+							elif t[0] > 0 and stat >= t[0]: am = (room,text,t[1])
+						if am:
+							karma_action_do(*am)
+							pprint('karma action in %s for %s is %s' % am)
 				else: msg = L('Time from last change %s\'s karma is very small. Please wait %s.') % (text,un_unix(int(stat[0])+GT('karma_timeout')[k_acc]-karma_time))
 				karma_base.close()
 		else: msg = L('You can\'t change karma!')

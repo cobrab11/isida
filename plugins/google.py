@@ -57,7 +57,7 @@ def google(type, jid, nick,text):
 		content = first['content']
 		noh_title = replace_bold(title,u'«',u'»')
 		content = replace_bold(content,u'«',u'»')
-		url = urllib.unquote(first['unescapedUrl'].encode('utf8')).decode('utf8')
+		url = urllib.unquote(first['unescapedUrl'].encode('utf8')).decode('utf8','ignore')
 		results = replacer(noh_title)+'\n'+replacer(content)+'\n'+url
 	send_msg(type, jid, nick, results)
 
