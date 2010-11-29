@@ -58,7 +58,7 @@ def to_drink(type, jid, nick, text):
 
 def calend(type, jid, nick, text):
 	msg, url, text = '', '', text.strip()
-	if not text: url = 'http://www.calend.ru/day/%s-%s/' % time.gmtime()[1:3]
+	if not text: url = 'http://www.calend.ru/day/%s-%s/' % tuple(time.localtime())[1:3]
 	elif re.match('\d+\.\d+$', text): url = 'http://www.calend.ru/day/%s-%s/' % tuple(text.split('.')[::-1])
 	elif len(text) > 1: url = 'http://www.calend.ru/search/?search_str='+urllib.quote(text.encode('cp1251'))
 	if url:
