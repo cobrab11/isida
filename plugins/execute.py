@@ -19,7 +19,7 @@ def calc(type, jid, nick, text):
 				ppc = 0
 				break
 	if ppc:
-		text = re.sub('([^\.]\d+)([^\.])', r'\1.0\2', text)
+		text = re.sub('([^.0-9]\d+)(?=([^.0-9]|$))', r'\1.0', text)
 		try:
 			text = remove_sub_space(str(eval(re.sub('([^a-zA-Z]|\A)([a-zA-Z])', r'\1math.\2', text))))
 			if text[-2:] == '.0': text = text[:-2]
