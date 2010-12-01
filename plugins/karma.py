@@ -67,9 +67,10 @@ def karma_set(jid, nick, text):
 	cof = getFile(conoff,[])
 	if (jid,'karma') in cof: return
 	k_acc = get_level(jid,nick)[0]
-	if k_acc >= 9:
-		text,val = text.split('\n',1)
-		try:
+	try:
+		if text.count('\n'): text,val = text.split('\n',1)
+		else: text,val = text.split(' ',1)	
+		if k_acc >= 9:
 			val = int(val)
 			jid, karmajid = getRoom(jid), getRoom(get_level(jid,text)[1])
 			if karmajid == getRoom(selfjid): return
@@ -83,8 +84,8 @@ def karma_set(jid, nick, text):
 				karma_base.close()
 				val = karma_val(val)
 				return L('You changes %s\'s karma to %s') % (text,val)
-		except: return L('incorrect digital parameter').capitalize()
-	else: return L('You can\'t change karma!')
+		else: return L('You can\'t change karma!')
+	except: return L('incorrect digital parameter').capitalize()
 
 def karma_clear(jid, nick, text):
 	cof = getFile(conoff,[])
