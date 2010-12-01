@@ -76,7 +76,7 @@ def translate(type, jid, nick,text):
 			'sr':L('Serbian'),'sk':L('Slovak'),'sl':L('Slovenian'),'sw':L('Swahili'),'tl':L('Tagalog'),
 			'th':L('Thai'),'tr':L('Turkish'),'uk':L('Ukrainian'),'fi':L('Finnish'),'fr':L('french'),'hi':L('Hindi'),
 			'hr':L('Croatian'),'cs':L('Czech'),'sv':L('Swedish'),'et':L('Estonian'),'ja':L('Japanese'),'ht':L('Creole')}
-	if text.lower() == 'list': msg = L('Available languages for translate:') + ' ' + ', '.join(trlang.keys())
+	if text.lower() == 'list': msg = L('Available languages for translate:') + ' ' + ', '.join(sorted(trlang.keys()))
 	elif text[:4].lower() == 'info':
 		text = text.lower().split(' ')
 		msg = ''

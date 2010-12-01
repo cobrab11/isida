@@ -288,6 +288,54 @@ No news	Новинок не найдено
 Total found %s matches. Result(s) %s:\n	Всего найдено %s совпадений. Результат(ы) %s:\n
 Search books and authors on flibusta.net.\nflibusta [-a author] [-t title] [-n number of result]	Поиск книг и авторов на сайте flibusta.net.\nflibusta [-a автор] [-t название] [-n номер результата]
 
+# file: ../trunk/plugins/fun.py
+Yes	Да
+Yes - definitely	Да - определенно
+You may rely on it	Вы можете положиться на это
+Without a doubt	Без сомнения
+Signs point to yes	Знаки говорят да
+Outlook good	Хорошая перспектива
+Most likely	Наиболее вероятно
+It is decidedly so	Это решительно так
+It is certain	Это бесспорно
+As I see it, yes	Я вижу это как да
+Reply hazy, try again	Туманный ответ, попробуй еще раз
+Ask again later	Спросите снова позже
+Better not tell you now	Лучше не говорить Вам сейчас
+Cannot predict now	Не могу предсказать сейчас
+Concentrate and ask again	Сконцентрируйтесь и спросите снова
+Don't count on it	Не рассчитывайте на это
+My reply is no	Мой ответ нет
+Outlook not so good	Перспектива, не столь хорошая
+My sources say no	Мои источники говорят нет
+Head	Орёл
+Tail	Решка
+For members this command not available in private!	Участникам данная команда не доступна в привате!
+gave NICK ... just gave ... :-"	дала NICK... просто дала... :-"
+poked a stick NICK in the eye ...	потыкала палочкой NICK в глаз...
+suggested NICK shrimp :-[	предложила NICK козявку :-[
+fed NICK laxative with powdered glass!	накормила NICK пургеном с толчёным стеклом!
+whispered in his ear softly NICK LOL!	прошептала NICK в ухо тихонько БУГАГА!
+trying kick the ass NICK	целится в NICK плюсомётом и добро улыбается
+threw the crowbar aside NICK	кинула ломик в сторону NICK
+gave NICK strawberry poison	дала NICK клубничного йаду
+jumped around with a tambourine NICK	попрыгала с бубном вокруг NICK
+sticking NICK with the words "buy ice cream, you creep!"	тыкает NICK со словами "купи мороженного, гадюка!"
+Sent in private message	Сообщение отправлено в приват
+Phrases:	Фразы:
+The record doesn't exist!	Такой фразы нет!
+Removed: %s	Удалено: %s
+Added	Добавила
+I can't add it! No keyword "NICK"!	Не могу добавить! Нет ключевого слова "NICK"!
+Masochist? 8-D	Самотык? 8-D
+I ban a ip for such jokes!	Ща зобаню по ip за такие шутки!
+I could be wrong, but %s not is here...	Я могу ошибаться, но %s тут нету...
+You live %s years or %s days or %s hours or %s minutes or %s seconds.\nYou slept %s hours, or %s days.\nYou blink about %s times.\nYour heart pumped %s liters of blood and made %s strikes.\nYou drank %s liters of water and drank it %s hours.\nYou have increased by %s centimeters in my head of hair, dropped %s pieces, all of the hair %s kilometers.\nYou grew up in the hands %s centimeters and in the feet %s centimeters nails.\nYou breathed %s liters of air a total weight of %s kilograms.\nYou have stood out %s liters of sweat, and %s liters of urine, and %s liters of saliva.\nYou lost %s billion nerve cells.\nYou laughed %s times.\nYou've gone %s kilometers	Ты живешь %s лет, или %s дней, или %s часов, или %s минут, или %s секунд.\nТы спал(а) %s часов, или %s суток.\nТы моргнул(а) примерно %s раз.\nТвоё сердце перекачало %s литров крови и сделало %s ударов.\nТы выпил(а) %s литров воды и пил(а) её %s часов.\nУ тебя выросло на голове %s сантиметров волос, выпало %s штук, все волосы %s километров.\nУ тебя выросло на руках %s сантиметров и на ногах %s сантиметров ногтей.\nТы вдохнул(а) %s литров воздуха общим весом %s килограммов.\nУ тебя выделилось %s литров пота, %s литров мочи и %s литров слюны.\nТы потерял(а) %s миллионов нервных клеток.\nТы смеялся(лась) %s раз.\nТы прошёл(ла) %s километров
+Prophecy oracle. Example: oracle your_answer?	Предсказания оракула. Пример: oracle ваш_вопрос?
+Heads or tails	Орёл или решка
+"Poke" command\npoke nick - say a random phrase for nick\nControls command, available only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу
+Info about your life. Example: life dd.mm.yy [hour:min:sec]	Информация о твоей жизни. Пример: life дд.мм.гг [час:мин:сек]
+
 # file: ../trunk/plugins/gis.py
 Night	Ночь
 Morning	Утро
@@ -439,7 +487,6 @@ Sagittarius %s	Стрелец %s
 Capricorn %s	Козерог %s
 Aquarius %s	Водолей %s
 Pisces %s	Рыбы %s
-Sent in private message	Сообщение отправлено в приват
 List of dates:\n%s	Список дат:\n%s
 Message send to private	Отправлен в приват
 Horoscope.\nhoro list - show all zodiacs.\nhoro date - show dates for zodiacs. | Author: ferym	Показывает гороскоп для указанного знака гороскопа. Просмотр знаков зодиака - "horo list". Просмотр списка дат - "horo date" | Автор: ferym
@@ -546,9 +593,9 @@ I'm not sure, but %s not is here.	Я не уверена, но %s тут нет.
 %s have a clear karma	У %s чистая карма
 %s karma is %s	У %s карма %s
 You can't change karma in outdoor conference!	Нельзя изменить карму участника вне конференции!
-You changes %s's karma to %s	Вы исменили карму %s до %s
-incorrect digital parameter	не верно задан цифровой параметр
+You changes %s's karma to %s	Вы изменили карму %s до %s
 You can't change karma!	Вам нельзя менять карму участника!
+incorrect digital parameter	не верно задан цифровой параметр
 You clear karma for %s	Вы очистили карму у %s
 You can't change karma in private!	Изменение кармы в привате запрещено!
 You can't change own karma!	Нельзя изменить карму самому себе!
@@ -696,7 +743,6 @@ I can't see %s here...	Я могу ошибаться, но %s тут нету..
 Last update:\n%s	Последнее обновление:\n%s
 Mode %s not detected!	Режим %s не опознан!
 Unable to remove %s	Невозможно удалить %s
-Removed: %s	Удалено: %s
 Aliases: %s	Сокращения: %s
 Aliases not found!	Сокращения не найдены!
 %s days %s	%s дней %s
@@ -1065,31 +1111,6 @@ I can't resolve it	Не резолвится
 DNS resolver.	DNS резолвер.
 Search domain zones TLD.	Поиск доменных зон TLD.
 
-# file: ../trunk/plugins/oracle.py
-Yes	Да
-Yes - definitely	Да - определенно
-You may rely on it	Вы можете положиться на это
-Without a doubt	Без сомнения
-Signs point to yes	Знаки говорят да
-Outlook good	Хорошая перспектива
-Most likely	Наиболее вероятно
-It is decidedly so	Это решительно так
-It is certain	Это бесспорно
-As I see it, yes	Я вижу это как да
-Reply hazy, try again	Туманный ответ, попробуй еще раз
-Ask again later	Спросите снова позже
-Better not tell you now	Лучше не говорить Вам сейчас
-Cannot predict now	Не могу предсказать сейчас
-Concentrate and ask again	Сконцентрируйтесь и спросите снова
-Don't count on it	Не рассчитывайте на это
-My reply is no	Мой ответ нет
-Outlook not so good	Перспектива, не столь хорошая
-My sources say no	Мои источники говорят нет
-Head	Орёл
-Tail	Решка
-Prophecy oracle. Example: oracle your_answer?	Предсказания оракула. Пример: oracle ваш_вопрос?
-Heads or tails	Орёл или решка
-
 # file: ../trunk/plugins/paste.py
 %s pasted by %s	%s запостил(а) %s
 Paste some text to server	Публикация текста на сервере
@@ -1098,27 +1119,6 @@ Paste some text to server	Публикация текста на сервере
 Your search returns no results.	По вашему запросу ничего не найдено.
 Found:\n	Найдено:\n
 Information about telephone city code, DEF code or search code for city.	Информация о коде города, DEF коде, поиск кода по названию
-
-# file: ../trunk/plugins/poke.py
-For members this command not available in private!	Участникам данная команда не доступна в привате!
-gave NICK ... just gave ... :-"	дала NICK... просто дала... :-"
-poked a stick NICK in the eye ...	потыкала палочкой NICK в глаз...
-suggested NICK shrimp :-[	предложила NICK козявку :-[
-fed NICK laxative with powdered glass!	накормила NICK пургеном с толчёным стеклом!
-whispered in his ear softly NICK LOL!	прошептала NICK в ухо тихонько БУГАГА!
-trying kick the ass NICK	целится в NICK плюсомётом и добро улыбается
-threw the crowbar aside NICK	кинула ломик в сторону NICK
-gave NICK strawberry poison	дала NICK клубничного йаду
-jumped around with a tambourine NICK	попрыгала с бубном вокруг NICK
-sticking NICK with the words "buy ice cream, you creep!"	тыкает NICK со словами "купи мороженного, гадюка!"
-Phrases:	Фразы:
-The record doesn't exist!	Такой фразы нет!
-Added	Добавила
-I can't add it! No keyword "NICK"!	Не могу добавить! Нет ключевого слова "NICK"!
-Masochist? 8-D	Самотык? 8-D
-I ban a ip for such jokes!	Ща зобаню по ip за такие шутки!
-I could be wrong, but %s not is here...	Я могу ошибаться, но %s тут нету...
-"Poke" command\npoke nick - say a random phrase for nick\nControls command, available only for bot owner:\npoke show - show list of phrases\npoke add phrase - add phrase\npoke del phrase_number - remove phrase.	Команда "тык"\npoke nick - сказать случайную фразу nick\nКоманды управления, доступные только владельцу бота:\npoke show - показать список фраз\npoke add фраза - добавить фразу\npoke del номер_фразы - удалить фразу
 
 # file: ../trunk/plugins/price.py
 site input format is domain.tld	формат ввода сайта domain.tld
@@ -1291,3 +1291,4 @@ Search weather by code, city, country.	Поиск погоды по коду г�
 
 # file: ../trunk/plugins/youtube.py
 Search at YouTube	Поиск по YouTube
+
