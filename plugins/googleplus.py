@@ -6,7 +6,7 @@ def gcalc(type, jid, nick, text):
 	else:
 		start='<h2 class=r style="font-size:138%"><b>'
 		end='</b>'
-		data = load_page('http://www.google.ru/search?', {'q':text.encode('utf-8')})
+		data = load_page('http://www.google.ru/search?', {'q':text.encode('utf-8'),'hl':GT('youtube_default_lang')})
 		if data.find(start)==-1: msg = L('Google Calculator results not found')
 		else:
 			begin=data.index(start)
