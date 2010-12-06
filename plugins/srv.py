@@ -11,12 +11,13 @@ def srv_host(type, jid, nick, text):
 	srv_raw_check(type, jid, nick, 'host '+text)
 
 def srv_raw_check(type, jid, nick, text):
-	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
+	text = ' '.join(tuple(re.findall(u'[-a-zA-Z0-9а-яА-Я._?#=@%]+',text,re.S)))
+	print text
 	send_msg(type, jid, nick, shell_execute(text))
 
 def chkserver(type, jid, nick, text):
 	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
-	t = re.findall(u'[-a-zA-Z0-9а-яА-Я._/?#=@%]+',text,re.S)
+	t = re.findall(u'[-a-zA-Z0-9а-яА-Я._?#=@%]+',text,re.S)
 	if len(t) >= 2:
 		port = []
 		for a in t:
