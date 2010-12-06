@@ -36,12 +36,12 @@ def google(type, jid, nick,text):
 	global google_last_res
 	results = ''
 	text = text.strip()
-	if text == 'next':
+	if text in ['next','']:
 		if google_last_res.has_key(jid) and google_last_res[jid].has_key(nick) and google_last_res[jid][nick]:
 			first = google_last_res[jid][nick][0]
 			google_last_res[jid][nick] = google_last_res[jid][nick][1:]
 		else: results = L('No results!')
-	elif text:
+	else:
 		try:
 			url = 'http://ajax.googleapis.com/ajax/services/search/web?'
 			search_results = html_encode(load_page(url, {'v': '1.0', 'q': text.encode("utf-8")}))
@@ -51,7 +51,6 @@ def google(type, jid, nick,text):
 			if google_last_res.has_key(jid): google_last_res[jid].update({nick: data[1:]})
 			else: google_last_res[jid] = {nick: data[1:]}
 		except: results = L('Expression \"%s\" not found!') % text
-	else: results = L('What?')
 	if not results:
 		title = first['title']
 		content = first['content']

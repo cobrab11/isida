@@ -1229,7 +1229,7 @@ def rss(type, jid, nick, text):
 						elif submode == 'body': tmsg = replacer(tbody)
 						elif submode == 'head': tsubj = replacer(ttitle)
 						else: return
-						if urlmode: tlink = turl
+						if urlmode: tlink = urllib.unquote(turl.encode('utf8')).decode('utf8','ignore')
 						t_msg.append((tsubj.replace('\n','; '),smart_concat(tmsg),tlink))
 						new_count += 1
 						if new_count >= lng: break
