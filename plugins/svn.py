@@ -3,6 +3,7 @@
 
 def svn_get(type, jid, nick,text):
 	if len(text):
+		for a in ';&|\\\n\t\r': text = text.replace(a,' ')
 		if text[:7] !='http://' and text[:8] !='https://' and text[:6] !='svn://': text = 'http://'+text
 		count = 1
 		revn = 0

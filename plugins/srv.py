@@ -11,9 +11,8 @@ def srv_host(type, jid, nick, text):
 	srv_raw_check(type, jid, nick, 'host '+text)
 
 def srv_raw_check(type, jid, nick, text):
-	if text.count('&') or text.count(';'): msg = L('Unavailable!')
-	else: msg = shell_execute(text)
-	send_msg(type, jid, nick, msg)
+	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
+	send_msg(type, jid, nick, shell_execute(text))
 
 def chkserver(type, jid, nick, text):
 	for a in ':;&/|\\\n\t\r': text = text.replace(a,' ')
