@@ -9,7 +9,7 @@ if not karmabasefile:
 	cu_karmabase.execute('''create table karma (room text, jid text, karma int)''')
 	cu_karmabase.execute('''create table commiters (room text, jid text, karmajid text, last int)''')
 	cu_karmabase.execute('''create index krj on karma (room,jid)''')
-	cu_karmabase.execute('''create index crjk on karma (room,jid,karmajid)''')
+	cu_karmabase.execute('''create index crjk on karma (room,jid,karma)''')
 	karma_base.commit()
 karma_base.close()
 
