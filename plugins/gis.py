@@ -42,6 +42,7 @@ def gweather_raw(type, jid, nick, text, fully):
 					try: body = str(SM)
 					except: body = unicode(SM)
 					noerr = None
+				if body == '<?xml version="1.0" encoding="UTF-8"?>\n</xml>': body,noerr = L('Unexpected error'), None
 				if noerr:
 					body = body.split('<FORE')[1:]
 					msg = L('Weather in %s:\nDate\t t%s\tWind\tClouds') % (wzc[0][1],u'°')
