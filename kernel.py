@@ -1447,7 +1447,8 @@ def presenceCB(sess,mess):
 			caps_and_send(Presence(room, 'unsubscribed'))
 			pprint('Unsubscribe %s' % room)
 	if nick != '' and nick != 'None' and nick != nowname and len(text)>1 and text != 'None' and al >= 0 and get_config(getRoom(room),'censor'):
-		if nick+text != to_censore(nick+text):
+		nt = '%s %s' % (nick,text)
+		if nt != to_censore(nt):
 			cens_text = L('Censored!')
 			if al >= 5 and get_config(getRoom(room),'censor_warning'): send_msg('groupchat',room,nick,cens_text)
 			elif al == 4 and get_config(getRoom(room),'censor_action_member') != 'off':
