@@ -304,8 +304,17 @@ def get_joke(text):
 	return jokes[randint(0,1)](text)
 
 def send_msg(mtype, mjid, mnick, mmessage):
+	global between_msg_last,time_limit
 	if mmessage:
-		# 1st april joke :) # if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
+		while True:
+			try: lm = between_msg_last[mjid]
+			except: between_msg_last[mjid],lm = 0,0
+			tt = time.time()
+			if lm and tt-lm < time_limit: sleep(tt-lm)
+			if between_msg_last[mjid]+time_limit <= time.time(): break
+		between_msg_last[mjid] = time.time()
+		# 1st april joke :)
+		# if time.localtime()[1:3] == (4,1): mmessage = get_joke(mmessage)
 		no_send = True
 		if len(mmessage) > msg_limit:
 			cnt = 0
@@ -341,8 +350,7 @@ def os_version():
 			handle = _winreg.OpenKey(key, subkey)
 			(value, type) = _winreg.QueryValueEx(handle, value)
 			return value
-		def get(key):
-			return get_registry_value("HKEY_LOCAL_MACHINE", "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",key)
+		def get(key): return get_registry_value("HKEY_LOCAL_MACHINE", "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",key)
 		osInfo = get("ProductName")
 		buildInfo = get("CurrentBuildNumber")
 		try:
@@ -1597,7 +1605,7 @@ bot_exit_type = None				# причина завершения бота
 last_stream = []					# очередь станз к отправке
 last_command = []					# последняя исполненная ботом команда
 thread_type = True					# тип тредов
-time_limit = 1.2					# максимальная задержка между посылкой станз с одинаковым типом в groupchat
+time_limit = 1.1					# максимальная задержка между посылкой станз с одинаковым типом в groupchat
 time_nolimit = 0.05					# задержка между посылкой станз с разными типами
 message_in,message_out = 0,0		# статистика сообщений
 iq_in,iq_out = 0,0					# статистика iq запросов
@@ -1619,6 +1627,7 @@ muc_repeat = {}
 last_stanza = ''					# последняя станза, посланная ботом
 ENABLE_TLS = True					# принудительное отключение TLS
 base_timeout = 20					# таймаут на доступ ко всем базам
+between_msg_last = {}				# время последнего сообщения
 
 gt=gmtime()
 lt=tuple(localtime())
