@@ -9,43 +9,38 @@ def netheader(type, jid, nick, text):
 			regex = text.split('\n')[0].replace('*','*?')
 			text = text.split('\n')[1]
 		except: regex = None
-		if '://' not in text: text = 'http://'+text
+		if '://' not in text[:10]: text = 'http://%s' % text
 		req = text.encode("utf-8")
-		try:
-			body, result = get_opener(req)
-			if result: body = text + '\n' + str(body.headers)
-			if regex:
-				try:
-					mt = re.findall(regex, body, re.S)
-					if mt != []: body = ''.join(mt[0])
-					else: body = L('RegExp not found!')
-				except: body = L('Error in RegExp!')
-		except: raise
-		#body = L('I can\'t do it')
+		body, result = get_opener(req)
+		if result: body = text + '\n' + str(body.headers)
+		if regex:
+			try:
+				mt = re.findall(regex, body, re.S)
+				if mt != []: body = ''.join(mt[0])
+				else: body = L('RegExp not found!')
+			except: body = L('Error in RegExp!')
 	else: body = L('What?')
-	send_msg(type, jid, nick, body)	
+	send_msg(type, jid, nick, body)
 
 def netwww(type, jid, nick, text):
 	try:
 		regex = text.split('\n')[0].replace('*','*?')
 		text = text.split('\n')[1]
 	except: regex = None
-	if '://' not in text: text = 'http://'+text
+	if '://' not in text[:10]: text = 'http://%s' % text
 	req = text.encode('utf-8')
-	try: 
-		body, result = get_opener(req)
-		if result: body = str(body.info())
-	except: body = L('I can\'t do it')
-	mt = re.findall('Content-Length.*?([0-9]+)', body, re.S)
-	msg = None
-	if mt != []:
-		try:
-			c_size = int(''.join(mt[0]))
-			if c_size > GT('size_overflow'): msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (str(c_size/1024),str(GT('size_overflow')/1024))
-		except: c_size = GT('size_overflow')
-	else: c_size = GT('size_overflow')
-	if not msg:
-		try:
+	msg, result = get_opener(req)
+	if result:
+		msg = str(msg.info())
+		mt = re.findall('Content-Length.*?([0-9]+)', msg, re.S)
+		msg = None
+		if mt != []:
+			try:
+				c_size = int(''.join(mt[0]))
+				if c_size > GT('size_overflow'): msg = L('Site size limit overflow! Size - %skb, allowed - %skb') % (str(c_size/1024),str(GT('size_overflow')/1024))
+			except: c_size = GT('size_overflow')
+		else: c_size = GT('size_overflow')
+		if not msg:
 			page = remove_sub_space(html_encode(load_page(req)))
 			if regex:
 				try:
@@ -56,18 +51,14 @@ def netwww(type, jid, nick, text):
 			else:
 				msg = urllib.unquote(unhtml_hard(page).encode('utf8')).decode('utf8')
 				if '<title' in page: msg = '%s\n%s' % (get_tag(page,'title'), msg)
-		except Exception, SM:
-			try: msg = str(SM)
-			except: msg = unicode(SM)
-			msg = L('Error! %s') % msg
 	send_msg(type, jid, nick, msg[:msg_limit])
 
 def parse_url_in_message(room,jid,nick,type,text):
 	global last_url_watch
 	if type != 'groupchat' or text == 'None' or nick == '' or getRoom(jid) == getRoom(selfjid): return
 	if not get_config(getRoom(room),'url_title'): return
-	if get_level(room,nick)[0] < 0: return
-	try: 
+	if get_level(room,nick)[0] < 4: return
+	try:
 		link = re.findall(r'(http[s]?://.*)',text)[0].split(' ')[0]
 		if link and last_url_watch != link and not link.count(pasteurl):
 			last_url_watch = link

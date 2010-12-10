@@ -1360,7 +1360,7 @@ def get_opener(page_name, parameters=None):
 	except urllib2.URLError, SM:
 		try: SM = str(SM)
 		except: SM = unicode(SM)
-		data, result = L('Error! %s') % SM, False
+		data, result = L('Error! %s') % SM.replace('>','').replace('<','').capitalize(), False
 	return data, result
 
 def load_page(page_name, parameters=None):
