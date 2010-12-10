@@ -1347,6 +1347,7 @@ def muc_filter_lock(type, jid, nick, text):
 	send_msg(type, jid, nick, msg)
 
 def get_opener(page_name, parameters=None):
+	socket.setdefaulttimeout(GT('rss_get_timeout'))
 	try:
 		proxy_support = urllib2.ProxyHandler({"http" : "http://%(user)s:%(password)s@%(host)s:%(port)d" % http_proxy})
 		opener = urllib2.build_opener(proxy_support, urllib2.HTTPHandler)
@@ -1354,10 +1355,18 @@ def get_opener(page_name, parameters=None):
 	except: opener = urllib2.build_opener(urllib2.HTTPHandler)  
 	opener.addheaders = [('User-agent', GT('user_agent'))]
 	if parameters: page_name += urllib.urlencode(parameters)
-	return opener.open(page_name)
+	try:
+		data, result = opener.open(page_name), True
+	except urllib2.URLError, SM:
+		try: SM = str(SM)
+		except: SM = unicode(SM)
+		data, result = L('Error! %s') % SM, False
+	return data, result
 
 def load_page(page_name, parameters=None):
-	return get_opener(page_name, parameters).read(GT('size_overflow'))
+	data, result = get_opener(page_name, parameters)
+	if result: return data.read(GT('size_overflow'))
+	else: return data
 
 config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of urls in conference'), [True,False], False],
 				'flood': [L('Flood is %s'), L('Autoanswer'), ['off','random','smart'], 'off'],

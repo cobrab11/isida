@@ -12,7 +12,8 @@ def netheader(type, jid, nick, text):
 		if '://' not in text: text = 'http://'+text
 		req = text.encode("utf-8")
 		try:
-			body = text + '\n' + str(get_opener(req).headers)
+			body, result = get_opener(req)
+			if result: body = text + '\n' + str(body.headers)
 			if regex:
 				try:
 					mt = re.findall(regex, body, re.S)
@@ -31,7 +32,9 @@ def netwww(type, jid, nick, text):
 	except: regex = None
 	if '://' not in text: text = 'http://'+text
 	req = text.encode('utf-8')
-	try: body = str(get_opener(req).info())
+	try: 
+		body, result = get_opener(req)
+		if result: body = str(body.info())
 	except: body = L('I can\'t do it')
 	mt = re.findall('Content-Length.*?([0-9]+)', body, re.S)
 	msg = None
