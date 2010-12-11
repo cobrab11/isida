@@ -26,7 +26,7 @@ def disco(type, jid, nick, text):
 def disco_async(type, jid, nick, what, where, hm, is_answ):
 	isan = unicode(is_answ[1][0])
 	if isan != 'None':
-		if (where.count('chat') or where.count('conference')) and not where.count('@'):
+		if (where.count('chat') or where.count('conference') or where.count('conf')) and not where.count('@'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (nick text, room text, size text)''')
@@ -34,23 +34,25 @@ def disco_async(type, jid, nick, what, where, hm, is_answ):
 			for ii in isa[1:]:
 				dname = get_subtag(ii,'name')
 				djid = get_subtag(ii,'jid')
-				dpos = 1
-				for tmp2 in range(0,dname.count('(')): dpos = dname.find('(',dpos+1)
-				dsize = dname[dpos+1:dname.find(')',dpos+1)]
-				dname = dname[:-(len(dsize)+3)]
+				if '(' in dname and ')' in dname:
+					dsize = dname.split('(')[-1].split(')')[0]
+					dname = '('.join(dname.split('(')[:-1])
+				else: dsize = 'n/a'
+				if dname == djid: djid = ''
 				cu.execute('insert into tempo values (?,?,?)', (dname, djid, dsize))
 			if len(what): cm = cu.execute('select * from tempo where (nick like ? or room like ?) order by -size',('%'+what+'%','%'+what+'%')).fetchmany(hm)
 			else: cm = cu.execute('select * from tempo order by -size').fetchmany(hm)
 			if len(cm):
-				cnt = 1
-				msg = L('Total: %s') % len(cm)
+				msg,cnt = L('Total: %s') % len(cm),1
 				for i in cm:
-					msg += u'\n%s. %s [%s] . %s' % (cnt,i[0],i[1],i[2])
+					if len(i[1]): msg += u'\n%s. %s [%s] . %s' % (cnt,i[0],i[1],i[2])
+					else: msg += u'\n%s. %s . %s' % (cnt,i[0],i[2])
 					cnt += 1
+				while msg.count('  '): msg = msg.replace('  ',' ')
 			elif len(what): msg = L('\"%s\" not found') % what
 			else: msg = L('Not found.')
 			tmp.close()
-		elif where.count('@conference') or where.count('@chat'):
+		elif where.count('@conference') or where.count('@chat') or where.count('@conf'):
 			tmp = sqlite3.connect(':memory:')
 			cu = tmp.cursor()
 			cu.execute('''create table tempo (nick text)''')

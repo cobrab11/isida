@@ -30,6 +30,7 @@ Status-flood block!	Блокировка статус-флуда!
 Warning! Exceeded the limit of sending the same message. You are blocked for a period of %s sec.	Внимание! Превышен лимит отправки одинаковых сообщений. Вы блокированы на срок %s сек.
 Censored!	Фильтруем базар!
 *** %s set topic: %s	*** %s обновил(а) тему: %s
+*** Topic: %s	*** Тема: %s
 Too many letters!	Слишком многа букаф!
 What?	Ась?
 /me detect bad stanza from %s	/me смотрит на %s и думает: "Факин умник детектед!"
