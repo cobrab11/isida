@@ -69,10 +69,10 @@ def seen_raw(type, jid, nick, text, xtype):
 	if llim > GT('age_max_limit'): llim = GT('age_max_limit')
 	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
-	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -time,-status',(jid,text,text.lower())).fetchone()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) order by -status,-time',(jid,text,text.lower())).fetchone()
 	if not real_jid:
 		textt = '%'+text.lower()+'%'
-		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,textt,textt)).fetchone()		
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -status,-time',(jid,textt,textt)).fetchone()		
 	if real_jid:
 		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
 		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
@@ -118,10 +118,10 @@ def seenjid_raw(type, jid, nick, text, xtype):
 	if llim > GT('age_max_limit'): llim = GT('age_max_limit')
 	mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 	cu = mdb.cursor()
-	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid order by -time,-status',(jid,text,text.lower())).fetchall()
+	real_jid = cu.execute('select jid from age where room=? and (nick=? or jid=?) group by jid order by -status,-time',(jid,text,text.lower())).fetchall()
 	if not real_jid:
 		txt = '%'+text.lower()+'%'
-		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) group by jid order by -time,-status',(jid,txt,txt)).fetchall()		
+		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) group by jid order by -status,-time',(jid,txt,txt)).fetchall()		
 	if real_jid:
 		sbody = []
 		for rj in real_jid:
