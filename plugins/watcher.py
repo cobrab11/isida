@@ -13,7 +13,7 @@ def connect_watch():
 		watch_count += 1
 		watch_reset = True
 		iqid = get_id()
-		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_VERSION},[])])
+		i = Node('iq', {'id': iqid, 'type': 'get', 'to':selfjid}, payload = [Node('query', {'xmlns': NS_URN_PING},[])])
 		iq_request[iqid]=(time.time(),watcher_reset,['chat',god,'',''])
 		sender(i)
 		to = GT('timeout') - 10
