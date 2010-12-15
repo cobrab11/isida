@@ -50,7 +50,7 @@ def define_message(room,jid,nick,type,text):
 		if (room,'define') in cof: return
 		tmppos = arr_semi_find(confbase, room)
 		nowname = getResourse(confbase[tmppos])
-		text = re.sub('^%s[,:]\ ' % nowname, '', text.strip())
+		text = re.sub('^%s[,:]\ ' % re.escape(nowname), '', text.strip())
 		what = re.search([u'^(?:(?:что такое)|(?:кто такой)) ([^?]+?)\?$',u'(?:(?:что такое)|(?:кто такой)) ([^?]+?)\?'][s=='partial'], text, re.I+re.U+re.S)
 		if what:
 			access_mode = get_level(room,nick)[0]
