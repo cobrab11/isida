@@ -1545,7 +1545,7 @@ def talk_count(room,jid,nick,text):
 	mdb = sqlite3.connect(talkersbase,timeout=base_timeout)
 	cu = mdb.cursor()
 	ab = cu.execute('select * from talkers where room=? and jid=?',(room,jid)).fetchone()
-	wtext = len(text.split(' '))
+	wtext = len(reduce_spaces_all(text).split(' '))
 	if ab: cu.execute('update talkers set nick=?, words=?, frases=? where room=? and jid=?', (nick,ab[3]+wtext,ab[4]+1,room,jid))
 	else: cu.execute('insert into talkers values (?,?,?,?,?)', (room, jid, nick, wtext, 1))
 	mdb.commit()
