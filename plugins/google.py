@@ -6,16 +6,8 @@ google_last_res = {}
 def replace_bold(t,b,e): return t.replace('<b>',b).replace('</b>',e)
 
 def wiki_search(type, jid, nick, text):
-	room = jid
-	jid = getRoom(get_level(room,nick)[1])
-	cof = getFile(conoff,[])
-	if (room,'wiki') in cof: return
-	tmppos = arr_semi_find(confbase, room)
-	nowname = getResourse(confbase[tmppos])
-	access_mode = get_level(room,nick)[0]
-	if text == 'next': text = 'google next'
-	else: text = 'google ' + L('wiki %s inurl:en.wikipedia.org/wiki') % text
-	com_parser(access_mode, nowname, type, room, nick, text, jid)
+	if text not in ['next','']: text = L('%s site:en.wikipedia.org') % text
+	google(type, jid, nick, text)
 
 def xep_show(type, jid, nick,text):
 	ntext = 'xep '+text+' inurl:xmpp.org'
@@ -32,7 +24,7 @@ def xep_show(type, jid, nick,text):
 	except: msg = L('xep \"%s\" not found!') % text
 	send_msg(type, jid, nick, msg)
 
-def google(type, jid, nick,text):
+def google(type, jid, nick, text):
 	global google_last_res
 	results = ''
 	text = text.strip()
@@ -63,7 +55,7 @@ def google(type, jid, nick,text):
 def google_clear(room,jid,nick,type,arr): 
 	if type == 'unavailable' and google_last_res.has_key(room) and google_last_res[room].has_key(nick): del google_last_res[room][nick]
 
-def translate(type, jid, nick,text):
+def translate(type, jid, nick, text):
 	text = text.strip()
 	trlang = {'sq':L('Albanian'),'en':L('English'),'ar':L('Arabic'),'af':L('Afrikaans'),
 			'be':L('Belarusian'),'bg':L('Bulgarian'),'cy':L('Welsh'),'hu':L('Hungarian'),'vi':L('Vietnamese'),

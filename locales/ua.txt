@@ -369,7 +369,7 @@ Weather forecast (short). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Коро
 Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Повний прогноз погоди. Надано Gismeteo.Ru | http://www.gismeteo.ru
 
 # file: ../trunk/plugins/google.py
-wiki %s inurl:en.wikipedia.org/wiki	вікі %s inurl:ru.wikipedia.org/wiki
+%s site:en.wikipedia.org	%s site:uk.wikipedia.org
 xep "%s" not found!	xep "%s" не знайден!
 Expression "%s" not found!	Виразу "%s" не знайдено!
 Albanian	албанська

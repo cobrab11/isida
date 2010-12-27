@@ -369,7 +369,7 @@ Weather forecast (short). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Крат
 Weather forecast (full). Courtesy Gismeteo.Ru | http://www.gismeteo.ru	Полный прогноз погоды. Предоставлено Gismeteo.Ru | http://www.gismeteo.ru'
 
 # file: ../trunk/plugins/google.py
-wiki %s inurl:en.wikipedia.org/wiki	вики %s inurl:ru.wikipedia.org/wiki
+%s site:en.wikipedia.org	%s site:ru.wikipedia.org
 xep "%s" not found!	xep "%s" не найден!
 Expression "%s" not found!	Выражение "%s" не найдено!
 Albanian	албанский
