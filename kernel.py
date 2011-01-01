@@ -911,23 +911,45 @@ def iqCB(sess,iq):
 						tojid = rss_replace(getRoom(get_level(room,getResourse(get_tag_item(msg,'message','to')))[1]))
 						nick = rss_replace(get_nick_by_jid_res(room,jid))
 						skip_owner = ownerbase.count(getRoom(jid))
+						gr = getRoom(room)
 						if get_tag_item(msg,'message','type') == 'chat' and not skip_owner:
 							mbase,mcur = open_muc_base()
 							tmp = mcur.execute('select * from muc where room=? and jid=?', (room,tojid)).fetchall()
 							close_muc_base(mbase)
 							if tmp: mute = True
 						if skip_owner: pass
-						elif get_config(getRoom(room),'muc_filter') and not mute:
+						elif get_config(gr,'muc_filter') and not mute:
 							body = get_tag(msg,'body')
 
+							# Mute newbie
+							if get_config(gr,'muc_filter_newbie') and msg and not mute:
+								mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
+								cu = mdb.cursor()
+								in_base = cu.execute('select time,sum(age),status from age where room=? and jid=? order by status',(gr,getRoom(jid))).fetchall()
+								mdb.close()
+								
+								if not in_base: nmute = True
+								else:
+									tmp = in_base[0]
+									if tmp[2]: r_age = tmp[1]
+									else: r_age = int(time.time())-tmp[0]+tmp[1]
+									newbie_time = get_config(gr,'muc_filter_newbie_time')
+									if newbie_time.isdigit(): newbie_time = int(newbie_time)
+									else: newbie_time = 60
+									if r_age < newbie_time: nmute = True
+									else: nmute = False
+								if nmute:								
+									pprint('MUC-Filter mute newbie: %s %s %s' % (gr,jid,body))
+									mute = True
+
 							# AD-Block filter
-							if get_config(getRoom(room),'muc_filter_adblock') != 'off' and msg and not mute:
+							if get_config(gr,'muc_filter_adblock') != 'off' and msg and not mute:
 								f = []
 								for reg in adblock_regexp:
 									tmp = re.findall(reg,body,re.I+re.S+re.U)
 									if tmp: f = f + tmp
 								if f:
-									act = get_config(getRoom(room),'muc_filter_adblock')
+									act = get_config(gr,'muc_filter_adblock')
 									pprint('MUC-Filter msg adblock (%s): %s [%s] %s' % (act,jid,room,body))
 									if act == 'replace':
 										for tmp in f: body = body.replace(tmp,[GT('censor_text')*len(tmp),GT('censor_text')][len(GT('censor_text'))>1])
@@ -936,7 +958,7 @@ def iqCB(sess,iq):
 									else: msg = muc_filter_action(act,jid,room,L('AD-Block!'))
 
 							# Repeat message filter
-							if get_config(getRoom(room),'muc_filter_repeat') != 'off' and msg and not mute:
+							if get_config(gr,'muc_filter_repeat') != 'off' and msg and not mute:
 								grj = getRoom(jid)
 								try: lm = last_msg_base[grj]
 								except: lm = None
@@ -953,7 +975,7 @@ def iqCB(sess,iq):
 											if muc_repeat[grj] >= (GT('muc_filter_repeat_count')-1): action = True
 										else: muc_repeat[grj] = 0
 										if action:
-											act = get_config(getRoom(room),'muc_filter_repeat')
+											act = get_config(gr,'muc_filter_repeat')
 											pprint('MUC-Filter msg repeat (%s): %s [%s] %s' % (act,jid,room,body))
 											if act == 'mute': mute = True
 											else: msg = muc_filter_action(act,jid,room,L('Repeat message block!'))
@@ -962,7 +984,7 @@ def iqCB(sess,iq):
 								last_msg_time_base[grj] = time.time()
 
 							# Match filter
-							if get_config(getRoom(room),'muc_filter_match') != 'off' and msg and not mute and len(body) >= GT('muc_filter_match_view'):
+							if get_config(gr,'muc_filter_match') != 'off' and msg and not mute and len(body) >= GT('muc_filter_match_view'):
 								tbody,warn_match,warn_space = body.split(),0,0
 								for tmp in tbody:
 									cnt = 0
@@ -971,22 +993,22 @@ def iqCB(sess,iq):
 									if cnt > GT('muc_filter_match_count'): warn_match += 1
 									if not len(tmp): warn_space += 1
 								if warn_match > GT('muc_filter_match_warning_match') or warn_space > GT('muc_filter_match_warning_space') or body.count('\n'*GT('muc_filter_match_warning_nn')):
-									act = get_config(getRoom(room),'muc_filter_match')
+									act = get_config(gr,'muc_filter_match')
 									pprint('MUC-Filter msg matcher (%s): %s [%s] %s' % (act,jid,room,body))
 									if act == 'mute': mute = True
 									else: msg = muc_filter_action(act,jid,room,L('Match message block!'))
 
 							# Censor filter
-							if get_config(getRoom(room),'muc_filter_censor') != 'off' and body != to_censore(body) and msg and not mute:
-								act = get_config(getRoom(room),'muc_filter_censor')
+							if get_config(gr,'muc_filter_censor') != 'off' and body != to_censore(body) and msg and not mute:
+								act = get_config(gr,'muc_filter_censor')
 								pprint('MUC-Filter msg censor (%s): %s [%s] %s' % (act,jid,room,body))
 								if act == 'replace': msg = msg.replace(get_tag_full(msg,'body'),'<body>%s</body>' % to_censore(body))
 								elif act == 'mute': mute = True
 								else: msg = muc_filter_action(act,jid,room,L('Blocked by censor!'))
 
 							# Large message filter
-							if get_config(getRoom(room),'muc_filter_large') != 'off' and len(body) > GT('muc_filter_large_message_size') and msg and not mute:
-								act = get_config(getRoom(room),'muc_filter_large')
+							if get_config(gr,'muc_filter_large') != 'off' and len(body) > GT('muc_filter_large_message_size') and msg and not mute:
+								act = get_config(gr,'muc_filter_large')
 								pprint('MUC-Filter msg large message (%s): %s [%s] %s' % (act,jid,room,body))
 								if act == 'paste' or act == 'truncate':
 									url = paste_text(rss_replace(body),room,jid)
@@ -1829,11 +1851,11 @@ while 1:
 		except: SM = unicode(SM)
 		pprint('*** Error *** %s ***' % SM)
 		logging.exception(' [%s] ' % timeadd(tuple(localtime())))
-		if str(SM).lower().count('parsing finished'):
+		if SM.lower().count('parsing finished'):
 			close_age()
 			kill_all_threads()
 			flush_stats()
-			sleep(300)
+			sleep(GT('reboot_time'))
 			sys.exit('restart')
 		if debugmode: raise
 

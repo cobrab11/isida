@@ -260,9 +260,11 @@ def reduce_spaces(text):
 	return text
 
 def reduce_spaces_all(text):
-	while text.count('  '): text = text.replace('  ',' ')
-	if text[0] == ' ': text = text[1:]
-	if text[-1:] == ' ': text = text[:-1]
+	if len(text) == text.count(' '): return ''
+	elif len(text):
+		while text.count('  '): text = text.replace('  ',' ')
+		if text[0] == ' ': text = text[1:]
+		if text[-1:] == ' ': text = text[:-1]
 	return text
 
 def status(type, jid, nick, text):
@@ -1380,6 +1382,8 @@ config_prefs = {'url_title': [L('Url title is %s'), L('Automatic show title of u
 				# MUC-Filter messages
 
 				'muc_filter': [L('Muc filter is %s'), L('Message filter for participants'), [True,False], False],
+				'muc_filter_newbie': [L('Mute newbie %s'), L('Mute all messages from newbie'), [True,False], False],
+				'muc_filter_newbie_time': [L('Mute newbie time %s'), L('Time of mute all messages from newbie'), None, '60'],
 				'muc_filter_adblock': [L('Adblock muc filter is %s'), L('Adblock filter'), ['off','visitor','kick','ban','replace','mute'], 'off'],
 				'muc_filter_repeat': [L('Repeat muc filter is %s'), L('Repeat same messages filter'), ['off','visitor','kick','ban','mute'], 'off'],
 				'muc_filter_match': [L('Match muc filter is %s'), L('Repeat text in message filter'), ['off','visitor','kick','ban','mute'], 'off'],
@@ -1433,7 +1437,8 @@ config_group_other = [L('Other settings'),'#room-other',
 config_group_mucfilter = [L('Muc-filter settings'),'#room-mucfilter',
 				['muc_filter','muc_filter_adblock','muc_filter_repeat','muc_filter_match',
 				'muc_filter_large','muc_filter_censor','muc_filter_adblock_prs','muc_filter_rejoin','muc_filter_whitelist',
-				'muc_filter_repeat_prs','muc_filter_large_nick','muc_filter_large_status','muc_filter_censor_prs']]
+				'muc_filter_repeat_prs','muc_filter_large_nick','muc_filter_large_status','muc_filter_censor_prs',
+				'muc_filter_newbie','muc_filter_newbie_time']]
 
 config_group_bomb = [L('Settings for bomb-joke'),'#room-bombjoke',
 				['bomb','bomb_fault','bomb_fault_persent','bomb_random','bomb_random_timer',

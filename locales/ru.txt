@@ -862,6 +862,10 @@ Clear notification by %s	Уведомления при очистке %s
 Clear notification by presence or message	Тип уведомлений при очистке: сообщения или презенсы
 Muc filter is %s	Muc-фильтр: %s
 Message filter for participants	Фильтр сообщений для участников
+Mute newbie %s	Подавлять сообщения от новичнов: %s
+Mute all messages from newbie	Подавлять все сообщения от новичков в конференции
+Mute newbie time %s	Возраст новичков: %s
+Time of mute all messages from newbie	Время, в течении которого, участник считается новичком
 Adblock muc filter is %s	Блокировка рекламы: %s
 Adblock filter	Фильтр блокировки рекламы
 Repeat muc filter is %s	Блокировка повтора сообщений: %s

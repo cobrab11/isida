@@ -6,9 +6,11 @@ def domaininfo(type, jid, nick, text):
 	else: t, regex, msg = 1, '<blockquote>(.*?)</blockquote>', L('Domain/IP address info:')
 	url = 'http://1whois.ru/index.php?url=%s&t=%s' % (text,t)
 	body = html_encode(load_page(url).replace('&nbsp;', ' '))
-	body = re.findall(regex, body, re.S)[0]
-	if body.count(u'Нет данных!'): msg += ' '+ L('No data!')
-	else: msg += '\n'+replacer(body)
+	try:
+		body = re.findall(regex, body, re.S)[0]
+		if body.count(u'Нет данных!'): msg += ' '+ L('No data!')
+		else: msg += '\n'+replacer(body)
+	except: msg = L('Unexpected error')
 	send_msg(type, jid, nick, msg)
 
 global execute
