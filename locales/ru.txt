@@ -862,7 +862,7 @@ Clear notification by %s	Уведомления при очистке %s
 Clear notification by presence or message	Тип уведомлений при очистке: сообщения или презенсы
 Muc filter is %s	Muc-фильтр: %s
 Message filter for participants	Фильтр сообщений для участников
-Mute newbie %s	Подавлять сообщения от новичнов: %s
+Mute newbie %s	Подавлять сообщения от новичков: %s
 Mute all messages from newbie	Подавлять все сообщения от новичков в конференции
 Mute newbie time %s	Возраст новичков: %s
 Time of mute all messages from newbie	Время, в течении которого, участник считается новичком
