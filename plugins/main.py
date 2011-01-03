@@ -544,7 +544,7 @@ def info_comm(type, jid, nick):
 
 def helpme(type, jid, nick, text):
 	text = text.strip().lower()
-	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-2o1o Disabler Production Lab. | http://isida-bot.com'
+	if text == 'about': msg = u'Isida Jabber Bot | © 2oo9-%s Disabler Production Lab. | http://isida-bot.com' % str(time.localtime()[0]).replace('0','o')
 	elif text in ['donation','donations']: msg = L('Send donation to: %sBest regards, %s') % ('\nYandexMoney: 41001384336826\nWMZ: Z392970180590\nWMR: R378494692310\nWME: E164241657651\n','Disabler')
 	elif text in [L('access'),'access']: msg = L('Bot has next access levels:\n-1 - ignored\n0 - minimal access\n1 - at least visitor and none\n2 - at least visitor and member\n3 - at least participant and none\n4 - at least participant and member\n5 - at least moderator and none\n6 - at least moderator and member\n7 - at least moderator and admin\n8 - at least moderator and owner\n9 - bot owner')
 	elif len(text) > 1:
@@ -565,7 +565,7 @@ def helpme(type, jid, nick, text):
 					for tmp in tm:
 						if tmp[0] == i and tmp[2] != '': tmsg.append(unicode(tmp[1]))
 					if len(tmsg): msg += u'[%s]…%s\n' % (i,', '.join(tmsg))
-	else: msg = L('%sInformation-referral bot%s Help for command: help command') % ('Isida Jabber Bot - ', u' | http://isida-bot.com | © 2oo9-2o1o Disabler Production Lab. | ')
+	else: msg = L('%sInformation-referral bot%s Help for command: help command') % ('Isida Jabber Bot - ', u' | http://isida-bot.com | © 2oo9-'+str(time.localtime()[0]).replace('0','o')+' Disabler Production Lab. | ')
 	send_msg(type, jid, nick, msg)
 
 def bot_rejoin(type, jid, nick, text):

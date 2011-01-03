@@ -6,7 +6,7 @@
 #                               version 2.30
 #
 # --------------------------------------------------------------------
-#                  (c) 2oo9-2o1o Disabler Production Lab.
+#                      (c) Disabler Production Lab.
 # --------------------------------------------------------------------
 
 from __future__ import with_statement
@@ -1736,7 +1736,7 @@ pprint('*** Name: %s' % botName)
 pprint('*** Version: %s' % botVersion)
 pprint('*** OS: %s ' % botOs)
 pprint('*'*50)
-pprint('*** (c) 2oo9-2o1o Disabler Production Lab.')
+pprint('*** (c) 2oo9-%s Disabler Production Lab.' % str(time.localtime()[0]).replace('0','o'))
 
 lastnick = Settings['nickname']
 jid = JID(Settings['jid'])
