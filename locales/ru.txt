@@ -932,8 +932,8 @@ Karma. Revoke voice when karma is lower than %s	Лишать голоса при
 Revoke voice when karma is lower than defined value	Лишать голоса при снижении кармы ниже заданного значения
 Karma. None affiliation when karma is lower than %s	Лишать полномочий при снижении кармы до %s
 Revoke affiliation when karma is lower than defined value	Лишать полномочий при снижении кармы ниже заданного значения
-Karma. Participant affiliation when karma is higher than %s	Наделять полномочий при повышении кармы до %s
-Give a participant affiliation when karma is higher than defined value	Наделять полномочий при повышении кармы выше заданного значения
+Karma. Participant affiliation when karma is higher than %s	Наделять полномочиями при повышении кармы до %s
+Give a participant affiliation when karma is higher than defined value	Наделять полномочиями при повышении кармы выше заданного значения
 Karma. Member affiliation when karma is higher than %s	Наделять полномочиями постоянного участника при повышении кармы до %s
 Give a member affiliation when karma is higher than defined value	Наделять полномочиями постоянного участника при повышении кармы выше заданного значения
 Karma. Moderator role when karma is higher than %s	Наделять полномочиями модератора при повышении кармы до %s
