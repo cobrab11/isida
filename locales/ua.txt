@@ -6,7 +6,7 @@
 #                         Ukrainian locale (woman)
 #
 # --------------------------------------------------------------------
-#                  (c) 2oo9-2o1o Disabler Production Lab.
+#                  (c) 2oo9-2o11 Disabler Production Lab.
 # --------------------------------------------------------------------
 
 # file: ../trunk/kernel.py
@@ -195,6 +195,7 @@ Distance between cities	Відстань між містами
 Sites at Domain/IP address: %s\n	Сайти, розташовані на IP-адресі/домені: %s\n
 Domain/IP address info:	Інформація о IP-адресі/домені:
 No data!	Немає даних!
+Unexpected error	Непередбачувана помилка
 Domain/IP address whois info.	Показує інформацію whois домену/IP-адреси\ndomain_info IP|домен\ndomain_info sites IP|домен - показує сайти, що знаходяться на домені/IP-адресі
 
 # file: ../trunk/plugins/drink.py
@@ -271,7 +272,6 @@ Find holiday\ncalend [name_holiday/date]	Пошук приводу випити 
 
 # file: ../trunk/plugins/dumpz.py
 Posting by URL: %s	Розмістила за посиланням %s 
-Unexpected error	Непередбачувана помилка
 Posting text&code on dedicated server for easy sharing.\ndumpz text - posting plain text,\ndumpz [sh|c|html|py|php|css|sql|cpp] - posting text with highlighting	Відправка тексту та коду на виділені сервери для спільного використання.\ndumpz text - відправка простого тексту,\ndumpz [sh|c|html|py|php|css|sql|cpp] - відправка тексту з підсвічуванням
 
 # file: ../trunk/plugins/empty.py
@@ -862,6 +862,10 @@ Clear notification by %s	Сповіщення при очищенні %s
 Clear notification by presence or message	Тип сповіщеннь при очищенні: повідомлення чи презенси
 Muc filter is %s	Muc-фільтр: %s
 Message filter for participants	Фільтр повідомлень для учасників
+Mute newbie %s	Блокувати повідомлення від новачків: %s
+Mute all messages from newbie	Блокувати всі повідомлення від новачків в конференції
+Mute newbie time %s	Вік новачків: %s
+Time of mute all messages from newbie	Час, на протязі якого учасник вважається новачком
 Adblock muc filter is %s	Блокування реклами: %s
 Adblock filter	Фільтр блокування реклами
 Repeat muc filter is %s	Повтор повідомлень: %s
