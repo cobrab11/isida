@@ -195,6 +195,7 @@ Distance between cities	Расстояние между городами. При
 Sites at Domain/IP address: %s\n	Сайты расположенные на IP адресе/домене: %s\n
 Domain/IP address info:	Информация о IP адресе/домене:
 No data!	Нет данных!
+Unexpected error	Непредвиденная ошибка
 Domain/IP address whois info.	Показывает информацию whois домена/IP адреса\ndomain_info IP|домен\ndomain_info sites IP|домен - показывает сайты находящиеся на домене/IP адресе
 
 # file: ../trunk/plugins/drink.py
@@ -271,7 +272,6 @@ Find holiday\ncalend [name_holiday/date]	Поиск повода выпить ;)
 
 # file: ../trunk/plugins/dumpz.py
 Posting by URL: %s	Запостила по ссылке %s 
-Unexpected error	Непредвиденная ошибка
 Posting text&code on dedicated server for easy sharing.\ndumpz text - posting plain text,\ndumpz [sh|c|html|py|php|css|sql|cpp] - posting text with highlighting	Отправка текста и кода на выделенные сервера для совместного использования.\ndumpz text - отправка простого текста,\ndumpz [sh|c|html|py|php|css|sql|cpp] - отправка текста с подсветкой
 
 # file: ../trunk/plugins/empty.py
@@ -603,6 +603,10 @@ You can't change own karma!	Нельзя изменить карму самом�
 You changes %s's karma to %s. Next time to change across: %s.	Вы изменили карму %s до %s. Следующий раз можно изменить через: %s
 Time from last change %s's karma is very small. Please wait %s.	Вы недавно меняли карму %s. Надо подождать: %s.
 Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма участника.\nkarma [show] nick\nkarma top+|- [количество]\nДля изменения:\nnick: +1\nnick: -1
+
+# file: ../trunk/plugins/kinopoisk.py
+Found:\n	Найдено:\n
+Search in www.kinopoisk.ru. Example:\nfilm [id] film_id\nfilm [search] film_name	Поиск по www.kinopoisk.ru. Пример:\nfilm [id] film_id\nfilm [search] film_name
 
 # file: ../trunk/plugins/known.py
 I know you as:	Я видела тебя как:
@@ -1122,7 +1126,6 @@ Paste some text to server	Публикация текста на сервере
 
 # file: ../trunk/plugins/phone.py
 Your search returns no results.	По вашему запросу ничего не найдено.
-Found:\n	Найдено:\n
 Information about telephone city code, DEF code or search code for city.	Информация о коде города, DEF коде, поиск кода по названию
 
 # file: ../trunk/plugins/price.py

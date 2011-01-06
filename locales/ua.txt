@@ -598,11 +598,15 @@ You changes %s's karma to %s	Ви змінили карму %s до %s
 You can't change karma!	Вам не можна змінювати карму учасника!
 incorrect digital parameter	невірно заданий цифровий параметр
 You clear karma for %s	Ви очистили карму %s
-You can't change karma in private!	Змінення карми в приваті заборонено!
+You can't change karma in private!	Зміна карми в приваті заборонено!
 You can't change own karma!	Не можна змінити карму самому собі!
-You changes %s's karma to %s. Next time to change across: %s.	Ви змінили карму %s до %s. Наступний раз можна змінити через: %s
-Time from last change %s's karma is very small. Please wait %s.	Ви нещодавно змінювали карму %s. Почекайте: %s.
-Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма учасника.\nkarma [show] nick\nkarma top+|- [кількість]\nДля змінення:\nnick: +1\nnick: -1
+You changes %s's karma to %s. Next time to change across: %s.	Ви змінили карму %s до %s. Наступного разу можна змінити через: %s
+Time from last change %s's karma is very small. Please wait %s.	Ви нещодавно змінювали карму %s. Зачекайте: %s.
+Karma.\nkarma [show] nick\nkarma top+|- [count]\nFor change karma: nick: +1\nnick: -1	Карма учасника.\nkarma [show] nick\nkarma top+|- [кількість]\nДля зміни:\nnick: +1\nnick: -1
+
+# file: ../trunk/plugins/kinopoisk.py
+Found:\n	Знайдено:\n
+Search in www.kinopoisk.ru. Example:\nfilm [id] film_id\nfilm [search] film_name	Пошук по www.kinopoisk.ru. Приклад:\nfilm [id] film_id\nfilm [search] film_name
 
 # file: ../trunk/plugins/known.py
 I know you as:	Я бачила тебе як:
@@ -1122,7 +1126,6 @@ Paste some text to server	Публікація тексту на сервері
 
 # file: ../trunk/plugins/phone.py
 Your search returns no results.	За вашим запитом нічого не знайдено.
-Found:\n	Знайдено:\n
 Information about telephone city code, DEF code or search code for city.	Інформація про код міста, DEF-код, пошук кода за назвою.
 
 # file: ../trunk/plugins/price.py
