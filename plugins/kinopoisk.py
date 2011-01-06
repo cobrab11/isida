@@ -9,7 +9,7 @@ def kinopoisk(type, jid, nick, text):
 		data = html_encode(load_page('http://m.kinopoisk.ru/search/'+query))
 		temp_urls = re.findall('<a href="/movie/(\d+?)/">(.+?)</a>', data)
 		if temp_urls:
-			msg = L('Found:\n')
+			msg = L('Found:')
 			for t_u in temp_urls:
 				msg += '\n%s - %s' % (t_u[0], t_u[1])
 		else: msg = L('Not found!')
