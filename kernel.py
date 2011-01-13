@@ -218,19 +218,9 @@ def get_tag_item(body,tag,item):
 	body = get_tag_full(body,tag)
 	return get_subtag(body,item)
 
-def parser(text):
-	text,ttext = unicode(text),''
-	for tmp in text:
-		if (tmp<='~'): ttext+=tmp
-		else: ttext+='?'
-	return ttext
+def parser(t): return ''.join([['?',l][l<='~'] for l in unicode(t)])
 
-def remove_sub_space(text):
-	tx, es = '', '\t\r\n'
-	for tmp in text:
-		if ord(tmp) >= 32 or tmp in es : tx += tmp
-		else: tx += '?'
-	return tx
+def remove_sub_space(t): return ''.join([['?',l][l>=' ' or l in '\t\r\n'] for l in unicode(t)])
 
 def smart_encode(text,enc):
 	tx,splitter = '','|'
