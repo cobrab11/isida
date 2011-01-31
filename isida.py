@@ -3,6 +3,7 @@
 
 import os, sys, time, re
 pid_file = 'isida.pid'
+updatelog_file = 'update.log'
 
 def readfile(filename):
 	fp = file(filename)
@@ -58,7 +59,8 @@ writefile(pid_file,str(os.getpid()))
 rm('settings/version')
 if os.name == 'nt': os.system('svnversion >> settings/version')
 else: os.system('echo `svnversion` >> settings/version')
-os.system('echo No Updates! >> update.log')
+rm(updatelog_file)
+os.system('echo Just Started! >> %s' % updatelog_file)
 
 while 1:
 	try: execfile('kernel.py')
@@ -70,23 +72,23 @@ while 1:
 			rm('settings/version')
 			rm('plugins/list.txt.back')
 			if os.name == 'nt':
-				#os.system('svnversion >> settings/ver')
+				os.system('svnversion >> settings/ver')
 				os.system('cd plugins && ren list.txt list.txt.back && cd ..')
 				os.system('svn up')
 				os.system('svnversion >> settings/version')
 			else:
-				#os.system('echo `svnversion` >> settings/ver')
+				os.system('echo `svnversion` >> settings/ver')
 				os.system('mv plugins/list.txt plugins/list.txt.back')
 				os.system('svn up')
 				os.system('echo `svnversion` >> settings/version')
 			if not os.path.isfile('plugins/list.txt'):
 				if os.name == 'nt': os.system('cd plugins && ren list.txt.back list.txt && cd ..')
 				else: os.system('mv plugins/list.txt.back plugins/list.txt')
-			#try: ver = int(re.findall('[0-9]+',readfile('settings/version'))) - int(re.findall('[0-9]+',readfile('settings/ver')))
-			#except: ver = -1
-			#if ver > 0:	 os.system('svn log --limit '+str(ver)+' >> update.log')
-			#elif ver < 0: os.system('echo Failed to detect version! >> update.log')
-			#else: os.system('echo No Updates! >> update.log')
+			try: ver = int(re.findall('[0-9]+',readfile('settings/version'))) - int(re.findall('[0-9]+',readfile('settings/ver')))
+			except: ver = -1
+			if ver > 0:	 os.system('svn log --limit %s >> %s' % (ver,updatelog_file))
+			elif ver < 0: os.system('echo Failed to detect version! >> %s' % updatelog_file)
+			else: os.system('echo No Updates! >> %s' % updatelog_file)
 		elif mode == 'exit': break
 		elif mode == 'restart': pass
 		else:

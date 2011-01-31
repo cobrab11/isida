@@ -44,7 +44,7 @@ def netwww(type, jid, nick, text):
 			page = remove_sub_space(html_encode(load_page(req)))
 			if regex:
 				try:
-					mt = re.findall(regex, page, re.S)
+					mt = re.findall(regex, page, re.S+re.U)
 					if mt != []: msg = unhtml_hard(''.join(mt[0]))
 					else: msg = L('RegExp not found!')
 				except: msg = L('Error in RegExp!')

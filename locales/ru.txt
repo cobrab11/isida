@@ -76,6 +76,7 @@ Is here: %s	Находится тут: %s
 Not found!	Не найдено!
 %s (with nick: %s)	%s (с ником: %s)
 I saw %s:	Я видела %s:
+Client:	Клиент:
 Send for you in private	Результат отправлен Вам в приват.
 Show age of jid in conference.	Показывает какое время определённый jid или ник находился в данной конференции.
 Show age of jid in conference splitted by nicks.	Показывает какое время определённый jid или ник находился в данной конференции с разбивкой по никам.
@@ -1143,6 +1144,7 @@ Redirect command output in groupchat.	Перенаправляет вывод к
 # file: ../trunk/plugins/say.py
 Message posted to Juick.	Сообщение отправлено в блог Juick.
 "Say" command. Bot say in conference all text after command.	Команда "Сказать". Бот выдаст в текущую конференцию всё, что будет после команды say.
+"Say" command. Bot say in private.\npsay <nick>\ntext	Команда "Сказать в приват".\npsay <ник>\nтекст
 Global message in all conferences, where bot is present.	Глобальное объявление во всех конференциях, где находится бот.
 Send message to blog at juick.com	Отправка сообщения в блог на juick.com
 Set conference topic.	Установка топика конференции

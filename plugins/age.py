@@ -84,15 +84,17 @@ def seen_raw(type, jid, nick, text, xtype):
 			if xtype: msg += '\n'+str(cnt)+'. '
 			else: msg += ' '
 			if text != tmp[1]: msg += L('%s (with nick: %s)') % (text,tmp[1])
-			else: msg += tmp[1] 
+			else: msg += tmp[1]
 			if tmp[5]:
 				if tmp[6] != '': msg += '\t'+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
 				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
-				if tmp[7] != '':
-					if tmp[7].count('\n') >= 4:
-						stat = tmp[7].split('\n',4)[4]
-						if stat != '': msg += ' ('+stat+')'
-					else: msg += ' ('+tmp[7]+')'
+				t7sp = tmp[7].split('\r')[0]
+				if t7sp != '':
+					if t7sp.count('\n') >= 4:
+						stat = t7sp.split('\n',4)[4]
+						if stat != '': msg += ' (%s)' % stat
+					else: msg += ' (%s)' % t7sp
+				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + ' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1])
 			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
@@ -138,12 +140,14 @@ def seenjid_raw(type, jid, nick, text, xtype):
 			msg += '\n'+str(cnt)+'. ' + tmp[1] + ' ('+tmp[2]+')'
 			if tmp[5]:
 				if tmp[6] != '': msg += '\t'+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
-				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
-				if tmp[7] != '':
-					if tmp[7].count('\n') >= 4:
-						stat = tmp[7].split('\n',4)[4]
-						if stat != '': msg += ' ('+stat+')'
-					else: msg += ' ('+tmp[7]+')'
+				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))					
+				t7sp = tmp[7].split('\r')[0]
+				if t7sp != '':
+					if t7sp.count('\n') >= 4:
+						stat = t7sp.split('\n',4)[4]
+						if stat != '': msg += ' (%s)' % stat
+					else: msg += ' (%s)' % t7sp
+				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + tmp[7].split('\r')[-1]
 			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')

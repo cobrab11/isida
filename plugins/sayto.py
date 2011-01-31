@@ -4,6 +4,9 @@
 last_cleanup_sayto_base = 0
 
 def sayto(type, jid, nick, text):
+	while len(text) and text[0] == '\n': text=text[1:]
+	while len(text) and (text[-1] == '\n' or text[-1] == ' '): text=text[:-1]
+	
 	if text.split(' ')[0] == 'show':
 		try: text = text.split(' ',1)[1]
 		except: text = ''
@@ -26,9 +29,10 @@ def sayto(type, jid, nick, text):
 					send_msg('chat', jid, nick, msg)
 					msg = L('Sent in private message')
 			else: msg = L('List is empty.')
-	elif text.count(' '):
-		to = text.split(' ')[0]
-		what = text.split(' ',1)[1]
+	elif text.count(' ') or text.count('\n'):
+		if text.count('\n'): splitter = '\n'
+		else: splitter = ' '
+		to,what = text.split(splitter,1)[0],text.split(splitter,1)[1]
 		frm = nick + '\n' + str(int(time.time()))
 		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()

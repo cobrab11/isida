@@ -10,7 +10,7 @@ def reduce_spaces_last(text):
 	
 def last_check_ascii(type, jid, nick, text):
 	for tmp in text:
-		if tmp > '~':
+		if tmp > '~' or tmp < ' ':
 			send_msg(type, jid, nick, L('Error!'))
 			return True
 	return None
@@ -30,6 +30,7 @@ def last_date_now(body):
 		except: return 'Unknown'
 
 def lastonetrack(type, jid, nick, text):
+	if last_check_ascii(type, jid, nick, text): return
 	ms = lf_api('user.getrecenttracks',text, '<track')
 	if len(ms): cnt = len(ms)
 	else: cnt = 0
@@ -39,8 +40,8 @@ def lastonetrack(type, jid, nick, text):
 
 def lf_api(method, user, splitter):
 	user = reduce_spaces_last(user.lower().encode('utf-8').replace('\\x','%')).replace(' ','%20')
-	link = lfm_url + '?method=' + method + '&user=' + user + '&api_key='+GT('lfm_api')
-	return rss_replace(html_encode(urllib.urlopen(link).read())).split(splitter)
+	link = '%s?method=%s&user=%s&api_key=' % (lfm_url,method,user,GT('lfm_api'))
+	return rss_replace(html_encode(load_page(link))).split(splitter)
 	
 def lasttracks(type, jid, nick, text):
 	if last_check_ascii(type, jid, nick, text): return
@@ -164,25 +165,21 @@ def tasteometer(type, jid, nick, text):
 	except:
 		send_msg(type, jid, nick, L('Need two users'))
 		return
-	link = lfm_url + '?method=tasteometer.compare&type1=user&type2=user&value1=' + user1 + '&value2=' + user2 + '&api_key='+GT('lfm_api')
-	lfxml = html_encode(urllib.urlopen(link).read())
+	link = '%s?method=tasteometer.compare&type1=user&type2=user&value1=%s&value2=%s&api_key=%s' % (lfm_url,user1,user2,GT('lfm_api'))
+	lfxml = html_encode(load_page(link))
 	scor = get_tag(lfxml,'score')
 	try: scor = float(scor)
 	except: scor = 0
 	if scor <= 0: msg = L('Tastes of %s and %s - soo different!') % (user1,user2)
 	else:
-		msg = L('Match tastes of %s and %s - %s') % (user1,user2,str(int(scor*100))+'%') 
-		msg2 = ''
+		msg,msg2 = L('Match tastes of %s and %s - %s') % (user1,user2,str(int(scor*100))+'%'),''
 		lfxml = lfxml.split('<artist')
 		cnt = len(lfxml)
 		for a in lfxml[2:cnt]: msg2 += get_tag(a,'name')+', '
 		if len(msg2): msg += '\n'+L('Artists: %s') % msg2[:-2]
 	send_msg(type, jid, nick, msg)
 
-def no_api(type, jid, nick):
-	send_msg(type, jid, nick, L('Not found LastFM api'))
-
-apifile = 'plugins/LastFM.api'
+def no_api(type, jid, nick): send_msg(type, jid, nick, L('Not found LastFM api'))
 
 exec_yes = [(3, 'lasttracks', lasttracks, 2, L('Last scrobled tracks')),
 	    (3, 'last', lastonetrack, 2, L('Last scrobled track')),

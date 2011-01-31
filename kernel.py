@@ -3,7 +3,7 @@
 # --------------------------------------------------------------------
 #
 #                             Isida Jabber Bot
-#                               version 2.30
+#                             version 2.31-rc0
 #
 # --------------------------------------------------------------------
 #                      (c) Disabler Production Lab.
@@ -1155,9 +1155,7 @@ def iq_async(*answ):
 	req = iq_request.pop(answ[0])
 	try: er_code = answ[3]
 	except: er_code = None
-	if er_code == 'error':
-		send_msg(req[2][0], req[2][1], req[2][2], answ[2])
-		return
+	if er_code == 'error': answ = answ[0:3]
 	is_answ = (answ[1]-req[0],answ[2:])
 	req[2].append(is_answ)
 	thr(req[1],(tuple(req[2])),'iq_async_%s' % answ[0])
@@ -1406,8 +1404,7 @@ def presenceCB(sess,mess):
 	if type=='error':
 		try: pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error').getTagData(tag='text')),tt))
 		except:
-			try: 
-				pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error')),tt))
+			try: pres_answer.append((id,'%s: %s' % (get_tag_item(unicode(mess),'error','code'),mess.getTag('error')),tt))
 			except: pres_answer.append((id,L('Unknown error!'),tt))
 		return
 	elif id != None: pres_answer.append((id,None,tt))
@@ -1425,6 +1422,8 @@ def presenceCB(sess,mess):
 		elif status=='303': exit_type,exit_message = L('Change nick to %s') % chg_nick,''
 		else: exit_type,exit_message = L('Leave'),text
 		if exit_message == 'None': exit_message = ''
+		try: exit_message += '\r' + acl_ver_tmp['%s/%s' % (room,nick)]
+		except: pass
 		if nick != '':
 			for mmb in megabase:
 				if mmb[0]==room and mmb[1]==nick:
@@ -1606,7 +1605,7 @@ CommandsLog = None					# логгирование команд
 prefix = '_'						# префикс комманд
 msg_limit = 1000					# лимит размера сообщений
 botName = 'Isida-Bot'				# название бота
-botVersion = 'v2.30'				# версия бота
+botVersion = 'v2.31-rc0'			# версия бота
 capsVersion = botVersion[1:]		# версия для капса
 disco_config_node = 'http://isida-bot.com/config'
 banbase = []						# результаты muc запросов
@@ -1780,6 +1779,7 @@ setup = getFile(c_file,{})
 join_percent, join_pers_add = 0, 100.0/len(confbase)
 
 for tocon in confbase:
+	pprint('->- %s' % tocon)
 	try: t = setup[getRoom(tocon)]
 	except: 
 		setup[getRoom(tocon)] = {}
@@ -1793,7 +1793,7 @@ for tocon in confbase:
 		tocon += '_'
 		zz = joinconf(tocon, getServer(Settings['jid']))
 	cb.append(tocon)
-	pprint('--> %s' % tocon)
+	pprint('-<- %s' % tocon)
 	if GT('show_loading_by_status_percent'):
 		join_percent += join_pers_add
 		join_status = '%s %s%s' % (GT('show_loading_by_status_message'),int(join_percent),'%')
@@ -1835,6 +1835,17 @@ while 1:
 		kill_all_threads()
 		flush_stats()
 		sys.exit('exit')
+
+	except SystemShutdown:
+		close_age()
+		StatusMessage = L('System Shutdown. Trying to restart in %s sec.') % sleep(GT('reboot_time'))
+		pprint(StatusMessage)
+		send_presence_all(StatusMessage)
+		sleep(0.1)
+		kill_all_threads()
+		flush_stats()
+		sleep(GT('reboot_time'))
+		sys.exit('restart')
 
 	except Exception, SM:
 		try: SM = str(SM)

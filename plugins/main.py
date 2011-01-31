@@ -279,16 +279,18 @@ def status(type, jid, nick, text):
 		mdb = sqlite3.connect(agestatbase,timeout=base_timeout)
 		cu = mdb.cursor()
 		stat = cu.execute('select message,status from age where jid=? and room=? and nick=?',(realjid,jid,text)).fetchone()
-		if stat[1]: msg = L('leave this room.')
-		else:
-			stat = stat[0].split('\n',4)
-			if stat[3] != 'None': msg = stat[3]
-			else: msg = 'online'
-			if stat[4] != 'None': msg += ' ('+stat[4]+')'
-			if stat[2] != 'None': msg += ' ['+stat[2]+'] '
-			else: msg += ' [0] '
-			if stat[0] != 'None' and stat[1] != 'None': msg += stat[0]+'/'+stat[1]
-		if text != nick: msg = text + ' - '+msg
+		if stat:
+			if stat[1]: msg = L('leave this room.')
+			else:
+				stat = stat[0].split('\n',4)
+				if stat[3] != 'None': msg = stat[3]
+				else: msg = 'online'
+				if stat[4] != 'None': msg += ' ('+stat[4]+')'
+				if stat[2] != 'None': msg += ' ['+stat[2]+'] '
+				else: msg += ' [0] '
+				if stat[0] != 'None' and stat[1] != 'None': msg += stat[0]+'/'+stat[1]
+			if text != nick: msg = text + ' - '+msg
+		else: msg = L('Not found!')
 	else: msg = L('I can\'t see %s here...') % text
 	send_msg(type, jid, nick, msg)
 
@@ -300,7 +302,9 @@ def replacer(msg):
 	return msg.replace('...',u'…')
 
 def svn_info(type, jid, nick):
-	if os.path.isfile(ul): msg = L('Last update:\n%s') % readfile(ul).decode('utf-8')
+	if os.path.isfile(ul):
+		try: msg = L('Last update:\n%s') % readfile(ul).decode('utf-8').replace('\n\n','\n')
+		except: msg = L('Error!')
 	else: msg = L('File %s not found!') % ul
 	send_msg(type, jid, nick, msg[:msg_limit])
 
@@ -1642,7 +1646,7 @@ comms = [
 	 (8, 'comm', comm_on_off, 2, L('Enable/Disable commands.\ncomm - show disable commands\ncomm on command - enable command\ncomm off command1[ command2 command3 ...] - disable one or more command')),
 	 (0, 'bot_uptime', uptime, 1, L('Show bot uptime.')),
 	 (6, 'info', info, 1, L('Misc information about bot.')),
-	 #(0, 'new', svn_info, 1, L('Last svn update log')),
+	 (3, 'new', svn_info, 1, L('Last svn update log')),
 	 (9, 'limit', conf_limit, 2, L('Set temporary message limit.')),
 	 (9, 'plugin', bot_plugin, 2, L('Plugin system.\nplugin show|local\nplugin add|del name')),
 	 (9, 'error', show_error, 2, L('Show error(s).\nerror [number|clear]')),
