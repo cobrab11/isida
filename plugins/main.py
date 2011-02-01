@@ -987,7 +987,7 @@ def rss_repl_del_html(ms,item):
 		for tmp in range(0,len(T)-1):
 			pos = None
 			TT = T[tmp].split(' ')[0]
-			if TT[0] != '/':
+			if TT and TT[0] != '/':
 				try: pos = T.index(SP % TT,tmp)
 				except: pass
 				if pos:

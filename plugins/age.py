@@ -24,8 +24,11 @@ def true_age_raw(type, jid, nick, text, xtype):
 		text = '%'+text.lower()+'%'
 		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -time,-status',(jid,text,text)).fetchone()		
 	try:
-		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchall()
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by -time,-status',(jid,real_jid[0])).fetchmany(llim)
+		else:
+			t_age = cu.execute('select sum(age) from age where room=? and jid=? order by -time,-status',(jid,real_jid[0])).fetchone()
+			sbody = cu.execute('select * from age where room=? and jid=? order by -time,-status',(jid,real_jid[0])).fetchone()
+			sbody = [sbody[:4] + t_age + sbody[5:]]
 	except: sbody = None
 	if sbody:
 		msg = L('I see:')
@@ -39,12 +42,14 @@ def true_age_raw(type, jid, nick, text, xtype):
 
 			if tmp[5]:
 				if tmp[6] != '': msg += L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
-				else: msg += L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
-				if tmp[7] != '':
-					if tmp[7].count('\n') >= 4:
-						stat = tmp[7].split('\n',4)[4]
-						if stat != '': msg += ' ('+stat+')'
-					else: msg += ' ('+tmp[7]+')'
+				else: msg += L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))					
+				t7sp = tmp[7].split('\r')[0]
+				if t7sp != '':
+					if t7sp.count('\n') >= 4:
+						stat = t7sp.split('\n',4)[4]
+						if stat != '': msg += ' (%s)' % stat
+					else: msg += ' (%s)' % t7sp
+				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + ' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1])
 			else: msg += L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
@@ -74,20 +79,20 @@ def seen_raw(type, jid, nick, text, xtype):
 		textt = '%'+text.lower()+'%'
 		real_jid = cu.execute('select jid from age where room=? and (nick like ? or jid like ?) order by -status,-time',(jid,textt,textt)).fetchone()		
 	if real_jid:
-		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
-		else: sbody = cu.execute('select room, nick, jid, time, sum(age), status, type, message from age where room=? and jid=? order by status',(jid,real_jid[0])).fetchmany(llim)
+		if xtype: sbody = cu.execute('select * from age where room=? and jid=? order by -status,-time',(jid,real_jid[0])).fetchmany(llim)
+		else: sbody = [cu.execute('select * from age where room=? and jid=? order by -status,-time',(jid,real_jid[0])).fetchone()]
 	else: sbody = None
 	if sbody:
 		msg = L('I see:')
 		cnt = 1
 		for tmp in sbody:
-			if xtype: msg += '\n'+str(cnt)+'. '
+			if xtype: msg += '\n%s. ' % cnt
 			else: msg += ' '
 			if text != tmp[1]: msg += L('%s (with nick: %s)') % (text,tmp[1])
 			else: msg += tmp[1]
 			if tmp[5]:
-				if tmp[6] != '': msg += '\t'+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
-				else: msg += '\t'+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
+				if tmp[6] != '': msg += ' - '+ L('%s %s ago') % (tmp[6],un_unix(int(time.time()-tmp[3])))
+				else: msg += ' - '+ L('Leave %s ago') % un_unix(int(time.time()-tmp[3]))
 				t7sp = tmp[7].split('\r')[0]
 				if t7sp != '':
 					if t7sp.count('\n') >= 4:
@@ -95,9 +100,8 @@ def seen_raw(type, jid, nick, text, xtype):
 						if stat != '': msg += ' (%s)' % stat
 					else: msg += ' (%s)' % t7sp
 				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + ' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1])
-			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
+			else: msg += ' - '+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
-			if not xtype: msg = msg.replace('\t',' - ')
 	else: msg = L('Not found!')
 	send_msg(type, jid, nick, msg)
 
