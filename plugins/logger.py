@@ -88,7 +88,9 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 	if nick[:11] != '<temporary>' and role != 'None' and affiliation != 'None':
 		text,exit_type = [mass[0],html_escape(mass[0])][GT('html_logs_enable')],mass[3]
 		if GT('html_logs_enable') and text[:20] == '&lt;br&gt;&amp;nbsp;': text = ' %s' % text[20:]#text = correct_html(text)
-		exit_message,show = [mass[4],html_escape(mass[4])][GT('html_logs_enable')], [mass[5],html_escape(mass[5])][GT('html_logs_enable')]
+		try: em = mass[4].split('\r')[0]
+		except: em = mass[4]
+		exit_message,show = [em,html_escape(em)][GT('html_logs_enable')], [mass[5],html_escape(mass[5])][GT('html_logs_enable')]
 		priority,not_found = mass[6],mass[7]
 		if not_found == 1 and not GT('aff_role_logs_enable'): return
 		if not_found == 2 and not GT('status_logs_enable'): return
@@ -108,6 +110,7 @@ def presence_logger(room,jid,nick,type,mass,mode,logfile):
 			if len(exit_type): log_body += ' '+exit_type.lower()
 			else: log_body += ' '+L('leave')
 			if exit_message != '': log_body += ' ('+exit_message+') '
+			if mode and '\r' in mass[4]: log_body += ', %s %s' % (L('Client:'),mass[4].split('\r')[1])
 			log_body += ['','</span></p>'][GT('html_logs_enable')] + '\n'
 		else:
 			log_body += ['*** %s','<span class="status">%s'][GT('html_logs_enable')] % nick

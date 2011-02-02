@@ -49,7 +49,7 @@ def true_age_raw(type, jid, nick, text, xtype):
 						stat = t7sp.split('\n',4)[4]
 						if stat != '': msg += ' (%s)' % stat
 					else: msg += ' (%s)' % t7sp
-				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + ' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1])
+				if tmp[7].count('\r'): msg += ', %s %s' % (L('Client:'),' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1]))
 			else: msg += L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')
@@ -99,7 +99,7 @@ def seen_raw(type, jid, nick, text, xtype):
 						stat = t7sp.split('\n',4)[4]
 						if stat != '': msg += ' (%s)' % stat
 					else: msg += ' (%s)' % t7sp
-				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + ' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1])
+				if tmp[7].count('\r'): msg += ', %s %s' % (L('Client:'),' // '.join(tmp[7].split('\r')[-1].split(' // ')[:-1]))
 			else: msg += ' - '+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 	else: msg = L('Not found!')
@@ -151,7 +151,7 @@ def seenjid_raw(type, jid, nick, text, xtype):
 						stat = t7sp.split('\n',4)[4]
 						if stat != '': msg += ' (%s)' % stat
 					else: msg += ' (%s)' % t7sp
-				if tmp[7].count('\r'): msg += ', %s ' % L('Client:') + tmp[7].split('\r')[-1]
+				if tmp[7].count('\r'): msg += ', %s %s' % (L('Client:'),tmp[7].split('\r')[-1])
 			else: msg += '\t'+ L('Is here: %s') % un_unix(int(time.time()-tmp[3]))
 			cnt += 1
 			if not xtype: msg = msg.replace('\t',' - ')

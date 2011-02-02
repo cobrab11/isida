@@ -40,7 +40,7 @@ def lastonetrack(type, jid, nick, text):
 
 def lf_api(method, user, splitter):
 	user = reduce_spaces_last(user.lower().encode('utf-8').replace('\\x','%')).replace(' ','%20')
-	link = '%s?method=%s&user=%s&api_key=' % (lfm_url,method,user,GT('lfm_api'))
+	link = '%s?method=%s&user=%s&api_key=%s' % (lfm_url,method,user,GT('lfm_api'))
 	return rss_replace(html_encode(load_page(link))).split(splitter)
 	
 def lasttracks(type, jid, nick, text):
