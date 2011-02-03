@@ -1675,9 +1675,10 @@ if os.path.isfile(loc_file):
 			if (not c[:3].count('#')) and len(c) and c.count('\t'): locales[c.split('\t',1)[0].replace('\\n','\n').replace('\\t','\t')] = c.split('\t',1)[1].replace('\\n','\n').replace('\\t','\t')
 pprint('*** Loading main plugin')
 
-execfile('plugins/main.py')
-plname		= 'plugins/list.txt'
-pliname		= 'plugins/ignored.txt'
+pl_folder	= 'plugins/%s'
+execfile(pl_folder % 'main.py')
+
+pliname		= pl_folder % 'ignored.txt'
 gtimer		= [check_rss]
 gpresence	= []
 gmessage	= []
@@ -1685,15 +1686,17 @@ gactmessage	= []
 
 pprint('*** Loading other plugins')
 
-plugins   = getFile(plname,[])
-pl_ignore = getFile(pliname,[])
+pl,pl_ignore,plugins = os.listdir(pl_folder % ''),getFile(pliname,[]),[]
+for tmp in pl:
+	if tmp[-3:] == '.py' and tmp[0] != '.' and tmp != 'main.py': plugins.append(tmp)
+plugins.sort()
 
 for pl in plugins:
 	if pl in pl_ignore: pprint('Ignore plugin: %s' % pl)
 	else:
 		presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
 		pprint('Append plugin: %s' % pl)
-		execfile('plugins/%s' % pl)
+		execfile(pl_folder % pl)
 		for cm in execute: comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (pl[:-3],cm[4])))
 		for tmr in timer: gtimer.append(tmr)
 		for tmp in presence_control: gpresence.append(tmp)

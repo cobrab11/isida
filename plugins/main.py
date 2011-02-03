@@ -678,76 +678,71 @@ def conf_limit(type, jid, nick, text):
 
 def bot_plugin(type, jid, nick, text):
 	global plname, plugins, execute, gtimer, gpresence, gmassage
-	text = text.split(' ')
-	do = ''
-	nnick = ''
-	if len(text)>0: do = text[0]
-	if len(text)>1: nnick = text[1]+'.py'
-	msg = ''
-	if do == 'add':
-		if os.path.isfile('plugins/'+nnick):
-			pl_ignore = getFile(pliname,[])
-			if nnick in pl_ignore:
-				pl_ignore.remove(nnick)
-				writefile(pliname,str(pl_ignore))
-			if not nnick in plugins: plugins.append(nnick)
-			presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
-			execfile('plugins/'+nnick)
-			tmsg = ''
-			for cm in execute:
-				tmsg += '%s[%s], ' % (cm[1],cm[0])
-				comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (nnick[:-3],cm[4])))
-			msg = L('Loaded plugin: %s') % nnick[:-3]
-			if tmsg: msg += L('\nAdd commands: %s') % tmsg[:-2]
+	text = text.split()
+	opt = text[0]
+	try: name = '%s.py' % text[1]
+	except: name = ''
+	msg = L('Wrong arguments!')
+	pl_ignore = getFile(pliname,[])
 
-			for tmr in timer: gtimer.append(tmr)
-			for tmp in presence_control: gpresence.append(tmp)
-			for tmp in message_control: gmessage.append(tmp)
-			for tmp in message_act_control: gactmessage.append(tmp)
+	if opt == 'add' and os.path.isfile(pl_folder % name):
+		if name in pl_ignore:
+			pl_ignore.remove(name)
+			writefile(pliname,str(pl_ignore))
+		if name not in plugins: plugins.append(name)
+		presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
+		execfile(pl_folder % name)
+		tmsg = ''
+		for cm in execute:
+			tmsg += '%s[%s], ' % (cm[1],cm[0])
+			comms.append((cm[0],cm[1],cm[2],cm[3],L('Plugin %s. %s') % (name[:-3],cm[4])))
+		msg = L('Loaded plugin: %s') % name[:-3]
+		if tmsg: msg += L('\nAdd commands: %s') % tmsg[:-2]
+		for tmr in timer: gtimer.append(tmr)
+		for tmp in presence_control: gpresence.append(tmp)
+		for tmp in message_control: gmessage.append(tmp)
+		for tmp in message_act_control: gactmessage.append(tmp)
 
-	elif do == 'del':
-		if os.path.isfile('plugins/'+nnick):
-			pl_ignore = getFile(pliname,[])
-			if not nnick in pl_ignore:
-				pl_ignore.append(nnick)
-				writefile(pliname,str(pl_ignore))
-			if nnick in plugins: plugins.remove(nnick)
-			presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
-			execfile('plugins/'+nnick)
-			tmsg = ''
-			for cm in execute:
-				tmsg += '%s[%s], ' % (cm[1],cm[0])
-				for i in comms:
-					if i[1] == cm[1]: comms.remove(i)
-			msg = L('Unloaded plugin: %s') % nnick[:-3]
-			if tmsg: msg += L('\nDel commands: %s') % tmsg[:-2]
-			for tmr in timer: gtimer.remove(tmr)
-			for tmp in presence_control: gpresence.remove(tmp)
-			for tmp in message_control: gmessage.remove(tmp)
-			for tmp in message_act_control: gactmessage.remove(tmp)
-	elif do == 'local':
-		a = os.listdir('plugins/')
+	elif opt == 'del' and name in plugins:
+		if name not in pl_ignore:
+			pl_ignore.append(name)
+			writefile(pliname,str(pl_ignore))
+		plugins.remove(name)
+		presence_control,message_control,message_act_control,iq_control,timer,execute = [],[],[],[],[],[]
+		execfile(pl_folder % name)
+		tmsg = ''
+		for cm in execute:
+			tmsg += '%s[%s], ' % (cm[1],cm[0])
+			for i in comms:
+				if i[1] == cm[1]: comms.remove(i)
+		msg = L('Unloaded plugin: %s') % name[:-3]
+		if tmsg: msg += L('\nDel commands: %s') % tmsg[:-2]
+		for tmr in timer: gtimer.remove(tmr)
+		for tmp in presence_control: gpresence.remove(tmp)
+		for tmp in message_control: gmessage.remove(tmp)
+		for tmp in message_act_control: gactmessage.remove(tmp)
+
+	elif opt == 'local':
+		a = os.listdir(pl_folder % '')
 		b = []
 		for c in a:
-			if c[-3:] == u'.py' and c != 'main.py': b.append(c[:-3].decode('utf-8'))
+			if c[-3:] == '.py' and c[0] != '.' and c != 'main.py': b.append(c[:-3].decode('utf-8'))
 		msg = L('Available plugins: %s') % ', '.join(b)
-		pl_ignore = getFile(pliname,[])
 		if len(pl_ignore):
 			b = []
 			for tmp in pl_ignore: b.append(tmp[:-3])
 			msg += L('\nIgnored plugins: %s') % ', '.join(b)
-	elif do == 'show':
+
+	elif opt == 'show':
 		msg = ''
 		for jjid in plugins: msg += jjid[:-3]+', '
 		msg = L('Active plugins: %s') % msg[:-2]
-		pl_ignore = getFile(pliname,[])
 		if len(pl_ignore):
 			b = []
 			for tmp in pl_ignore: b.append(tmp[:-3])
 			msg += L('\nIgnored plugins: %s') % ', '.join(b)
-	else: msg = L('Wrong arguments!')
+
 	plugins.sort()
-	writefile(plname,unicode(plugins))
 	send_msg(type, jid, nick, msg)
 
 def owner(type, jid, nick, text):
