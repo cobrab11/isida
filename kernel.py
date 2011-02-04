@@ -1096,20 +1096,22 @@ def iqCB(sess,iq):
 
 						# Rejoin filter
 						if get_config(gr,'muc_filter_rejoin') and msg and not mute and newjoin:
-							try: muc_rejoins[tojid] = [muc_rejoins[tojid],muc_rejoins[tojid][1:]][len(muc_rejoins[tojid])==GT('muc_filter_rejoin_count')] + [int(time.time())]
-							except: muc_rejoins[tojid] = []
-							if len(muc_rejoins[tojid]) == GT('muc_filter_rejoin_count'):
-								tmo = muc_rejoins[tojid][GT('muc_filter_rejoin_count')-1] - muc_rejoins[tojid][0]
+							ttojid = '%s|%s' % (getRoom(tojid),getRoom(jid))
+							try: muc_rejoins[ttojid] = [muc_rejoins[ttojid],muc_rejoins[ttojid][1:]][len(muc_rejoins[ttojid])==GT('muc_filter_rejoin_count')] + [int(time.time())]
+							except: muc_rejoins[ttojid] = []
+							if len(muc_rejoins[ttojid]) == GT('muc_filter_rejoin_count'):
+								tmo = muc_rejoins[ttojid][GT('muc_filter_rejoin_count')-1] - muc_rejoins[ttojid][0]
 								if tmo < GT('muc_filter_rejoin_timeout'):
 									msg,mute = unicode(Node('presence', {'from': tojid, 'type': 'error', 'to':jid}, payload = ['replace_it',Node('error', {'type': 'auth','code':'403'}, payload=[Node('forbidden',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[]),Node('text',{'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'},[L('To many rejoins! Wait %s sec.') % GT('muc_filter_rejoin_timeout')])])])).replace('replace_it',get_tag(msg,'presence')),True
 									pprint('MUC-Filter rejoin: %s [%s] %s' % (jid,room,nick))
 
 						# Status filter
 						if get_config(gr,'muc_filter_repeat_prs') != 'off' and msg and not mute and not newjoin:
-							try: muc_statuses[tojid] = [muc_statuses[tojid],muc_statuses[tojid][1:]][len(muc_statuses[tojid])==GT('muc_filter_status_count')] + [int(time.time())]
-							except: muc_statuses[tojid] = []
-							if len(muc_statuses[tojid]) == GT('muc_filter_status_count'):
-								tmo = muc_statuses[tojid][GT('muc_filter_status_count')-1] - muc_statuses[tojid][0]
+							ttojid = '%s|%s' % (getRoom(tojid),getRoom(jid))
+							try: muc_statuses[ttojid] = [muc_statuses[ttojid],muc_statuses[ttojid][1:]][len(muc_statuses[ttojid])==GT('muc_filter_status_count')] + [int(time.time())]
+							except: muc_statuses[ttojid] = []
+							if len(muc_statuses[ttojid]) == GT('muc_filter_status_count'):
+								tmo = muc_statuses[ttojid][GT('muc_filter_status_count')-1] - muc_statuses[ttojid][0]
 								if tmo < GT('muc_filter_status_timeout'):
 									act = get_config(gr,'muc_filter_repeat_prs')
 									pprint('MUC-Filter status (%s): %s [%s] %s' % (act,jid,room,nick))
