@@ -117,11 +117,14 @@ def muc_tempo_ban2(type, jid, nick,text):
 		writefile(tban,str(ubl))
 		send_msg(type, jid, nick, msg)
 
-def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast')
-def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none')
-def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member')
+def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',None)
+def muc_banjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',True)
+def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',None)
+def muc_nonejid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',True)
+def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',None)
+def muc_memberjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',True)
 
-def muc_affiliation(type, jid, nick, text, aff):
+def muc_affiliation(type, jid, nick, text, aff, is_jid):
 	tmppos = arr_semi_find(confbase, jid)
 	if tmppos == -1: nowname = Settings['nickname']
 	else:
@@ -137,7 +140,7 @@ def muc_affiliation(type, jid, nick, text, aff):
 		skip = None
 		if text.count('\n'): who, reason = text.split('\n',1)[0], text.split('\n',1)[1]
 		else: who, reason = text, L('by Isida!')
-		whojid = unicode(get_level(jid,who)[1])
+		whojid = [unicode(get_level(jid,who)[1]),who][is_jid]
 		if whojid != 'None': sender(Node('iq', {'id': get_id(), 'type': 'set', 'to':jid}, payload = [Node('query', {'xmlns': NS_MUC_ADMIN},[Node('item',{'affiliation':aff, 'jid':whojid},[Node('reason',{},reason)])])]))
 		else: send_msg(type, jid, nick, L('I don\'t know %s') % who)
 	else: send_msg(type, jid, nick, L('What?'))
@@ -224,13 +227,18 @@ timer = [check_unban]
 
 execute = [(7, 'ban_past', muc_ban_past, 2, L('Ban user.')),
 	   (7, 'ban', muc_ban, 2, L('Ban user.')),
+	   (7, 'banjid', muc_banjid, 2, L('Ban user by jid.')),
+	   (7, 'unban', muc_none, 2, L('Unban user.')),
+	   (7, 'unbanjid', muc_nonejid, 2, L('Unban user by jid.')),
 	   (7, 'tban', muc_tempo_ban, 2, L('Temporary ban.\ntban show|del [jid] - show/del temporary bans\ntban nick\ntimeD|H|M|S\nreason - ban nick for time because reason.')),
-	   (7, 'none_past', muc_none_past, 2, L('Delete user affiliation.')),
+	   (7, 'none_past', muc_none_past, 2, L('Remove user affiliation.')),
+	   (7, 'none', muc_none, 2, L('Remove user affiliation.')),
+	   (7, 'nonejid', muc_nonejid, 2, L('Remove user affiliation.')),
 	   (7, 'member_past', muc_member_past, 2, L('Get member affiliation.')),
-	   (7, 'none', muc_none, 2, L('Delete user affiliation.')),
 	   (7, 'member', muc_member, 2, L('Get member affiliation.')),
+	   (7, 'memberjid', muc_memberjid, 2, L('Get member affiliation.')),
 	   (7, 'kick', muc_kick, 2, L('Kick user.')),
-	   (7, 'participant', muc_participant, 2, L('Give participant.')),
-	   (7, 'visitor', muc_visitor, 2, L('Give visitor.')),
-	   (7, 'moderator', muc_moderator, 2, L('Give role moderator.')),
+	   (7, 'participant', muc_participant, 2, L('Change role to participant.')),
+	   (7, 'visitor', muc_visitor, 2, L('Revoke voice.')),
+	   (7, 'moderator', muc_moderator, 2, L('Grant moderator.')),
 	   (8, 'global_ban', global_ban, 2, L('Global ban. Available only for confernce owner.\nglobal_ban del - remove conference from banlist,\nglobal_ban add - add conference into banlist,\nglobal_ban <jid> - ban jid in all rooms, where bot is admin.'))]
