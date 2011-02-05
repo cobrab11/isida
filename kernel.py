@@ -1843,7 +1843,7 @@ while 1:
 
 	except SystemShutdown:
 		close_age()
-		StatusMessage = L('System Shutdown. Trying to restart in %s sec.') % sleep(GT('reboot_time'))
+		StatusMessage = L('System Shutdown. Trying to restart in %s sec.') % GT('reboot_time')
 		pprint(StatusMessage)
 		send_presence_all(StatusMessage)
 		sleep(0.1)
