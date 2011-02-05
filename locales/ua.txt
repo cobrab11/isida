@@ -262,7 +262,7 @@ saturday	субота
 sunday	неділя
 last	останній
 Last	остання
-lAst	останнє
+lAst	остання
 Read file error.	Помилка читання файлу.
 Holiday: %s not found.	Привід: %s не знайдений.
 I know holidays: %s	Я знаю приводи випити: %s

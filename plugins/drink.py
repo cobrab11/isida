@@ -12,8 +12,7 @@ def to_drink(type, jid, nick, text):
 	mmas2 = [L('January'),L('February'),L('March'),L('April'),L('May'),L('June'),L('July'),L('August'),
 		L('September'),L('October'),L('November'),L('December')]
 	wday = [L('monday'),L('tuesday'),L('wendesday'),L('thirsday'),L('friday'),L('saturday'),L('sunday')]
-	lday = [L('last').lower(),L('last').lower(),L('Last').lower(),
-		L('last').lower(),L('Last').lower(),L('Last').lower(),L('lAst').lower()]
+	lday = [L('last'),L('last'),L('Last'),L('last'),L('Last'),L('Last'),L('lAst')]
 	if os.path.isfile(date_file):
 		ddate = readfile(date_file).decode('UTF')
 		week1 = ''
@@ -26,7 +25,7 @@ def to_drink(type, jid, nick, text):
 				if ltim[0]/4.0 == int(ltim[0]/4): mtab = [31,29,31,30,31,30,31,31,30,31,30,31]
 				else: mtab = [31,28,31,30,31,30,31,31,30,31,30,31]
 				week1 = str(int(ltim[2]/7.0)+1*(int(ltim[2]/7.0)!=(ltim[2]/7.0))) + ' '+wday[ltim[6]]+' '+mmas2[ltim[1]-1]
-				if ltim[2]+7 > mtab[ltim[1]-1]: week2 = lday[ltim[6]]+' '+wday[ltim[6]]+' '+mmas2[ltim[1]-1]
+				if ltim[2]+7 > mtab[ltim[1]-1]: week2 = lday[ltim[6]].lower()+' '+wday[ltim[6]]+' '+mmas2[ltim[1]-1]
 			or_text = text
 			if text.count('.')==1: text = text.split('.')
 			elif text.count(' ')==1: text = text.split(' ')
