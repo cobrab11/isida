@@ -117,12 +117,12 @@ def muc_tempo_ban2(type, jid, nick,text):
 		writefile(tban,str(ubl))
 		send_msg(type, jid, nick, msg)
 
-def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',None)
-def muc_banjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',True)
-def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',None)
-def muc_nonejid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',True)
-def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',None)
-def muc_memberjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',True)
+def muc_ban(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',0)
+def muc_banjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'outcast',1)
+def muc_none(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',0)
+def muc_nonejid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'none',1)
+def muc_member(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',0)
+def muc_memberjid(type, jid, nick,text): muc_affiliation(type, jid, nick, text, 'member',1)
 
 def muc_affiliation(type, jid, nick, text, aff, is_jid):
 	tmppos = arr_semi_find(confbase, jid)
