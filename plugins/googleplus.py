@@ -11,7 +11,7 @@ def gcalc(type, jid, nick, text):
 		else:
 			begin=data.index(start)
 			result=data[begin+len(start):begin+data[begin:].index(end)]
-			result = result.replace("<font size=-2> </font>",",").replace(" &#215; 10<sup>","E").replace("</sup>","").replace("\xa0","").replace('<sup>','^')
+			result = result.replace("<font size=-2> </font>",",").replace(" &#215; 10<sup>","E").replace("</sup>","").replace('<sup>','^')
 			msg = result.decode('utf-8', 'ignore')
 	send_msg(type, jid, nick, msg)
 
