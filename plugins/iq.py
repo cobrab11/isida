@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf -*-
 
+iq_ping_minimal = 0
+
 def iq_vcard(type, jid, nick, text):
 	global iq_request
 	if text.count('\n'):
@@ -95,8 +97,13 @@ def ping(type, jid, nick, text):
 	sender(i)
 	
 def ping_async(type, jid, nick, text, is_answ):
-	tpi = float(is_answ[0])-time_nolimit
-	tpi = str(int(tpi))+'.'+str(int((tpi-int(tpi))*10**GT('ping_digits')))
+	global iq_ping_minimal
+	tpi_old = float(is_answ[0])-time_nolimit
+	tpi = tpi_old - iq_ping_minimal
+	if tpi <= 0: tpi = iq_ping_minimal
+	if iq_ping_minimal == 0 or iq_ping_minimal > tpi_old: iq_ping_minimal = tpi_old
+	tpif = str(float(tpi)).split('.')
+	tpi = '%s.%s' % (tpif[0],tpif[1][:GT('ping_digits')])
 	if text == '': msg = L('Ping from you %s sec.') % tpi
 	else: msg = L('Ping from %s %s sec.') % (text, tpi)
 	send_msg(type, jid, nick, msg)
