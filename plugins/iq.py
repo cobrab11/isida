@@ -23,7 +23,6 @@ def iq_vcard(type, jid, nick, text):
 
 def vcard_async(type, jid, nick, text, args, is_answ):
 	isa = is_answ[1][0]
-	print parser(str(is_answ))
 	if isa == '<vCard xmlns="vcard-temp" />': msg = L('vCard:') + ' ' + L('Empty!')
 	elif isa[:6] == '<vCard' and isa[-8:] == '</vCard>':
 		while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
