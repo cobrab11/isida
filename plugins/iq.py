@@ -17,35 +17,40 @@ def iq_vcard(type, jid, nick, text):
 				who = getRoom(jid)+'/'+text
 				break
 	iqid = get_id()
-	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('query', {'xmlns': NS_VCARD},[])])
+	i = Node('iq', {'id': iqid, 'type': 'get', 'to':who}, payload = [Node('vCard', {'xmlns': NS_VCARD},[])])
 	iq_request[iqid]=(time.time(),vcard_async,[type, jid, nick, text, args])
 	sender(i)
 
 def vcard_async(type, jid, nick, text, args, is_answ):
 	isa = is_answ[1][0]
-	while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
-	while isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
-	if args.lower() == 'show':
-		msg = L('vCard tags:') + ' '
-		for i in range(0,len(isa)):
-			if isa[i] == '<':
-				tag = isa[i+1:isa.find('>',i)]
-				if isa[i:].count('</'+tag+'>'): msg += tag+', '
-		msg = msg[:-2]
-	elif args != '':
-		msg = L('vCard:') + ' '
-		for tmp in args.split('|'):
-			if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
-			else: tname,ttag = tmp,tmp
-			tt = get_tag(isa,ttag.upper())
-			if tt != '': msg += '\n'+tname+': '+rss_del_nn(remove_ltgt(tt.replace('><','> <').replace('>\n<','> <')))
-	else:
+	print parser(str(is_answ))
+	if isa == '<vCard xmlns="vcard-temp" />': msg = L('vCard:') + ' ' + L('Empty!')
+	elif isa[:6] == '<vCard' and isa[-8:] == '</vCard>':
+		while isa.count('<BINVAL>') and isa.count('</BINVAL>'): isa=isa[:isa.find('<BINVAL>')]+isa[isa.find('</BINVAL>')+9:]
+		while isa.count('<PHOTO>') and isa.count('</PHOTO>'): isa=isa[:isa.find('<PHOTO>')]+isa[isa.find('</PHOTO>')+8:]
 		msg = ''
-		for tmp in [(L('Nick'),'NICKNAME'),(L('Name'),'FN'),(L('About'),'DESC'),(L('URL'),'URL')]:
-			tt = remove_ltgt(get_tag(isa,tmp[1]))
-			if len(tt): msg += '\n'+tmp[0]+': '+tt
-		if len(msg): msg = L('vCard:') + msg
-		else: msg = L('Empty!')
+		if args.lower() == 'show':
+			msg_header = '%s ' % L('vCard tags:')
+			for i in range(0,len(isa)):
+				if isa[i] == '<':
+					tag = isa[i+1:isa.find('>',i)]
+					if isa[i:].count('</'+tag+'>'): msg += tag+', '
+			msg = msg[:-2]
+		elif args != '':
+			msg_header = '%s ' % L('vCard:')
+			for tmp in args.split('|'):
+				if tmp.count(':'): tname,ttag = tmp.split(':')[1],tmp.split(':')[0]
+				else: tname,ttag = tmp,tmp
+				tt = get_tag(isa,ttag.upper())
+				if tt != '': msg += '\n'+tname+': '+rss_del_nn(remove_ltgt(tt.replace('><','> <').replace('>\n<','> <')))
+		else:
+			msg_header = L('vCard:')
+			for tmp in [(L('Nick'),'NICKNAME'),(L('Name'),'FN'),(L('About'),'DESC'),(L('URL'),'URL')]:
+				tt = remove_ltgt(get_tag(isa,tmp[1]))
+				if len(tt): msg += '\n'+tmp[0]+': '+tt
+		if len(msg): msg = msg_header + msg
+		else: msg = msg_header + L('Empty!')
+	else: msg = isa
 	send_msg(type, jid, nick, msg)
 
 def iq_uptime(type, jid, nick, text):
