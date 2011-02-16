@@ -78,8 +78,9 @@ while 1:
 				os.system('echo `svnversion` >> settings/ver')
 				os.system('svn up')
 				os.system('echo `svnversion` >> settings/version')
-			try: ver = int(re.findall('[0-9]+',readfile('settings/version'))) - int(re.findall('[0-9]+',readfile('settings/ver')))
+			try: ver = int(re.findall('[0-9]+',readfile('settings/version'))[0]) - int(re.findall('[0-9]+',readfile('settings/ver'))[0])
 			except: ver = -1
+			rm(updatelog_file)
 			if ver > 0:	 os.system('svn log --limit %s >> %s' % (ver,updatelog_file))
 			elif ver < 0: os.system('echo Failed to detect version! >> %s' % updatelog_file)
 			else: os.system('echo No Updates! >> %s' % updatelog_file)
