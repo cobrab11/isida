@@ -154,7 +154,7 @@ def karma_action_do(room,text,action):
 	else: nick = getResourse(confbase[tmppos])
 	act = {'outcast':muc_affiliation,'none':muc_affiliation,'member':muc_affiliation,
 		   'kick':muc_role,'participant':muc_role,'visitor':muc_role,'moderator':muc_role}
-	act[action]('chat',room,nick,'%s\n%s' % (text,get_config(room,'karma_action_reason')),action.replace('kick','none'))
+	act[action]('chat',room,nick,'%s\n%s' % (text,get_config(room,'karma_action_reason')),action.replace('kick','none'),0)
 
 def karma_change(room,jid,nick,type,text,value):
 	if type == 'chat': msg = L('You can\'t change karma in private!')

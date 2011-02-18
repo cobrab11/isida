@@ -184,12 +184,12 @@ def muc_affiliation_past(type, jid, nick, text, aff):
 		sender(i)
 		send_msg(type, jid, nick, msg)
 
-def muc_kick(type, jid, nick, text): muc_role(type, jid, nick, text, 'none')
-def muc_participant(type, jid, nick, text): muc_role(type, jid, nick, text, 'participant')
-def muc_visitor(type, jid, nick, text): muc_role(type, jid, nick, text, 'visitor')
-def muc_moderator(type, jid, nick, text): muc_role(type, jid, nick, text, 'moderator')
+def muc_kick(type, jid, nick, text): muc_role(type, jid, nick, text, 'none',1)
+def muc_participant(type, jid, nick, text): muc_role(type, jid, nick, text, 'participant',1)
+def muc_visitor(type, jid, nick, text): muc_role(type, jid, nick, text, 'visitor',1)
+def muc_moderator(type, jid, nick, text): muc_role(type, jid, nick, text, 'moderator',1)
 
-def muc_role(type, jid, nick, text, role):
+def muc_role(type, jid, nick, text, role, unused):
 	tmppos = arr_semi_find(confbase, jid)
 	if tmppos == -1: nowname = Settings['nickname']
 	else:
